@@ -7,8 +7,6 @@
 
 This is the backend administrative platform for MOVICUOTAS, a mobile phone credit sales system. It manages customers, devices, loans (with contract numbers), payments, and integrates with MDM for remote device control.
 
-**Client**: MOVICUOTAS
-**Developer**: TAPHN
 **Tech Stack**: Rails 8, PostgreSQL, ViewComponent 4, Solid Queue, ActiveStorage (S3)
 **Brand Color**: #125282 (RGB: 18, 82, 130)
 
@@ -685,14 +683,13 @@ Post-launch support includes:
 
 ## Contributing
 
-This is a private project for MOVICUOTAS. For development questions or issues, contact the TAPHN development team.
+This is a private project. For development questions or issues, contact the development team.
 
 ## License
 
-Proprietary - TAPHN/MOVICUOTAS
+Proprietary
 
 ---
 
 **Project Status**: Phase 1 (Setup)
 **Next Milestone**: Database schema + basic CRUD (Phase 2)
-**Contact**: TAPHN Development Team
