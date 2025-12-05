@@ -52,7 +52,7 @@ movicuotas-backend/
 ├── db/
 │   ├── migrate/
 │   └── seeds.rb
-└── spec/                  # RSpec tests
+└── test/                  # Minitest tests
 ```
 
 ## Core Domain Models
@@ -179,9 +179,9 @@ bin/rails routes | grep api  # View API routes
 
 ### Testing
 ```bash
-bundle exec rspec            # Run all tests
-bundle exec rspec spec/models
-bundle exec rspec spec/services
+bin/rails test               # Run all tests
+bin/rails test test/models
+bin/rails test test/services
 ```
 
 ### Database

@@ -556,7 +556,7 @@ end
 
 ## Testing Strategy
 
-### Model Tests (RSpec)
+### Model Tests (Minitest)
 - Validations
 - Associations
 - Scopes
@@ -632,7 +632,7 @@ bin/dev
 bin/dev                      # Start server + Solid Queue
 bin/rails console            # Rails console
 bin/rails routes             # View all routes
-bundle exec rspec            # Run tests
+bin/rails test               # Run tests
 ```
 
 ## Deployment Checklist
