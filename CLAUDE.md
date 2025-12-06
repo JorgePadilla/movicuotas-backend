@@ -7,8 +7,6 @@ This file provides context for AI assistants (like Claude Code) working on this 
 **Name**: MOVICUOTAS Backend
 **Type**: Rails 8 Admin Platform + REST API
 **Purpose**: Credit management system for mobile phone sales
-**Client**: MOVICUOTAS - Tu Crédito, Tu Móvil
-**Developer**: TAPHN
 **Brand Color**: #125282 (RGB: 18, 82, 130)
 
 ## Tech Stack
