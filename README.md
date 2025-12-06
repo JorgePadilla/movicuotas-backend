@@ -600,6 +600,9 @@ AWS_SECRET_ACCESS_KEY=...
 AWS_REGION=us-east-1
 AWS_BUCKET=movicuotas-receipts-production
 FCM_SERVER_KEY=...
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_PHONE_NUMBER=...
 SECRET_KEY_BASE=...
 ```
 
@@ -659,27 +662,6 @@ bin/rails test               # Run tests
 8. Deploy to staging
 9. QA testing
 10. Deploy to production
-
-## Future Enhancements (Post-Launch)
-
-- Automatic MDM API integration (depends on provider)
-- SMS notifications (Twilio integration)
-- WhatsApp notifications
-- Multiple loans per customer
-- Loan refinancing
-- Early payment discounts
-- Customer credit scoring
-- Analytics dashboard
-- Mobile app for vendors
-
-## Support & Maintenance
-
-Post-launch support includes:
-- Bug fixes
-- Security updates
-- Performance monitoring
-- Database backups verification
-- Monthly reports generation
 
 ## Contributing
 
