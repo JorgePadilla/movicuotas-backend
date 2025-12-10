@@ -124,6 +124,63 @@ This is the backend administrative platform for MOVICUOTAS, a mobile phone credi
 - changes (jsonb) # Store what changed
 - ip_address (inet)
 - timestamps
+
+# credit_applications - Credit application requests
+- application_number (string, unique, required, indexed) # Auto-generated: APP-000001
+- customer_id (references customers, nullable) # Linked after approval
+- identification_number (string, required, indexed)
+- full_name (string, required)
+- gender (enum: masculino, femenino)
+- date_of_birth (date, required)
+- address (text, required)
+- city (string, required)
+- department (string, required)
+- phone (string, required)
+- phone_verification_method (enum: sms, whatsapp)
+- email (string, nullable)
+- employment_status (enum: asalariado, desempleado, jubilado, independiente, comerciante)
+- salary_range (enum: less_than_10k, between_10k_25k, more_than_25k)
+- id_front_photo (active_storage attachment)
+- id_back_photo (active_storage attachment)
+- facial_verification_photo (active_storage attachment)
+- status (enum: pending, approved, rejected)
+- approved_amount (decimal, precision: 10, scale: 2, nullable)
+- approved_at (datetime, nullable)
+- approved_by_id (references users, nullable)
+- rejection_reason (text, nullable)
+- timestamps
+
+# phone_models - Available phone models catalog
+- model_number (string, unique, required, indexed)
+- brand (string, required)
+- model_name (string, required)
+- retail_price (decimal, precision: 10, scale: 2, required)
+- description (text)
+- image (active_storage attachment)
+- is_available (boolean, default: true)
+- timestamps
+
+# loan_accessories - Accessories added to loans
+- loan_id (references loans, required)
+- description (string, required)
+- cost (decimal, precision: 10, scale: 2, required)
+- timestamps
+
+# contracts - Digital contracts and signatures
+- loan_id (references loans, required, unique)
+- contract_document (active_storage attachment)
+- customer_signature (active_storage attachment)
+- signed_at (datetime, required)
+- signed_by_vendor_id (references users, required)
+- timestamps
+
+# mdm_blueprints - QR codes for device configuration
+- qr_code (string, required)
+- qr_image (active_storage attachment)
+- description (text)
+- is_active (boolean, default: true)
+- created_by_id (references users)
+- timestamps
 ```
 
 ### Indexes
@@ -140,18 +197,74 @@ add_index :installments, [:loan_id, :installment_number]
 add_index :payments, :payment_date
 add_index :notifications, :sent_at
 add_index :audit_logs, [:resource_type, :resource_id]
+add_index :credit_applications, :application_number, unique: true
+add_index :credit_applications, :identification_number
+add_index :credit_applications, :status
+add_index :phone_models, :model_number, unique: true
+add_index :phone_models, :is_available
+add_index :contracts, :loan_id, unique: true
 ```
 
 ## Business Logic
+
+### Vendor Workflow Business Rules
+
+#### Customer Verification (Step 1)
+1. Query database for active loans by customer identification number
+2. If active loan exists, block progression and display warning
+3. If no active loan, allow vendor to proceed
+
+#### Credit Application Submission (Step 2)
+1. Validate all required fields are present
+2. Validate identification number is unique (not already in system)
+3. Upload ID photos and facial verification to S3
+4. Create `CreditApplication` record with status "pending"
+5. Run credit approval algorithm (manual or automated)
+6. If approved: Set status to "approved", store approved amount, generate application number
+7. If rejected: Set status to "rejected", store rejection reason
+
+#### Application Retrieval and Device Selection (Step 3)
+1. Load approved application by application number
+2. Display available phone models where `retail_price <= approved_amount`
+3. When model selected, verify IMEI is unique and not already in system
+4. If accessories selected, verify: `phone_price + accessories_cost <= approved_amount`
+5. Create preliminary loan record (not yet finalized)
+
+#### Payment Calculation (Step 5)
+**Formula for Bi-weekly Installments**:
+- Down payment options: 30%, 40%, 50% of total purchase
+- Number of installments: 6, 8, or 12 (bi-weekly periods)
+- Interest rate: Applied to financed amount
+- Calculate bi-weekly payment: `PMT = (financed_amount * (r/2)) / (1 - (1 + r/2)^-n)`
+  - Where: financed_amount = total_purchase - down_payment
+  - r = annual interest rate
+  - n = number of bi-weekly installments
+
+#### Contract Generation and Signature (Step 6-7)
+1. Generate contract PDF with all customer and loan details
+2. Capture digital signature via touch interface
+3. Save signature as image to S3
+4. Create `Contract` record linking to loan
+5. Update loan status to "active"
+6. Generate contract number (format: `S01-2025-12-04-000001`)
+
+#### Device Configuration (Step 8-10)
+1. Generate or retrieve QR code (BluePrint) for MDM configuration
+2. Vendor scans QR with customer's device
+3. MDM app is installed automatically
+4. Customer installs MoviCuotas app and logs in
+5. Vendor completes final checklist
+6. System marks device as "configured" and loan as "active"
 
 ### Loan Creation Process
 1. Validate customer exists and is active
 2. Validate device exists and is not assigned
 3. Calculate financed amount: `total_amount - down_payment`
-4. Generate installment schedule using `LoanCalculatorService`
+4. Generate installment schedule using `LoanCalculatorService` (bi-weekly installments)
 5. Create loan and all installments in a transaction
 6. Assign device to customer
-7. Send welcome notification
+7. Create contract record with signature
+8. Send welcome notification
 
 ### Payment Processing
 1. Receive payment with optional receipt image
@@ -424,6 +537,123 @@ class Admin::Customers::CustomerCardComponent < ViewComponent::Base
   end
 end
 ```
+
+## Vendor Workflow (Flujo de Trabajo del Vendedor)
+
+This section describes the complete step-by-step process that vendors follow when creating a new credit for a customer.
+
+### Step 1: Customer Verification Screen
+**Objective**: Verify if the customer already has an active credit before starting.
+
+**UI Elements**:
+- Text input field: "Ingrese Número de Identidad del Cliente"
+- Primary action button: "Verificar"
+
+**Response States** (Post-click):
+- **State A (Active Credit)**: Display alert message (red): "Cliente tiene crédito activo. Finaliza el pago de tus Movicuotas para aplicar a más créditos!". Block progression.
+- **State B (No Active Credit)**: Display confirmation message (green): "Cliente no cuenta con crédito activo". Enable new button: "Empezar Proceso" or "Iniciar Solicitud".
+
+### Step 2: Credit Application (Multi-layer Form)
+
+#### Sub-screen 2.1: General Data (First Part)
+**Elements**:
+- Field "Número de Identidad" (Pre-filled from Step 1 if possible)
+- Field "Nombre Completo" (As it appears on ID)
+- Selector "Género": Masculino / Femenino
+- Date selector: "Fecha de Nacimiento"
+- Address fields: Dirección, Ciudad, Departamento
+- Field "Teléfono"
+- Selector "Verificación de Teléfono": Options SMS or Whatsapp
+- Image uploads: Buttons to upload/take "Fotografía de enfrente" and "Fotografía revés" of ID
+- Image upload: Button for "Verificación Facial"
+- Field "Correo" (Optional) with checkbox for "No tengo"
+
+#### Sub-screen 2.2: Income Data (Second Part)
+**Elements**:
+- Selector "Estado laboral" (Multiple options): Asalariado, Desempleado, Jubilado, Independiente, Comerciante
+- Salary range selector "¿Cuánto gana?":
+  - Menos de L. 10,000.00
+  - De 10,000.00 a L. 25,000.00
+  - Más de L. 25,000.00
+
+#### Sub-screen 2.3: Confirmation and Submission (Third Part)
+**Elements**:
+- Read-only summary of all previously entered data for review
+- Final action button: "Enviar Solicitud"
+
+#### Sub-screen 2.4: Application Result (Pop-up or New Screen)
+**States**:
+- **Approved**: Display message "Aprobado". Show "Número de Solicitud: ######" and "Monto aprobado: L. ######"
+- **Not Approved**: Display message "No Aprobado"
+
+### Step 3: Credit Application and Selection
+
+#### Sub-screen 3.1: Retrieve Approved Application
+**Elements**:
+- Input field: "Ingrese Número de Solicitud aprobada"
+- Button: "Ingresar"
+- Upon entry, system loads data and displays (read-only): Nombre, Identidad, Teléfono, Correo, Foto, and Monto Aprobado (L.)
+- Button: "Proceder"
+
+#### Sub-screen 3.2: Model Catalog
+**Elements**:
+- Visual list or grid of available phone models with their prices
+- **Logic**: When selecting a model, the app automatically verifies that the price is equal to or less than the approved amount
+- Once model is selected, fields appear to enter: "Imei" and "Color"
+- Button: "Siguiente"
+
+#### Sub-screen 3.3: Accessories (Remaining Credit)
+**Elements**:
+- On-screen question: "¿Le gustaría utilizar el crédito restante para accesorios?" with "Sí" and "No" buttons
+- If "No" selected: Proceed to next step
+- If "Sí" selected: Display menu to enter "Descripción" of accessory and "Costo" (Amount)
+- **Logic**: Database must verify that accessory cost does not exceed remaining total approved amount
+- Button: "Siguiente"
+
+### Step 4: Purchase Confirmation
+**Objective**: Final summary before calculating payments.
+
+**Elements** (Read-only):
+- Summary showing: "Teléfono seleccionado", "Accesorios" (if applicable), and "Total Compra"
+- Button: "Siguiente"
+
+### Step 5: Payment Calculator
+**Elements**:
+- Top summary: Teléfono, Accesorios, Total Compra
+- **Down Payment Section**: Display interactive options (e.g., radio buttons) for 30%, 40%, 50%, showing calculated amount in Lempiras for each option
+- **Term Section**: Display interactive options for "Número de Cuotas": 6, 8, 12
+- **Dynamic Result**: Display "Cuota Quincenal: L. ----" (This value must update automatically based on selected down payment and term)
+- Final action button: "Generar Crédito" (after customer verifies information)
+
+### Step 6: Contract Signature
+**Elements**:
+- Document viewer: Display complete contract with all customer information already filled in
+- Button at end of contract: "Aceptar"
+- Digital signature screen: Touch-sensitive area for customer to sign digitally, with "Guardar" option
+
+### Step 7: Final Confirmation and Actions
+**Elements**:
+- Large success message: "¡Crédito Aplicado! Felicidades. Estás a unos pasos de disfrutar de nueva compra."
+- Two distinct action buttons:
+  1. "Descargar Contrato" (Vendor downloads it)
+  2. "Proceder a Configuración de Teléfono"
+
+### Step 8: QR Generation
+**Elements**:
+- Screen displaying large QR code (the "BluePrint") intended to be installed on customer's phone
+- Instruction text for vendor: "Escanee este QR con el teléfono del cliente para iniciar la configuración."
+- Mechanism needed to upload QR, edit, delete, change
+
+### Step 9 and 10: Configuration and Verification (Manual Phase)
+**Note**: These steps describe actions the vendor physically performs on the customer's phone, not necessarily screens in the vendor app, although the vendor app could have a "checklist" screen to finalize.
+
+**Suggested Screen for Vendor (Final Checklist)**:
+- Title: Verificación de Configuración del Cliente
+- Manual checklist for vendor:
+  - [ ] BluePrint scanned and configuration completed
+  - [ ] MDM application installed and confirmed
+  - [ ] MoviCuotas application installed and login completed
+- Final button: "Finalizar Proceso de Venta"
 
 ## Admin Dashboard Features
 

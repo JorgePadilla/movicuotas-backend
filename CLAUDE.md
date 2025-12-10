@@ -29,9 +29,11 @@ movicuotas-backend/
 │   ├── components/         # ViewComponent 4 components
 │   │   ├── shared/        # Reusable UI components
 │   │   ├── admin/         # Admin-specific components
+│   │   ├── vendor/        # Vendor-specific components
 │   │   └── reports/       # Report components
 │   ├── controllers/
 │   │   ├── admin/         # Admin web interface
+│   │   ├── vendor/        # Vendor web interface (10-step workflow)
 │   │   └── api/v1/        # Mobile app API
 │   ├── models/
 │   │   ├── customer.rb
@@ -39,12 +41,19 @@ movicuotas-backend/
 │   │   ├── loan.rb
 │   │   ├── installment.rb
 │   │   ├── payment.rb
-│   │   └── notification.rb
+│   │   ├── notification.rb
+│   │   ├── credit_application.rb
+│   │   ├── phone_model.rb
+│   │   ├── loan_accessory.rb
+│   │   ├── contract.rb
+│   │   └── mdm_blueprint.rb
 │   ├── policies/          # Pundit authorization
 │   ├── services/          # Business logic
 │   │   ├── loan_calculator_service.rb
 │   │   ├── payment_processor_service.rb
 │   │   ├── notification_service.rb
+│   │   ├── credit_approval_service.rb
+│   │   ├── contract_generator_service.rb
 │   │   └── mdm_service.rb
 │   └── jobs/              # Solid Queue background jobs
 ├── db/
@@ -63,24 +72,78 @@ movicuotas-backend/
 1. **Customer**: End customer buying on credit
 2. **Device**: Mobile phone with IMEI and MDM tracking
 3. **Loan**: Credit agreement with contract number (format: `S01-2025-12-04-000001`)
-4. **Installment**: Individual payment due dates
+4. **Installment**: Individual payment due dates (bi-weekly)
 5. **Payment**: Actual payments made (with receipt images in S3)
 6. **Notification**: FCM push notifications to customers
+7. **CreditApplication**: Credit application requests from vendors
+8. **PhoneModel**: Catalog of available phone models
+9. **LoanAccessory**: Accessories purchased with remaining credit
+10. **Contract**: Digital contracts with customer signatures
+11. **MdmBlueprint**: QR codes for device MDM configuration
 
 ## Key Business Rules
 
+### Vendor Workflow (10-Step Process)
+
+**Step 1: Customer Verification**
+- Check if customer has active loan by identification number
+- Block if active loan exists
+- Allow progression only if no active loans
+
+**Step 2: Credit Application**
+- Collect customer data (personal, employment, income)
+- Upload ID photos (front/back) and facial verification to S3
+- Submit for approval (manual or automated)
+- Generate application number if approved (format: `APP-000001`)
+
+**Step 3: Device Selection**
+- Retrieve approved application by number
+- Display phone models where price <= approved amount
+- Validate IMEI uniqueness
+- Allow accessory selection with remaining credit
+
+**Step 4: Purchase Confirmation**
+- Display summary: phone + accessories + total
+
+**Step 5: Payment Calculator**
+- Down payment options: 30%, 40%, 50%
+- Installment terms: 6, 8, or 12 bi-weekly periods
+- Calculate and display bi-weekly payment amount dynamically
+
+**Step 6: Contract Signature**
+- Generate contract PDF with all details
+- Capture digital signature
+- Save to S3
+
+**Step 7: Confirmation**
+- Display success message
+- Offer contract download
+- Proceed to device configuration
+
+**Step 8: QR Generation**
+- Display QR code (BluePrint) for MDM setup
+- Vendor scans with customer's device
+
+**Step 9-10: Device Configuration**
+- Install MDM app via QR
+- Install MoviCuotas app
+- Vendor completes checklist
+- Finalize sale
+
 ### Loan Creation
 - Auto-generate contract number: `{branch}-{date}-{sequence}`
-- Calculate installment schedule with interest
-- Generate all installments upfront
+- Calculate bi-weekly installment schedule with interest
+- Generate all installments upfront (bi-weekly due dates)
 - Assign device to customer atomically
+- Create contract with digital signature
 
 ### Payment Processing
 - Upload receipts to S3
 - Support partial payments
-- Calculate late fees for overdue
+- Calculate late fees for overdue (bi-weekly periods)
 - Apply overpayments to next installment
 - Send FCM confirmation notification
+- Bi-weekly payment schedule (every 15 days)
 
 ### Device Locking (Phase 1)
 **Manual Process**:
@@ -160,6 +223,30 @@ AuditLog.create!(
 )
 ```
 
+## Vendor Workflow Implementation Notes
+
+### Controllers Structure
+- `Vendor::CustomerVerificationsController` - Step 1: Check active loans
+- `Vendor::CreditApplicationsController` - Steps 2-3: Application submission and retrieval
+- `Vendor::DeviceSelectionsController` - Step 3: Phone model and accessory selection
+- `Vendor::PaymentCalculatorsController` - Step 5: Calculate bi-weekly payments
+- `Vendor::ContractsController` - Step 6: Contract generation and signature
+- `Vendor::LoansController` - Step 7: Finalize loan creation
+- `Vendor::MdmBlueprintsController` - Step 8: QR code display
+- `Vendor::DeviceConfigurationsController` - Steps 9-10: Final checklist
+
+### Key Services for Vendor Workflow
+- `CreditApprovalService` - Evaluate application and determine approval
+- `ContractGeneratorService` - Generate PDF contracts with customer data
+- `BiweeklyCalculatorService` - Calculate bi-weekly installment payments
+- `LoanFinalizationService` - Complete loan creation with all dependencies
+
+### Important Validations
+1. **Active Loan Check**: `Customer.joins(:loans).where(loans: { status: 'active' })`
+2. **IMEI Uniqueness**: Validate IMEI not in `devices` table
+3. **Price Validation**: `phone_price + accessories <= approved_amount`
+4. **Bi-weekly Calculation**: Use proper interest rate division (annual_rate / 26 for bi-weekly)
+
 ## Common Tasks & Commands
 
 ### Setup
@@ -173,6 +260,7 @@ bin/rails db:create db:migrate db:seed
 bin/dev                      # Start server + jobs
 bin/rails c                  # Console
 bin/rails routes | grep api  # View API routes
+bin/rails routes | grep vendor  # View vendor routes
 ```
 
 ### Testing
@@ -180,6 +268,7 @@ bin/rails routes | grep api  # View API routes
 bin/rails test               # Run all tests
 bin/rails test test/models
 bin/rails test test/services
+bin/rails test test/controllers/vendor
 ```
 
 ### Database
@@ -297,6 +386,7 @@ When implementing features, ensure:
 
 ### Completed
 - Project planning and documentation
+- Vendor workflow specification (10-step process)
 
 ### In Progress
 - Database schema design
@@ -304,24 +394,33 @@ When implementing features, ensure:
 - Basic CRUD setup
 
 ### Next Steps
-1. Generate models with migrations
+1. Generate models with migrations (including new vendor workflow models)
 2. Add validations and associations
-3. Create seed data
-4. Build admin interface with ViewComponents
-5. Implement core services (loan calculator, payment processor)
-6. Setup Solid Queue jobs
-7. Configure S3 for file storage
-8. Build API endpoints
-9. Setup Devise and Pundit
-10. Write tests
+3. Create seed data (including phone models, MDM blueprints)
+4. Build vendor interface with ViewComponents (10-step workflow)
+5. Build admin interface with ViewComponents
+6. Implement core services:
+   - LoanCalculatorService (bi-weekly installments)
+   - PaymentProcessorService
+   - CreditApprovalService
+   - ContractGeneratorService
+   - BiweeklyCalculatorService
+7. Setup Solid Queue jobs
+8. Configure S3 for file storage (receipts, ID photos, contracts, signatures)
+9. Build API endpoints
+10. Setup Devise and Pundit
+11. Write tests (especially vendor workflow integration tests)
 
 ## Questions to Ask When Stuck
 
 1. **For features**: Does this belong in a controller, model, or service?
-2. **For authorization**: What user roles can do this action?
+2. **For authorization**: What user roles can do this action? (Admin vs Vendedor)
 3. **For background jobs**: Does this need to be async?
 4. **For API**: What does the mobile app need in the response?
 5. **For UI**: Can I reuse an existing ViewComponent?
+6. **For vendor workflow**: Which step (1-10) does this belong to?
+7. **For calculations**: Is this bi-weekly or monthly? (System uses bi-weekly installments)
+8. **For file uploads**: Does this need S3 storage? (ID photos, receipts, contracts, signatures)
 
 ## Useful References
 
@@ -338,7 +437,21 @@ When implementing features, ensure:
 - **Use Rails conventions**: Don't fight the framework
 - **Document as you go**: Update this file when patterns change
 
+## Key Vendor Workflow Reminders
+
+When implementing vendor features, remember:
+1. **Step 1 blocks progression** if customer has active loan
+2. **All calculations are bi-weekly** (not monthly)
+3. **Down payment options**: Only 30%, 40%, or 50%
+4. **Installment options**: Only 6, 8, or 12 bi-weekly periods
+5. **File uploads**: ID photos (front/back), facial verification, contract signature → S3
+6. **Application numbers**: Format `APP-000001` (sequential)
+7. **Contract numbers**: Format `{branch}-{date}-{sequence}` (e.g., `S01-2025-12-04-000001`)
+8. **IMEI validation**: Must be unique across entire system
+9. **Price validation**: Total (phone + accessories) must be <= approved amount
+10. **Digital signatures**: Capture via touch interface, save as image
+
 ---
 
-**Last Updated**: 2025-12-05
-**Project Status**: Phase 1 - Setup
+**Last Updated**: 2025-12-10
+**Project Status**: Phase 1 - Setup with Vendor Workflow Specification
