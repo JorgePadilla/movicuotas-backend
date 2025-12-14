@@ -5,9 +5,141 @@ This file provides context for AI assistants (like Claude Code) working on this 
 ## Project Identity
 
 **Name**: MOVICUOTAS Backend
+**Full Brand**: MOVICUOTAS - Tu Crédito, Tu Móvil
 **Type**: Rails 8 Admin Platform + REST API
 **Purpose**: Credit management system for mobile phone sales
 **Brand Color**: #125282 (RGB: 18, 82, 130)
+
+## Visual Style Guide and Color Palette
+
+### Corporate Color
+**Primary Brand Color**: `#125282` (Azul Corporativo MOVICUOTAS)
+- **RGB**: 18, 82, 130
+- **HSL**: 207°, 76%, 29%
+- **CMYK**: 86, 37, 0, 49
+
+**Color Psychology**: The dark blue conveys:
+- Trust and security - Essential for financial transactions
+- Professionalism - Associated with serious financial institutions
+- Stability - Communicates that the platform is solid and reliable
+- Authority - Inspires respect and credibility
+
+**Applications**:
+- Main headers and navigation
+- Logos and branding
+- Primary action buttons
+- Important titles
+- Main borders and dividers
+
+### Functional Colors
+
+#### Status Colors
+
+**Success / Approved - Green**: `#10b981` (RGB: 16, 185, 129)
+- Credit approved
+- Payment verified successfully
+- Process completed
+- Action confirmations
+- "Active" or "Current" status badges
+
+**Error / Rejected - Red**: `#ef4444` (RGB: 239, 68, 68)
+- Credit rejected
+- Customer blocked (active credit exists)
+- Overdue payments / late fees
+- Validation errors
+- Critical error messages
+- Device lock warnings
+
+**Warning / Pending - Orange**: `#f59e0b` (RGB: 245, 158, 11)
+- Payment due soon (3-5 days)
+- Pending review application
+- Pending verification
+- Documents to complete
+- Intermediate states
+
+**Information / Neutral - Blue**: `#3b82f6` (RGB: 59, 130, 246)
+- Informational messages
+- Tooltips and help
+- General notifications
+- Secondary links
+- Informational badges
+
+#### Interface Colors
+
+**Purple - Products and Catalog**: `#6366f1` (RGB: 99, 102, 241)
+- Phone catalog
+- Products section
+- Device configuration
+- QR codes / BluePrints
+
+**Pink - Accessories and Extras**: `#ec4899` (RGB: 236, 72, 153)
+- Accessories section
+- Optional extras
+- Special promotions
+
+### Neutral Colors
+
+| Color | HEX | Use |
+|-------|-----|-----|
+| Dark Gray | `#1f2937` | Main text, secondary headers |
+| Medium Gray | `#6b7280` | Secondary text, descriptions |
+| Light Gray | `#d1d5db` | Borders, separators |
+| Very Light Gray | `#f3f4f6` | Secondary backgrounds, cards |
+| White | `#ffffff` | Main background, featured cards |
+
+### Typography
+
+**Heading 1 - Main Titles**
+- Font: Inter / Calibri - Bold
+- Size: 28pt
+- Color: `#125282`
+
+**Heading 2 - Sections**
+- Font: Inter / Calibri - Semibold
+- Size: 20pt
+- Color: `#1f2937`
+
+**Body Text**
+- Font: Inter / Calibri - Regular
+- Size: 12pt
+- Color: `#1f2937`
+
+### Accessibility Requirements (WCAG 2.1 Level AA)
+
+**Minimum Contrast Ratios**:
+- Normal text: 4.5:1
+- Large text (18pt+): 3:1
+- Interactive elements: 3:1
+
+**Approved Colors on White Background**:
+- ✅ `#125282` (Corporate Blue) - Contrast 8.2:1
+- ✅ `#1f2937` (Dark Gray) - Contrast 14.1:1
+- ✅ `#ef4444` (Red) - Contrast 4.5:1
+- ✅ `#10b981` (Green) - Contrast 3.9:1 (large text only)
+
+### Design Best Practices
+
+**✅ DO**:
+- Use `#125282` for brand and navigation
+- Green only for confirmed success
+- Red only for errors/rejections
+- Maintain accessible contrast (WCAG AA)
+- Use grays for text hierarchy
+
+**❌ DON'T**:
+- Mix green with red in same context
+- Use red for decoration
+- Change the corporate blue `#125282`
+- Use colors with low contrast
+- Invent new status colors
+
+### Design Philosophy
+
+The MOVICUOTAS color palette is specifically designed for a financial credit system. Each color serves a precise psychological function:
+- Generate trust in money transactions
+- Clearly communicate the status of each operation
+- Reduce anxiety in approval/rejection processes
+- Intuitively guide the user through each step
 
 ## Tech Stack
 
@@ -199,8 +331,33 @@ class Admin::Customers::CustomerCardComponent < ViewComponent::Base
   def initialize(customer:)
     @customer = customer
   end
+
+  def status_color
+    case @customer.status
+    when 'active' then '#10b981'      # Green - Success
+    when 'suspended' then '#f59e0b'   # Orange - Warning
+    when 'blocked' then '#ef4444'     # Red - Error
+    end
+  end
+
+  def status_badge_class
+    case @customer.status
+    when 'active' then 'bg-green-100 text-green-800'
+    when 'suspended' then 'bg-orange-100 text-orange-800'
+    when 'blocked' then 'bg-red-100 text-red-800'
+    end
+  end
 end
 ```
+
+**Important**: Always use the defined color palette:
+- Primary brand: `#125282`
+- Success/approved: `#10b981`
+- Error/rejected: `#ef4444`
+- Warning/pending: `#f59e0b`
+- Info: `#3b82f6`
+- Products: `#6366f1`
+- Accessories: `#ec4899`
 
 ### 4. Pundit for Authorization
 ```ruby
@@ -330,6 +487,9 @@ GET /api/v1/notifications
 - Keep components focused and reusable
 - Pass data via initializer, not instance variables
 - Use slots for flexible content areas
+- **Always use the defined color palette** - Never hardcode arbitrary colors
+- Use Tailwind CSS color utilities that match the brand palette
+- Example: `bg-[#125282]` for corporate blue, `text-green-600` for success states
 
 ### Jobs
 - Set appropriate queue priorities
@@ -440,7 +600,7 @@ When implementing features, ensure:
 ## Key Vendor Workflow Reminders
 
 When implementing vendor features, remember:
-1. **Step 1 blocks progression** if customer has active loan
+1. **Step 1 blocks progression** if customer has active loan - Display RED (`#ef4444`) alert message
 2. **All calculations are bi-weekly** (not monthly)
 3. **Down payment options**: Only 30%, 40%, or 50%
 4. **Installment options**: Only 6, 8, or 12 bi-weekly periods
@@ -451,7 +611,35 @@ When implementing vendor features, remember:
 9. **Price validation**: Total (phone + accessories) must be <= approved amount
 10. **Digital signatures**: Capture via touch interface, save as image
 
+### UI Color Guidelines for Vendor Workflow
+
+**Step 1 - Customer Verification**:
+- Active loan exists → RED (`#ef4444`) alert
+- No active loan → GREEN (`#10b981`) confirmation
+
+**Step 2.4 - Application Result**:
+- Approved → GREEN (`#10b981`) with "Aprobado" message
+- Not Approved → RED (`#ef4444`) with "No Aprobado" message
+
+**Step 3 - Phone Models**:
+- Use PURPLE (`#6366f1`) for product cards and catalog items
+
+**Step 3.3 - Accessories**:
+- Use PINK (`#ec4899`) for accessory items and extras
+
+**Step 5 - Payment Calculator**:
+- Primary buttons → CORPORATE BLUE (`#125282`)
+- Display calculated amounts in DARK GRAY (`#1f2937`)
+
+**Step 6 - Contract Signature**:
+- Success message → GREEN (`#10b981`)
+- Signature area border → CORPORATE BLUE (`#125282`)
+
+**Step 7 - Final Confirmation**:
+- Success message → GREEN (`#10b981`) large text
+- Primary action buttons → CORPORATE BLUE (`#125282`)
+
 ---
 
-**Last Updated**: 2025-12-10
-**Project Status**: Phase 1 - Setup with Vendor Workflow Specification
+**Last Updated**: 2025-12-14
+**Project Status**: Phase 1 - Setup with Vendor Workflow Specification + Visual Style Guide
