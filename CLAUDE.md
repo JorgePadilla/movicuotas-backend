@@ -72,10 +72,6 @@ This file provides context for AI assistants (like Claude Code) working on this 
 - Device configuration
 - QR codes / BluePrints
 
-**Pink - Accessories and Extras**: `#ec4899` (RGB: 236, 72, 153)
-- Accessories section
-- Optional extras
-- Special promotions
 
 ### Neutral Colors
 
@@ -176,7 +172,6 @@ movicuotas-backend/
 │   │   ├── notification.rb
 │   │   ├── credit_application.rb
 │   │   ├── phone_model.rb
-│   │   ├── loan_accessory.rb
 │   │   ├── contract.rb
 │   │   └── mdm_blueprint.rb
 │   ├── policies/          # Pundit authorization
@@ -201,46 +196,58 @@ movicuotas-backend/
 2. **Vendedores**: Limited to customer/loan management
 
 ### Main Entities
-1. **Customer**: End customer buying on credit
+1. **Customer**: End customer buying on credit (with date of birth for age calculation)
 2. **Device**: Mobile phone with IMEI and MDM tracking
 3. **Loan**: Credit agreement with contract number (format: `S01-2025-12-04-000001`)
+   - **CRITICAL**: Track loan status across ALL stores/branches
+   - Only ONE active loan per customer system-wide
 4. **Installment**: Individual payment due dates (bi-weekly)
+   - Must track status: pending, paid, overdue, cancelled
+   - Each installment linked to specific loan
 5. **Payment**: Actual payments made (with receipt images in S3)
+   - Must track which installment(s) each payment applies to
+   - Track payment history for reporting
 6. **Notification**: FCM push notifications to customers
 7. **CreditApplication**: Credit application requests from vendors
 8. **PhoneModel**: Catalog of available phone models
-9. **LoanAccessory**: Accessories purchased with remaining credit
-10. **Contract**: Digital contracts with customer signatures
-11. **MdmBlueprint**: QR codes for device MDM configuration
+9. **Contract**: Digital contracts with customer signatures
+10. **MdmBlueprint**: QR codes for device MDM configuration
 
 ## Key Business Rules
 
 ### Vendor Workflow (10-Step Process)
 
 **Step 1: Customer Verification**
-- Check if customer has active loan by identification number
-- Block if active loan exists
-- Allow progression only if no active loans
+- Check if customer has active loan by identification number **ACROSS ALL STORES/BRANCHES**
+- Block if active loan exists in ANY store
+- Display message: "Cliente tiene crédito activo. Finaliza el pago de tus Movicuotas para aplicar a más créditos!"
+- Allow progression only if no active loans exist in the entire system
+- **CRITICAL**: This is a system-wide check, not per-store
 
 **Step 2: Credit Application**
 - Collect customer data (personal, employment, income)
+- **REQUIRED**: Capture date of birth (fecha de nacimiento) to calculate age
 - Upload ID photos (front/back) and facial verification to S3
 - Submit for approval (manual or automated)
 - Generate application number if approved (format: `APP-000001`)
+- Age validation: Customer must meet minimum age requirement
 
 **Step 3: Device Selection**
 - Retrieve approved application by number
 - Display phone models where price <= approved amount
 - Validate IMEI uniqueness
-- Allow accessory selection with remaining credit
+- Display customer data (read-only): Nombre, Identidad, Teléfono, Correo, Foto
+- **NOTE**: Do NOT display approved amount on frontend after this step
 
 **Step 4: Purchase Confirmation**
-- Display summary: phone + accessories + total
+- Display summary: selected phone model + total price
 
 **Step 5: Payment Calculator**
+- Display phone model and total price
 - Down payment options: 30%, 40%, 50%
 - Installment terms: 6, 8, or 12 bi-weekly periods
 - Calculate and display bi-weekly payment amount dynamically
+- **Payment Tracking**: System must track each installment and payment status
 
 **Step 6: Contract Signature**
 - Generate contract PDF with all details
@@ -263,19 +270,26 @@ movicuotas-backend/
 - Finalize sale
 
 ### Loan Creation
+- **Pre-requisite**: Verify NO active loans exist for customer across ALL stores
 - Auto-generate contract number: `{branch}-{date}-{sequence}`
 - Calculate bi-weekly installment schedule with interest
 - Generate all installments upfront (bi-weekly due dates)
 - Assign device to customer atomically
 - Create contract with digital signature
+- Set loan status to 'active'
+- **IMPORTANT**: Only ONE active loan per customer in entire system
 
 ### Payment Processing
 - Upload receipts to S3
 - Support partial payments
+- **Track each payment**: Link to specific installment(s)
+- **Track payment history**: Maintain complete audit trail
 - Calculate late fees for overdue (bi-weekly periods)
 - Apply overpayments to next installment
+- Update installment status when paid
 - Send FCM confirmation notification
 - Bi-weekly payment schedule (every 15 days)
+- **Critical**: Update loan status when fully paid (all installments completed)
 
 ### Device Locking (Phase 1)
 **Manual Process**:
@@ -399,10 +413,15 @@ AuditLog.create!(
 - `LoanFinalizationService` - Complete loan creation with all dependencies
 
 ### Important Validations
-1. **Active Loan Check**: `Customer.joins(:loans).where(loans: { status: 'active' })`
+1. **Active Loan Check (CRITICAL)**:
+   - Query: `Customer.joins(:loans).where(loans: { status: 'active' })`
+   - **Must check across ALL stores/branches in entire system**
+   - Block new credit if ANY active loan exists
 2. **IMEI Uniqueness**: Validate IMEI not in `devices` table
-3. **Price Validation**: `phone_price + accessories <= approved_amount`
+3. **Price Validation**: `phone_price <= approved_amount` (no accessories)
 4. **Bi-weekly Calculation**: Use proper interest rate division (annual_rate / 26 for bi-weekly)
+5. **Age Validation**: Calculate from date_of_birth, must meet minimum age requirement
+6. **Payment Tracking**: Each payment must link to installment(s) and update loan balance
 
 ## Common Tasks & Commands
 
@@ -600,16 +619,20 @@ When implementing features, ensure:
 ## Key Vendor Workflow Reminders
 
 When implementing vendor features, remember:
-1. **Step 1 blocks progression** if customer has active loan - Display RED (`#ef4444`) alert message
-2. **All calculations are bi-weekly** (not monthly)
-3. **Down payment options**: Only 30%, 40%, or 50%
-4. **Installment options**: Only 6, 8, or 12 bi-weekly periods
-5. **File uploads**: ID photos (front/back), facial verification, contract signature → S3
-6. **Application numbers**: Format `APP-000001` (sequential)
-7. **Contract numbers**: Format `{branch}-{date}-{sequence}` (e.g., `S01-2025-12-04-000001`)
-8. **IMEI validation**: Must be unique across entire system
-9. **Price validation**: Total (phone + accessories) must be <= approved amount
-10. **Digital signatures**: Capture via touch interface, save as image
+1. **Step 1 blocks progression** if customer has active loan **IN ANY STORE** - Display RED (`#ef4444`) alert message
+2. **CRITICAL**: Check active loans across ALL stores/branches system-wide
+3. **All calculations are bi-weekly** (not monthly)
+4. **Down payment options**: Only 30%, 40%, or 50%
+5. **Installment options**: Only 6, 8, or 12 bi-weekly periods
+6. **File uploads**: ID photos (front/back), facial verification, contract signature → S3
+7. **Application numbers**: Format `APP-000001` (sequential)
+8. **Contract numbers**: Format `{branch}-{date}-{sequence}` (e.g., `S01-2025-12-04-000001`)
+9. **IMEI validation**: Must be unique across entire system
+10. **Price validation**: Phone price must be <= approved amount (NO accessories)
+11. **Digital signatures**: Capture via touch interface, save as image
+12. **Date of birth**: Required field to calculate customer age
+13. **Payment tracking**: Track every payment and link to specific installments
+14. **Hide approved amount**: Do NOT display on frontend after Step 3 (only backend validation)
 
 ### UI Color Guidelines for Vendor Workflow
 
@@ -623,9 +646,6 @@ When implementing vendor features, remember:
 
 **Step 3 - Phone Models**:
 - Use PURPLE (`#6366f1`) for product cards and catalog items
-
-**Step 3.3 - Accessories**:
-- Use PINK (`#ec4899`) for accessory items and extras
 
 **Step 5 - Payment Calculator**:
 - Primary buttons → CORPORATE BLUE (`#125282`)
