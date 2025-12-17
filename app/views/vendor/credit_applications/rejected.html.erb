@@ -1,0 +1,61 @@
+<% content_for :title, "Solicitud Rechazada - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="text-center">
+    <!-- Error Icon -->
+    <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-red-100 mb-6">
+      <svg class="h-12 w-12 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Solicitud No Aprobada</h1>
+
+    <!-- Application Number -->
+    <div class="inline-block bg-red-50 border border-red-200 rounded-lg px-6 py-4 mb-6">
+      <p class="text-sm text-red-700 mb-1">Número de Solicitud</p>
+      <p class="text-2xl font-bold text-red-900"><%= @credit_application.application_number %></p>
+    </div>
+
+    <!-- Rejection Reason -->
+    <div class="max-w-2xl mx-auto mb-8">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold text-red-900 mb-2">Motivo del Rechazo</h3>
+        <p class="text-red-700"><%= @credit_application.rejection_reason.presence || "La solicitud no cumple con los criterios de aprobación establecidos." %></p>
+      </div>
+
+      <p class="text-lg text-gray-700 mb-4">
+        La solicitud de crédito para <span class="font-semibold"><%= @credit_application.customer.full_name %></span> no ha sido aprobada.
+      </p>
+      <p class="text-gray-600">
+        Puedes revisar los datos ingresados y considerar si hay errores que puedan corregirse, o buscar otro cliente para aplicar a crédito.
+      </p>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="max-w-2xl mx-auto bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+      <div class="flex">
+        <svg class="h-6 w-6 text-yellow-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="text-sm font-medium text-yellow-900">Recomendaciones</h3>
+          <ul class="mt-1 text-sm text-yellow-700 list-disc pl-5 space-y-1">
+            <li>Verifica que los datos del cliente sean correctos</li>
+            <li>Asegúrate de que las fotografías sean claras y legibles</li>
+            <li>Confirma que el cliente no tenga créditos activos en otras tiendas</li>
+            <li>Considera si el perfil laboral y salarial cumple con los requisitos mínimos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      <%= link_to "Ver Detalles de la Solicitud", vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-[#125282] text-[#125282] font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200" %>
+      <%= link_to "Editar esta Solicitud", edit_vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+    </div>
+  </div>
+</div>
