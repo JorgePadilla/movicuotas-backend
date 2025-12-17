@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -6,6 +8,9 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   before_action :authenticate
+  after_action :verify_authorized
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
@@ -21,4 +26,13 @@ class ApplicationController < ActionController::Base
     Current.session&.user
   end
   helper_method :current_user
+
+  def pundit_user
+    current_user
+  end
+
+  def user_not_authorized
+    flash[:alert] = "No tienes permisos para realizar esta acción"
+    redirect_back(fallback_location: root_path)
+  end
 end
