@@ -36,15 +36,15 @@ class LoanPolicy < ApplicationPolicy
 
   # Scope: Filter loans based on role
   # - Admin: All loans
-  # - Vendedor: Only loans they created
+  # - Vendedor: Only loans in their branch
   # - Cobrador: All loans (read-only access)
   class Scope < Scope
     def resolve
       if user&.admin? || user&.cobrador?
         scope.all
       elsif user&.vendedor?
-        # Assuming loan has a `user` association with the vendedor who created it
-        scope.where(user: user)
+        # Vendedores can see loans in their branch
+        scope.where(branch_number: user.branch_number)
       else
         scope.none
       end

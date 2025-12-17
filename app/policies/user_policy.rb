@@ -27,6 +27,11 @@ class UserPolicy < ApplicationPolicy
     admin?
   end
 
+  # Cobrador cannot manage users at all
+  def block?
+    admin?
+  end
+
   # Scope: Only admins can see users
   class Scope < Scope
     def resolve

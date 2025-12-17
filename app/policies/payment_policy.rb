@@ -35,15 +35,16 @@ class PaymentPolicy < ApplicationPolicy
 
   # Scope: Filter payments based on role
   # - Admin: All payments
-  # - Vendedor: Payments for loans they created
+  # - Vendedor: Payments for loans in their branch
   # - Cobrador: All payments (read-only access)
   class Scope < Scope
     def resolve
       if user&.admin? || user&.cobrador?
         scope.all
       elsif user&.vendedor?
-        # Assuming payment belongs to loan, and loan belongs to user (vendedor)
-        scope.joins(loan: :user).where(loans: { user: user })
+        # Vendedores can see payments for loans in their branch
+        scope.joins(loan: :customer)
+             .where(loans: { branch_number: user.branch_number })
       else
         scope.none
       end

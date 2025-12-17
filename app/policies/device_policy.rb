@@ -45,15 +45,16 @@ class DevicePolicy < ApplicationPolicy
   # Scope: Filter devices based on role
   # - Admin: All devices
   # - Vendedor: All devices
-  # - Cobrador: Only devices with overdue installments (to be implemented later)
+  # - Cobrador: Only devices with overdue installments
   class Scope < Scope
     def resolve
       if user&.admin? || user&.vendedor?
         scope.all
       elsif user&.cobrador?
-        # TODO: Implement filtering for overdue devices only
-        # scope.joins(loan: :installments).where(installments: { status: 'overdue' }).distinct
-        scope.all  # Temporary: show all devices (will be filtered in controller)
+        # Cobradores can only see devices with overdue loans
+        scope.joins(loan: :installments)
+             .where(installments: { status: "overdue" })
+             .distinct
       else
         scope.none
       end
