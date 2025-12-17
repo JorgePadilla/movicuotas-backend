@@ -5,5 +5,6 @@ class PagesController < ApplicationController
 
   def home
     # Root page with identity search
+    authorize :page
   end
 end

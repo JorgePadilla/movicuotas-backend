@@ -80,6 +80,14 @@ phone_models = [
     color: 'Verde',
     price: 12_000.00,
     active: true
+  },
+  {
+    brand: 'Huawei',
+    model: 'P60 Pro',
+    storage: '256GB',
+    color: 'Blanco',
+    price: 18_500.00,
+    active: true
   }
 ]
 
