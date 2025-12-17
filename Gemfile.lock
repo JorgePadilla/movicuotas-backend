@@ -401,7 +401,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
-  view_component (~> 4.0)
+  view_component
   web-console
 
 CHECKSUMS
