@@ -18,11 +18,11 @@ class Customer < ApplicationRecord
   validates :status, inclusion: { in: %w[active suspended blocked] }
 
   # Enums
-  enum :gender, { male: 'male', female: 'female', other: 'other' }, prefix: true
-  enum :status, { active: 'active', suspended: 'suspended', blocked: 'blocked' }, default: 'active'
+  enum :gender, { male: "male", female: "female", other: "other" }, prefix: true
+  enum :status, { active: "active", suspended: "suspended", blocked: "blocked" }, default: "active"
 
   # Scopes
-  scope :with_active_loans, -> { joins(:loans).where(loans: { status: 'active' }) }
+  scope :with_active_loans, -> { joins(:loans).where(loans: { status: "active" }) }
   scope :without_active_loans, -> { where.not(id: with_active_loans.select(:id)) }
 
   # Methods

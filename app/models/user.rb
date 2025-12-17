@@ -10,23 +10,11 @@ class User < ApplicationRecord
   # Optional: Add password validations
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
-  enum :role, { admin: "admin", vendedor: "vendedor", cobrador: "cobrador" }
+  enum :role, { admin: "admin", vendedor: "vendedor", cobrador: "cobrador" }, default: "vendedor"
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
 
-  # Role helpers
-  def admin?
-    role == "admin"
-  end
-
-  def vendedor?
-    role == "vendedor"
-  end
-
-  def cobrador?
-    role == "cobrador"
-  end
 
   # Permission helpers
   def can_create_loans?

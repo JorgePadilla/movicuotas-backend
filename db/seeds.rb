@@ -157,7 +157,7 @@ if customer
     ca.status = 'approved'
     ca.approved_amount = 22_000.00
     ca.employment_status = 'employed'
-    ca.salary_range = '20000_30000'
+    ca.salary_range = 'range_20000_30000'
     ca.verification_method = 'sms'
   end
 end
@@ -262,7 +262,7 @@ end
 puts "Creating audit logs..."
 AuditLog.find_or_create_by!(action: 'seed_data_created', resource_type: 'Seed', resource_id: 1) do |al|
   al.user = User.system_user
-  al.changes = { seeded_at: Time.current.iso8601 }
+  al.change_details = { seeded_at: Time.current.iso8601 }
   al.ip_address = '127.0.0.1'
   al.user_agent = 'Rails Seeds'
 end
