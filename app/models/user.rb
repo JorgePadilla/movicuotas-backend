@@ -33,6 +33,18 @@ class User < ApplicationRecord
     admin?
   end
 
+  # Password reset functionality (requires reset_digest and reset_sent_at columns)
+  def generate_password_reset_token
+    # In a real implementation, generate token, set reset_digest and reset_sent_at
+    SecureRandom.urlsafe_base64
+  end
+
+  def password_reset_expired?
+    # Check if reset sent more than 2 hours ago
+    # Requires reset_sent_at column
+    reset_sent_at && reset_sent_at < 2.hours.ago
+  end
+
   # System user for automated actions
   def self.system_user
     find_or_create_by(email: "system@movicuotas.com") do |user|
