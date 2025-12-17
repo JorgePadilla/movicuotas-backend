@@ -72,7 +72,6 @@ This file provides context for AI assistants (like Claude Code) working on this 
 - Device configuration
 - QR codes / BluePrints
 
-
 ### Neutral Colors
 
 | Color | HEX | Use |
@@ -215,62 +214,275 @@ movicuotas-backend/
 
 ## Key Business Rules
 
-### Vendor Workflow (10-Step Process)
+### Vendor Workflow (18-Screen Process)
 
-**Step 1: Customer Verification**
-- Check if customer has active loan by identification number **ACROSS ALL STORES/BRANCHES**
-- Block if active loan exists in ANY store
-- Display message: "Cliente tiene crédito activo. Finaliza el pago de tus Movicuotas para aplicar a más créditos!"
-- Allow progression only if no active loans exist in the entire system
-- **CRITICAL**: This is a system-wide check, not per-store
+**CRITICAL NAVIGATION FLOW:**
+```
+Login (Step 1) → Customer Search (Step 2 - MAIN SCREEN) → [Dashboard accessible from menu]
+```
 
-**Step 2: Credit Application**
-- Collect customer data (personal, employment, income)
+#### Step 1: Login
+Standard authentication for vendor users.
+
+**UI Elements:**
+- Email input field
+- Password input field
+- "Iniciar Sesión" button
+
+**Next:** Step 2 (Buscar Cliente - Main Screen)
+
+---
+
+#### Step 2: Buscar Cliente (Main Screen)
+**CRITICAL:** This is the main screen after login, NOT the dashboard.
+
+**Primary Function:** Search for customer by identification number across ALL stores.
+
+**UI Elements:**
+- Large search bar: "Número de Identidad del Cliente"
+- Prominent button: "Buscar en TODAS las tiendas"
+- Navigation menu (sidebar/header):
+  - 📊 Dashboard (accessible from menu)
+  - 👥 Clientes
+  - 💰 Préstamos
+  - 💳 Pagos
+  - 📋 Reportes
+
+**Business Logic:**
+```ruby
+def search_customer(identification_number)
+  # Check active loans across ALL branches
+  active_loan = Loan.joins(:customer)
+                   .where(customers: { identification_number: identification_number })
+                   .where(status: 'active')
+                   .first
+
+  if active_loan
+    {
+      blocked: true,
+      message: "Cliente tiene crédito activo en tienda #{active_loan.branch_number}",
+      contract_number: active_loan.contract_number,
+      alert_color: "red",
+      action: "show_blocked_screen" # Step 3a
+    }
+  else
+    {
+      blocked: false,
+      message: "Cliente disponible para nuevo crédito",
+      alert_color: "green",
+      action: "show_available_screen" # Step 3b
+    }
+  end
+end
+```
+
+**UI Response:**
+- **If blocked:** Show Step 3a
+- **If available:** Show Step 3b
+
+**Notes:**
+- Search is the PRIMARY action
+- Dashboard is SECONDARY, accessible via menu
+- This screen is the "home" for vendors
+- Always returns here after completing a sale
+
+---
+
+#### Step 3a: Cliente Bloqueado (If has active loan)
+**Screen Type:** Error/Blocking
+
+**UI Elements:**
+- Red alert banner (`#ef4444`)
+- Message: "Cliente tiene crédito activo. Finaliza el pago de tus Movicuotas para aplicar a más créditos!"
+- Display: Contract number, Branch number
+- Button: "← Nueva Búsqueda" (returns to Step 2)
+
+**Business Rule:** NO progression allowed. Must search different customer.
+
+---
+
+#### Step 3b: Cliente Disponible (If no active loan)
+**Screen Type:** Success/Confirmation
+
+**UI Elements:**
+- Green confirmation banner (`#10b981`)
+- Message: "Cliente disponible para nuevo crédito"
+- Verification checkmark: "✓ Sin créditos activos"
+- Button: "Iniciar Solicitud →" (proceeds to Step 4)
+
+**Business Rule:** Enable credit application flow.
+
+---
+
+#### Step 4: Datos Generales (Credit Application - Part 1)
+- Collect customer data (personal info)
 - **REQUIRED**: Capture date of birth (fecha de nacimiento) to calculate age
+- Fields: Número de Identidad, Nombre Completo, Género, Fecha de Nacimiento, Dirección, Ciudad, Departamento, Teléfono
+- Button: "Siguiente"
+
+---
+
+#### Step 5: Fotografías (Credit Application - Part 2)
 - Upload ID photos (front/back) and facial verification to S3
-- Submit for approval (manual or automated)
-- Generate application number if approved (format: `APP-000001`)
-- Age validation: Customer must meet minimum age requirement
+- Verification method selector (SMS/WhatsApp)
+- Email (optional)
+- Button: "Siguiente"
 
-**Step 3: Device Selection**
-- Retrieve approved application by number
-- Display phone models where price <= approved amount
-- Validate IMEI uniqueness
-- Display customer data (read-only): Nombre, Identidad, Teléfono, Correo, Foto
-- **NOTE**: Do NOT display approved amount on frontend after this step
+---
 
-**Step 4: Purchase Confirmation**
-- Display summary: selected phone model + total price
+#### Step 6: Datos Laborales (Credit Application - Part 3)
+- Employment status selector
+- Salary range selector
+- Button: "Siguiente"
 
-**Step 5: Payment Calculator**
-- Display phone model and total price
-- Down payment options: 30%, 40%, 50%
-- Installment terms: 6, 8, or 12 bi-weekly periods
-- Calculate and display bi-weekly payment amount dynamically
-- **Payment Tracking**: System must track each installment and payment status
+---
 
-**Step 6: Contract Signature**
-- Generate contract PDF with all details
-- Capture digital signature
-- Save to S3
+#### Step 7: Resumen Solicitud (Credit Application - Part 4)
+- Read-only summary of all entered data
+- Button: "Enviar Solicitud"
 
-**Step 7: Confirmation**
-- Display success message
-- Offer contract download
-- Proceed to device configuration
+**Next:** Submit for approval → Step 8a or 8b
 
-**Step 8: QR Generation**
-- Display QR code (BluePrint) for MDM setup
-- Vendor scans with customer's device
+---
 
-**Step 9-10: Device Configuration**
-- Install MDM app via QR
-- Install MoviCuotas app
-- Vendor completes checklist
-- Finalize sale
+#### Step 8a: No Aprobado (Application Rejected)
+**UI Elements:**
+- Red message (`#ef4444`): "No Aprobado"
+- Rejection reason display
+- Button: "Nueva Búsqueda" (returns to Step 2)
 
-### Loan Creation
-- **Pre-requisite**: Verify NO active loans exist for customer across ALL stores
+---
+
+#### Step 8b: Aprobado (Application Approved)
+**UI Elements:**
+- Green message (`#10b981`): "Aprobado"
+- Display: Application number (format: `APP-000001`)
+- **IMPORTANT:** Do NOT display approved amount
+- Button: "Continuar" (proceeds to Step 9)
+
+**Backend:** Generate application number, store approved amount (backend only)
+
+---
+
+#### Step 9: Recuperar Solicitud
+**UI Elements:**
+- Input field: "Ingrese Número de Solicitud aprobada"
+- Button: "Ingresar"
+- Upon entry, display (read-only): Nombre, Identidad, Teléfono, Correo, Foto
+- **CRITICAL:** Do NOT display "Monto Aprobado" on frontend
+- Button: "Proceder" (to Step 10)
+
+---
+
+#### Step 10: Catálogo Teléfonos (Device Selection)
+**UI Elements:**
+- Visual grid of phone models with prices
+- **Logic:** Backend validates `phone_price <= approved_amount`
+- Fields appear when model selected: IMEI, Color
+- Button: "Siguiente" (to Step 11)
+
+**Note:** NO accessories feature. Phone only.
+
+---
+
+#### Step 11: Confirmación (Purchase Summary)
+**UI Elements:**
+- Display: Selected phone model, Total price (phone only)
+- Button: "Siguiente" (to Step 12)
+
+---
+
+#### Step 12: Calculadora (Payment Calculator)
+**UI Elements:**
+- Summary: Phone model, Total price
+- Down payment selector: 30%, 40%, 50% (radio buttons)
+- Installment term selector: 6, 8, 12 bi-weekly periods
+- Dynamic display: "Cuota Quincenal: L. ----"
+- Button: "Generar Crédito" (to Step 13)
+
+**Calculation:** Based on phone price ONLY (no accessories)
+
+---
+
+#### Step 13: Contrato (Contract Display)
+**UI Elements:**
+- Document viewer with complete contract
+- All customer and loan data pre-filled
+- Button: "Aceptar" (to Step 14)
+
+---
+
+#### Step 14: Firma Digital (Digital Signature)
+**UI Elements:**
+- Touch-sensitive signature area
+- Button: "Guardar" (to Step 15)
+- Save signature to S3
+
+---
+
+#### Step 15: Crédito Aplicado (Success Confirmation)
+**UI Elements:**
+- Large success message (green `#10b981`): "¡Crédito Aplicado! Felicidades. Estás a unos pasos de disfrutar de nueva compra."
+- Two action buttons:
+  1. "Descargar Contrato"
+  2. "Proceder a Configuración de Teléfono" (to Step 16)
+
+---
+
+#### Step 16: Código QR (QR Generation)
+**UI Elements:**
+- Large QR code display (BluePrint for MDM)
+- Instruction: "Escanee este QR con el teléfono del cliente para iniciar la configuración."
+- MDM configuration mechanism
+
+---
+
+#### Step 17: Checklist Final (Device Configuration)
+**UI Elements:**
+- Title: "Verificación de Configuración del Cliente"
+- Manual checklist:
+  - [ ] BluePrint escaneado y configuración realizada
+  - [ ] Aplicación MDM instalada y confirmada
+  - [ ] Aplicación MoviCuotas instalada y Log-in realizado
+- Button: "Finalizar Proceso de Venta" (returns to Step 2)
+
+---
+
+#### Step 18: Tracking de Préstamo (Loan Tracking Dashboard)
+**Accessible from:** Main navigation menu
+
+**UI Elements:**
+- Loan status display
+- Installment schedule with status
+- Payment history
+- Remaining balance
+- Next payment due date
+
+---
+
+### Dashboard (Accessible from Navigation Menu)
+
+**Access:** From navigation menu on main screen (Step 2)
+
+**Not the main screen** - vendors start at Customer Search (Step 2), not Dashboard.
+
+**UI Elements:**
+- Total customers (active/suspended/blocked)
+- Total devices assigned
+- Active loans count and total value
+- Payments collected this month
+- Overdue installments count and value
+- Recent payments list (last 10)
+- Upcoming due dates (next 7 days)
+- Quick actions (can initiate "Nueva Búsqueda")
+
+**Navigation:**
+- Returns to Step 2 (Buscar Cliente) when starting new sale
+
+### Loan Creation (Steps 10-15)
+- **Pre-requisite**: Verify NO active loans exist for customer across ALL stores (validated in Step 2)
+- Customer selects phone model only (NO accessories)
+- Calculate financed amount: `phone_price - down_payment`
 - Auto-generate contract number: `{branch}-{date}-{sequence}`
 - Calculate bi-weekly installment schedule with interest
 - Generate all installments upfront (bi-weekly due dates)
@@ -278,6 +490,7 @@ movicuotas-backend/
 - Create contract with digital signature
 - Set loan status to 'active'
 - **IMPORTANT**: Only ONE active loan per customer in entire system
+- Total amount = phone price ONLY
 
 ### Payment Processing
 - Upload receipts to S3
@@ -371,7 +584,6 @@ end
 - Warning/pending: `#f59e0b`
 - Info: `#3b82f6`
 - Products: `#6366f1`
-- Accessories: `#ec4899`
 
 ### 4. Pundit for Authorization
 ```ruby
@@ -397,14 +609,16 @@ AuditLog.create!(
 ## Vendor Workflow Implementation Notes
 
 ### Controllers Structure
-- `Vendor::CustomerVerificationsController` - Step 1: Check active loans
-- `Vendor::CreditApplicationsController` - Steps 2-3: Application submission and retrieval
-- `Vendor::DeviceSelectionsController` - Step 3: Phone model and accessory selection
-- `Vendor::PaymentCalculatorsController` - Step 5: Calculate bi-weekly payments
-- `Vendor::ContractsController` - Step 6: Contract generation and signature
-- `Vendor::LoansController` - Step 7: Finalize loan creation
-- `Vendor::MdmBlueprintsController` - Step 8: QR code display
-- `Vendor::DeviceConfigurationsController` - Steps 9-10: Final checklist
+- `Vendor::SessionsController` - Step 1: Login
+- `Vendor::CustomerSearchController` - Step 2: Main screen - Search customer across all stores
+- `Vendor::CreditApplicationsController` - Steps 4-7: Application submission
+- `Vendor::DeviceSelectionsController` - Step 10: Phone model selection
+- `Vendor::PaymentCalculatorsController` - Step 12: Calculate bi-weekly payments
+- `Vendor::ContractsController` - Steps 13-14: Contract generation and signature
+- `Vendor::LoansController` - Step 15: Finalize loan creation
+- `Vendor::MdmBlueprintsController` - Step 16: QR code display
+- `Vendor::DeviceConfigurationsController` - Step 17: Final checklist
+- `Vendor::DashboardController` - Dashboard (accessible from menu)
 
 ### Key Services for Vendor Workflow
 - `CreditApprovalService` - Evaluate application and determine approval
@@ -413,12 +627,13 @@ AuditLog.create!(
 - `LoanFinalizationService` - Complete loan creation with all dependencies
 
 ### Important Validations
-1. **Active Loan Check (CRITICAL)**:
+1. **Active Loan Check (CRITICAL - Step 2)**:
    - Query: `Customer.joins(:loans).where(loans: { status: 'active' })`
    - **Must check across ALL stores/branches in entire system**
    - Block new credit if ANY active loan exists
+   - This is the MAIN SCREEN after login
 2. **IMEI Uniqueness**: Validate IMEI not in `devices` table
-3. **Price Validation**: `phone_price <= approved_amount` (no accessories)
+3. **Price Validation**: `phone_price <= approved_amount` (phone only, no accessories)
 4. **Bi-weekly Calculation**: Use proper interest rate division (annual_rate / 26 for bi-weekly)
 5. **Age Validation**: Calculate from date_of_birth, must meet minimum age requirement
 6. **Payment Tracking**: Each payment must link to installment(s) and update loan balance
@@ -619,47 +834,122 @@ When implementing features, ensure:
 ## Key Vendor Workflow Reminders
 
 When implementing vendor features, remember:
-1. **Step 1 blocks progression** if customer has active loan **IN ANY STORE** - Display RED (`#ef4444`) alert message
-2. **CRITICAL**: Check active loans across ALL stores/branches system-wide
-3. **All calculations are bi-weekly** (not monthly)
-4. **Down payment options**: Only 30%, 40%, or 50%
-5. **Installment options**: Only 6, 8, or 12 bi-weekly periods
-6. **File uploads**: ID photos (front/back), facial verification, contract signature → S3
-7. **Application numbers**: Format `APP-000001` (sequential)
-8. **Contract numbers**: Format `{branch}-{date}-{sequence}` (e.g., `S01-2025-12-04-000001`)
-9. **IMEI validation**: Must be unique across entire system
-10. **Price validation**: Phone price must be <= approved amount (NO accessories)
-11. **Digital signatures**: Capture via touch interface, save as image
-12. **Date of birth**: Required field to calculate customer age
-13. **Payment tracking**: Track every payment and link to specific installments
-14. **Hide approved amount**: Do NOT display on frontend after Step 3 (only backend validation)
+
+**NAVIGATION:**
+1. **Main screen is Step 2 (Customer Search)** - NOT Dashboard
+2. **Dashboard is accessible from menu** - Secondary function
+3. **Flow**: Login → Search → [Process or Dashboard from menu]
+
+**BUSINESS RULES:**
+4. **Step 2 is CRITICAL** - Check active loans across ALL stores/branches system-wide
+5. **Block if active loan exists** in ANY store - Display RED (`#ef4444`) alert (Step 3a)
+6. **Only ONE active loan** per customer in entire system
+
+**WORKFLOW (18 SCREENS):**
+7. **All calculations are bi-weekly** (not monthly)
+8. **Down payment options**: Only 30%, 40%, or 50%
+9. **Installment options**: Only 6, 8, or 12 bi-weekly periods
+10. **NO accessories feature** - Phone price only
+11. **Price validation**: Phone price must be <= approved amount
+
+**DATA HANDLING:**
+12. **File uploads**: ID photos (front/back), facial verification, contract signature → S3
+13. **Application numbers**: Format `APP-000001` (sequential)
+14. **Contract numbers**: Format `{branch}-{date}-{sequence}` (e.g., `S01-2025-12-04-000001`)
+15. **IMEI validation**: Must be unique across entire system
+16. **Digital signatures**: Capture via touch interface, save as image
+17. **Date of birth**: Required field to calculate customer age
+18. **Payment tracking**: Track every payment and link to specific installments
+19. **Hide approved amount**: Do NOT display on frontend after Step 8b (only backend validation)
 
 ### UI Color Guidelines for Vendor Workflow
 
-**Step 1 - Customer Verification**:
-- Active loan exists → RED (`#ef4444`) alert
-- No active loan → GREEN (`#10b981`) confirmation
+**Step 2 - Customer Search (Main Screen)**:
+- Search button → CORPORATE BLUE (`#125282`)
+- Navigation menu → CORPORATE BLUE (`#125282`)
 
-**Step 2.4 - Application Result**:
-- Approved → GREEN (`#10b981`) with "Aprobado" message
-- Not Approved → RED (`#ef4444`) with "No Aprobado" message
+**Step 3a - Cliente Bloqueado**:
+- Alert banner → RED (`#ef4444`)
+- Error message text → RED (`#ef4444`)
 
-**Step 3 - Phone Models**:
-- Use PURPLE (`#6366f1`) for product cards and catalog items
-
-**Step 5 - Payment Calculator**:
-- Primary buttons → CORPORATE BLUE (`#125282`)
-- Display calculated amounts in DARK GRAY (`#1f2937`)
-
-**Step 6 - Contract Signature**:
+**Step 3b - Cliente Disponible**:
+- Confirmation banner → GREEN (`#10b981`)
 - Success message → GREEN (`#10b981`)
+
+**Step 8a - Application Rejected**:
+- Rejection message → RED (`#ef4444`)
+
+**Step 8b - Application Approved**:
+- Approval message → GREEN (`#10b981`)
+
+**Step 10 - Phone Catalog**:
+- Product cards → PURPLE (`#6366f1`)
+
+**Step 12 - Payment Calculator**:
+- Primary buttons → CORPORATE BLUE (`#125282`)
+- Calculated amounts → DARK GRAY (`#1f2937`)
+
+**Step 14 - Contract Signature**:
 - Signature area border → CORPORATE BLUE (`#125282`)
 
-**Step 7 - Final Confirmation**:
+**Step 15 - Final Confirmation**:
 - Success message → GREEN (`#10b981`) large text
 - Primary action buttons → CORPORATE BLUE (`#125282`)
 
 ---
 
-**Last Updated**: 2025-12-14
+**Last Updated**: 2025-12-16
 **Project Status**: Phase 1 - Setup with Vendor Workflow Specification + Visual Style Guide
+
+---
+
+## Project Status
+
+**Phase 1:** Database schema + basic CRUD (In Progress)
+
+**Current Milestone:** Vendor Workflow Implementation (18 Screens)
+
+**Screen Count:** 18 screens total
+```
+Pantalla 1: Login
+Pantalla 2: Buscar Cliente (MAIN SCREEN)
+Pantalla 3a: Cliente Bloqueado
+Pantalla 3b: Cliente Disponible
+Pantalla 4: Datos Generales
+Pantalla 5: Fotografías
+Pantalla 6: Datos Laborales
+Pantalla 7: Resumen Solicitud
+Pantalla 8a: No Aprobado
+Pantalla 8b: Aprobado (sin monto)
+Pantalla 9: Recuperar Solicitud
+Pantalla 10: Catálogo Teléfonos
+Pantalla 11: Confirmación (solo teléfono)
+Pantalla 12: Calculadora
+Pantalla 13: Contrato
+Pantalla 14: Firma Digital
+Pantalla 15: Crédito Aplicado
+Pantalla 16: Código QR
+Pantalla 17: Checklist Final
+Pantalla 18: Tracking de Préstamo
+```
+
+**Next Milestones:**
+- [ ] Implement customer search as main screen (Step 2)
+- [ ] Implement customer verification across all stores
+- [ ] Add age calculation and validation
+- [ ] ✅ Remove all accessories references (COMPLETED v1.2)
+- [ ] Hide approved_amount in vendor frontend (Step 8b, 9)
+- [ ] Build loan tracking dashboard (Step 18)
+- [ ] Complete payment tracking system
+- [ ] Build navigation menu with Dashboard access
+- [ ] Implement 18-screen vendor workflow
+
+**Recent Changes (v1.2 - 2025-12-16):**
+- ✅ Removed accessories completely from system
+- ✅ Changed main screen from Dashboard to Customer Search (Step 2)
+- ✅ Dashboard now accessible via navigation menu (secondary)
+- ✅ Updated vendor workflow to 18 screens (was 19)
+- ✅ Simplified loan structure (phone price only, no accessories)
+- ✅ Renumbered all workflow steps
+- ✅ Updated all business rules and validations
+- ✅ Flow: Login → Search (Main) → [Process or Dashboard from menu]
