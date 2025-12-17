@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+admin:
+  email: admin@movicuotas.com
+  password_digest: $2a$12$3L55YMTk8v0wKr2PXut2nuYUviGO9fNIh2l6DxMW4SG.sPYZ6Sstu
+  full_name: Administrador
+  role: admin
+  branch_number: "S01"
+  active: true
+
+vendedor:
+  email: vendedor@movicuotas.com
+  password_digest: $2a$12$cU/T7wOlt3whGGwp.uosPezPQfx3/iOjeMYEjTh9i9QmW37qo8YK.
+  full_name: Vendedor Demo
+  role: vendedor
+  branch_number: "S02"
+  active: true
+
+cobrador:
+  email: cobrador@movicuotas.com
+  password_digest: $2a$12$YgQdPk0ktPc2OLEFsBxLjegxN6kErGIpl4ouRLx97IbgA3NvtYIYS
+  full_name: Cobrador Demo
+  role: cobrador
+  branch_number: "COL01"
+  active: true
