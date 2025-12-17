@@ -1,44 +1,30 @@
 # frozen_string_literal: true
 
 class CustomerPolicy < ApplicationPolicy
-  def index?
-    true # Everyone can view
-  end
+  # Customer management policies based on MOVICUOTAS permission matrix:
+  # - View customers: All roles (Admin, Vendedor, Cobrador read-only)
+  # - Create customers: Admin and Vendedor
+  # - Edit customers: Admin and Vendedor
+  # - Delete customers: Admin only
+  # - Block customers: Admin only
 
-  def show?
-    true # Everyone can view details
-  end
+  # Default CRUD actions (inherited from ApplicationPolicy):
+  # - index?: true (all authenticated users)
+  # - show?: true (all authenticated users)
+  # - create?: admin? || vendedor?
+  # - update?: admin? || vendedor?
+  # - destroy?: admin?
 
-  def create?
-    admin? || vendedor? # Cobrador CANNOT create
-  end
-
-  def update?
-    admin? || vendedor? # Cobrador CANNOT update
-  end
-
-  def destroy?
-    admin? # Cobrador CANNOT delete
-  end
-
+  # Custom actions
   def block?
-    admin? # Only admin can block customers
+    admin?  # Only admin can block customers
   end
 
-  # Scope for customer access
+  # Scope: All authenticated users can see all customers
+  # (Vendedors need to search across all stores)
   class Scope < Scope
     def resolve
-      if user.admin?
-        scope.all
-      elsif user.vendedor?
-        # Vendedores can see customers in their branch
-        scope.joins(:loans).where(loans: { branch_number: user.branch_number }).distinct
-      elsif user.cobrador?
-        # Cobradores can see all customers (read-only)
-        scope.all
-      else
-        scope.none
-      end
+      scope.all
     end
   end
 end

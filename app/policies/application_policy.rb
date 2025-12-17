@@ -9,50 +9,7 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    false
-  end
-
-  def show?
-    false
-  end
-
-  def create?
-    false
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    false
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    false
-  end
-
-  # Scope class for defining record scopes
-  class Scope
-    attr_reader :user, :scope
-
-    def initialize(user, scope)
-      @user = user
-      @scope = scope
-    end
-
-    def resolve
-      scope.all
-    end
-  end
-
-  private
-
+  # Role helpers
   def admin?
     user&.admin?
   end
@@ -63,5 +20,54 @@ class ApplicationPolicy
 
   def cobrador?
     user&.cobrador?
+  end
+
+  # Default permissions based on MOVICUOTAS permission matrix
+  # These defaults follow the most common pattern:
+  # - Viewing (index, show): All authenticated users
+  # - Creating/Updating: Admin and Vendedor (where applicable)
+  # - Destroying: Admin only
+
+  def index?
+    user.present?  # All authenticated users can view lists
+  end
+
+  def show?
+    user.present?  # All authenticated users can view details
+  end
+
+  def create?
+    admin? || vendedor?  # Admin and Vendedor can create
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    admin? || vendedor?  # Admin and Vendedor can update
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    admin?  # Only admin can destroy
+  end
+
+  # Scope base class - defaults to all records
+  # Individual policies should override #resolve for scoping
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      scope.all  # Default: show all records (override in specific policies)
+    end
   end
 end
