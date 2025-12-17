@@ -1,0 +1,62 @@
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="h-10 w-10 bg-[#125282] rounded-lg"></div>
+          <h1 class="text-2xl font-bold text-[#125282]">MOVICUOTAS</h1>
+          <span class="text-gray-500 text-sm">Tu Crédito, Tu Móvil</span>
+        </div>
+        <div>
+          <%= link_to "Acceso Vendedores", login_path, class: "px-6 py-2 bg-[#125282] hover:bg-[#0f4670] text-white font-semibold rounded-lg transition duration-200" %>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-6 py-12">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Sistema de Gestión de Créditos</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Busque clientes en todas las tiendas para verificar disponibilidad de crédito
+      </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto border border-gray-200">
+      <h3 class="text-2xl font-bold text-gray-800 mb-6">Verificación de Cliente</h3>
+      <p class="text-gray-600 mb-8">
+        Ingrese el número de identidad del cliente para buscar créditos activos en <strong>todas las tiendas</strong> del sistema.
+      </p>
+
+      <%= render Shared::IdentitySearchComponent.new %>
+
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4">¿Cómo funciona?</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="h-12 w-12 bg-[#125282] text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
+            <h5 class="font-bold text-gray-800 mb-2">Ingrese Identidad</h5>
+            <p class="text-gray-600 text-sm">Escriba el número de identidad del cliente</p>
+          </div>
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="h-12 w-12 bg-[#125282] text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
+            <h5 class="font-bold text-gray-800 mb-2">Busque en Todas las Tiendas</h5>
+            <p class="text-gray-600 text-sm">El sistema revisará créditos activos en toda la red</p>
+          </div>
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="h-12 w-12 bg-[#125282] text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
+            <h5 class="font-bold text-gray-800 mb-2">Resultado Inmediato</h5>
+            <p class="text-gray-600 text-sm">Verifique si el cliente está disponible para nuevo crédito</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="mt-16 py-8 border-t border-gray-200 bg-gray-50">
+    <div class="container mx-auto px-6 text-center text-gray-500 text-sm">
+      <p>© <%= Date.today.year %> MOVICUOTAS - Sistema de Crédito para Móviles</p>
+      <p class="mt-2">Plataforma de gestión de créditos y pagos quincenales</p>
+    </div>
+  </footer>
+</div>
