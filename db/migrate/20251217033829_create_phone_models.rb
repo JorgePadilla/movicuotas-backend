@@ -1,6 +1,6 @@
 class CreatePhoneModels < ActiveRecord::Migration[8.1]
   def change
-    create_table :phone_models do |t|
+    create_table :phone_models, if_not_exists: true do |t|
       t.string :brand, null: false
       t.string :model, null: false
       t.string :storage
@@ -12,6 +12,6 @@ class CreatePhoneModels < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :phone_models, [:brand, :model], unique: true
+    add_index :phone_models, [ :brand, :model ], unique: true
   end
 end

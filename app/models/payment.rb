@@ -12,12 +12,12 @@ class Payment < ApplicationRecord
   validates :verification_status, presence: true, inclusion: { in: %w[pending verified rejected] }
 
   # Enums
-  enum :payment_method, { cash: 'cash', transfer: 'transfer', card: 'card', other: 'other' }, default: 'cash'
-  enum :verification_status, { pending: 'pending', verified: 'verified', rejected: 'rejected' }, default: 'pending'
+  enum :payment_method, { cash: "cash", transfer: "transfer", card: "card", other: "other" }, default: "cash"
+  enum :verification_status, { pending: "pending", verified: "verified", rejected: "rejected" }, default: "pending"
 
   # Scopes
-  scope :verified, -> { where(verification_status: 'verified') }
-  scope :pending_verification, -> { where(verification_status: 'pending') }
+  scope :verified, -> { where(verification_status: "verified") }
+  scope :pending_verification, -> { where(verification_status: "pending") }
   scope :by_date, ->(date) { where(payment_date: date) }
   scope :by_loan, ->(loan) { where(loan: loan) }
 
@@ -52,24 +52,24 @@ class Payment < ApplicationRecord
   end
 
   def verify!(verified_by)
-    update!(verification_status: 'verified')
+    update!(verification_status: "verified")
     # Create audit log
     AuditLog.create!(
       user: verified_by,
-      action: 'payment_verified',
+      action: "payment_verified",
       resource: self,
-      changes: { verification_status: ['pending', 'verified'] }
+      changes: { verification_status: [ "pending", "verified" ] }
     )
   end
 
   def reject!(rejected_by, reason)
-    update!(verification_status: 'rejected', notes: reason)
+    update!(verification_status: "rejected", notes: reason)
     # Create audit log
     AuditLog.create!(
       user: rejected_by,
-      action: 'payment_rejected',
+      action: "payment_rejected",
       resource: self,
-      changes: { verification_status: ['pending', 'rejected'] }
+      changes: { verification_status: [ "pending", "rejected" ] }
     )
   end
 

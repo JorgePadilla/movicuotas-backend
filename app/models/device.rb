@@ -2,7 +2,7 @@ class Device < ApplicationRecord
   # Associations
   belongs_to :loan
   belongs_to :phone_model
-  belongs_to :locked_by, class_name: 'User', optional: true
+  belongs_to :locked_by, class_name: "User", optional: true
   has_one :mdm_blueprint, dependent: :destroy
 
   # Validations
@@ -14,13 +14,13 @@ class Device < ApplicationRecord
   validates :lock_status, presence: true, inclusion: { in: %w[unlocked pending locked] }
 
   # Enums
-  enum :lock_status, { unlocked: 'unlocked', pending: 'pending', locked: 'locked' }, default: 'unlocked'
+  enum :lock_status, { unlocked: "unlocked", pending: "pending", locked: "locked" }, default: "unlocked"
 
   # Scopes
-  scope :locked, -> { where(lock_status: 'locked') }
-  scope :pending_lock, -> { where(lock_status: 'pending') }
-  scope :unlocked, -> { where(lock_status: 'unlocked') }
-  scope :with_overdue_loans, -> { joins(loan: :installments).where(installments: { status: 'overdue' }).distinct }
+  scope :locked, -> { where(lock_status: "locked") }
+  scope :pending_lock, -> { where(lock_status: "pending") }
+  scope :unlocked, -> { where(lock_status: "unlocked") }
+  scope :with_overdue_loans, -> { joins(loan: :installments).where(installments: { status: "overdue" }).distinct }
 
   # Callbacks
   after_update :broadcast_status_change, if: -> { saved_change_to_lock_status? }
@@ -30,7 +30,7 @@ class Device < ApplicationRecord
     return false unless unlocked?
 
     update!(
-      lock_status: 'pending',
+      lock_status: "pending",
       locked_by: locked_by_user,
       locked_at: Time.current
     )
@@ -38,11 +38,11 @@ class Device < ApplicationRecord
     # Create audit log
     AuditLog.create!(
       user: locked_by_user,
-      action: 'device_lock_requested',
+      action: "device_lock_requested",
       resource: self,
       changes: {
         reason: reason,
-        lock_status: ['unlocked', 'pending']
+        lock_status: [ "unlocked", "pending" ]
       }
     )
 
@@ -51,14 +51,14 @@ class Device < ApplicationRecord
 
   def confirm_lock!
     return false unless pending?
-    update!(lock_status: 'locked')
+    update!(lock_status: "locked")
   end
 
   def unlock!(unlocked_by_user, reason = "Payment received")
     return false unless locked?
 
     update!(
-      lock_status: 'unlocked',
+      lock_status: "unlocked",
       locked_by: nil,
       locked_at: nil
     )
@@ -66,11 +66,11 @@ class Device < ApplicationRecord
     # Create audit log
     AuditLog.create!(
       user: unlocked_by_user,
-      action: 'device_unlocked',
+      action: "device_unlocked",
       resource: self,
       changes: {
         reason: reason,
-        lock_status: ['locked', 'unlocked']
+        lock_status: [ "locked", "unlocked" ]
       }
     )
 
@@ -78,15 +78,15 @@ class Device < ApplicationRecord
   end
 
   def locked?
-    lock_status == 'locked'
+    lock_status == "locked"
   end
 
   def pending?
-    lock_status == 'pending'
+    lock_status == "pending"
   end
 
   def unlocked?
-    lock_status == 'unlocked'
+    lock_status == "unlocked"
   end
 
   private
