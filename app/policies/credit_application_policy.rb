@@ -42,8 +42,8 @@ class CreditApplicationPolicy < ApplicationPolicy
       if user&.admin?
         scope.all
       elsif user&.vendedor?
-        # Assuming credit_application has a `user` association with the vendedor who created it
-        scope.where(user: user)
+        # Assuming credit_application has a `vendor` association with the vendedor who created it
+        scope.where(vendor: user)
       else
         scope.none
       end
@@ -53,7 +53,7 @@ class CreditApplicationPolicy < ApplicationPolicy
   private
 
   def own_application?
-    # Assuming credit_application has a `user` association with the vendedor who created it
-    record.user == user
+    # Assuming credit_application has a `vendor` association with the vendedor who created it
+    record.vendor == user
   end
 end

@@ -13,7 +13,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def show?
-    admin? || own_notification?
+    admin?  # Only admin can view notification details
   end
 
   def create?
@@ -30,25 +30,14 @@ class NotificationPolicy < ApplicationPolicy
 
   # Scope: Filter notifications based on role
   # - Admin: All notifications
-  # - Vendedor: Notifications they created (or for their customers)
-  # - Users: Only their own notifications (if applicable)
+  # - Other roles: No access
   class Scope < Scope
     def resolve
       if user&.admin?
         scope.all
-      elsif user&.vendedor?
-        # Assuming notification has a `user` association with the creator
-        scope.where(user: user)
       else
-        scope.none
+        scope.none  # Only admin can see notifications
       end
     end
-  end
-
-  private
-
-  def own_notification?
-    # Assuming notification has a `user` association with the creator
-    record.user == user
   end
 end

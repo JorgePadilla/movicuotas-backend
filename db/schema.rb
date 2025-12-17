@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_042848) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_17_071322) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -165,10 +165,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_042848) do
     t.string "status", default: "active", null: false
     t.decimal "total_amount", precision: 10, scale: 2, null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["branch_number"], name: "index_loans_on_branch_number"
     t.index ["contract_number"], name: "index_loans_on_contract_number", unique: true
     t.index ["customer_id"], name: "index_loans_on_customer_id"
     t.index ["status"], name: "index_loans_on_status"
+    t.index ["user_id"], name: "index_loans_on_user_id"
   end
 
   create_table "mdm_blueprints", force: :cascade do |t|
@@ -270,6 +272,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_042848) do
   add_foreign_key "devices", "users", column: "locked_by_id"
   add_foreign_key "installments", "loans"
   add_foreign_key "loans", "customers"
+  add_foreign_key "loans", "users"
   add_foreign_key "mdm_blueprints", "devices"
   add_foreign_key "notifications", "customers"
   add_foreign_key "payment_installments", "installments"
