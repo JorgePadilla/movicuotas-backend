@@ -28,6 +28,13 @@ create_worktree() {
 
     echo -e "${YELLOW}Creating worktree: $worktree_name${NC}"
 
+    # Check if worktree already exists
+    if [ -d "$WORKTREE_DIR/$worktree_name" ]; then
+        echo -e "${BLUE}Worktree already exists: $WORKTREE_DIR/$worktree_name${NC}"
+        echo -e "${BLUE}Skipping...${NC}\n"
+        return 0
+    fi
+
     # Check if branch exists
     if git show-ref --verify --quiet "refs/heads/$branch_name"; then
         echo "Branch $branch_name already exists"
