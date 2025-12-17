@@ -1,0 +1,98 @@
+<% content_for :title, "Cobrador Dashboard - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-[#125282] mb-6">Dashboard de Cobrador</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-red-100 p-3 rounded-full">
+          <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <h3 class="text-lg font-medium text-gray-900">Dispositivos en Mora</h3>
+          <p class="text-2xl font-bold text-gray-900">0</p>
+          <p class="text-sm text-gray-500">Dispositivos con pagos atrasados</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-orange-100 p-3 rounded-full">
+          <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <h3 class="text-lg font-medium text-gray-900">Dispositivos Bloqueados</h3>
+          <p class="text-2xl font-bold text-gray-900">0</p>
+          <p class="text-sm text-gray-500">Dispositivos bloqueados via MDM</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-blue-100 p-3 rounded-full">
+          <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <h3 class="text-lg font-medium text-gray-900">Tasa de Recuperación</h3>
+          <p class="text-2xl font-bold text-gray-900">0%</p>
+          <p class="text-sm text-gray-500">Pagos recuperados vs mora</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Funciones de Cobrador</h2>
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <li class="flex items-start">
+        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="font-medium text-gray-900">Ver dispositivos en mora</h3>
+          <p class="text-sm text-gray-500">Lista de dispositivos con pagos atrasados, filtros por días y monto.</p>
+        </div>
+      </li>
+      <li class="flex items-start">
+        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="font-medium text-gray-900">Bloquear dispositivos</h3>
+          <p class="text-sm text-gray-500">Bloquear dispositivos via MDM cuando los pagos estén muy atrasados.</p>
+        </div>
+      </li>
+      <li class="flex items-start">
+        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="font-medium text-gray-900">Historial de pagos (solo lectura)</h3>
+          <p class="text-sm text-gray-500">Ver historial de pagos de clientes, sin capacidad de editar.</p>
+        </div>
+      </li>
+      <li class="flex items-start">
+        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="font-medium text-gray-900">Reportes de mora</h3>
+          <p class="text-sm text-gray-500">Generar reportes de mora por sucursal, días de atraso, etc.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="mt-8 text-center text-sm text-gray-500">
+    <p>Esta funcionalidad será implementada completamente en <strong>Phase 4: Cobrador Interface</strong>.</p>
+  </div>
+</div>

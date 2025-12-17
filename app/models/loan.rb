@@ -1,6 +1,7 @@
 class Loan < ApplicationRecord
   # Associations
   belongs_to :customer
+  belongs_to :user  # Creator (admin or vendedor)
   has_one :device, dependent: :destroy
   has_many :installments, dependent: :destroy
   has_many :payments, dependent: :destroy

@@ -8,11 +8,28 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   before_action :authenticate
-  after_action :verify_authorized, unless: :devise_controller?
+  after_action :verify_authorized, if: :should_verify_authorized?
+  after_action :verify_policy_scoped, if: :should_verify_policy_scoped?
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
+
+  def skip_authorization?
+    # Skip authorization for public controllers (pages, passwords)
+    # Sessions controller handles authorization per-action with skip_after_action
+    controller_name == "pages" || controller_name == "passwords"
+  end
+
+  def should_verify_policy_scoped?
+    # Only verify policy scoped for index actions and if not skipping authorization
+    action_name == "index" && !skip_authorization?
+  end
+
+  def should_verify_authorized?
+    # Verify authorized for non-index actions and if not skipping authorization
+    action_name != "index" && !skip_authorization?
+  end
 
   def authenticate
     if session_record = Session.find_by(id: cookies.signed[:session_token])
@@ -27,14 +44,13 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_user
 
-  def pundit_user
-    current_user
+  def user_not_authorized
+    flash[:alert] = "No estás autorizado para realizar esta acción."
+    redirect_back fallback_location: root_path
   end
 
-  def user_not_authorized(exception)
-    policy_name = exception.policy.class.to_s.underscore
-
-    flash[:alert] = "No estás autorizado para realizar esta acción."
-    redirect_to(request.referrer || root_path)
+  # Override pundit user context
+  def pundit_user
+    current_user
   end
 end

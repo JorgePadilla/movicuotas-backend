@@ -1,4 +1,6 @@
-# Base policy class
+# frozen_string_literal: true
+
+# Base policy class for all Pundit policies
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -7,32 +9,55 @@ class ApplicationPolicy
     @record = record
   end
 
-  # Default policy: only admins can index
+  # Role helpers
+  def admin?
+    user&.admin?
+  end
+
+  def vendedor?
+    user&.vendedor?
+  end
+
+  def cobrador?
+    user&.cobrador?
+  end
+
+  # Default permissions based on MOVICUOTAS permission matrix
+  # These defaults follow the most common pattern:
+  # - Viewing (index, show): All authenticated users
+  # - Creating/Updating: Admin and Vendedor (where applicable)
+  # - Destroying: Admin only
+
   def index?
-    user&.admin?
+    user.present?  # All authenticated users can view lists
   end
 
-  # Default policy: only admins can show
   def show?
-    user&.admin?
+    user.present?  # All authenticated users can view details
   end
 
-  # Default policy: only admins can create
   def create?
-    user&.admin?
+    admin? || vendedor?  # Admin and Vendedor can create
   end
 
-  # Default policy: only admins can update
+  def new?
+    create?
+  end
+
   def update?
-    user&.admin?
+    admin? || vendedor?  # Admin and Vendedor can update
   end
 
-  # Default policy: only admins can destroy
+  def edit?
+    update?
+  end
+
   def destroy?
-    user&.admin?
+    admin?  # Only admin can destroy
   end
 
-  # Scope class for listing records
+  # Scope base class - defaults to all records
+  # Individual policies should override #resolve for scoping
   class Scope
     attr_reader :user, :scope
 
@@ -42,11 +67,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      if user&.admin?
-        scope.all
-      else
-        scope.none
-      end
+      scope.all  # Default: show all records (override in specific policies)
     end
   end
 end

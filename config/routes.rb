@@ -14,6 +14,11 @@ Rails.application.routes.draw do
   post "login",  to: "sessions#create"
   delete "logout", to: "sessions#destroy"
 
+  # Password reset
+  resources :passwords, only: [ :new, :create, :edit, :update ]
+  get "forgot-password", to: "passwords#new", as: :forgot_password
+  get "reset-password/:token", to: "passwords#edit", as: :reset_password
+
   # Public pages
   root "pages#home"
   get "/home", to: "pages#home", as: :home
