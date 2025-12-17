@@ -1,11 +1,14 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate, only: [ :new, :create ]
+  skip_after_action :verify_authorized, only: [ :new ]
 
   def new
     # Login form
   end
 
   def create
+    authorize Session  # Login is public, policy allows create? true
+
     user = User.find_by(email: params[:email])
 
     if user&.authenticate(params[:password])
@@ -20,6 +23,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    authorize Current.session if Current.session
     Current.session&.destroy
     cookies.delete(:session_token)
     redirect_to root_path, notice: "Sesión cerrada"
