@@ -2,6 +2,8 @@
 
 class PasswordsController < ApplicationController
   skip_before_action :authenticate
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
 
   def new
     # Request password reset form

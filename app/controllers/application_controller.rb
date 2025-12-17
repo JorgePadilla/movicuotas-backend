@@ -16,8 +16,9 @@ class ApplicationController < ActionController::Base
   private
 
   def skip_authorization?
-    # Skip authorization for sessions and pages controllers (public pages)
-    controller_name == "sessions" || controller_name == "pages"
+    # Skip authorization for public controllers (pages, passwords)
+    # Sessions controller handles authorization per-action with skip_after_action
+    controller_name == "pages" || controller_name == "passwords"
   end
 
   def should_verify_policy_scoped?
