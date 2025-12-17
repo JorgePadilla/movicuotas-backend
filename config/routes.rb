@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   # Password reset
-  resources :passwords, only: [:new, :create, :edit, :update]
+  resources :passwords, only: [ :new, :create, :edit, :update ]
   get "forgot-password", to: "passwords#new", as: :forgot_password
   get "reset-password/:token", to: "passwords#edit", as: :reset_password
 

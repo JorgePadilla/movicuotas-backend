@@ -53,7 +53,7 @@ class DevicePolicy < ApplicationPolicy
       elsif user&.cobrador?
         # Cobradores can only see devices with overdue loans
         scope.joins(loan: :installments)
-             .where(installments: { status: 'overdue' })
+             .where(installments: { status: "overdue" })
              .distinct
       else
         scope.none

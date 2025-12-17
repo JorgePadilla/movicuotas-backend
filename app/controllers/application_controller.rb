@@ -17,17 +17,17 @@ class ApplicationController < ActionController::Base
 
   def skip_authorization?
     # Skip authorization for sessions and pages controllers (public pages)
-    controller_name == 'sessions' || controller_name == 'pages'
+    controller_name == "sessions" || controller_name == "pages"
   end
 
   def should_verify_policy_scoped?
     # Only verify policy scoped for index actions and if not skipping authorization
-    action_name == 'index' && !skip_authorization?
+    action_name == "index" && !skip_authorization?
   end
 
   def should_verify_authorized?
     # Verify authorized for non-index actions and if not skipping authorization
-    action_name != 'index' && !skip_authorization?
+    action_name != "index" && !skip_authorization?
   end
 
   def authenticate
