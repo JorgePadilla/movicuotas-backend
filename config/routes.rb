@@ -9,6 +9,27 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Authentication
+  get  "login",  to: "sessions#new"
+  post "login",  to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  # Public pages
+  root "sessions#new"
+
+  # Role-specific routes (placeholders for future branches)
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
+    # ... other admin routes will be added in phase3-admin-* branches
+  end
+
+  namespace :vendor do
+    get 'customer_search', to: 'customer_search#index', as: :customer_search  # Main screen for vendors
+    # ... other vendor routes will be added in phase2-vendor-* branches
+  end
+
+  namespace :cobrador do
+    get 'dashboard', to: 'dashboard#index'
+    # ... other cobrador routes will be added in phase4-cobrador-* branches
+  end
 end
