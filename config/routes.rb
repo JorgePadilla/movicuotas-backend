@@ -15,7 +15,8 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   # Public pages
-  root "sessions#new"
+  root "pages#home"
+  get "/home", to: "pages#home", as: :home
 
   # Role-specific routes (placeholders for future branches)
   namespace :admin do
