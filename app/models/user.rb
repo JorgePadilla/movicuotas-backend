@@ -2,9 +2,10 @@ class User < ApplicationRecord
   has_secure_password
 
   # Validations
-  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :full_name, presence: true
   validates :role, presence: true, inclusion: { in: %w[admin vendedor cobrador] }
+  validates :branch_number, format: { with: /\A[A-Z0-9]+\z/, message: "solo letras mayúsculas y números" }, allow_blank: true
 
   # Optional: Add password validations
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
