@@ -8,7 +8,7 @@ class MdmBlueprint < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[active inactive expired] }
 
   # Enums
-  enum :status, { active: 'active', inactive: 'inactive', expired: 'expired' }, default: 'active'
+  enum :status, { active: "active", inactive: "inactive", expired: "expired" }, default: "active"
 
   # Callbacks
   before_validation :generate_qr_code_data, if: -> { qr_code_data.blank? }
@@ -36,11 +36,11 @@ class MdmBlueprint < ApplicationRecord
   end
 
   def expired?
-    status == 'expired' || (generated_at && generated_at < 30.days.ago)
+    status == "expired" || (generated_at && generated_at < 30.days.ago)
   end
 
   def mark_as_expired
-    update(status: 'expired')
+    update(status: "expired")
   end
 
   private

@@ -12,21 +12,21 @@ class Loan < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[draft active paid overdue cancelled] }
   validates :total_amount, presence: true, numericality: { greater_than: 0 }
   validates :approved_amount, presence: true, numericality: { greater_than: 0 }
-  validates :down_payment_percentage, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, inclusion: { in: [30, 40, 50] }
+  validates :down_payment_percentage, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 100 }, inclusion: { in: [ 30, 40, 50 ] }
   validates :down_payment_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :financed_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :interest_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
-  validates :number_of_installments, presence: true, numericality: { greater_than: 0 }, inclusion: { in: [6, 8, 12] }
+  validates :number_of_installments, presence: true, numericality: { greater_than: 0 }, inclusion: { in: [ 6, 8, 12 ] }
   validates :start_date, presence: true
   validate :start_date_not_in_past
   validate :approved_amount_covers_total_amount
 
   # Enums
-  enum :status, { draft: 'draft', active: 'active', paid: 'paid', overdue: 'overdue', cancelled: 'cancelled' }, default: 'draft'
+  enum :status, { draft: "draft", active: "active", paid: "paid", overdue: "overdue", cancelled: "cancelled" }, default: "draft"
 
   # Scopes
-  scope :active, -> { where(status: 'active') }
-  scope :overdue, -> { where(status: 'overdue') }
+  scope :active, -> { where(status: "active") }
+  scope :overdue, -> { where(status: "overdue") }
   scope :by_branch, ->(branch) { where(branch_number: branch) }
   scope :by_customer, ->(customer) { where(customer: customer) }
 
@@ -61,16 +61,16 @@ class Loan < ApplicationRecord
 
   def mark_as_paid_if_completed
     return unless installments.pending.empty? && remaining_balance <= 0
-    update(status: 'paid')
+    update(status: "paid")
   end
 
   def update_status_based_on_installments
     if overdue_installments.exists?
-      update(status: 'overdue')
+      update(status: "overdue")
     elsif pending_installments.exists?
-      update(status: 'active')
+      update(status: "active")
     else
-      update(status: 'paid')
+      update(status: "paid")
     end
   end
 
@@ -92,7 +92,7 @@ class Loan < ApplicationRecord
 
   def generate_contract_number
     # Format: {branch}-{date}-{sequence}
-    date_part = Time.current.strftime('%Y-%m-%d')
+    date_part = Time.current.strftime("%Y-%m-%d")
     sequence = Loan.where(branch_number: branch_number, start_date: start_date).count + 1
     self.contract_number = "#{branch_number}-#{date_part}-#{sequence.to_s.rjust(6, '0')}"
   end

@@ -11,15 +11,15 @@ class Installment < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[pending paid overdue cancelled] }
 
   # Enums
-  enum :status, { pending: 'pending', paid: 'paid', overdue: 'overdue', cancelled: 'cancelled' }, default: 'pending'
+  enum :status, { pending: "pending", paid: "paid", overdue: "overdue", cancelled: "cancelled" }, default: "pending"
 
   # Scopes
-  scope :pending, -> { where(status: 'pending') }
-  scope :paid, -> { where(status: 'paid') }
-  scope :overdue, -> { where(status: 'overdue') }
+  scope :pending, -> { where(status: "pending") }
+  scope :paid, -> { where(status: "paid") }
+  scope :overdue, -> { where(status: "overdue") }
   scope :by_due_date, ->(date) { where(due_date: date) }
-  scope :due_before, ->(date) { where('due_date < ?', date) }
-  scope :due_after, ->(date) { where('due_date > ?', date) }
+  scope :due_before, ->(date) { where("due_date < ?", date) }
+  scope :due_after, ->(date) { where("due_date > ?", date) }
 
   # Callbacks
   before_save :update_status_based_on_due_date, if: -> { due_date_changed? || status_changed? }
@@ -33,14 +33,14 @@ class Installment < ApplicationRecord
 
   def mark_as_paid(paid_amount, paid_date = Date.today)
     update(
-      status: 'paid',
+      status: "paid",
       paid_date: paid_date,
       paid_amount: paid_amount
     )
   end
 
   def mark_as_overdue
-    update(status: 'overdue') if pending? && due_date.past?
+    update(status: "overdue") if pending? && due_date.past?
   end
 
   def remaining_amount
@@ -57,9 +57,9 @@ class Installment < ApplicationRecord
 
     # Update status based on paid amount
     if total_paid >= amount
-      update(status: 'paid', paid_date: Date.today) unless paid?
+      update(status: "paid", paid_date: Date.today) unless paid?
     elsif total_paid > 0 && pending?
-      update(status: 'pending') # Ensure it's pending if partially paid
+      update(status: "pending") # Ensure it's pending if partially paid
     end
   end
 
@@ -67,9 +67,9 @@ class Installment < ApplicationRecord
 
   def update_status_based_on_due_date
     if pending? && due_date.past?
-      self.status = 'overdue'
+      self.status = "overdue"
     elsif overdue? && due_date.future?
-      self.status = 'pending'
+      self.status = "pending"
     end
   end
 

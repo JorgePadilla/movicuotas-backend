@@ -7,7 +7,7 @@ class PhoneModel < ApplicationRecord
   validates :model, presence: true
   validates :model, uniqueness: { scope: :brand }
   validates :price, presence: true, numericality: { greater_than: 0 }
-  validates :active, inclusion: { in: [true, false] }
+  validates :active, inclusion: { in: [ true, false ] }
 
   # Scopes
   scope :active, -> { where(active: true) }
