@@ -21,6 +21,14 @@ class SessionPolicy < ApplicationPolicy
     admin? || owns_session?
   end
 
+  def update?
+    false  # Sessions cannot be updated
+  end
+
+  def edit?
+    update?
+  end
+
   # Scope: Admin sees all, users see only their own sessions
   class Scope < Scope
     def resolve
