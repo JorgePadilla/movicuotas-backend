@@ -19,17 +19,17 @@ Rails.application.routes.draw do
 
   # Role-specific routes (placeholders for future branches)
   namespace :admin do
-    get 'dashboard', to: 'dashboard#index'
+    get "dashboard", to: "dashboard#index"
     # ... other admin routes will be added in phase3-admin-* branches
   end
 
   namespace :vendor do
-    get 'customer_search', to: 'customer_search#index', as: :customer_search  # Main screen for vendors
+    get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
   namespace :cobrador do
-    get 'dashboard', to: 'dashboard#index'
+    get "dashboard", to: "dashboard#index"
     # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
 end

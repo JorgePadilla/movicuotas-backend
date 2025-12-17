@@ -9,22 +9,22 @@ class User < ApplicationRecord
   # Optional: Add password validations
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
-  enum role: { admin: 'admin', vendedor: 'vendedor', cobrador: 'cobrador' }
+  enum role: { admin: "admin", vendedor: "vendedor", cobrador: "cobrador" }
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
 
   # Role helpers
   def admin?
-    role == 'admin'
+    role == "admin"
   end
 
   def vendedor?
-    role == 'vendedor'
+    role == "vendedor"
   end
 
   def cobrador?
-    role == 'cobrador'
+    role == "cobrador"
   end
 
   # Permission helpers
@@ -46,9 +46,9 @@ class User < ApplicationRecord
 
   # System user for automated actions
   def self.system_user
-    find_or_create_by(email: 'system@movicuotas.com') do |user|
-      user.role = 'admin'
-      user.full_name = 'System'
+    find_or_create_by(email: "system@movicuotas.com") do |user|
+      user.role = "admin"
+      user.full_name = "System"
       user.password = SecureRandom.hex(32)
     end
   end

@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate, only: [:new, :create]
+  skip_before_action :authenticate, only: [ :new, :create ]
 
   def new
     # Login form
@@ -29,11 +29,11 @@ class SessionsController < ApplicationController
 
   def after_sign_in_path_for(user)
     case user.role
-    when 'admin'
+    when "admin"
       admin_dashboard_path
-    when 'vendedor'
+    when "vendedor"
       vendor_customer_search_path  # Main screen for vendors
-    when 'cobrador'
+    when "cobrador"
       cobrador_dashboard_path
     else
       root_path
