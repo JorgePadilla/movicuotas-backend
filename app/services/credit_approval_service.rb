@@ -86,21 +86,21 @@ class CreditApprovalService
 
     # Adjust based on salary range (higher salary = higher probability)
     salary_factor = case @credit_application.salary_range
-                    when "less_than_10000" then 0.7
-                    when "range_10000_20000" then 0.8
-                    when "range_20000_30000" then 0.9
-                    when "range_30000_40000" then 0.95
-                    when "more_than_40000" then 1.0
-                    else 0.8
-                    end
+    when "less_than_10000" then 0.7
+    when "range_10000_20000" then 0.8
+    when "range_20000_30000" then 0.9
+    when "range_30000_40000" then 0.95
+    when "more_than_40000" then 1.0
+    else 0.8
+    end
 
     # Adjust based on employment status
     employment_factor = case @credit_application.employment_status
-                        when "employed" then 1.0
-                        when "self_employed" then 0.9
-                        when "retired" then 0.8
-                        else 0.5
-                        end
+    when "employed" then 1.0
+    when "self_employed" then 0.9
+    when "retired" then 0.8
+    else 0.5
+    end
 
     final_probability = probability * salary_factor * employment_factor
     rand <= final_probability
@@ -118,8 +118,8 @@ class CreditApprovalService
       action: "credit_application_auto_approved",
       resource: @credit_application,
       changes: {
-        status: ["pending", "approved"],
-        approved_amount: [nil, approved_amount]
+        status: [ "pending", "approved" ],
+        approved_amount: [ nil, approved_amount ]
       }
     ) if @evaluator.nil?  # Only log if auto-approved (no human evaluator)
 
@@ -137,8 +137,8 @@ class CreditApprovalService
       action: "credit_application_auto_rejected",
       resource: @credit_application,
       changes: {
-        status: ["pending", "rejected"],
-        rejection_reason: [nil, rejection_reason]
+        status: [ "pending", "rejected" ],
+        rejection_reason: [ nil, rejection_reason ]
       }
     ) if @evaluator.nil?
 
