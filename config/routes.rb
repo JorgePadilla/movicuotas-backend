@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     resources :mdm_blueprints, only: [:show], param: :id
 
     # Payment Calculator (Step 12)
-    resource :payment_calculator, only: [:new, :create] do
+    resource :payment_calculator, only: [ :new, :create ] do
       post :calculate, on: :collection
     end
     # ... other vendor routes will be added in phase2-vendor-* branches

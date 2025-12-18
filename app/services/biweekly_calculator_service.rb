@@ -19,10 +19,10 @@
 #   n = number_of_installments
 class BiweeklyCalculatorService
   # Valid down payment percentages (from Loan model validation)
-  VALID_DOWN_PAYMENT_PERCENTAGES = [30, 40, 50].freeze
+  VALID_DOWN_PAYMENT_PERCENTAGES = [ 30, 40, 50 ].freeze
 
   # Valid installment terms (updated to include 10)
-  VALID_INSTALLMENT_TERMS = [6, 8, 10, 12].freeze
+  VALID_INSTALLMENT_TERMS = [ 6, 8, 10, 12 ].freeze
 
   # Interest Rate Table (Bi-weekly Rates)
   # Source: CLAUDE.md - Payment Calculator Reference Data
@@ -218,7 +218,7 @@ class BiweeklyCalculatorService
     return unless age_group == 2  # 50-60 years
 
     # 50-60 years: only 40% and 50% down payment allowed
-    unless [40, 50].include?(@down_payment_percentage)
+    unless [ 40, 50 ].include?(@down_payment_percentage)
       @errors << "Clientes de 50-60 años solo pueden seleccionar 40% o 50% de pago inicial"
     end
   end

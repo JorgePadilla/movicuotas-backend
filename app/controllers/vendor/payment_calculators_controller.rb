@@ -2,7 +2,7 @@
 
 module Vendor
   class PaymentCalculatorsController < ApplicationController
-    skip_after_action :verify_policy_scoped, only: [:new, :calculate]
+    skip_after_action :verify_policy_scoped, only: [ :new, :calculate ]
 
     # Step 12: Payment Calculator
     # Display calculator form with down payment options and installment terms
@@ -59,7 +59,7 @@ module Vendor
             render turbo_stream: turbo_stream.replace(
               "calculator_errors",
               partial: "vendor/payment_calculators/errors",
-              locals: { errors: ["No se pudo obtener la fecha de nacimiento del cliente"] }
+              locals: { errors: [ "No se pudo obtener la fecha de nacimiento del cliente" ] }
             )
           end
           format.html do
