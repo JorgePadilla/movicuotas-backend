@@ -17,7 +17,7 @@ class Loan < ApplicationRecord
   validates :down_payment_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :financed_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :interest_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
-  validates :number_of_installments, presence: true, numericality: { greater_than: 0 }, inclusion: { in: [ 6, 8, 12 ] }
+  validates :number_of_installments, presence: true, numericality: { greater_than: 0 }, inclusion: { in: [ 6, 8, 10, 12 ] }
   validates :start_date, presence: true
   validate :start_date_not_in_past
   validate :approved_amount_covers_total_amount

@@ -31,6 +31,11 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+
+    # Payment Calculator (Step 12)
+    resource :payment_calculator, only: [:new, :create] do
+      post :calculate, on: :collection
+    end
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
