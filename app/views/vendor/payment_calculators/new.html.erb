@@ -1,0 +1,172 @@
+<% content_for :title, "Calculadora de Pagos - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold text-[#125282] mb-2">Calculadora de Pagos</h1>
+  <p class="text-gray-600 mb-8">Paso 12: Calcula las cuotas quincenales para el crédito.</p>
+
+  <%# Phone and Approved Amount Summary %>
+  <div class="bg-white shadow rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Resumen del Teléfono</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Precio del Teléfono</p>
+          <p class="text-2xl font-bold text-[#125282]">L. <%= number_with_delimiter(@phone_price.round(2), delimiter: ",") %></p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500">Monto Aprobado</p>
+          <p class="text-xl font-semibold text-green-600">L. <%= number_with_delimiter(@approved_amount.round(2), delimiter: ",") %></p>
+          <% if @phone_price > @approved_amount %>
+            <p class="text-sm text-red-600 mt-1">⚠️ El precio excede el monto aprobado</p>
+          <% else %>
+            <p class="text-sm text-green-600 mt-1">✓ Dentro del límite aprobado</p>
+          <% end %>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Financiamiento Disponible</p>
+          <p class="text-xl font-semibold text-gray-900">L. <%= number_with_delimiter((@approved_amount - @phone_price).round(2), delimiter: ",") %></p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500">Tasa de Interés Anual</p>
+          <p class="text-lg font-semibold text-gray-900"><%= BiweeklyCalculatorService::DEFAULT_INTEREST_RATE %>%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Calculator Form %>
+  <div class="bg-white shadow rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-6">Configuración de Pago</h2>
+
+    <%= form_with url: calculate_vendor_payment_calculator_path,
+                  method: :post,
+                  data: {
+                    controller: "payment-calculator",
+                    action: "change->payment-calculator#calculate",
+                    "payment-calculator-calculate-url-value": calculate_vendor_payment_calculator_path,
+                    turbo_frame: "calculator_results"
+                  },
+                  class: "space-y-8" do |f| %>
+
+      <%# Hidden fields for phone price and approved amount %>
+      <%= hidden_field_tag :phone_price, @phone_price %>
+      <%= hidden_field_tag :approved_amount, @approved_amount %>
+      <%= hidden_field_tag :date_of_birth, @date_of_birth %>
+
+      <%# Down Payment Selection %>
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Pago Inicial</h3>
+        <p class="text-sm text-gray-600 mb-4">Selecciona el porcentaje de pago inicial. Mayor pago inicial significa cuotas más bajas.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <% [30, 40, 50].each do |percentage| %>
+            <label class="relative">
+              <input
+                type="radio"
+                name="down_payment_percentage"
+                value="<%= percentage %>"
+                class="sr-only peer"
+                <%= "checked" if @down_payment_percentage == percentage %>
+                data-payment-calculator-target="downPayment"
+                data-action="change->payment-calculator#calculate"
+              >
+              <div class="cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-[#125282] peer-checked:border-[#125282] peer-checked:bg-blue-50 transition-all duration-200">
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-[#125282]"><%= percentage %>%</p>
+                  <p class="text-sm text-gray-600 mt-2">
+                    <% down_payment = @phone_price * (percentage / 100.0) %>
+                    L. <%= number_with_delimiter(down_payment.round(2), delimiter: ",") %>
+                  </p>
+                </div>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Installment Term Selection %>
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Plazo de Cuotas</h3>
+        <p class="text-sm text-gray-600 mb-4">Selecciona el número de cuotas quincenales (cada 15 días).</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <% [6, 8, 10, 12].each do |term| %>
+            <label class="relative">
+              <input
+                type="radio"
+                name="number_of_installments"
+                value="<%= term %>"
+                class="sr-only peer"
+                <%= "checked" if @number_of_installments == term %>
+                data-payment-calculator-target="installmentTerm"
+                data-action="change->payment-calculator#calculate"
+              >
+              <div class="cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-[#125282] peer-checked:border-[#125282] peer-checked:bg-blue-50 transition-all duration-200">
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-[#125282]"><%= term %></p>
+                  <p class="text-sm text-gray-600 mt-2">
+                    <% months = (term * 14) / 30.0 %>
+                    ≈ <%= months.round(1) %> meses
+                  </p>
+                </div>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Error Display %>
+      <div id="calculator_errors">
+        <% if @result && !@result[:success] %>
+          <%= render partial: "vendor/payment_calculators/errors", locals: { errors: @result[:errors] } %>
+        <% end %>
+      </div>
+
+      <%# Submit Button (for non-JS fallback) %>
+      <div class="pt-6 border-t border-gray-200">
+        <button
+          type="submit"
+          class="w-full md:w-auto bg-[#125282] text-white font-semibold py-3 px-8 rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]"
+        >
+          Calcular Cuota
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Results Display (updated via Turbo Stream) %>
+  <%= turbo_frame_tag "calculator_results" do %>
+    <% if @result && @result[:success] %>
+      <%= render partial: "vendor/payment_calculators/results", locals: { result: @result } %>
+    <% else %>
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+        <p class="text-gray-600">Selecciona las opciones de pago para calcular tu cuota quincenal.</p>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%# Navigation %>
+  <div class="flex flex-col md:flex-row justify-between items-center mt-8 pt-8 border-t border-gray-200">
+    <div>
+      <%= link_to "← Volver a selección de teléfono", vendor_device_selection_path, class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+    </div>
+    <div>
+      <% if @result && @result[:success] %>
+        <%= button_to "Continuar al Contrato →",
+                      vendor_payment_calculator_path,
+                      method: :post,
+                      class: "bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600" %>
+      <% else %>
+        <button disabled class="bg-gray-300 text-gray-500 font-semibold py-3 px-8 rounded-lg cursor-not-allowed">
+          Continuar al Contrato →
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center text-sm text-gray-500">
+    <p>Recuerda: Las cuotas son <strong>quincenales</strong> (cada 15 días). El interés se calcula sobre el monto financiado.</p>
+  </div>
+</div>
