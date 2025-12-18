@@ -76,9 +76,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_071322) do
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
     t.string "employment_status"
-    t.string "facial_verification_image_filename"
-    t.string "id_back_image_filename"
-    t.string "id_front_image_filename"
     t.text "notes"
     t.string "rejection_reason"
     t.string "salary_range"

@@ -9,7 +9,7 @@ module Vendor
 
       if params[:identification_number].present?
         # Clean the identification number (remove dashes, spaces)
-        clean_id = params[:identification_number].gsub(/[-\s]/, '')
+        clean_id = params[:identification_number].gsub(/[-\s]/, "")
 
         # Validate the cleaned ID
         if clean_id.length != 13 || clean_id !~ /\A\d+\z/
