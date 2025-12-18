@@ -38,7 +38,7 @@ Rails.application.routes.draw do
     end
 
     # Credit Application Workflow (Steps 4-9)
-    resources :credit_applications, only: [:new, :create, :show, :edit, :update] do
+    resources :credit_applications, only: [ :new, :create, :show, :edit, :update ] do
       member do
         get :photos, as: :photos
         patch :update_photos, as: :update_photos
@@ -52,7 +52,7 @@ Rails.application.routes.draw do
     end
 
     # Step 9: Application Recovery
-    resource :application_recovery, only: [:show, :create], controller: 'application_recovery'
+    resource :application_recovery, only: [ :show, :create ], controller: "application_recovery"
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
