@@ -6,6 +6,8 @@ class CreditApplication < ApplicationRecord
   has_one_attached :id_back_image
   has_one_attached :facial_verification_image
 
+  accepts_nested_attributes_for :customer
+
   # Enums
   enum :employment_status, { employed: "employed", self_employed: "self_employed", unemployed: "unemployed", student: "student", retired: "retired" }, prefix: true
   enum :salary_range, { less_than_10000: "less_than_10000", range_10000_20000: "10000_20000", range_20000_30000: "20000_30000", range_30000_40000: "30000_40000", more_than_40000: "more_than_40000" }, prefix: true
