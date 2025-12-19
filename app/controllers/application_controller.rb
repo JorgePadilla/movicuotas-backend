@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   after_action :verify_policy_scoped, if: :should_verify_policy_scoped?
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from ActionController::InvalidAuthenticityToken, with: :invalid_authenticity_token
 
   private
 
@@ -44,9 +45,26 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_user
 
-  def user_not_authorized
+  def user_not_authorized(exception)
+    Rails.logger.error "Pundit NotAuthorizedError: #{exception.message}"
+    Rails.logger.error "Policy: #{exception.policy&.class}, query: #{exception.query}"
+    Rails.logger.error "Backtrace: #{exception.backtrace.first(5).join('\n')}"
+
     flash[:alert] = "No estás autorizado para realizar esta acción."
     redirect_back fallback_location: root_path
+  end
+
+  def invalid_authenticity_token(exception)
+    Rails.logger.error "CSRF Token Error: #{exception.message}"
+    Rails.logger.error "Controller: #{controller_name}, Action: #{action_name}"
+    Rails.logger.error "Request format: #{request.format}"
+    Rails.logger.error "Authenticity token in params: #{params[:authenticity_token].present?}"
+    Rails.logger.error "Session cookie present: #{cookies[:session_token].present?}"
+    Rails.logger.error "Session cookie value: #{cookies[:session_token]&.first(20)}..." if cookies[:session_token].present?
+    Rails.logger.error "Headers: #{request.headers['X-CSRF-Token'].present? ? 'X-CSRF-Token present' : 'No X-CSRF-Token'}"
+
+    flash[:alert] = "Error de seguridad. Por favor, recarga la página e intenta nuevamente."
+    redirect_back fallback_location: login_path
   end
 
   # Override pundit user context
