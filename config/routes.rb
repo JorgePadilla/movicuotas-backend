@@ -31,6 +31,10 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+    # Device selection (Step 10)
+    resources :device_selections, only: [:show, :update], param: :credit_application_id
+    # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
+    get "device_selections/:credit_application_id/confirmation", to: "device_selections#confirmation", as: :device_selection_confirmation
 
     # Payment Calculator (Step 12)
     resource :payment_calculator, only: [ :new, :create ] do
