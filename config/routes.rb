@@ -31,6 +31,16 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+
+    # Contract routes (Steps 13-14)
+    resources :contracts, only: [:show] do
+      member do
+        get :signature
+        post :save_signature
+        get :download
+      end
+    end
+
     # Device selection (Step 10)
     resources :device_selections, only: [:show, :update], param: :credit_application_id
     # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
