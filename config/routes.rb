@@ -32,6 +32,15 @@ Rails.application.routes.draw do
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
     get "dashboard", to: "dashboard#index"  # Dashboard accessible from navigation menu
+
+    # Loan finalization (Step 15)
+    resources :loans, only: [:new, :create, :show] do
+      member do
+        get :download_contract
+      end
+    end
+    # MDM Blueprint (Step 16) - placeholder for now
+    resources :mdm_blueprints, only: [:show], param: :id
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
