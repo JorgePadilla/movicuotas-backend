@@ -1,0 +1,123 @@
+<%# Step 10: Catálogo Teléfonos (Device Selection) %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Catálogo de Teléfonos</h1>
+    <p class="mt-2 text-gray-600">
+      Seleccione un teléfono para el cliente <span class="font-semibold"><%= @credit_application.customer.full_name %></span>
+      (Solicitud: <%= @credit_application.application_number %>)
+    </p>
+    <p class="mt-1 text-sm text-gray-500">
+      <span class="font-medium text-green-600">✓ Crédito aprobado</span> - El precio del teléfono seleccionado debe ser menor o igual al monto aprobado (validación automática).
+    </p>
+  </div>
+
+  <% if @credit_application.errors.any? %>
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <h3 class="text-red-800 font-medium">Error al seleccionar teléfono:</h3>
+      <ul class="mt-2 text-red-700 text-sm list-disc list-inside">
+        <% @credit_application.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @credit_application, url: vendor_device_selection_path(@credit_application), method: :patch, data: { turbo: false } do |f| %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <% @phone_models.each do |phone| %>
+        <label class="relative">
+          <input type="radio" name="credit_application[selected_phone_model_id]" value="<%= phone.id %>"
+                 class="peer sr-only"
+                 data-phone-price="<%= phone.price %>"
+                 <%= "checked" if @credit_application.selected_phone_model_id == phone.id %>
+                 required>
+          <div class="border-2 border-gray-200 rounded-xl p-5 cursor-pointer transition-all duration-200
+                      peer-checked:border-[#6366f1] peer-checked:ring-2 peer-checked:ring-[#6366f1] peer-checked:bg-[#6366f1]/5
+                      hover:border-gray-300 hover:shadow-md">
+            <%# Product card in purple (#6366f1) per color palette %>
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900"><%= phone.brand %> <%= phone.model %></h3>
+                <p class="text-sm text-gray-600 mt-1"><%= phone.storage %>GB · <%= phone.color %></p>
+              </div>
+              <% if phone.image_url.present? %>
+                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <img src="<%= phone.image_url %>" alt="<%= phone.brand %>" class="max-w-full max-h-full object-contain">
+                </div>
+              <% end %>
+            </div>
+            <div class="mt-4">
+              <div class="text-2xl font-bold text-[#1f2937]">L. <%= number_to_currency(phone.price, unit: "", delimiter: ",") %></div>
+              <p class="text-sm text-gray-500 mt-1">Precio total (sin accesorios)</p>
+            </div>
+            <div class="mt-4 text-sm text-gray-700">
+              <% if phone.price <= @credit_application.approved_amount %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  ✓ Dentro del monto aprobado
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  ✗ Excede monto aprobado
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </label>
+      <% end %>
+    </div>
+
+    <%# IMEI and Color fields (appear when a phone is selected) %>
+    <div id="device-details" class="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8 <%= 'hidden' unless @credit_application.selected_phone_model_id.present? %>">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Datos del dispositivo seleccionado</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= f.label :selected_imei, "Número IMEI (15 dígitos)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :selected_imei,
+                placeholder: "Ej: 123456789012345",
+                maxlength: 15,
+                pattern: "\d{15}",
+                title: "Debe tener 15 dígitos numéricos",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#125282] focus:border-[#125282]" %>
+          <p class="mt-1 text-sm text-gray-500">Ingrese el IMEI del dispositivo físico (15 dígitos).</p>
+        </div>
+        <div>
+          <%= f.label :selected_color, "Color del dispositivo", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :selected_color,
+                placeholder: "Ej: Negro, Blanco, Azul",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#125282] focus:border-[#125282]" %>
+          <p class="mt-1 text-sm text-gray-500">Color específico del dispositivo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+      <div>
+        <%= link_to "← Volver a búsqueda", vendor_customer_search_path, class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <div class="flex space-x-4">
+        <%= link_to "Cancelar", vendor_customer_search_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-2 bg-[#125282] text-white font-medium rounded-md hover:bg-[#125282]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282] cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // Show device details when a phone model is selected
+  document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[type="radio"][name="credit_application[selected_phone_model_id]"]');
+    const deviceDetails = document.getElementById('device-details');
+
+    function toggleDeviceDetails() {
+      const anyChecked = Array.from(radioButtons).some(radio => radio.checked);
+      deviceDetails.classList.toggle('hidden', !anyChecked);
+    }
+
+    radioButtons.forEach(radio => {
+      radio.addEventListener('change', toggleDeviceDetails);
+    });
+
+    // Initial check
+    toggleDeviceDetails();
+  });
+</script>
