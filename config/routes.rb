@@ -63,6 +63,11 @@ Rails.application.routes.draw do
 
     # Step 9: Application Recovery
     resource :application_recovery, only: [ :show, :create ], controller: "application_recovery"
+
+    # Device selection (Step 10)
+    resources :device_selections, only: [:show, :update], param: :credit_application_id
+    # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
+    get "device_selections/:credit_application_id/confirmation", to: "device_selections#confirmation", as: :device_selection_confirmation
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
