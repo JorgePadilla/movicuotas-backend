@@ -21,18 +21,35 @@ module Vendor
 
     # Step 4 submission: Create customer and credit application
     def create
-      @customer = find_or_initialize_customer
+      # Build credit application with nested customer attributes
       @credit_application = CreditApplication.new(credit_application_params)
-      @credit_application.customer = @customer
       @credit_application.vendor = current_user
       @credit_application.status = :pending
 
+      # Get customer from the built association for error display
+      @customer = @credit_application.customer || Customer.new
+
       authorize @credit_application
 
-      if @customer.save && @credit_application.save
+      # Use transaction for atomic save
+      saved = false
+      ActiveRecord::Base.transaction do
+        if @credit_application.save
+          saved = true
+        else
+          # Rollback the transaction if save fails
+          raise ActiveRecord::Rollback
+        end
+      end
+
+      if saved
         redirect_to photos_vendor_credit_application_path(@credit_application),
                     notice: "Datos generales guardados. Sube las fotografías de identificación."
       else
+        # Log errors for debugging
+        Rails.logger.error "Credit application save errors: #{@credit_application.errors.full_messages}" if @credit_application.errors.any?
+        Rails.logger.error "Customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
+
         render :new, status: :unprocessable_entity
       end
     end
@@ -116,9 +133,12 @@ module Vendor
     def find_or_initialize_customer
       if params[:customer_id].present?
         Customer.find_by(id: params[:customer_id])
+      elsif params[:identification_number].present?
+        # Find existing customer by identification_number or initialize new (from search)
+        Customer.find_or_initialize_by(identification_number: params[:identification_number])
       elsif credit_application_params[:customer_attributes].present? &&
             credit_application_params[:customer_attributes][:identification_number].present?
-        # Find existing customer by identification_number or initialize new
+        # Find existing customer by identification_number or initialize new (from form submission)
         identification = credit_application_params[:customer_attributes][:identification_number]
         Customer.find_or_initialize_by(identification_number: identification)
       else
@@ -139,8 +159,8 @@ module Vendor
           :city,
           :department,
           :phone,
-          :email,
-          :status
+          :email
+          # status is not included - uses default "active" from enum
         ]
       )
     end

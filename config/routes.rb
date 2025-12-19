@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   get "reset-password/:token", to: "passwords#edit", as: :reset_password
 
   # Public pages
-  root "sessions#new"
+  root "home#index"
   get "/home", to: "pages#home", as: :home
 
   # Role-specific routes (placeholders for future branches)

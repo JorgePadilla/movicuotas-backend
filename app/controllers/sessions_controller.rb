@@ -1,22 +1,34 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate, only: [ :new, :create ]
-  skip_after_action :verify_authorized, only: [ :new ]
+  skip_after_action :verify_authorized, only: [ :new, :create ]
 
   def new
     # Login form
   end
 
   def create
-    authorize Session  # Login is public, policy allows create? true
+    Rails.logger.info "SessionsController#create - Starting login for email: #{params[:email]}"
+
+    begin
+      authorize Session  # Login is public, policy allows create? true
+      Rails.logger.info "SessionsController#create - Authorization passed"
+    rescue Pundit::NotAuthorizedError => e
+      Rails.logger.error "SessionsController#create - Authorization failed: #{e.message}"
+      raise
+    end
 
     user = User.find_by(email: params[:email])
+    Rails.logger.info "SessionsController#create - User found: #{user.present?}, user id: #{user&.id}"
+    Rails.logger.info "SessionsController#create - Password param present: #{params[:password].present?}, length: #{params[:password]&.length}"
 
     if user&.authenticate(params[:password])
+      Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
       session = user.sessions.create!
       cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
 
       redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente"
     else
+      Rails.logger.warn "SessionsController#create - Authentication FAILED for email: #{params[:email]}"
       flash.now[:alert] = "Email o contraseña incorrectos"
       render :new, status: :unprocessable_entity
     end
@@ -32,15 +44,6 @@ class SessionsController < ApplicationController
   private
 
   def after_sign_in_path_for(user)
-    case user.role
-    when "admin"
-      admin_dashboard_path
-    when "vendedor"
-      vendor_customer_search_path  # Main screen for vendors
-    when "cobrador"
-      cobrador_dashboard_path
-    else
-      root_path
-    end
+    root_path  # HomeController will redirect based on role
   end
 end

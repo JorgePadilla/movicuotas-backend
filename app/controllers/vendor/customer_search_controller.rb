@@ -5,14 +5,14 @@ module Vendor
     skip_after_action :verify_policy_scoped, only: :index
 
     def index
-      authorize :customer_search
+      authorize nil, policy_class: Vendor::CustomerSearchPolicy
 
       if params[:identification_number].present?
         # Clean the identification number (remove dashes, spaces)
-        clean_id = params[:identification_number].gsub(/[-\s]/, "")
+        @clean_id = params[:identification_number].gsub(/[-\s]/, "")
 
         # Validate the cleaned ID
-        if clean_id.length != 13 || clean_id !~ /\A\d+\z/
+        if @clean_id.length != 13 || @clean_id !~ /\A\d+\z/
           @step = :invalid
           @alert_color = "#f59e0b"  # Orange/Warning
           @alert_message = "Número de identidad inválido. Debe tener 13 dígitos."
@@ -21,7 +21,7 @@ module Vendor
         end
 
         # Find customer by identification number
-        @customer = Customer.find_by(identification_number: clean_id)
+        @customer = Customer.find_by(identification_number: @clean_id)
 
         if @customer
           # Check if customer has any active loans across ALL stores
@@ -40,10 +40,10 @@ module Vendor
             @alert_message = "Cliente disponible para nuevo crédito"
           end
         else
-          # Customer not found
+          # Customer not found - can start new application
           @step = :not_found
-          @alert_color = "#f59e0b"  # Orange/Warning
-          @alert_message = "Cliente no encontrado. Verifica el número de identidad."
+          @alert_color = "#10b981"  # Green/Success (can start new application)
+          @alert_message = "Cliente no registrado en el sistema. Puedes crear un nuevo registro e iniciar una solicitud de crédito."
         end
 
         # Set the search query for display
@@ -52,6 +52,12 @@ module Vendor
         # Initial page load - no search yet
         @step = :initial
       end
+    end
+
+    private
+
+    def pundit_policy_class
+      Vendor::CustomerSearchPolicy
     end
   end
 end

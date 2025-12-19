@@ -7,7 +7,7 @@ module Vendor
     # Step 12: Payment Calculator
     # Display calculator form with down payment options and installment terms
     def new
-      authorize :payment_calculator
+      authorize nil, policy_class: Vendor::PaymentCalculatorPolicy
 
       # Get parameters from previous step (Step 11: Confirmation)
       # Phone price and approved amount should be passed via session or params
@@ -46,7 +46,7 @@ module Vendor
     # Calculate installment amount dynamically (Turbo Stream)
     # Called via AJAX/Turbo when user changes down payment or installment term
     def calculate
-      authorize :payment_calculator
+      authorize nil, policy_class: Vendor::PaymentCalculatorPolicy
 
       phone_price = params[:phone_price]&.to_f || 0
       down_payment_percentage = params[:down_payment_percentage]&.to_i || 30
@@ -108,7 +108,7 @@ module Vendor
 
     # Create loan with calculated installments (proceed to Step 13: Contract)
     def create
-      authorize :payment_calculator
+      authorize nil, policy_class: Vendor::PaymentCalculatorPolicy
 
       # This action will be implemented in Phase 2: Loan Finalization
       # For now, redirect to contract step with calculated parameters
