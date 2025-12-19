@@ -59,6 +59,15 @@ Rails.application.routes.draw do
       post :calculate, on: :collection
     end
 
+    # Contract routes (Steps 13-14)
+    resources :contracts, only: [:show] do
+      member do
+        get :signature
+        post :save_signature
+        get :download
+      end
+    end
+
     # Loan finalization (Step 15)
     resources :loans, only: [:new, :create, :show] do
       member do
