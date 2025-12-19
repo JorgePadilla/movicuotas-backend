@@ -398,11 +398,55 @@ end
 **UI Elements:**
 - Summary: Phone model, Total price
 - Down payment selector: 30%, 40%, 50% (radio buttons)
-- Installment term selector: 6, 8, 12 bi-weekly periods
+- Installment term selector: 6, 8, 10, 12 bi-weekly periods
 - Dynamic display: "Cuota Quincenal: L. ----"
 - Button: "Generar Crédito" (to Step 13)
 
 **Calculation:** Based on phone price ONLY (no accessories)
+
+---
+
+**⚠️ TEMPORARY: Payment Calculator Reference Data (DELETE AFTER PROJECT COMPLETION)**
+
+**Interest Rate Table (Bi-weekly Rates):**
+
+| Down Payment (Prima) | 6 Payments | 8 Payments | 10 Payments | 12 Payments |
+|---------------------|------------|------------|-------------|-------------|
+| 30% | 14.0% | 13.5% | 13.0% | 12.5% |
+| 40% | 13.0% | 12.5% | 12.0% | 11.5% |
+| 50% | 12.0% | 11.5% | 11.0% | 10.5% |
+
+**Age and Credit Restrictions:**
+
+- **Credit available for ages:** 21 - 60 years
+- **Age-based limits:**
+  - **50-60 years:** Only 40% and 50% down payment options, Max financed: L. 3,000
+  - **21-49 years:** All down payment options (30%, 40%, 50%), Max financed: L. 3,500
+
+**Calculation Example:**
+```
+Phone Price:           L. 3,500
+Down Payment (30%):    L. 1,050
+Financed Amount:       L. 2,450
+Bi-weekly Rate:        0.125 (12.5% for 30% down, 12 payments)
+Number of Payments:    12 bi-weekly periods
+Bi-weekly Payment:     L. 404.73
+```
+
+**Formula:**
+```ruby
+financed_amount = phone_price - (phone_price * down_payment_percentage)
+bi_weekly_rate = interest_rate_from_table[down_payment][periods] / 100
+payment = financed_amount * (bi_weekly_rate * (1 + bi_weekly_rate) ** periods) /
+          ((1 + bi_weekly_rate) ** periods - 1)
+```
+
+**Implementation Notes:**
+- Use interest rates from table above (NOT annual_rate / 26)
+- Validate customer age from date_of_birth
+- Enforce age-based restrictions on down payment and max financed amount
+- Available payment terms: 6, 8, 10, 12 bi-weekly periods (note: 10 was added)
+- Store bi_weekly_rate used in loan record for audit trail
 
 ---
 
@@ -1583,7 +1627,7 @@ feature/phase2-vendor-payment-calculator
   - Depends on: phase1-*
   - Step 12: Bi-weekly calculator
   - Down payment options: 30%, 40%, 50%
-  - Installment terms: 6, 8, 12 periods
+  - Installment terms: 6, 8, 10, 12 periods
   - Service: BiweeklyCalculatorService
   - Files: app/controllers/vendor/payment_calculators_controller.rb, app/services/biweekly_calculator_service.rb
 

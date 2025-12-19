@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   get "reset-password/:token", to: "passwords#edit", as: :reset_password
 
   # Public pages
-  root "pages#home"
+  root "home#index"
   get "/home", to: "pages#home", as: :home
 
   # Role-specific routes (placeholders for future branches)
@@ -31,6 +31,34 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+
+    # Credit Application Workflow (Steps 4-9)
+    resources :credit_applications, only: [ :new, :create, :show, :edit, :update ] do
+      member do
+        get :photos, as: :photos
+        patch :update_photos, as: :update_photos
+        get :employment, as: :employment
+        patch :update_employment, as: :update_employment
+        get :summary, as: :summary
+        post :submit, as: :submit
+        get :approved, as: :approved
+        get :rejected, as: :rejected
+      end
+    end
+
+    # Step 9: Application Recovery
+    resource :application_recovery, only: [ :show, :create ], controller: "application_recovery"
+
+    # Device selection (Step 10)
+    resources :device_selections, only: [:show, :update], param: :credit_application_id
+    # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
+    get "device_selections/:credit_application_id/confirmation", to: "device_selections#confirmation", as: :device_selection_confirmation
+
+    # Payment Calculator (Step 12)
+    resource :payment_calculator, only: [ :new, :create ] do
+      post :calculate, on: :collection
+    end
+
     # Loan finalization (Step 15)
     resources :loans, only: [:new, :create, :show] do
       member do
@@ -39,6 +67,7 @@ Rails.application.routes.draw do
     end
     # MDM Blueprint (Step 16) - placeholder for now
     resources :mdm_blueprints, only: [:show], param: :id
+
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
