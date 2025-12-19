@@ -2,8 +2,8 @@
 
 module Vendor
   class ContractsController < ApplicationController
-    before_action :set_contract, except: [:new, :create]
-    after_action :verify_authorized, except: [:signature, :save_signature]
+    before_action :set_contract, except: [ :new, :create ]
+    after_action :verify_authorized, except: [ :signature, :save_signature ]
     after_action :verify_policy_scoped, only: :index
 
     # Step 13: Display contract for review
@@ -28,30 +28,30 @@ module Vendor
       if params[:signature_data].present?
         # Decode base64 signature data
         signature_data = params[:signature_data]
-        signature_data = signature_data.split(',').last if signature_data.include?(',')
+        signature_data = signature_data.split(",").last if signature_data.include?(",")
         decoded_signature = Base64.decode64(signature_data)
 
         # Create a temporary file
-        temp_file = Tempfile.new(['signature', '.png'], encoding: 'ascii-8bit')
+        temp_file = Tempfile.new([ "signature", ".png" ], encoding: "ascii-8bit")
         temp_file.write(decoded_signature)
         temp_file.rewind
 
         # Attach to contract
         if @contract.sign!(temp_file, @contract.loan.customer.full_name)
           # Update loan status if needed (loan should already be active)
-          @contract.loan.update(status: 'active') if @contract.loan.draft?
+          @contract.loan.update(status: "active") if @contract.loan.draft?
 
           redirect_to vendor_contract_path(@contract),
-                      notice: 'Firma guardada exitosamente. Procediendo al siguiente paso.'
+                      notice: "Firma guardada exitosamente. Procediendo al siguiente paso."
         else
-          flash.now[:alert] = 'Error al guardar la firma. Intente nuevamente.'
+          flash.now[:alert] = "Error al guardar la firma. Intente nuevamente."
           render :signature, status: :unprocessable_entity
         end
 
         temp_file.close
         temp_file.unlink
       else
-        flash.now[:alert] = 'No se detectó firma. Por favor, firme en el área designada.'
+        flash.now[:alert] = "No se detectó firma. Por favor, firme en el área designada."
         render :signature, status: :unprocessable_entity
       end
     end
@@ -62,7 +62,7 @@ module Vendor
       # TODO: Implement PDF generation and download
       # For now, redirect to show page
       redirect_to vendor_contract_path(@contract),
-                  alert: 'Descarga de PDF no implementada aún.'
+                  alert: "Descarga de PDF no implementada aún."
     end
 
     private
@@ -77,7 +77,7 @@ module Vendor
         @loan = @contract.loan
       else
         redirect_to vendor_customer_search_path,
-                    alert: 'No se especificó préstamo o contrato.'
+                    alert: "No se especificó préstamo o contrato."
       end
     end
 

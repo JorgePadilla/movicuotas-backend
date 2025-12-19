@@ -3,7 +3,7 @@ module Vendor
   class DeviceSelectionsController < ApplicationController
     before_action :set_credit_application
     before_action :authorize_credit_application
-    before_action :ensure_device_selected, only: [:confirmation]
+    before_action :ensure_device_selected, only: [ :confirmation ]
 
     # Step 10: Catálogo Teléfonos (Device Selection)
     # GET /vendor/device_selection/:credit_application_id

@@ -92,12 +92,12 @@ class LoanFinalizationService
     end
 
     # Validate down payment percentage is allowed (30%, 40%, 50%)
-    unless [30, 40, 50].include?(@loan_attributes[:down_payment_percentage])
+    unless [ 30, 40, 50 ].include?(@loan_attributes[:down_payment_percentage])
       raise LoanFinalizationError, "Porcentaje de enganche inválido. Debe ser 30%, 40% o 50%"
     end
 
     # Validate number of installments is allowed (6, 8, 12)
-    unless [6, 8, 12].include?(@loan_attributes[:number_of_installments])
+    unless [ 6, 8, 12 ].include?(@loan_attributes[:number_of_installments])
       raise LoanFinalizationError, "Número de cuotas inválido. Debe ser 6, 8 o 12"
     end
   end

@@ -16,8 +16,8 @@ module Vendor
     # - contract_id: Signed contract
     # - loan_attributes: Payment calculator results (total_amount, down_payment_percentage, etc.)
 
-    before_action :set_prerequisites, only: [:create]
-    before_action :set_loan, only: [:show, :download_contract]
+    before_action :set_prerequisites, only: [ :create ]
+    before_action :set_loan, only: [ :show, :download_contract ]
 
     # GET /vendor/loans/new
     # This would be the entry point from Step 14 (contract signature)
