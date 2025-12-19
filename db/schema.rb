@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_071322) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_19_034125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,18 +76,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_071322) do
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
     t.string "employment_status"
-    t.string "facial_verification_image_filename"
-    t.string "id_back_image_filename"
-    t.string "id_front_image_filename"
     t.text "notes"
     t.string "rejection_reason"
     t.string "salary_range"
+    t.string "selected_color"
+    t.string "selected_imei"
+    t.bigint "selected_phone_model_id"
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
     t.bigint "vendor_id"
     t.string "verification_method"
     t.index ["application_number"], name: "index_credit_applications_on_application_number", unique: true
     t.index ["customer_id"], name: "index_credit_applications_on_customer_id"
+    t.index ["selected_phone_model_id"], name: "index_credit_applications_on_selected_phone_model_id"
     t.index ["status"], name: "index_credit_applications_on_status"
     t.index ["vendor_id"], name: "index_credit_applications_on_vendor_id"
   end
@@ -266,6 +267,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_071322) do
   add_foreign_key "audit_logs", "users"
   add_foreign_key "contracts", "loans"
   add_foreign_key "credit_applications", "customers"
+  add_foreign_key "credit_applications", "phone_models", column: "selected_phone_model_id"
   add_foreign_key "credit_applications", "users", column: "vendor_id"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"
