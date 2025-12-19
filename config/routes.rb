@@ -50,7 +50,7 @@ Rails.application.routes.draw do
     resource :application_recovery, only: [ :show, :create ], controller: "application_recovery"
 
     # Device selection (Step 10)
-    resources :device_selections, only: [:show, :update], param: :credit_application_id
+    resources :device_selections, only: [ :show, :update ], param: :credit_application_id
     # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
     get "device_selections/:credit_application_id/confirmation", to: "device_selections#confirmation", as: :device_selection_confirmation
 
@@ -60,7 +60,7 @@ Rails.application.routes.draw do
     end
 
     # Contract routes (Steps 13-14)
-    resources :contracts, only: [:show] do
+    resources :contracts, only: [ :show ] do
       member do
         get :signature
         post :save_signature
@@ -69,13 +69,13 @@ Rails.application.routes.draw do
     end
 
     # Loan finalization (Step 15)
-    resources :loans, only: [:new, :create, :show] do
+    resources :loans, only: [ :new, :create, :show ] do
       member do
         get :download_contract
       end
     end
     # MDM Blueprint (Step 16) - placeholder for now
-    resources :mdm_blueprints, only: [:show], param: :id
+    resources :mdm_blueprints, only: [ :show ], param: :id
 
     # ... other vendor routes will be added in phase2-vendor-* branches
   end

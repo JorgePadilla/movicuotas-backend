@@ -179,7 +179,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       current_user: @vendedor
     )
 
-    assert_difference ["Loan.count", "Installment.count"], 1 do
+    assert_difference [ "Loan.count", "Installment.count" ], 1 do
       # Loan count increases by 1, Installment count increases by number_of_installments
       # Actually installment count increases by 6, but assert_difference with specific number
       # We'll handle separately
