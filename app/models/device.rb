@@ -1,6 +1,6 @@
 class Device < ApplicationRecord
   # Associations
-  belongs_to :loan
+  belongs_to :loan, optional: true
   belongs_to :phone_model
   belongs_to :locked_by, class_name: "User", optional: true
   has_one :mdm_blueprint, dependent: :destroy

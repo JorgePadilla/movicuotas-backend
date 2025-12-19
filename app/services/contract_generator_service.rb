@@ -12,7 +12,7 @@ class ContractGeneratorService
   # Generate HTML contract content
   def generate_html
     ApplicationController.render(
-      template: 'vendor/contracts/_contract_content',
+      template: "vendor/contracts/_contract_content",
       layout: false,
       locals: {
         contract: @contract,
@@ -69,14 +69,14 @@ class ContractGeneratorService
   # Style for installment status
   def installment_status_style(status)
     case status
-    when 'paid'
-      'color: #10b981; font-weight: bold;'
-    when 'overdue'
-      'color: #ef4444; font-weight: bold;'
-    when 'pending'
-      'color: #f59e0b; font-weight: bold;'
+    when "paid"
+      "color: #10b981; font-weight: bold;"
+    when "overdue"
+      "color: #ef4444; font-weight: bold;"
+    when "pending"
+      "color: #f59e0b; font-weight: bold;"
     else
-      'color: #6b7280;'
+      "color: #6b7280;"
     end
   end
 end

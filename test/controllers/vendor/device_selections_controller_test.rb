@@ -2,7 +2,6 @@ require "test_helper"
 
 module Vendor
   class DeviceSelectionsControllerTest < ActionDispatch::IntegrationTest
-
     setup do
       # Use seeded data
       @vendor = User.find_by(email: "vendedor@movicuotas.com")
