@@ -5,7 +5,7 @@ module Vendor
     skip_after_action :verify_policy_scoped, only: :index
 
     def index
-      authorize :dashboard
+      authorize nil, policy_class: Vendor::DashboardPolicy
 
       # Customer statistics
       @total_customers = customers_scope.count
@@ -66,6 +66,12 @@ module Vendor
 
     def devices_scope
       Device.joins(:loan).where(loans: { id: loans_scope.select(:id) })
+    end
+
+    private
+
+    def pundit_policy_class
+      Vendor::DashboardPolicy
     end
   end
 end
