@@ -74,7 +74,7 @@ class CreditApprovalService
 
     salary_ranges = CreditApplication.salary_ranges.keys
     current_index = salary_ranges.index(current_key)
-    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE)
+    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE.to_s)  # Convert symbol to string
 
     current_index && minimum_index && current_index >= minimum_index
   end
@@ -116,15 +116,18 @@ class CreditApprovalService
     @credit_application.approve!(approved_amount, @evaluator)
 
     # Log approval
-    AuditLog.create!(
-      user: @evaluator,
-      action: "credit_application_auto_approved",
-      resource: @credit_application,
-      changes: {
-        status: [ "pending", "approved" ],
-        approved_amount: [ nil, approved_amount ]
-      }
-    ) if @evaluator.nil?  # Only log if auto-approved (no human evaluator)
+    if @evaluator.nil?
+      AuditLog.create!(
+        user_id: nil,
+        action: "credit_application_auto_approved",
+        resource_type: "CreditApplication",
+        resource_id: @credit_application.id,
+        change_details: {
+          status: [ "pending", "approved" ],
+          approved_amount: [ nil, approved_amount ]
+        }
+      )
+    end
 
     { approved: true, amount: approved_amount }
   end
@@ -135,15 +138,18 @@ class CreditApprovalService
     @credit_application.reject!(rejection_reason, @evaluator)
 
     # Log rejection
-    AuditLog.create!(
-      user: @evaluator,
-      action: "credit_application_auto_rejected",
-      resource: @credit_application,
-      changes: {
-        status: [ "pending", "rejected" ],
-        rejection_reason: [ nil, rejection_reason ]
-      }
-    ) if @evaluator.nil?
+    if @evaluator.nil?
+      AuditLog.create!(
+        user_id: nil,
+        action: "credit_application_auto_rejected",
+        resource_type: "CreditApplication",
+        resource_id: @credit_application.id,
+        change_details: {
+          status: [ "pending", "rejected" ],
+          rejection_reason: [ nil, rejection_reason ]
+        }
+      )
+    end
 
     { approved: false, reason: rejection_reason }
   end
@@ -151,10 +157,10 @@ class CreditApprovalService
   def calculate_approved_amount
     # Get the enum key (symbol) from the stored string value
     range_key = CreditApplication.salary_ranges.key(@credit_application.salary_range)&.to_sym
-    amount_range = APPROVED_AMOUNT_RANGES[range_key] || 5000..10000
+    amount_range = APPROVED_AMOUNT_RANGES[range_key] || (5000..10000)
 
     # Random amount within range (in real system, would be based on credit score)
-    rand(amount_range)
+    rand(amount_range.begin..amount_range.end)
   end
 
   def select_rejection_reason
