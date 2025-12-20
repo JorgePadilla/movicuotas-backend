@@ -31,6 +31,7 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+    get "dashboard", to: "dashboard#index"  # Dashboard accessible from navigation menu
 
     # Credit Application Workflow (Steps 4-9)
     resources :credit_applications, only: [ :new, :create, :show, :edit, :update ] do
@@ -76,7 +77,6 @@ Rails.application.routes.draw do
     end
     # MDM Blueprint (Step 16) - placeholder for now
     resources :mdm_blueprints, only: [ :show ], param: :id
-
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
