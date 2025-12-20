@@ -77,6 +77,7 @@ Rails.application.routes.draw do
     end
     # MDM Blueprint (Step 16) - placeholder for now
     resources :mdm_blueprints, only: [ :show ], param: :id
+
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
