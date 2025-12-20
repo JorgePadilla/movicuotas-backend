@@ -68,10 +68,13 @@ class CreditApprovalService
   end
 
   def valid_salary_range?
-    # Convert salary_range to comparable value
+    # Get the enum key for current salary range
+    current_key = CreditApplication.salary_ranges.key(@credit_application.salary_range)
+    return false unless current_key
+
     salary_ranges = CreditApplication.salary_ranges.keys
-    current_index = salary_ranges.index(@credit_application.salary_range.to_s)
-    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE.to_s)
+    current_index = salary_ranges.index(current_key)
+    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE)
 
     current_index && minimum_index && current_index >= minimum_index
   end
@@ -87,9 +90,9 @@ class CreditApprovalService
     # Adjust based on salary range (higher salary = higher probability)
     salary_factor = case @credit_application.salary_range
     when "less_than_10000" then 0.7
-    when "range_10000_20000" then 0.8
-    when "range_20000_30000" then 0.9
-    when "range_30000_40000" then 0.95
+    when "10000_20000" then 0.8
+    when "20000_30000" then 0.9
+    when "30000_40000" then 0.95
     when "more_than_40000" then 1.0
     else 0.8
     end
@@ -146,7 +149,8 @@ class CreditApprovalService
   end
 
   def calculate_approved_amount
-    range_key = @credit_application.salary_range.to_sym
+    # Get the enum key (symbol) from the stored string value
+    range_key = CreditApplication.salary_ranges.key(@credit_application.salary_range)&.to_sym
     amount_range = APPROVED_AMOUNT_RANGES[range_key] || 5000..10000
 
     # Random amount within range (in real system, would be based on credit score)
