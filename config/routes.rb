@@ -31,6 +31,7 @@ Rails.application.routes.draw do
 
   namespace :vendor do
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
+    get "dashboard", to: "dashboard#index"  # Dashboard accessible from navigation menu
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 

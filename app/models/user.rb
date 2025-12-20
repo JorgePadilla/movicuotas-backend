@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
-
+  has_many :loans, dependent: :restrict_with_error
 
   # Permission helpers
   def can_create_loans?

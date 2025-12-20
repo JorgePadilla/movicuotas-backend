@@ -1,0 +1,166 @@
+<% content_for :title, "Dashboard - Vendedor" %>
+
+<div class="w-full">
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Dashboard de Vendedor</h1>
+    <p class="text-gray-600 mt-2">Resumen de tus actividades y estadísticas</p>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="mb-8 flex flex-wrap gap-4">
+    <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Ver Todos los Préstamos", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Ver Pagos Recientes", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+  </div>
+
+  <!-- Metrics grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Customers card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">👥 Clientes</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @total_customers %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Activos</span>
+          <span class="font-medium text-green-600"><%= @active_customers %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Suspendidos</span>
+          <span class="font-medium text-orange-500"><%= @suspended_customers %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Bloqueados</span>
+          <span class="font-medium text-red-600"><%= @blocked_customers %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Devices card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">📱 Dispositivos</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @assigned_devices %></div>
+      </div>
+      <p class="text-gray-600 text-sm">Asignados a préstamos activos</p>
+    </div>
+
+    <!-- Loans card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">💰 Préstamos</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @active_loans %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Valor total</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@total_loan_value, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Promedio</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@average_loan_amount, delimiter: ',') %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">💳 Pagos</h3>
+        <div class="text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@payments_this_month, delimiter: ',') %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">En mora</span>
+          <span class="font-medium text-red-600"><%= @overdue_installments %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Monto mora</span>
+          <span class="font-medium text-red-600">L. <%= number_with_delimiter(@overdue_amount, delimiter: ',') %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-column layout for tables -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent payments table -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-[#125282]">Pagos Recientes</h3>
+        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <% if @recent_payments.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @recent_payments.each do |payment| %>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= payment.payment_date.strftime("%d/%m/%Y") %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= payment.loan.customer.full_name %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"><%= payment.payment_method.titleize %></span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-8">No hay pagos recientes</p>
+      <% end %>
+    </div>
+
+    <!-- Upcoming due dates -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-[#125282]">Próximos Vencimientos</h3>
+        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <% if @upcoming_installments.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Días</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @upcoming_installments.each do |installment| %>
+                <% days_until = (installment.due_date - Date.today).to_i %>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= installment.loan.customer.full_name %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= installment.due_date.strftime("%d/%m/%Y") %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_with_delimiter(installment.amount, delimiter: ',') %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <% if days_until <= 3 %>
+                      <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">En <%= days_until %> días</span>
+                    <% else %>
+                      <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">En <%= days_until %> días</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-8">No hay vencimientos próximos</p>
+      <% end %>
+    </div>
+  </div>
+</div>

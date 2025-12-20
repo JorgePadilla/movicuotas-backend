@@ -99,6 +99,21 @@
                 <%= current_user.role.titleize %>
               </span>
             </div>
+
+            <% if current_user.vendedor? || current_user.admin? %>
+              <div class="pt-3 border-t border-white/10">
+                <h4 class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">Navegación</h4>
+                <div class="space-y-1">
+                  <%= link_to "📊 Dashboard", vendor_dashboard_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                  <%= link_to "🔍 Buscar Cliente", vendor_customer_search_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                  <%= link_to "👥 Clientes", "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                  <%= link_to "💰 Préstamos", "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                  <%= link_to "💳 Pagos", "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                  <%= link_to "📋 Reportes", "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
+                </div>
+              </div>
+            <% end %>
+
             <div class="pt-3 border-t border-white/10">
               <%= link_to "Cerrar Sesión", logout_path, method: :delete, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors" %>
             </div>
@@ -108,7 +123,26 @@
     </header>
 
     <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
+      <% if current_user && (current_user.vendedor? || current_user.admin?) %>
+        <!-- Desktop sidebar -->
+        <div class="hidden md:block w-64 mr-8">
+          <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 sticky top-32">
+            <h3 class="text-lg font-semibold text-[#125282] mb-4">Navegación</h3>
+            <nav class="space-y-2">
+              <%= link_to "📊 Dashboard", vendor_dashboard_path, class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors #{current_page?(vendor_dashboard_path) ? 'bg-[#125282] text-white' : 'text-gray-700'}" %>
+              <%= link_to "🔍 Buscar Cliente", vendor_customer_search_path, class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors #{current_page?(vendor_customer_search_path) ? 'bg-[#125282] text-white' : 'text-gray-700'}" %>
+              <%= link_to "👥 Clientes", "#", class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors text-gray-700" %>
+              <%= link_to "💰 Préstamos", "#", class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors text-gray-700" %>
+              <%= link_to "💳 Pagos", "#", class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors text-gray-700" %>
+              <%= link_to "📋 Reportes", "#", class: "block px-4 py-3 rounded-lg hover:bg-[#125282] hover:text-white transition-colors text-gray-700" %>
+            </nav>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="flex-1">
+        <%= yield %>
+      </div>
     </main>
 
     <script>
