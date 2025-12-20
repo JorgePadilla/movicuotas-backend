@@ -32,7 +32,127 @@
     <% end %>
   </div>
 
-  <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+  <%# Search Results Section %>
+  <% if @step.present? && @step != :initial %>
+    <div class="mt-8">
+      <% if @step == :blocked %>
+        <%# Step 3a: Cliente Bloqueado %>
+        <div class="bg-white border-l-4 border-[#ef4444] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#ef4444]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#ef4444]">Cliente Bloqueado</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+
+              <% if @customer && @active_loan %>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Información del Cliente</h4>
+                    <p class="text-sm text-gray-600">Nombre: <span class="font-medium"><%= @customer.full_name %></span></p>
+                    <p class="text-sm text-gray-600">Identidad: <span class="font-medium"><%= @customer.identification_number %></span></p>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Crédito Activo</h4>
+                    <p class="text-sm text-gray-600">Contrato: <span class="font-medium"><%= @active_loan.contract_number %></span></p>
+                    <p class="text-sm text-gray-600">Sucursal: <span class="font-medium"><%= @active_loan.branch_number %></span></p>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="mt-6">
+                <%= link_to "← Nueva Búsqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% elsif @step == :available %>
+        <%# Step 3b: Cliente Disponible %>
+        <div class="bg-white border-l-4 border-[#10b981] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#10b981]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#10b981]">Cliente Disponible</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+              <div class="mt-3 flex items-center text-sm text-gray-600">
+                <svg class="h-5 w-5 text-[#10b981] mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">✓ Sin créditos activos en todo el sistema</span>
+              </div>
+
+              <% if @customer %>
+                <div class="mt-4">
+                  <h4 class="font-semibold text-gray-900">Información del Cliente</h4>
+                  <p class="text-sm text-gray-600">Nombre: <span class="font-medium"><%= @customer.full_name %></span></p>
+                  <p class="text-sm text-gray-600">Identidad: <span class="font-medium"><%= @customer.identification_number %></span></p>
+                  <p class="text-sm text-gray-600">Teléfono: <span class="font-medium"><%= @customer.phone %></span></p>
+                </div>
+              <% end %>
+
+              <div class="mt-6">
+                <%= link_to "Iniciar Solicitud →", new_vendor_credit_application_path(customer_id: @customer.id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "ml-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% elsif @step == :not_found %>
+        <%# Customer Not Found - Can Start New Application %>
+        <div class="bg-white border-l-4 border-[#10b981] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#10b981]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#10b981]">Cliente no encontrado, se puede iniciar nueva solicitud</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+              <p class="mt-2 text-sm text-gray-600">Búsqueda realizada: <span class="font-medium"><%= @search_query %></span></p>
+
+              <div class="mt-6 flex space-x-4">
+                <%= link_to "Intentar de nuevo", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+                <%= link_to "Registrar Cliente y Iniciar Solicitud →", new_vendor_credit_application_path(identification_number: @clean_id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% elsif @step == :invalid %>
+        <%# Invalid Identification Number %>
+        <div class="bg-white border-l-4 border-[#f59e0b] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#f59e0b]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#f59e0b]">Número de Identidad Inválido</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+              <p class="mt-2 text-sm text-gray-600">Formato esperado: 13 dígitos (ej: 0801199012345)</p>
+
+              <div class="mt-6">
+                <%= link_to "Intentar de nuevo", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-8">
     <h3 class="text-lg font-medium text-gray-900 mb-3">Información importante</h3>
     <ul class="space-y-3 text-gray-700">
       <li class="flex items-start">
@@ -60,9 +180,5 @@
         <span>Desde el menú de navegación puedes acceder al <strong>Dashboard</strong> y otras funciones.</span>
       </li>
     </ul>
-  </div>
-
-  <div class="mt-8 text-center text-sm text-gray-500">
-    <p>Esta funcionalidad será implementada completamente en <strong>Phase 2: Vendor Workflow</strong>.</p>
   </div>
 </div>

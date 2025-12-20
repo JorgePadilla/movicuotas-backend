@@ -30,6 +30,15 @@ admin = User.find_or_create_by!(email: 'admin@movicuotas.com') do |user|
   user.active = true
 end
 
+# Admin user with specified credentials
+admin_jorge = User.find_or_create_by!(email: 'jorgep4dill4@gmail.com') do |user|
+  user.full_name = 'Jorge Padilla'
+  user.password = 'Honduras1!'
+  user.role = 'admin'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
 vendedor = User.find_or_create_by!(email: 'vendedor@movicuotas.com') do |user|
   user.full_name = 'Vendedor Ejemplo'
   user.password = 'password123'
@@ -42,6 +51,15 @@ cobrador = User.find_or_create_by!(email: 'cobrador@movicuotas.com') do |user|
   user.full_name = 'Cobrador Ejemplo'
   user.password = 'password123'
   user.role = 'cobrador'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
+# New admin user with movicuotas email
+movicuotas_admin = User.find_or_create_by!(email: 'movicuotas@gmail.com') do |user|
+  user.full_name = 'MOVICUOTAS Admin'
+  user.password = 'Honduras123!'
+  user.role = 'admin'
   user.branch_number = 'S01'
   user.active = true
 end

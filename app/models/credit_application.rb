@@ -2,9 +2,12 @@ class CreditApplication < ApplicationRecord
   # Associations
   belongs_to :customer
   belongs_to :vendor, class_name: "User", optional: true
+  belongs_to :selected_phone_model, class_name: "PhoneModel", optional: true
   has_one_attached :id_front_image
   has_one_attached :id_back_image
   has_one_attached :facial_verification_image
+
+  accepts_nested_attributes_for :customer
 
   # Enums
   enum :employment_status, { employed: "employed", self_employed: "self_employed", unemployed: "unemployed", student: "student", retired: "retired" }, prefix: true
@@ -17,6 +20,8 @@ class CreditApplication < ApplicationRecord
   validates :employment_status, inclusion: { in: CreditApplication.employment_statuses.keys }, allow_blank: true
   validates :salary_range, inclusion: { in: CreditApplication.salary_ranges.keys }, allow_blank: true
   validates :verification_method, inclusion: { in: CreditApplication.verification_methods.keys }, allow_blank: true
+  validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, length: { is: 15 }, allow_blank: true
+  validate :selected_phone_price_within_approved_amount, if: -> { selected_phone_model_id.present? && approved? }
 
   # Enums
   enum :status, { pending: "pending", approved: "approved", rejected: "rejected" }, default: "pending"
@@ -69,6 +74,14 @@ class CreditApplication < ApplicationRecord
   def approved_amount_present_if_approved
     if approved? && approved_amount.blank?
       errors.add(:approved_amount, "debe estar presente cuando la solicitud está aprobada")
+    end
+  end
+
+  def selected_phone_price_within_approved_amount
+    return unless selected_phone_model_id.present? && approved_amount.present?
+
+    if selected_phone_model.price > approved_amount
+      errors.add(:selected_phone_model_id, "el precio del teléfono (#{selected_phone_model.price}) excede el monto aprobado (#{approved_amount})")
     end
   end
 

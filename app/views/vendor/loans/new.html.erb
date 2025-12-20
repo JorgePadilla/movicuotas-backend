@@ -1,0 +1,138 @@
+<%# Step 15: Loan Finalization Confirmation %>
+<%# This view is displayed before finalizing the loan creation %>
+<%# It shows all collected data and allows the vendor to confirm %>
+
+<div class="min-h-screen bg-gray-50 py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-3xl">
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6" style="color: #125282;">
+          Confirmación de Crédito
+        </h1>
+
+        <p class="text-gray-600 mb-8">
+          Revise la información del crédito antes de finalizar. Una vez aplicado, no podrá ser modificado.
+        </p>
+
+        <%# Credit Application Summary %>
+        <div class="mb-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Solicitud de Crédito</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Número de Solicitud</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @credit_application.application_number %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Cliente</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @credit_application.customer.full_name %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Monto Aprobado</dt>
+              <dd class="mt-1 text-sm text-gray-900">L. <%= number_to_currency(@credit_application.approved_amount, unit: "", delimiter: ",") %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Estado</dt>
+              <dd class="mt-1">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <%= @credit_application.status %>
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <%# Device Summary %>
+        <div class="mb-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Dispositivo Seleccionado</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Marca y Modelo</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @device.brand %> <%= @device.model %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">IMEI</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @device.imei %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Color</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @device.color %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Precio</dt>
+              <dd class="mt-1 text-sm text-gray-900">L. <%= number_to_currency(@device.phone_model.price, unit: "", delimiter: ",") %></dd>
+            </div>
+          </dl>
+        </div>
+
+        <%# Contract Summary %>
+        <div class="mb-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Contrato</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Fecha de Firma</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @contract.signed_at&.strftime("%d/%m/%Y %H:%M") || "Pendiente" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Firmado por</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @contract.signed_by_name %></dd>
+            </div>
+          </dl>
+        </div>
+
+        <%# Loan Terms Summary %>
+        <div class="mb-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Términos del Crédito</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% if @loan_attributes.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Monto Total</dt>
+                <dd class="mt-1 text-sm text-gray-900">L. <%= number_to_currency(@loan_attributes[:total_amount], unit: "", delimiter: ",") %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Porcentaje de Enganche</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @loan_attributes[:down_payment_percentage] %>%</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Número de Cuotas</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @loan_attributes[:number_of_installments] %> quincenales</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Tasa de Interés Anual</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @loan_attributes[:interest_rate] %>%</dd>
+              </div>
+            <% else %>
+              <div class="col-span-2">
+                <p class="text-sm text-gray-500">No se han definido términos de crédito. Complete la calculadora de pagos primero.</p>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+
+        <%# Finalization Form %>
+        <div class="mt-10 border-t border-gray-200 pt-8">
+          <%= form_with(url: vendor_loans_path, method: :post, class: "space-y-6") do |f| %>
+            <%= hidden_field_tag :credit_application_id, @credit_application.id %>
+            <%= hidden_field_tag :device_id, @device.id %>
+            <%= hidden_field_tag :contract_id, @contract.id %>
+
+            <% if @loan_attributes.present? %>
+              <%= hidden_field_tag "loan[total_amount]", @loan_attributes[:total_amount] %>
+              <%= hidden_field_tag "loan[down_payment_percentage]", @loan_attributes[:down_payment_percentage] %>
+              <%= hidden_field_tag "loan[number_of_installments]", @loan_attributes[:number_of_installments] %>
+              <%= hidden_field_tag "loan[interest_rate]", @loan_attributes[:interest_rate] %>
+            <% end %>
+
+            <div class="flex justify-end space-x-4">
+              <%= link_to "Cancelar", vendor_customer_search_path,
+                          class: "px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+
+              <%= f.submit "Aplicar Crédito",
+                           class: "px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                           style: "background-color: #125282;" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
