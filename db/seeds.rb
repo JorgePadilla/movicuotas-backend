@@ -7,16 +7,20 @@ if Rails.env.development? || Rails.env.test?
   # Clear existing data (optional - comment out if you want to preserve data)
   puts "Clearing existing data..."
   # Uncomment the following lines to clear data before seeding
-  # PaymentInstallment.delete_all
-  # Payment.delete_all
-  # Installment.delete_all
-  # Loan.delete_all
-  # Device.delete_all
-  # Contract.delete_all
-  # CreditApplication.delete_all
-  # Customer.delete_all
-  # PhoneModel.delete_all
-  # User.delete_all
+  PaymentInstallment.delete_all
+  Payment.delete_all
+  Installment.delete_all
+  MdmBlueprint.delete_all
+  Device.delete_all
+  Contract.delete_all
+  Notification.delete_all
+  Loan.delete_all
+  CreditApplication.delete_all
+  Customer.delete_all
+  PhoneModel.delete_all
+  AuditLog.delete_all
+  Session.delete_all
+  User.delete_all
 
   puts "Seeding data..."
 
@@ -122,38 +126,38 @@ end
 puts "Creating customers..."
 customers = [
   {
-    identification_number: '0801-1990-12345',
+    identification_number: '0801199012345',
     full_name: 'Juan Pérez García',
     gender: 'male',
     date_of_birth: Date.new(1990, 5, 15),
     address: 'Colonia Los Robles, Tegucigalpa',
     city: 'Tegucigalpa',
     department: 'Francisco Morazán',
-    phone: '+504 9876-5432',
+    phone: '98765432',
     email: 'juan.perez@example.com',
     status: 'active'
   },
   {
-    identification_number: '0801-1985-67890',
+    identification_number: '0801198567890',
     full_name: 'María Rodríguez López',
     gender: 'female',
     date_of_birth: Date.new(1985, 8, 22),
     address: 'Residencial Valle Verde, San Pedro Sula',
     city: 'San Pedro Sula',
     department: 'Cortés',
-    phone: '+504 8765-4321',
+    phone: '87654321',
     email: 'maria.rodriguez@example.com',
     status: 'active'
   },
   {
-    identification_number: '0801-1995-54321',
+    identification_number: '0801199554321',
     full_name: 'Carlos Hernández Martínez',
     gender: 'male',
     date_of_birth: Date.new(1995, 3, 10),
     address: 'Barrio Abajo, La Ceiba',
     city: 'La Ceiba',
     department: 'Atlántida',
-    phone: '+504 7654-3210',
+    phone: '76543210',
     email: 'carlos.hernandez@example.com',
     status: 'active'
   }
@@ -193,6 +197,7 @@ puts "Creating loan..."
 if customer
   loan = Loan.find_or_create_by!(contract_number: 'S01-2025-12-16-000001') do |l|
     l.customer = customer
+    l.user = vendedor
     l.branch_number = 'S01'
     l.status = 'active'
     l.total_amount = 22_000.00
