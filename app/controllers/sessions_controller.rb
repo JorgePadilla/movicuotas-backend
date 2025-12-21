@@ -17,11 +17,13 @@ class SessionsController < ApplicationController
       raise
     end
 
-    user = User.find_by(email: params[:email])
+    email = params[:email]&.strip
+    password = params[:password]&.strip
+    user = email.present? ? User.where('email ILIKE ?', email).first : nil
     Rails.logger.info "SessionsController#create - User found: #{user.present?}, user id: #{user&.id}"
-    Rails.logger.info "SessionsController#create - Password param present: #{params[:password].present?}, length: #{params[:password]&.length}"
+    Rails.logger.info "SessionsController#create - Password param present: #{password.present?}, length: #{password&.length}"
 
-    if user&.authenticate(params[:password])
+    if user&.authenticate(password)
       Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
       session = user.sessions.create!
       cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
