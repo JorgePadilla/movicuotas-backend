@@ -9,7 +9,7 @@
     <div>
       <% status_color = @credit_application.approved? ? "bg-green-100 text-green-800" : @credit_application.rejected? ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800" %>
       <span class="px-4 py-2 rounded-full text-sm font-semibold <%= status_color %>">
-        <%= @credit_application.status.humanize %>
+        <%= @credit_application.human_enum_name(:status) %>
       </span>
     </div>
   </div>
@@ -38,7 +38,7 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Género</p>
-            <p class="font-medium"><%= @credit_application.customer.gender.humanize %></p>
+            <p class="font-medium"><%= @credit_application.customer.human_enum_name(:gender) %></p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Teléfono</p>
@@ -61,7 +61,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p class="text-sm text-gray-500">Situación Laboral</p>
-            <p class="font-medium"><%= @credit_application.employment_status.humanize %></p>
+            <p class="font-medium"><%= @credit_application.human_enum_name(:employment_status) %></p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Rango Salarial Mensual</p>
@@ -84,7 +84,7 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Método de Verificación</p>
-            <p class="font-medium"><%= @credit_application.verification_method.humanize %></p>
+            <p class="font-medium"><%= @credit_application.human_enum_name(:verification_method) %></p>
           </div>
         </div>
       </div>

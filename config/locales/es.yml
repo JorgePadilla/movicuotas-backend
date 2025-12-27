@@ -1,0 +1,52 @@
+# Archivo de localización en español para MOVICUOTAS
+# Traducciones para enums y atributos
+
+es:
+  activerecord:
+    attributes:
+      customer:
+        gender: "Género"
+        status: "Estado"
+      credit_application:
+        employment_status: "Situación Laboral"
+        salary_range: "Rango Salarial"
+        verification_method: "Método de Verificación"
+        status: "Estado"
+      user:
+        role: "Rol"
+    enums:
+      customer:
+        gender:
+          male: "Masculino"
+          female: "Femenino"
+          other: "Otro"
+        status:
+          active: "Activo"
+          suspended: "Suspendido"
+          blocked: "Bloqueado"
+      credit_application:
+        employment_status:
+          employed: "Empleado"
+          self_employed: "Autoempleado"
+          unemployed: "Desempleado"
+          student: "Estudiante"
+          retired: "Jubilado"
+        salary_range:
+          less_than_10000: "Menos de L. 10,000"
+          range_10000_20000: "L. 10,000 - L. 20,000"
+          range_20000_30000: "L. 20,000 - L. 30,000"
+          range_30000_40000: "L. 30,000 - L. 40,000"
+          more_than_40000: "Más de L. 40,000"
+        verification_method:
+          sms: "SMS"
+          whatsapp: "WhatsApp"
+          email: "Correo Electrónico"
+        status:
+          pending: "Pendiente"
+          approved: "Aprobado"
+          rejected: "Rechazado"
+      user:
+        role:
+          admin: "Administrador"
+          vendedor: "Vendedor"
+          cobrador: "Cobrador"

@@ -41,7 +41,7 @@
                     class: "h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]",
                     required: true %>
               <span class="ml-3 text-sm font-medium text-gray-900">
-                <%= status.humanize %>
+                <%= CreditApplication.human_enum_name(:employment_status, status) %>
               </span>
             </label>
           <% end %>
