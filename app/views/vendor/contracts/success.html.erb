@@ -1,0 +1,127 @@
+<% content_for :title, "¡Crédito Aplicado! - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# Progress Indicator %>
+  <div class="mb-12">
+    <div class="flex items-center justify-center">
+      <div class="flex items-center">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#125282] text-white font-bold">
+          15
+        </div>
+        <div class="w-24 h-1 bg-[#125282]"></div>
+      </div>
+      <div class="text-sm font-medium text-[#125282] ml-3">Paso 15 de 18: Crédito Aplicado</div>
+    </div>
+  </div>
+
+  <%# Success Card %>
+  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-green-500">
+    <div class="bg-gradient-to-r from-green-500 to-green-600 p-8 text-center">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-6">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-white mb-4">¡Crédito Aplicado!</h1>
+      <p class="text-xl text-green-100 mb-2">Felicidades. Estás a unos pasos de disfrutar de tu nueva compra.</p>
+      <p class="text-green-100">El contrato ha sido firmado y el crédito está ahora activo.</p>
+    </div>
+
+    <div class="p-8">
+      <%# Contract Summary %>
+      <div class="bg-gray-50 rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Resumen del Crédito</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Cliente</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
+            <p class="text-gray-600"><%= @customer.identification_number %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Contrato</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
+            <p class="text-gray-600">Firmado: <%= l(@contract.signed_at, format: :long) if @contract.signed_at %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Dispositivo</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
+            <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Próximo Pago</p>
+            <p class="text-lg font-semibold text-[#125282]">
+              <% next_installment = @loan.next_installment %>
+              <% if next_installment %>
+                L. <%= number_with_delimiter(next_installment.amount.round(2), delimiter: ",") %>
+                <span class="block text-sm font-normal text-gray-600">
+                  <%= l(next_installment.due_date, format: :long) %>
+                </span>
+              <% else %>
+                <span class="text-gray-500">No hay pagos pendientes</span>
+              <% end %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%# Action Buttons %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <%# Download Contract Button %>
+        <%= link_to download_vendor_contract_path(@contract),
+                    class: "group flex flex-col items-center justify-center p-8 bg-[#125282] hover:bg-[#0f4670] rounded-xl transition-colors duration-200 text-white text-center" do %>
+          <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <h3 class="text-xl font-bold mb-2">Descargar Contrato</h3>
+          <p class="text-blue-100">Guarda una copia del contrato firmado en tu dispositivo.</p>
+        <% end %>
+
+        <%# Proceed to Device Configuration Button %>
+        <%= link_to "#",
+                    class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center" do %>
+          <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+          <h3 class="text-xl font-bold mb-2">Proceder a Configuración de Teléfono</h3>
+          <p class="text-indigo-100">Continúa con la configuración del dispositivo del cliente.</p>
+          <span class="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/20">
+            Paso 16: Código QR
+          </span>
+        <% end %>
+      </div>
+
+      <%# Important Notes %>
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">Recordatorios importantes</h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <li>El cliente debe escanear el código QR en el siguiente paso para configurar el dispositivo.</li>
+                <li>Verifica que la aplicación MDM esté instalada y funcionando antes de entregar el teléfono.</li>
+                <li>Recuerda al cliente las fechas de pago quincenales para evitar mora.</li>
+                <li>Guarda una copia del contrato firmado para tus registros.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Navigation %>
+      <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200">
+        <div>
+          <%= link_to "← Volver al contrato", vendor_contract_path(@contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <%= link_to "Nueva Búsqueda de Cliente", vendor_customer_search_path,
+                      class: "bg-gray-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
