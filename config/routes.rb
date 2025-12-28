@@ -38,6 +38,7 @@ Rails.application.routes.draw do
         get :signature
         post :save_signature
         get :download
+        get :success  # Step 15: Success confirmation after signature
       end
     end
 

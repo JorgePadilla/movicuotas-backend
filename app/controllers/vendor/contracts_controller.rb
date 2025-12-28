@@ -41,8 +41,8 @@ module Vendor
           # Update loan status if needed (loan should already be active)
           @contract.loan.update(status: 'active') if @contract.loan.draft?
 
-          redirect_to vendor_contract_path(@contract),
-                      notice: 'Firma guardada exitosamente. Procediendo al siguiente paso.'
+          redirect_to success_vendor_contract_path(@contract),
+                      notice: 'Firma guardada exitosamente. ¡Crédito aplicado!'
         else
           flash.now[:alert] = 'Error al guardar la firma. Intente nuevamente.'
           render :signature, status: :unprocessable_entity
@@ -59,10 +59,30 @@ module Vendor
     # Download contract as PDF (optional feature)
     def download
       authorize @contract
-      # TODO: Implement PDF generation and download
-      # For now, redirect to show page
-      redirect_to vendor_contract_path(@contract),
-                  alert: 'Descarga de PDF no implementada aún.'
+
+      begin
+        service = ContractGeneratorService.new(@contract)
+        pdf_data = service.generate_pdf
+
+        filename = "contrato-#{@loan.contract_number}.pdf"
+
+        send_data pdf_data,
+                  filename: filename,
+                  type: 'application/pdf',
+                  disposition: 'attachment'
+      rescue StandardError => e
+        Rails.logger.error "PDF generation failed: #{e.message}"
+        flash[:alert] = 'Error al generar el PDF. Por favor, intente nuevamente.'
+        redirect_to vendor_contract_path(@contract)
+      end
+    end
+
+    # Step 15: Success confirmation after signature
+    def success
+      authorize @contract
+      @loan = @contract.loan
+      @customer = @loan.customer
+      @device = @loan.device
     end
 
     private
