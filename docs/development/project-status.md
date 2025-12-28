@@ -1,6 +1,6 @@
 ## Project Status
 
-**Phase 1:** Database schema + basic CRUD (In Progress)
+**Phase 2:** Vendor Workflow Implementation (In Progress)
 
 **Current Milestone:** Vendor Workflow Implementation (18 Screens)
 
@@ -29,15 +29,19 @@ Pantalla 18: Tracking de Préstamo
 ```
 
 **Next Milestones:**
-- [ ] Implement customer search as main screen (Step 2)
-- [ ] Implement customer verification across all stores
-- [ ] Add age calculation and validation
-- [ ] ✅ Remove all accessories references (COMPLETED v1.2)
+- [x] Implement customer search as main screen (Step 2) - Routing & UI complete, validation in progress
+- [x] Implement customer verification across all stores - Basic logic implemented
+- [ ] Add age calculation and validation (Step 4)
 - [ ] Hide approved_amount in vendor frontend (Step 8b, 9)
-- [ ] ✅ Build loan tracking dashboard (Step 18) (COMPLETED 2025-12-28)
+- [x] Build loan tracking dashboard (Step 18) (COMPLETED 2025-12-28)
+- [x] Build navigation menu with Dashboard access (COMPLETED)
 - [ ] Complete payment tracking system
-- [ ] Build navigation menu with Dashboard access
 - [ ] Implement 18-screen vendor workflow
+
+**Recent Changes (v1.6 - 2025-12-28):**
+- ✅ Fix loan status filter on vendor loans dashboard
+- ✅ Set vendor root to Customer Search (Step 2 main screen)
+- ✅ Update project documentation to current phase status
 
 **Recent Changes (v1.5 - 2025-12-28):**
 - ✅ Complete contract & digital signature implementation (Steps 13-14)
