@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   end
 
   namespace :vendor do
+    root to: "customer_search#index"  # Main screen after login
     get "customer_search", to: "customer_search#index", as: :customer_search  # Main screen for vendors
     get "dashboard", to: "dashboard#index", as: :dashboard
 
