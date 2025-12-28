@@ -69,10 +69,20 @@ module Vendor
       end
     end
 
+    # GET /vendor/loans
+    # Step 18: Loan Tracking Dashboard - List all loans for tracking
+    def index
+      @loans = policy_scope(Loan).order(created_at: :desc)
+      authorize :loan, :index?
+    end
+
     # GET /vendor/loans/:id
     # Show loan details (optional, not part of core workflow)
     def show
       authorize @loan
+      # Step 18: Loan Tracking Dashboard - Detailed view
+      @installments = @loan.installments.order(:due_date)
+      @payments = @loan.payments.order(payment_date: :desc)
     end
 
     # GET /vendor/loans/:id/download_contract
