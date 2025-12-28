@@ -57,8 +57,9 @@
                     ["Completados", "Completados"],
                     ["En mora", "En mora"]
                   ], params[:status]),
-                  { onchange: "this.form.submit()" },
-                  class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg" %>
+                  {},
+                  { onchange: "this.form.submit()",
+                    class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg" } %>
             <% end %>
           </div>
           <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
