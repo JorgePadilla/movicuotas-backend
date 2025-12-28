@@ -72,11 +72,14 @@ module Vendor
     # GET /vendor/loans
     # Step 18: Loan Tracking Dashboard - List all loans for tracking
     def index
+      Rails.logger.info "Loans index called with status param: #{params[:status].inspect}"
       @loans = policy_scope(Loan).order(created_at: :desc)
 
       # Filter by status if provided
       if params[:status].present? && params[:status] != "Todos los estados"
+        Rails.logger.info "Filtering loans by status: #{params[:status]}"
         @loans = filter_loans_by_status(@loans, params[:status])
+        Rails.logger.info "Filtered loans count: #{@loans.count}"
       end
 
       authorize :loan, :index?
@@ -169,15 +172,23 @@ module Vendor
     end
 
     def filter_loans_by_status(loans, status_filter)
+      Rails.logger.info "filter_loans_by_status called with: #{status_filter}"
       case status_filter
       when "Activos"
-        loans.where(status: "active")
+        filtered = loans.where(status: "active")
+        Rails.logger.info "Filtering active loans. SQL: #{filtered.to_sql}"
+        filtered
       when "Completados"
-        loans.where(status: "paid")
+        filtered = loans.where(status: "paid")
+        Rails.logger.info "Filtering completed loans. SQL: #{filtered.to_sql}"
+        filtered
       when "En mora"
         # Loans with overdue installments
-        loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+        filtered = loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+        Rails.logger.info "Filtering overdue loans. SQL: #{filtered.to_sql}"
+        filtered
       else
+        Rails.logger.info "No filter applied, returning all loans"
         loans
       end
     end
