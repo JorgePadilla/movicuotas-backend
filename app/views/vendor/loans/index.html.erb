@@ -49,12 +49,17 @@
         <h2 class="text-xl font-semibold text-gray-900">Lista de Préstamos</h2>
         <div class="flex space-x-3">
           <div class="relative">
-            <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg">
-              <option selected>Todos los estados</option>
-              <option>Activos</option>
-              <option>Completados</option>
-              <option>En mora</option>
-            </select>
+            <%= form_with url: vendor_loans_path, method: :get, local: true, class: "inline-block" do |form| %>
+              <%= form.select :status,
+                  options_for_select([
+                    ["Todos los estados", ""],
+                    ["Activos", "Activos"],
+                    ["Completados", "Completados"],
+                    ["En mora", "En mora"]
+                  ], params[:status]),
+                  { onchange: "this.form.submit()" },
+                  class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg" %>
+            <% end %>
           </div>
           <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
         </div>

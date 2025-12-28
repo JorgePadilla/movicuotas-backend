@@ -22,34 +22,44 @@ module Vendor
     # Step 4 submission: Create customer and credit application
     def create
       Rails.logger.info "Credit application create params: #{params.inspect}"
+      Rails.logger.info "Credit application params (permitted): #{credit_application_params.inspect}"
+
       # Build credit application with nested customer attributes
       @credit_application = CreditApplication.new(credit_application_params)
       @credit_application.vendor = current_user
       @credit_application.status = :pending
 
       # Get customer from the built association for error display
-      @customer = @credit_application.customer || Customer.new
+      @customer = @credit_application.customer || find_or_initialize_customer
+      Rails.logger.info "Customer attributes: #{@customer.attributes.inspect}"
+      Rails.logger.info "Credit application attributes: #{@credit_application.attributes.inspect}"
 
       authorize @credit_application
 
       # Use transaction for atomic save
       saved = false
+      Rails.logger.info "Attempting to save credit application and customer..."
       ActiveRecord::Base.transaction do
         if @credit_application.save
           saved = true
+          Rails.logger.info "Credit application saved successfully with ID: #{@credit_application.id}"
+          Rails.logger.info "Customer saved with ID: #{@customer.id}"
         else
           # Rollback the transaction if save fails
+          Rails.logger.error "Credit application save failed. Errors: #{@credit_application.errors.full_messages}"
+          Rails.logger.error "Customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
           raise ActiveRecord::Rollback
         end
       end
 
       if saved
+        Rails.logger.info "Redirecting to photos path: #{photos_vendor_credit_application_path(@credit_application)}"
         redirect_to photos_vendor_credit_application_path(@credit_application),
                     notice: "Datos generales guardados. Sube las fotografías de identificación."
       else
         # Log errors for debugging
-        Rails.logger.error "Credit application save errors: #{@credit_application.errors.full_messages}" if @credit_application.errors.any?
-        Rails.logger.error "Customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
+        Rails.logger.error "Final credit application errors: #{@credit_application.errors.full_messages}" if @credit_application.errors.any?
+        Rails.logger.error "Final customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
 
         render :new, status: :unprocessable_entity
       end

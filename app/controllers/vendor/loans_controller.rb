@@ -73,6 +73,12 @@ module Vendor
     # Step 18: Loan Tracking Dashboard - List all loans for tracking
     def index
       @loans = policy_scope(Loan).order(created_at: :desc)
+
+      # Filter by status if provided
+      if params[:status].present? && params[:status] != "Todos los estados"
+        @loans = filter_loans_by_status(@loans, params[:status])
+      end
+
       authorize :loan, :index?
     end
 
@@ -160,6 +166,20 @@ module Vendor
       session.delete(:device_id)
       session.delete(:contract_id)
       session.delete(:loan_attributes)
+    end
+
+    def filter_loans_by_status(loans, status_filter)
+      case status_filter
+      when "Activos"
+        loans.where(status: "active")
+      when "Completados"
+        loans.where(status: "paid")
+      when "En mora"
+        # Loans with overdue installments
+        loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+      else
+        loans
+      end
     end
   end
 end

@@ -57,7 +57,7 @@
       </div>
     <% end %>
 
-    <%= form_with model: @credit_application, url: vendor_credit_applications_path, local: true, data: { turbo: false }, html: { onsubmit: "console.log('Form submitting');" }, class: "space-y-6" do |f| %>
+    <%= form_with model: @credit_application, url: vendor_credit_applications_path, class: "space-y-6" do |f| %>
       <%= f.fields_for :customer, @customer do |customer_fields| %>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Identification Number -->
@@ -163,7 +163,7 @@
       <!-- Navigation Buttons -->
       <div class="flex justify-between pt-6 border-t border-gray-200">
         <%= link_to "← Cancelar", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
-        <%= f.submit "Siguiente →", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]", onclick: "console.log('Submit button clicked');" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
       </div>
     <% end %>
   </div>

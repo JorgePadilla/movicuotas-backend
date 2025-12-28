@@ -34,10 +34,15 @@ Pantalla 18: Tracking de Préstamo
 - [ ] Add age calculation and validation
 - [ ] ✅ Remove all accessories references (COMPLETED v1.2)
 - [ ] Hide approved_amount in vendor frontend (Step 8b, 9)
-- [ ] Build loan tracking dashboard (Step 18)
+- [ ] ✅ Build loan tracking dashboard (Step 18) (COMPLETED 2025-12-28)
 - [ ] Complete payment tracking system
 - [ ] Build navigation menu with Dashboard access
 - [ ] Implement 18-screen vendor workflow
+
+**Recent Changes (v1.5 - 2025-12-28):**
+- ✅ Complete contract & digital signature implementation (Steps 13-14)
+- ✅ Loan tracking navigation and dashboard routing (Step 18)
+- ✅ Fix pagination errors and debugging for credit application form
 
 **Recent Changes (v1.4 - 2025-12-16):**
 - ✅ Migrated from Devise to **Rails 8 built-in authentication**
