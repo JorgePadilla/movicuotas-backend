@@ -21,6 +21,7 @@ module Vendor
 
     # Step 4 submission: Create customer and credit application
     def create
+      Rails.logger.info "Credit application create params: #{params.inspect}"
       # Build credit application with nested customer attributes
       @credit_application = CreditApplication.new(credit_application_params)
       @credit_application.vendor = current_user
