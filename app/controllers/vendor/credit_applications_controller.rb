@@ -87,10 +87,20 @@ module Vendor
 
     # Step 6 submission: Save employment data
     def update_employment
+      Rails.logger.info "Updating employment data for credit application #{@credit_application.id}"
+      Rails.logger.info "Params: #{employment_params.inspect}"
+
+      # Set validation context for employment data step
+      @credit_application.updating_employment = true
+
       if @credit_application.update(employment_params)
+        Rails.logger.info "Employment data saved successfully"
         redirect_to summary_vendor_credit_application_path(@credit_application),
                     notice: "Datos laborales guardados. Revisa el resumen."
       else
+        Rails.logger.error "Failed to update employment data. Errors: #{@credit_application.errors.full_messages}"
+        Rails.logger.error "Employment status: #{@credit_application.employment_status.inspect}"
+        Rails.logger.error "Salary range: #{@credit_application.salary_range.inspect}"
         render :employment, status: :unprocessable_entity
       end
     end

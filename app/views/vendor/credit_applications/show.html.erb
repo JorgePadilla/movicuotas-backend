@@ -66,20 +66,7 @@
           <div>
             <p class="text-sm text-gray-500">Rango Salarial Mensual</p>
             <p class="font-medium">
-              <%= case @credit_application.salary_range
-                  when "less_than_10000"
-                    "Menos de L. 10,000"
-                  when "range_10000_20000"
-                    "L. 10,000 - L. 20,000"
-                  when "range_20000_30000"
-                    "L. 20,000 - L. 30,000"
-                  when "range_30000_40000"
-                    "L. 30,000 - L. 40,000"
-                  when "more_than_40000"
-                    "Más de L. 40,000"
-                  else
-                    @credit_application.salary_range.humanize
-                  end %>
+              <%= @credit_application.human_salary_range %>
             </p>
           </div>
           <div>

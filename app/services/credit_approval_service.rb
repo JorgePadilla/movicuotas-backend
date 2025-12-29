@@ -3,7 +3,7 @@
 class CreditApprovalService
   # Business rules for credit approval
   MINIMUM_AGE = 18
-  MINIMUM_SALARY_RANGE = :range_10000_20000  # At least L. 10,000 - L. 20,000
+  MINIMUM_SALARY_RANGE = "range_10000_20000"  # Minimum salary range required for approval
   APPROVAL_RATE = 0.85  # 85% of applications are approved (for simulation)
   APPROVED_AMOUNT_RANGES = {
     less_than_10000: 5000..8000,
@@ -11,6 +11,14 @@ class CreditApprovalService
     range_20000_30000: 12000..18000,
     range_30000_40000: 18000..25000,
     more_than_40000: 25000..35000
+  }.freeze
+
+  # Mapping from old form values to correct enum values (for backward compatibility)
+  SALARY_RANGE_VALUE_MAPPING = {
+    "range_10000_20000" => "10000_20000",
+    "range_20000_30000" => "20000_30000",
+    "range_30000_40000" => "30000_40000"
+    # "less_than_10000" and "more_than_40000" already match enum values
   }.freeze
 
   def initialize(credit_application, evaluator = nil)
@@ -37,9 +45,20 @@ class CreditApprovalService
 
   # Validate basic requirements
   def validate_application
-    # Check customer age
+    Rails.logger.info "validate_application starting for credit application #{@credit_application.id}"
+    # Check customer age (legal adult)
     unless @credit_application.customer.adult?
       return { approved: false, reason: "El cliente debe ser mayor de edad (18+ años)." }
+    end
+
+    # Check credit age requirement (21-60 for loans)
+    customer_age = @credit_application.customer.age.to_i
+    unless customer_age >= 21
+      return { approved: false, reason: "El cliente debe tener al menos 21 años para obtener crédito." }
+    end
+
+    unless customer_age <= 60
+      return { approved: false, reason: "El cliente no puede tener más de 60 años para obtener crédito." }
     end
 
     # Check required photos
@@ -64,19 +83,32 @@ class CreditApprovalService
   def valid_employment_status?
     # Employed, self-employed, or retired (assuming pension) are acceptable
     acceptable_statuses = %w[employed self_employed retired]
-    acceptable_statuses.include?(@credit_application.employment_status)
+    employment_status = @credit_application.employment_status
+    Rails.logger.info "valid_employment_status? employment_status: #{employment_status.inspect}"
+    Rails.logger.info "valid_employment_status? acceptable_statuses: #{acceptable_statuses.inspect}"
+    result = acceptable_statuses.include?(employment_status)
+    Rails.logger.info "valid_employment_status? result: #{result.inspect}"
+    result
   end
 
   def valid_salary_range?
-    # Get the enum key for current salary range
-    current_key = CreditApplication.salary_ranges.key(@credit_application.salary_range)
-    return false unless current_key
+    salary_range = @credit_application.salary_range
+    Rails.logger.info "valid_salary_range? salary_range: #{salary_range.inspect}"
+    return false unless salary_range.present?
 
+    # Get all salary range keys in order
     salary_ranges = CreditApplication.salary_ranges.keys
-    current_index = salary_ranges.index(current_key)
-    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE.to_s)  # Convert symbol to string
+    Rails.logger.info "valid_salary_range? salary_ranges: #{salary_ranges.inspect}"
 
-    current_index && minimum_index && current_index >= minimum_index
+    # Find indices
+    current_index = salary_ranges.index(salary_range.to_s)
+    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE)
+    Rails.logger.info "valid_salary_range? current_index: #{current_index.inspect}, minimum_index: #{minimum_index.inspect}"
+
+    # Both indices must exist and current must be >= minimum
+    result = current_index && minimum_index && current_index >= minimum_index
+    Rails.logger.info "valid_salary_range? result: #{result.inspect}"
+    result
   end
 
   # Business logic decision (simulated)
@@ -88,7 +120,10 @@ class CreditApprovalService
     probability = APPROVAL_RATE
 
     # Adjust based on salary range (higher salary = higher probability)
-    salary_factor = case @credit_application.salary_range
+    raw_salary = @credit_application.salary_range
+    normalized_salary = raw_salary.present? ? (SALARY_RANGE_VALUE_MAPPING[raw_salary] || raw_salary) : nil
+
+    salary_factor = case normalized_salary
     when "less_than_10000" then 0.7
     when "10000_20000" then 0.8
     when "20000_30000" then 0.9
@@ -155,8 +190,14 @@ class CreditApprovalService
   end
 
   def calculate_approved_amount
-    # Get the enum key (symbol) from the stored string value
-    range_key = CreditApplication.salary_ranges.key(@credit_application.salary_range)&.to_sym
+    raw_value = @credit_application.salary_range
+    return rand(5000..10000) unless raw_value.present?
+
+    # Normalize value (map old form values to correct enum values)
+    normalized_value = SALARY_RANGE_VALUE_MAPPING[raw_value] || raw_value
+
+    # Get the enum key (symbol) from the normalized string value
+    range_key = CreditApplication.salary_ranges.key(normalized_value)&.to_sym
     amount_range = APPROVED_AMOUNT_RANGES[range_key] || (5000..10000)
 
     # Random amount within range (in real system, would be based on credit score)
@@ -167,7 +208,7 @@ class CreditApprovalService
     reasons = [
       "Perfil crediticio no cumple con los requisitos mínimos.",
       "Historial crediticio insuficiente.",
-      "Capacidad de pago no adecuada para el monto solicitado.",
+      "Capacidad de pago no adecuada según el perfil ingresado.",
       "Información proporcionada requiere verificación adicional.",
       "Sistema de scoring no alcanzó el puntaje mínimo requerido."
     ]

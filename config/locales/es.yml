@@ -8,6 +8,7 @@ es:
         gender: "Género"
         status: "Estado"
       credit_application:
+        application_number: "Número de Solicitud"
         employment_status: "Situación Laboral"
         salary_range: "Rango Salarial"
         verification_method: "Método de Verificación"
@@ -50,3 +51,82 @@ es:
           admin: "Administrador"
           vendedor: "Vendedor"
           cobrador: "Cobrador"
+    errors:
+      messages:
+        taken: "ya está en uso"
+        blank: "no puede estar en blanco"
+        invalid: "no es válido"
+        inclusion: "no está incluido en la lista"
+      models:
+        credit_application:
+          taken: "ya está en uso"
+          inclusion: "no está incluido en la lista"
+          attributes:
+            application_number:
+              taken: "ya está en uso"
+            employment_status:
+              inclusion: "no está incluido en la lista"
+            salary_range:
+              inclusion: "no está incluido en la lista"
+        user:
+          taken: "ya está en uso"
+          attributes:
+            email:
+              taken: "ya está en uso"
+        mdm_blueprint:
+          taken: "ya está en uso"
+          attributes:
+            device:
+              taken: "ya está en uso"
+        device:
+          taken: "ya está en uso"
+          attributes:
+            imei:
+              taken: "ya está en uso"
+        phone_model:
+          taken: "ya está en uso"
+          attributes:
+            model:
+              taken: "ya está en uso"
+        customer:
+          taken: "ya está en uso"
+          attributes:
+            identification_number:
+              taken: "ya está en uso"
+        contract:
+          taken: "ya está en uso"
+          attributes:
+            loan:
+              taken: "ya está en uso"
+        loan:
+          taken: "ya está en uso"
+          attributes:
+            contract_number:
+              taken: "ya está en uso"
+  errors:
+    messages:
+      taken: "ya está en uso"
+      blank: "no puede estar en blanco"
+      invalid: "no es válido"
+      inclusion: "no está incluido en la lista"
+    attributes:
+      application_number:
+        taken: "ya está en uso"
+      email:
+        taken: "ya está en uso"
+      device:
+        taken: "ya está en uso"
+      imei:
+        taken: "ya está en uso"
+      model:
+        taken: "ya está en uso"
+      identification_number:
+        taken: "ya está en uso"
+      loan:
+        taken: "ya está en uso"
+      contract_number:
+        taken: "ya está en uso"
+      employment_status:
+        inclusion: "no está incluido en la lista"
+      salary_range:
+        inclusion: "no está incluido en la lista"

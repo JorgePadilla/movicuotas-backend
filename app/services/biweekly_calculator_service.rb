@@ -32,6 +32,9 @@ class BiweeklyCalculatorService
     50 => { 6 => 12.0, 8 => 11.5, 10 => 11.0, 12 => 10.5 }
   }.freeze
 
+  # Default interest rate for display (bi-weekly rate in percentage)
+  DEFAULT_INTEREST_RATE = 12.5
+
   # Age restrictions
   MIN_AGE = 21
   MAX_AGE = 60

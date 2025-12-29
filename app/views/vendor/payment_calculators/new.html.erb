@@ -29,7 +29,7 @@
           <p class="text-xl font-semibold text-gray-900">L. <%= number_with_delimiter((@approved_amount - @phone_price).round(2), delimiter: ",") %></p>
         </div>
         <div>
-          <p class="text-sm font-medium text-gray-500">Tasa de Interés Anual</p>
+          <p class="text-sm font-medium text-gray-500">Tasa de Interés Quincenal</p>
           <p class="text-lg font-semibold text-gray-900"><%= BiweeklyCalculatorService::DEFAULT_INTEREST_RATE %>%</p>
         </div>
       </div>
