@@ -1,6 +1,6 @@
 <% content_for :title, "Tracking de Préstamos - MOVICUOTAS" %>
 
-<div class="w-full">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Page header -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#125282]">Tracking de Préstamos</h1>
@@ -44,7 +44,7 @@
 
   <!-- Loans table -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <div class="px-6 py-5 border-b border-gray-200">
+    <div class="px-4 py-4 border-b border-gray-200">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900">Lista de Préstamos</h2>
         <div class="flex space-x-3">
@@ -71,29 +71,29 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Próximo Vencimiento</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Próximo Vencimiento</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @loans.any? %>
             <% @loans.each do |loan| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900"><%= loan.contract_number %></div>
                   <div class="text-xs text-gray-500"><%= loan.branch_number %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
                   <div class="text-xs text-gray-500"><%= loan.customer.identification_number %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <% if loan.device %>
                     <div class="text-sm text-gray-900"><%= loan.device.phone_model.brand %> <%= loan.device.phone_model.model %></div>
                     <div class="text-xs text-gray-500"><%= loan.device.imei %></div>
@@ -101,10 +101,10 @@
                     <span class="text-sm text-gray-500">No asignado</span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                   L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <% status_class = case loan.status
                     when 'active' then 'bg-green-100 text-green-800'
                     when 'completed' then 'bg-blue-100 text-blue-800'
@@ -116,7 +116,7 @@
                     <%= loan.status.titleize %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <div class="text-sm text-gray-900">
                     <%= loan.installments.paid.count %>/<%= loan.number_of_installments %> pagadas
                   </div>
@@ -124,7 +124,7 @@
                     <%= loan.installments.overdue.count %> en mora
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <% next_installment = loan.installments.pending.order(:due_date).first %>
                   <% if next_installment %>
                     <div class="text-sm text-gray-900"><%= next_installment.due_date.strftime("%d/%m/%Y") %></div>
@@ -140,7 +140,7 @@
                     <span class="text-sm text-gray-500">Completado</span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
                   <%= link_to "Ver", vendor_loan_path(loan), class: "text-[#125282] hover:text-[#0f4670] mr-4" %>
                   <%= link_to "Contrato", download_contract_vendor_loan_path(loan), class: "text-gray-600 hover:text-gray-900" %>
                 </td>

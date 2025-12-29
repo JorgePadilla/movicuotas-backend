@@ -12,7 +12,7 @@ Git worktrees allow you to work on multiple branches simultaneously in separate 
 
 #### Current Worktree Status (as of 2025-12-28)
 
-**Existing Worktrees (Phase 2):**
+**Existing Worktrees (Phase 2 - Vendor Workflow):**
 
 - ✅ phase2-calculator (`feature/phase2-vendor-payment-calculator`)
 - ✅ phase2-credit-app (`feature/phase2-vendor-credit-application`)
@@ -22,8 +22,20 @@ Git worktrees allow you to work on multiple branches simultaneously in separate 
 - ✅ phase2-contract (`feature/phase2-vendor-contract-signature`)
 - ✅ phase2-customer-search (`feature/phase2-vendor-customer-search`)
 - ✅ phase2-loan (`feature/phase2-vendor-loan-finalization`)
+- ✅ phase2-loan-tracking (`feature/phase2-vendor-loan-tracking`)
 
-**Branches Exist, Worktrees Not Created:** None - All Phase 2 worktrees have been created.
+**Existing Worktrees (Phase 3 - Admin Interface):**
+
+- ✅ phase3-admin-dash (`feature/phase3-admin-dashboard`) - 1 commit ahead of main
+- ✅ phase3-admin-users (`feature/phase3-admin-users`)
+- ✅ phase3-admin-customers (`feature/phase3-admin-customers`)
+- ✅ phase3-admin-loans (`feature/phase3-admin-loans`)
+- ✅ phase3-admin-payments (`feature/phase3-admin-payments`)
+- ✅ phase3-admin-reports (`feature/phase3-admin-reports`)
+
+**Total Worktrees:** 15 (9 Phase 2 + 6 Phase 3)
+
+**Branches Exist, Worktrees Not Created:** None - All Phase 2 & 3 worktrees have been created.
 
 #### Initial Setup
 
@@ -84,8 +96,11 @@ git worktree add ../worktrees/phase2-mdm feature/phase2-vendor-mdm-configuration
 # Loan Finalization
 git worktree add ../worktrees/phase2-loan feature/phase2-vendor-loan-finalization
 
-# Dashboard & Tracking (Step 18)
+# Vendor Dashboard (Navigation menu)
 git worktree add ../worktrees/phase2-dashboard feature/phase2-vendor-dashboard
+
+# Loan Tracking Dashboard (Step 18)
+git worktree add ../worktrees/phase2-loan-tracking feature/phase2-vendor-loan-tracking
 ```
 
 **Phase 3: Admin Interface (Can work in parallel)**
