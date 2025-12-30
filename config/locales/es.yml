@@ -12,6 +12,7 @@ es:
         employment_status: "Situación Laboral"
         salary_range: "Rango Salarial"
         verification_method: "Método de Verificación"
+        selected_imei: "IMEI seleccionado"
         status: "Estado"
       user:
         role: "Rol"

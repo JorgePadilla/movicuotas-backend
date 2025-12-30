@@ -25,6 +25,40 @@ class Customer < ApplicationRecord
   scope :with_active_loans, -> { joins(:loans).where(loans: { status: "active" }) }
   scope :without_active_loans, -> { where.not(id: with_active_loans.select(:id)) }
 
+  # Custom setter for date_of_birth to handle multiple date formats
+  def date_of_birth=(value)
+    return super(value) if value.is_a?(Date) || value.nil?
+
+    # Try to parse as Date if it's already a Date object (e.g., from ActiveRecord)
+    if value.respond_to?(:to_date)
+      super(value.to_date)
+      return
+    end
+
+    str = value.to_s.strip
+    return super(nil) if str.empty?
+
+    # Try ISO format (YYYY-MM-DD)
+    if match = str.match(/\A(\d{4})-(\d{1,2})-(\d{1,2})\z/)
+      year, month, day = match[1].to_i, match[2].to_i, match[3].to_i
+      super(Date.new(year, month, day)) rescue super(Date.parse(str))
+      return
+    end
+
+    # Try DD/MM/YYYY or DD-MM-YYYY
+    if match = str.match(/\A(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\z/)
+      day, month, year = match[1].to_i, match[2].to_i, match[3].to_i
+      super(Date.new(year, month, day)) rescue super(Date.parse(str))
+      return
+    end
+
+    # Fallback to Date.parse (handles other formats)
+    super(Date.parse(str))
+  rescue Date::Error
+    # If parsing fails, set to nil and let validation fail
+    super(nil)
+  end
+
   # Methods
   def age
     return nil unless date_of_birth

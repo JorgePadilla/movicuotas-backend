@@ -33,7 +33,7 @@ module Vendor
     private
 
     def set_credit_application
-      @credit_application = CreditApplication.find(params[:id])
+      @credit_application = CreditApplication.find(params[:credit_application_id])
     end
 
     def authorize_credit_application

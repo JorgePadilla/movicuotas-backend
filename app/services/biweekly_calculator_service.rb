@@ -183,7 +183,7 @@ class BiweeklyCalculatorService
     validate_number_of_installments
     validate_age
     validate_age_restrictions
-    validate_financed_amount_limit
+    # validate_financed_amount_limit  # Disabled per user request: remove age-based financing limit
     validate_start_date
   end
 
@@ -226,15 +226,15 @@ class BiweeklyCalculatorService
     end
   end
 
-  def validate_financed_amount_limit
-    return unless age_group
-
-    max_amount = age_group == 1 ? MAX_FINANCED_AGE_GROUP_1 : MAX_FINANCED_AGE_GROUP_2
-
-    if financed_amount > max_amount
-      @errors << "Monto financiado excede el límite para la edad del cliente (L. #{max_amount})"
-    end
-  end
+  # def validate_financed_amount_limit
+  #   return unless age_group
+  #
+  #   max_amount = age_group == 1 ? MAX_FINANCED_AGE_GROUP_1 : MAX_FINANCED_AGE_GROUP_2
+  #
+  #   if financed_amount > max_amount
+  #     @errors << "Monto financiado excede el límite para la edad del cliente (L. #{max_amount})"
+  #   end
+  # end
 
   def validate_start_date
     if @start_date < Date.today

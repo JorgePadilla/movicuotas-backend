@@ -2,6 +2,7 @@
 // Step 12: Payment Calculator - Vendor Workflow
 
 import { Controller } from "@hotwired/stimulus"
+import * as Turbo from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static targets = ["downPayment", "installmentTerm"]
@@ -10,23 +11,29 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("Payment calculator controller connected")
     // Set the calculate URL if not already set
     if (!this.hasCalculateUrlValue) {
       this.calculateUrlValue = this.element.dataset.calculateUrl || "/vendor/payment_calculator/calculate"
     }
+    console.log("Calculate URL:", this.calculateUrlValue)
   }
 
   // Calculate installment amount when any input changes
   calculate(event) {
     event.preventDefault()
+    console.log("Payment calculator: calculate triggered")
 
     // Get form data
     const formData = new FormData(this.element)
+    const formDataObj = Object.fromEntries(formData.entries())
+    console.log("Form data:", formDataObj)
 
     // Show loading state
     this.showLoading()
 
     // Send Turbo Stream request
+    console.log("Sending request to:", this.calculateUrlValue)
     fetch(this.calculateUrlValue, {
       method: "POST",
       headers: {
@@ -37,12 +44,15 @@ export default class extends Controller {
       body: new URLSearchParams(formData)
     })
       .then(response => {
+        console.log("Response status:", response.status, response.statusText)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         return response.text()
       })
       .then(html => {
+        console.log("Received Turbo Stream HTML length:", html.length)
+        console.log("HTML preview:", html.substring(0, 200))
         // Turbo will handle the stream response
         Turbo.renderStreamMessage(html)
         this.hideLoading()

@@ -22,7 +22,7 @@
     </div>
   <% end %>
 
-  <%= form_with model: @credit_application, url: vendor_device_selection_path(@credit_application), method: :patch, data: { turbo: false } do |f| %>
+  <%= form_with model: @credit_application, url: vendor_device_selection_path(@credit_application), method: :patch, data: { turbo: false }, html: { novalidate: true } do |f| %>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <% @phone_models.each do |phone| %>
         <label class="relative">

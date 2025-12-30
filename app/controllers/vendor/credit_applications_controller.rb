@@ -15,6 +15,10 @@ module Vendor
     def new
       # Customer ID comes from Step 3b (Cliente Disponible)
       @customer = find_or_initialize_customer
+
+      # Don't pre-fill date_of_birth - let JavaScript handle default (July 1, 2000)
+      # Leave it nil so the input field is clean
+
       @credit_application = CreditApplication.new(customer: @customer)
       authorize @credit_application
     end
@@ -166,6 +170,7 @@ module Vendor
         Customer.new
       end
     end
+
 
     def credit_application_params
       params.require(:credit_application).permit(

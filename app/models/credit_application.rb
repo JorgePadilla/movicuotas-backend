@@ -27,7 +27,7 @@ class CreditApplication < ApplicationRecord
   # Conditional presence validations for employment data step
   validates :employment_status, presence: true, if: :updating_employment
   validates :salary_range, presence: true, if: :updating_employment
-  validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, length: { is: 15 }, allow_blank: true
+  validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, allow_blank: true
   validate :selected_phone_price_within_approved_amount, if: -> { selected_phone_model_id.present? && approved? }
 
   # Enums

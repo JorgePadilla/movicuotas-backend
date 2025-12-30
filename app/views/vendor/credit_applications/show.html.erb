@@ -186,7 +186,7 @@
           <% end %>
 
           <% if @credit_application.approved? %>
-            <%= link_to "Proceder a Catálogo", vendor_customer_search_path, class: "block w-full text-center px-4 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200" %>
+            <%= link_to "Proceder a Catálogo", vendor_device_selection_path(@credit_application), class: "block w-full text-center px-4 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200" %>
           <% end %>
 
           <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "block w-full text-center px-4 py-3 border border-[#125282] text-[#125282] font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200" %>

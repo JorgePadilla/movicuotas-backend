@@ -7,8 +7,7 @@ class Device < ApplicationRecord
 
   # Validations
   validates :imei, presence: true, uniqueness: true,
-            format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" },
-            length: { is: 15 }
+            format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }
   validates :brand, presence: true
   validates :model, presence: true
   validates :lock_status, presence: true, inclusion: { in: %w[unlocked pending locked] }

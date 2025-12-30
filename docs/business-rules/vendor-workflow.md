@@ -202,8 +202,8 @@ end
 
 - **Credit available for ages:** 21 - 60 years
 - **Age-based limits:**
-  - **50-60 years:** Only 40% and 50% down payment options, Max financed: L. 3,000
-  - **21-49 years:** All down payment options (30%, 40%, 50%), Max financed: L. 3,500
+  - **50-60 years:** Only 40% and 50% down payment options
+  - **21-49 years:** All down payment options (30%, 40%, 50%)
 
 **Calculation Example:**
 ```

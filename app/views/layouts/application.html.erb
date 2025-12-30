@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <title><%= content_for(:title) || "Movicuotas Backend" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -20,6 +20,94 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Flatpickr CSS for date picker %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" data-turbo-track="reload">
+    <%# Pikaday CSS for date picker %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" data-turbo-track="reload">
+    <style>
+      /* Custom styles for Flatpickr calendar */
+      .flatpickr-calendar {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+      }
+      .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+        background-color: #125282;
+        border-color: #125282;
+      }
+      .flatpickr-day.today {
+        border-color: #125282;
+        color: #125282;
+      }
+      .flatpickr-day.today:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .flatpickr-months .flatpickr-month {
+        color: #125282;
+      }
+      .flatpickr-current-month .flatpickr-monthDropdown-months {
+        color: #125282;
+      }
+      .flatpickr-weekdays {
+        background-color: #f9fafb;
+      }
+      .flatpickr-weekday {
+        color: #6b7280;
+        font-weight: 600;
+      }
+
+      /* Custom styles for Pikaday calendar */
+      .pikaday-es-calendar .pika-single {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+      }
+      .pikaday-es-calendar .pika-title {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-label {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-select {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-prev,
+      .pikaday-es-calendar .pika-next {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-prev:hover,
+      .pikaday-es-calendar .pika-next:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .pika-table th {
+        color: #125282;
+        font-weight: 600;
+      }
+      .pikaday-es-calendar .is-selected .pika-button {
+        background-color: #125282;
+        border-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .pika-button:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .is-today .pika-button {
+        color: #125282;
+        font-weight: bold;
+        border-color: #125282;
+      }
+      .pikaday-es-calendar .is-disabled .pika-button {
+        color: #9ca3af;
+      }
+      .pikaday-es-calendar .is-outside-current-month .pika-button {
+        color: #d1d5db;
+      }
+    </style>
     <%= javascript_importmap_tags %>
   </head>
 
