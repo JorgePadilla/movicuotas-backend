@@ -82,13 +82,13 @@ module Vendor
       respond_to do |format|
         format.turbo_stream do
           if result[:success]
-            render turbo_stream: turbo_stream.replace(
+            render turbo_stream: turbo_stream.update(
               "calculator_results",
               partial: "vendor/payment_calculators/results",
               locals: { result: result }
             )
           else
-            render turbo_stream: turbo_stream.replace(
+            render turbo_stream: turbo_stream.update(
               "calculator_errors",
               partial: "vendor/payment_calculators/errors",
               locals: { errors: result[:errors] }
@@ -111,16 +111,21 @@ module Vendor
     def create
       authorize nil, policy_class: Vendor::PaymentCalculatorPolicy
 
+      Rails.logger.info "PaymentCalculator#create called with params: #{params.permit(:phone_price, :approved_amount, :down_payment_percentage, :number_of_installments, :date_of_birth, :credit_application_id).to_h}"
+
       # Temporary implementation for contract feature testing
       # Will be replaced by LoanFinalizationService in phase2-vendor-loan-finalization
       loan = create_loan_from_calculator
 
-      if loan.persisted?
-        # Create contract if it doesn't exist
-        contract = loan.contract || Contract.create!(loan: loan)
+      Rails.logger.info "Loan creation result: persisted=#{loan.persisted?}, errors=#{loan.errors.full_messages}, contract_number=#{loan.contract_number}"
 
+      if loan.persisted?
+        # Find or create contract for this loan
+        contract = Contract.find_or_create_by!(loan: loan)
+
+        Rails.logger.info "Contract found/created: id=#{contract.id}, loan_id=#{contract.loan_id}"
         flash[:notice] = "Préstamo creado exitosamente. Procediendo al contrato..."
-        redirect_to vendor_contract_path(loan_id: loan.id)
+        redirect_to vendor_contract_path(contract)
       else
         flash[:alert] = "Error al crear préstamo: #{loan.errors.full_messages.join(', ')}"
         redirect_to vendor_payment_calculator_path
@@ -139,9 +144,19 @@ module Vendor
       date_of_birth = params[:date_of_birth] || fetch_date_of_birth
       credit_application_id = params[:credit_application_id] || session[:credit_application_id]
 
+      Rails.logger.info "create_loan_from_calculator: phone_price=#{phone_price}, approved_amount=#{approved_amount}, down_payment_percentage=#{down_payment_percentage}, number_of_installments=#{number_of_installments}, credit_application_id=#{credit_application_id}"
+
       # Get customer from credit application
       credit_application = CreditApplication.find_by(id: credit_application_id) if credit_application_id.present?
+      Rails.logger.info "Credit application lookup: id=#{credit_application_id}, found=#{credit_application.present?}, customer_id=#{credit_application&.customer&.id}"
       customer = credit_application&.customer || Customer.first # Fallback for testing
+
+      if customer.nil?
+        Rails.logger.error "No customer found for credit_application_id=#{credit_application_id} and no Customer.first exists"
+        return Loan.new.tap { |l| l.errors.add(:base, "No se pudo encontrar el cliente. Por favor, verifica la solicitud de crédito.") }
+      end
+
+      Rails.logger.info "Using customer: id=#{customer.id}, name=#{customer.try(:name) || customer.try(:full_name) || 'N/A'}"
 
       # Validate phone price against approved amount
       if phone_price > approved_amount
@@ -167,7 +182,11 @@ module Vendor
       branch_number = current_user.branch_number || 'S01'
       start_date = Date.today
 
-      # Create loan
+      # First, try to find an existing draft loan for this customer created today
+      existing_loan = find_existing_draft_loan(customer, phone_price, approved_amount, credit_application_id)
+      return existing_loan if existing_loan.present?
+
+      # Create new loan
       loan = Loan.new(
         customer: customer,
         user: current_user, # Creator (vendor)
@@ -187,9 +206,43 @@ module Vendor
       # Save loan and create installments
       if loan.save
         create_installments_for_loan(loan, result[:installments])
+      else
+        Rails.logger.info "Loan save failed: errors=#{loan.errors.full_messages}, contract_number=#{loan.contract_number}"
+        # Check if save failed due to contract number uniqueness
+        if loan.errors[:contract_number].any?
+          Rails.logger.info "Contract number uniqueness error, trying to find existing loan with contract_number: #{loan.contract_number}"
+          # Try to find the existing loan with this contract number
+          existing_loan = Loan.find_by(contract_number: loan.contract_number)
+          if existing_loan
+            Rails.logger.info "Found existing loan: id=#{existing_loan.id}, contract_number=#{existing_loan.contract_number}"
+            return existing_loan
+          else
+            Rails.logger.error "No existing loan found with contract_number: #{loan.contract_number}"
+          end
+        end
       end
 
       loan
+    end
+
+    # Find existing draft loan for customer created today
+    # We look for draft loans for this customer created recently
+    def find_existing_draft_loan(customer, phone_price, approved_amount, credit_application_id)
+      # First, try to find by credit_application_id if we store it somewhere
+      # (currently not stored, but we could add it to session or loan metadata)
+
+      # For now, find loans for this customer created in the last 7 days
+      # This is a simplification - in production, we should have a better way
+      # to associate loans with credit applications
+      recent_date = 7.days.ago
+
+      existing_loan = Loan.where(
+        customer: customer,
+        created_at: recent_date..Time.current
+      ).order(created_at: :desc).first
+
+      Rails.logger.info "find_existing_draft_loan: customer_id=#{customer.id}, found_loan_id=#{existing_loan&.id}, contract_number=#{existing_loan&.contract_number}"
+      existing_loan
     end
 
     # Create installments for the loan

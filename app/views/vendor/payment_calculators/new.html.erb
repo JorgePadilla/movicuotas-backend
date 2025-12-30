@@ -44,9 +44,7 @@
                   method: :post,
                   data: {
                     controller: "payment-calculator",
-                    action: "change->payment-calculator#calculate",
-                    "payment-calculator-calculate-url-value": calculate_vendor_payment_calculator_path,
-                    turbo_frame: "calculator_results"
+                    "payment-calculator-calculate-url-value": calculate_vendor_payment_calculator_path
                   },
                   class: "space-y-8" do |f| %>
 
@@ -69,7 +67,6 @@
                 value="<%= percentage %>"
                 class="sr-only peer"
                 <%= "checked" if @down_payment_percentage == percentage %>
-                data-payment-calculator-target="downPayment"
                 data-action="change->payment-calculator#calculate"
               >
               <div class="cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-[#125282] peer-checked:border-[#125282] peer-checked:bg-blue-50 transition-all duration-200">
@@ -100,7 +97,6 @@
                 value="<%= term %>"
                 class="sr-only peer"
                 <%= "checked" if @number_of_installments == term %>
-                data-payment-calculator-target="installmentTerm"
                 data-action="change->payment-calculator#calculate"
               >
               <div class="cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-[#125282] peer-checked:border-[#125282] peer-checked:bg-blue-50 transition-all duration-200">
@@ -137,7 +133,7 @@
   </div>
 
   <%# Results Display (updated via Turbo Stream) %>
-  <%= turbo_frame_tag "calculator_results" do %>
+  <div id="calculator_results">
     <% if @result && @result[:success] %>
       <%= render partial: "vendor/payment_calculators/results", locals: { result: @result } %>
     <% else %>
@@ -145,7 +141,7 @@
         <p class="text-gray-600">Selecciona las opciones de pago para calcular tu cuota quincenal.</p>
       </div>
     <% end %>
-  <% end %>
+  </div>
 
   <%# Navigation %>
   <div class="flex flex-col md:flex-row justify-between items-center mt-8 pt-8 border-t border-gray-200">
@@ -157,24 +153,25 @@
       <% end %>
     </div>
     <div>
-      <% if @result && @result[:success] %>
-        <%= form_with url: vendor_payment_calculator_path, method: :post, class: "inline" do |f| %>
-          <%= hidden_field_tag :phone_price, @phone_price %>
-          <%= hidden_field_tag :approved_amount, @approved_amount %>
-          <%= hidden_field_tag :date_of_birth, @date_of_birth %>
-          <%= hidden_field_tag :down_payment_percentage, @down_payment_percentage %>
-          <%= hidden_field_tag :number_of_installments, @number_of_installments %>
-          <%= hidden_field_tag :credit_application_id, @credit_application_id %>
-          <button type="submit"
-                  class="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">
-            Continuar al Contrato →
-          </button>
-        <% end %>
-      <% else %>
-        <button disabled class="bg-gray-300 text-gray-500 font-semibold py-3 px-8 rounded-lg cursor-not-allowed">
+      <%# Continue form (hidden initially if result not successful) %>
+      <% continue_form_class = "inline #{@result && @result[:success] ? '' : 'hidden'}" %>
+      <%= form_with url: vendor_payment_calculator_path, method: :post, class: continue_form_class, id: "continue_to_contract_form" do |f| %>
+        <%= hidden_field_tag :phone_price, @phone_price %>
+        <%= hidden_field_tag :approved_amount, @approved_amount %>
+        <%= hidden_field_tag :date_of_birth, @date_of_birth %>
+        <%= hidden_field_tag :down_payment_percentage, @down_payment_percentage %>
+        <%= hidden_field_tag :number_of_installments, @number_of_installments %>
+        <%= hidden_field_tag :credit_application_id, @credit_application_id %>
+        <button type="submit"
+                class="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">
           Continuar al Contrato →
         </button>
       <% end %>
+
+      <%# Disabled button (shown initially if result not successful) %>
+      <button disabled id="disabled_continue_button" class="bg-gray-300 text-gray-500 font-semibold py-3 px-8 rounded-lg cursor-not-allowed <%= @result && @result[:success] ? 'hidden' : '' %>">
+        Continuar al Contrato →
+      </button>
     </div>
   </div>
 

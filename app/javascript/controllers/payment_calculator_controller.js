@@ -2,10 +2,10 @@
 // Step 12: Payment Calculator - Vendor Workflow
 
 import { Controller } from "@hotwired/stimulus"
-import * as Turbo from "@hotwired/turbo-rails"
+// Turbo is available globally via importmap in application.js
 
 export default class extends Controller {
-  static targets = ["downPayment", "installmentTerm"]
+  static targets = []  // No Stimulus targets needed, using getElementById
   static values = {
     calculateUrl: String
   }
@@ -17,6 +17,12 @@ export default class extends Controller {
       this.calculateUrlValue = this.element.dataset.calculateUrl || "/vendor/payment_calculator/calculate"
     }
     console.log("Calculate URL:", this.calculateUrlValue)
+
+    // Sync continue form with initial values
+    this.syncContinueForm()
+
+    // Update continue button state based on existing results
+    this.updateContinueButtonStateBasedOnDOM()
   }
 
   // Calculate installment amount when any input changes
@@ -28,6 +34,9 @@ export default class extends Controller {
     const formData = new FormData(this.element)
     const formDataObj = Object.fromEntries(formData.entries())
     console.log("Form data:", formDataObj)
+
+    // Sync continue form hidden fields with current values
+    this.syncContinueForm()
 
     // Show loading state
     this.showLoading()
@@ -53,8 +62,37 @@ export default class extends Controller {
       .then(html => {
         console.log("Received Turbo Stream HTML length:", html.length)
         console.log("HTML preview:", html.substring(0, 200))
+        // Update continue button state based on response
+        this.parseAndUpdateButtonState(html)
         // Turbo will handle the stream response
-        Turbo.renderStreamMessage(html)
+        console.log("Turbo object available:", typeof window.Turbo)
+        console.log("renderStreamMessage available:", window.Turbo && typeof window.Turbo.renderStreamMessage)
+        if (window.Turbo && window.Turbo.renderStreamMessage) {
+          console.log("Calling Turbo.renderStreamMessage")
+          try {
+            window.Turbo.renderStreamMessage(html)
+            console.log("Turbo.renderStreamMessage completed")
+          } catch (error) {
+            console.error("Error in Turbo.renderStreamMessage:", error)
+            console.log("Falling back to manual DOM update")
+            this.updateDOMWithResponse(html)
+          }
+          // Check if DOM was updated
+          setTimeout(() => {
+            const resultsElement = document.getElementById('calculator_results')
+            console.log("After Turbo stream - results element:", resultsElement)
+            console.log("InnerHTML length:", resultsElement ? resultsElement.innerHTML.length : 'no element')
+            if (resultsElement) {
+              // Check for installment amount in the results
+              const installmentEl = resultsElement.querySelector('.text-5xl.font-bold.text-green-600')
+              console.log("Installment element:", installmentEl)
+              console.log("Installment text:", installmentEl ? installmentEl.textContent : 'not found')
+            }
+          }, 100)
+        } else {
+          console.error("Turbo.renderStreamMessage not available, falling back to DOM update")
+          this.updateDOMWithResponse(html)
+        }
         this.hideLoading()
       })
       .catch(error => {
@@ -62,6 +100,57 @@ export default class extends Controller {
         this.showError("Error al calcular. Por favor, intenta nuevamente.")
         this.hideLoading()
       })
+  }
+
+  // Sync hidden fields in continue form with current calculator values
+  syncContinueForm() {
+    // Try multiple ways to find the continue form
+    let continueForm = document.getElementById('continue_to_contract_form')
+    if (!continueForm) {
+      // Try by action attribute
+      continueForm = document.querySelector('form[action*="vendor_payment_calculator"]:not([data-controller="payment-calculator"])')
+    }
+    if (!continueForm) {
+      console.log("No continue form found, skipping sync")
+      // Debug: log all forms on page
+      const allForms = document.querySelectorAll('form')
+      console.log("Available forms:", Array.from(allForms).map(f => ({ id: f.id, action: f.action, class: f.className })))
+      return
+    }
+
+    console.log("Found continue form:", continueForm.id || continueForm.action)
+
+    const formData = new FormData(this.element)
+
+    // Update hidden fields in continue form
+    const downPayment = formData.get('down_payment_percentage')
+    const installments = formData.get('number_of_installments')
+
+    console.log("Syncing continue form with values:", { downPayment, installments })
+
+    // Update hidden inputs in continue form
+    const downPaymentInput = continueForm.querySelector('input[name="down_payment_percentage"]')
+    const installmentsInput = continueForm.querySelector('input[name="number_of_installments"]')
+
+    if (downPaymentInput && downPayment) {
+      downPaymentInput.value = downPayment
+    }
+    if (installmentsInput && installments) {
+      installmentsInput.value = installments
+    }
+
+    // Also update phone_price and approved_amount just in case
+    const phonePrice = formData.get('phone_price')
+    const approvedAmount = formData.get('approved_amount')
+    const dateOfBirth = formData.get('date_of_birth')
+
+    const phonePriceInput = continueForm.querySelector('input[name="phone_price"]')
+    const approvedAmountInput = continueForm.querySelector('input[name="approved_amount"]')
+    const dateOfBirthInput = continueForm.querySelector('input[name="date_of_birth"]')
+
+    if (phonePriceInput && phonePrice) phonePriceInput.value = phonePrice
+    if (approvedAmountInput && approvedAmount) approvedAmountInput.value = approvedAmount
+    if (dateOfBirthInput && dateOfBirth) dateOfBirthInput.value = dateOfBirth
   }
 
   // Get CSRF token from meta tag
@@ -106,6 +195,148 @@ export default class extends Controller {
           </div>
         </div>
       `
+    }
+  }
+
+  // Parse Turbo Stream HTML and update button state
+  parseAndUpdateButtonState(html) {
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      const turboStreams = doc.querySelectorAll('turbo-stream')
+
+      let hasError = false
+      let hasSuccess = false
+
+      turboStreams.forEach(stream => {
+        const target = stream.getAttribute('target')
+        if (target === 'calculator_errors') {
+          hasError = true
+        } else if (target === 'calculator_results') {
+          hasSuccess = true
+        }
+      })
+
+      this.updateContinueButtonState(hasSuccess && !hasError)
+    } catch (error) {
+      console.error("Error parsing Turbo Stream response:", error)
+    }
+  }
+
+  // Update continue button state based on existing DOM state
+  updateContinueButtonStateBasedOnDOM() {
+    // Check if calculator_results contains success content (not placeholder)
+    const resultsElement = document.getElementById('calculator_results')
+    const errorsElement = document.getElementById('calculator_errors')
+
+    let enabled = false
+    if (resultsElement && resultsElement.querySelector('.bg-white.shadow-lg')) {
+      // Success results partial is present
+      enabled = true
+    } else if (errorsElement && errorsElement.querySelector('.bg-red-50')) {
+      // Error partial is present
+      enabled = false
+    } else {
+      // No results yet, check if continue form is already visible
+      const continueForm = document.getElementById('continue_to_contract_form')
+      enabled = continueForm && !continueForm.classList.contains('hidden')
+    }
+
+    this.updateContinueButtonState(enabled)
+  }
+
+  // Update continue button state based on calculation success
+  updateContinueButtonState(enabled) {
+    // Find elements by ID (not using Stimulus targets for broader scope)
+    const continueForm = document.getElementById('continue_to_contract_form')
+    const disabledButton = document.getElementById('disabled_continue_button')
+
+    if (!continueForm || !disabledButton) {
+      console.log("Continue form or disabled button not found, skipping state update")
+      return
+    }
+
+    if (enabled) {
+      // Enable the submit button and show the form
+      continueForm.classList.remove('hidden')
+      disabledButton.classList.add('hidden')
+    } else {
+      // Disable the submit button and show disabled button
+      continueForm.classList.add('hidden')
+      disabledButton.classList.remove('hidden')
+    }
+  }
+
+  // Fallback method to update DOM when Turbo.renderStreamMessage is not available
+  updateDOMWithResponse(html) {
+    console.log("Fallback: manually parsing Turbo Stream response")
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      const turboStreams = doc.querySelectorAll('turbo-stream')
+
+      if (turboStreams.length === 0) {
+        console.error("No turbo-stream elements found in response")
+        return
+      }
+
+      let hasError = false
+      let hasSuccess = false
+
+      turboStreams.forEach(stream => {
+        const action = stream.getAttribute('action')
+        const target = stream.getAttribute('target')
+        const template = stream.querySelector('template')
+
+        // Track error/success for button state
+        if (target === 'calculator_errors') {
+          hasError = true
+        } else if (target === 'calculator_results') {
+          hasSuccess = true
+        }
+
+        if (!template || !target) {
+          console.error("Invalid turbo-stream element:", stream)
+          return
+        }
+
+        const targetElement = document.getElementById(target)
+        if (!targetElement) {
+          console.error("Target element not found:", target)
+          return
+        }
+
+        const content = template.innerHTML
+
+        switch (action) {
+          case 'replace':
+            targetElement.innerHTML = content
+            break
+          case 'append':
+            targetElement.insertAdjacentHTML('beforeend', content)
+            break
+          case 'prepend':
+            targetElement.insertAdjacentHTML('afterbegin', content)
+            break
+          case 'remove':
+            targetElement.remove()
+            break
+          case 'before':
+            targetElement.insertAdjacentHTML('beforebegin', content)
+            break
+          case 'after':
+            targetElement.insertAdjacentHTML('afterend', content)
+            break
+          default:
+            console.error("Unknown turbo-stream action:", action)
+        }
+      })
+
+      // Update button state based on success/error
+      this.updateContinueButtonState(hasSuccess && !hasError)
+    } catch (error) {
+      console.error("Error parsing Turbo Stream response:", error)
+      this.showError("Error al procesar la respuesta del servidor.")
     }
   }
 }
