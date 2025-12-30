@@ -1,0 +1,133 @@
+# Archivo de localización en español para MOVICUOTAS
+# Traducciones para enums y atributos
+
+es:
+  activerecord:
+    attributes:
+      customer:
+        gender: "Género"
+        status: "Estado"
+      credit_application:
+        application_number: "Número de Solicitud"
+        employment_status: "Situación Laboral"
+        salary_range: "Rango Salarial"
+        verification_method: "Método de Verificación"
+        selected_imei: "IMEI seleccionado"
+        status: "Estado"
+      user:
+        role: "Rol"
+    enums:
+      customer:
+        gender:
+          male: "Masculino"
+          female: "Femenino"
+          other: "Otro"
+        status:
+          active: "Activo"
+          suspended: "Suspendido"
+          blocked: "Bloqueado"
+      credit_application:
+        employment_status:
+          employed: "Empleado"
+          self_employed: "Autoempleado"
+          unemployed: "Desempleado"
+          student: "Estudiante"
+          retired: "Jubilado"
+        salary_range:
+          less_than_10000: "Menos de L. 10,000"
+          range_10000_20000: "L. 10,000 - L. 20,000"
+          range_20000_30000: "L. 20,000 - L. 30,000"
+          range_30000_40000: "L. 30,000 - L. 40,000"
+          more_than_40000: "Más de L. 40,000"
+        verification_method:
+          sms: "SMS"
+          whatsapp: "WhatsApp"
+          email: "Correo Electrónico"
+        status:
+          pending: "Pendiente"
+          approved: "Aprobado"
+          rejected: "Rechazado"
+      user:
+        role:
+          admin: "Administrador"
+          vendedor: "Vendedor"
+          cobrador: "Cobrador"
+    errors:
+      messages:
+        taken: "ya está en uso"
+        blank: "no puede estar en blanco"
+        invalid: "no es válido"
+        inclusion: "no está incluido en la lista"
+      models:
+        credit_application:
+          taken: "ya está en uso"
+          inclusion: "no está incluido en la lista"
+          attributes:
+            application_number:
+              taken: "ya está en uso"
+            employment_status:
+              inclusion: "no está incluido en la lista"
+            salary_range:
+              inclusion: "no está incluido en la lista"
+        user:
+          taken: "ya está en uso"
+          attributes:
+            email:
+              taken: "ya está en uso"
+        mdm_blueprint:
+          taken: "ya está en uso"
+          attributes:
+            device:
+              taken: "ya está en uso"
+        device:
+          taken: "ya está en uso"
+          attributes:
+            imei:
+              taken: "ya está en uso"
+        phone_model:
+          taken: "ya está en uso"
+          attributes:
+            model:
+              taken: "ya está en uso"
+        customer:
+          taken: "ya está en uso"
+          attributes:
+            identification_number:
+              taken: "ya está en uso"
+        contract:
+          taken: "ya está en uso"
+          attributes:
+            loan:
+              taken: "ya está en uso"
+        loan:
+          taken: "ya está en uso"
+          attributes:
+            contract_number:
+              taken: "ya está en uso"
+  errors:
+    messages:
+      taken: "ya está en uso"
+      blank: "no puede estar en blanco"
+      invalid: "no es válido"
+      inclusion: "no está incluido en la lista"
+    attributes:
+      application_number:
+        taken: "ya está en uso"
+      email:
+        taken: "ya está en uso"
+      device:
+        taken: "ya está en uso"
+      imei:
+        taken: "ya está en uso"
+      model:
+        taken: "ya está en uso"
+      identification_number:
+        taken: "ya está en uso"
+      loan:
+        taken: "ya está en uso"
+      contract_number:
+        taken: "ya está en uso"
+      employment_status:
+        inclusion: "no está incluido en la lista"
+      salary_range:
+        inclusion: "no está incluido en la lista"

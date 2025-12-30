@@ -46,6 +46,7 @@ module Vendor
     # Calculate installment amount dynamically (Turbo Stream)
     # Called via AJAX/Turbo when user changes down payment or installment term
     def calculate
+      Rails.logger.info "PaymentCalculator#calculate called with params: #{params.permit(:phone_price, :down_payment_percentage, :number_of_installments, :date_of_birth, :approved_amount, :credit_application_id).to_h}"
       authorize nil, policy_class: Vendor::PaymentCalculatorPolicy
 
       phone_price = params[:phone_price]&.to_f || 0

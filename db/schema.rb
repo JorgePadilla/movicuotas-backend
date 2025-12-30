@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_19_034125) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,7 +61,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_034125) do
   create_table "contracts", force: :cascade do |t|
     t.string "contract_document_filename"
     t.datetime "created_at", null: false
-    t.bigint "loan_id", null: false
+    t.bigint "loan_id"
     t.text "notes"
     t.string "signature_image_filename"
     t.datetime "signed_at"
@@ -115,7 +115,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_034125) do
     t.string "color"
     t.datetime "created_at", null: false
     t.string "imei", null: false
-    t.bigint "loan_id", null: false
+    t.bigint "loan_id"
     t.string "lock_status", default: "unlocked"
     t.datetime "locked_at"
     t.bigint "locked_by_id"

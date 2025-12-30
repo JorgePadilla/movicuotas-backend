@@ -7,16 +7,20 @@ if Rails.env.development? || Rails.env.test?
   # Clear existing data (optional - comment out if you want to preserve data)
   puts "Clearing existing data..."
   # Uncomment the following lines to clear data before seeding
-  # PaymentInstallment.delete_all
-  # Payment.delete_all
-  # Installment.delete_all
-  # Loan.delete_all
-  # Device.delete_all
-  # Contract.delete_all
-  # CreditApplication.delete_all
-  # Customer.delete_all
-  # PhoneModel.delete_all
-  # User.delete_all
+  PaymentInstallment.delete_all
+  Payment.delete_all
+  Installment.delete_all
+  MdmBlueprint.delete_all
+  Device.delete_all
+  Contract.delete_all
+  Notification.delete_all
+  Loan.delete_all
+  CreditApplication.delete_all
+  Customer.delete_all
+  PhoneModel.delete_all
+  AuditLog.delete_all
+  Session.delete_all
+  User.delete_all
 
   puts "Seeding data..."
 

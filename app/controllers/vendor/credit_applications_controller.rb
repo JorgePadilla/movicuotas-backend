@@ -15,40 +15,55 @@ module Vendor
     def new
       # Customer ID comes from Step 3b (Cliente Disponible)
       @customer = find_or_initialize_customer
+
+      # Don't pre-fill date_of_birth - let JavaScript handle default (July 1, 2000)
+      # Leave it nil so the input field is clean
+
       @credit_application = CreditApplication.new(customer: @customer)
       authorize @credit_application
     end
 
     # Step 4 submission: Create customer and credit application
     def create
+      Rails.logger.info "Credit application create params: #{params.inspect}"
+      Rails.logger.info "Credit application params (permitted): #{credit_application_params.inspect}"
+
       # Build credit application with nested customer attributes
       @credit_application = CreditApplication.new(credit_application_params)
       @credit_application.vendor = current_user
       @credit_application.status = :pending
 
       # Get customer from the built association for error display
-      @customer = @credit_application.customer || Customer.new
+      @customer = @credit_application.customer || find_or_initialize_customer
+      Rails.logger.info "Customer attributes: #{@customer.attributes.inspect}"
+      Rails.logger.info "Credit application attributes: #{@credit_application.attributes.inspect}"
 
       authorize @credit_application
 
       # Use transaction for atomic save
       saved = false
+      Rails.logger.info "Attempting to save credit application and customer..."
       ActiveRecord::Base.transaction do
         if @credit_application.save
           saved = true
+          Rails.logger.info "Credit application saved successfully with ID: #{@credit_application.id}"
+          Rails.logger.info "Customer saved with ID: #{@customer.id}"
         else
           # Rollback the transaction if save fails
+          Rails.logger.error "Credit application save failed. Errors: #{@credit_application.errors.full_messages}"
+          Rails.logger.error "Customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
           raise ActiveRecord::Rollback
         end
       end
 
       if saved
+        Rails.logger.info "Redirecting to photos path: #{photos_vendor_credit_application_path(@credit_application)}"
         redirect_to photos_vendor_credit_application_path(@credit_application),
                     notice: "Datos generales guardados. Sube las fotografías de identificación."
       else
         # Log errors for debugging
-        Rails.logger.error "Credit application save errors: #{@credit_application.errors.full_messages}" if @credit_application.errors.any?
-        Rails.logger.error "Customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
+        Rails.logger.error "Final credit application errors: #{@credit_application.errors.full_messages}" if @credit_application.errors.any?
+        Rails.logger.error "Final customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
 
         render :new, status: :unprocessable_entity
       end
@@ -76,10 +91,20 @@ module Vendor
 
     # Step 6 submission: Save employment data
     def update_employment
+      Rails.logger.info "Updating employment data for credit application #{@credit_application.id}"
+      Rails.logger.info "Params: #{employment_params.inspect}"
+
+      # Set validation context for employment data step
+      @credit_application.updating_employment = true
+
       if @credit_application.update(employment_params)
+        Rails.logger.info "Employment data saved successfully"
         redirect_to summary_vendor_credit_application_path(@credit_application),
                     notice: "Datos laborales guardados. Revisa el resumen."
       else
+        Rails.logger.error "Failed to update employment data. Errors: #{@credit_application.errors.full_messages}"
+        Rails.logger.error "Employment status: #{@credit_application.employment_status.inspect}"
+        Rails.logger.error "Salary range: #{@credit_application.salary_range.inspect}"
         render :employment, status: :unprocessable_entity
       end
     end
@@ -145,6 +170,7 @@ module Vendor
         Customer.new
       end
     end
+
 
     def credit_application_params
       params.require(:credit_application).permit(

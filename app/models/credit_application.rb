@@ -9,6 +9,9 @@ class CreditApplication < ApplicationRecord
 
   accepts_nested_attributes_for :customer
 
+  # Virtual attribute for validation context
+  attr_accessor :updating_employment
+
   # Enums
   enum :employment_status, { employed: "employed", self_employed: "self_employed", unemployed: "unemployed", student: "student", retired: "retired" }, prefix: true
   enum :salary_range, { less_than_10000: "less_than_10000", range_10000_20000: "10000_20000", range_20000_30000: "20000_30000", range_30000_40000: "30000_40000", more_than_40000: "more_than_40000" }, prefix: true
@@ -17,10 +20,14 @@ class CreditApplication < ApplicationRecord
   validates :application_number, presence: true, uniqueness: true
   validates :status, presence: true, inclusion: { in: %w[pending approved rejected] }
   validate :approved_amount_present_if_approved
-  validates :employment_status, inclusion: { in: CreditApplication.employment_statuses.keys }, allow_blank: true
-  validates :salary_range, inclusion: { in: CreditApplication.salary_ranges.keys }, allow_blank: true
-  validates :verification_method, inclusion: { in: CreditApplication.verification_methods.keys }, allow_blank: true
-  validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, length: { is: 15 }, allow_blank: true
+  validates :employment_status, inclusion: { in: CreditApplication.employment_statuses.keys.map(&:to_s) }, allow_blank: true
+  validates :salary_range, inclusion: { in: CreditApplication.salary_ranges.keys.map(&:to_s) }, allow_blank: true
+  validates :verification_method, inclusion: { in: CreditApplication.verification_methods.keys.map(&:to_s) }, allow_blank: true
+
+  # Conditional presence validations for employment data step
+  validates :employment_status, presence: true, if: :updating_employment
+  validates :salary_range, presence: true, if: :updating_employment
+  validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, allow_blank: true
   validate :selected_phone_price_within_approved_amount, if: -> { selected_phone_model_id.present? && approved? }
 
   # Enums
@@ -85,11 +92,99 @@ class CreditApplication < ApplicationRecord
     end
   end
 
+  # Returns human-readable salary range text
+  def human_salary_range
+    # Map stored value to display text (handles both old and new values)
+    case salary_range
+    when "less_than_10000", "less_than_10000"
+      "Menos de L. 10,000"
+    when "range_10000_20000", "10000_20000"
+      "L. 10,000 - L. 20,000"
+    when "range_20000_30000", "20000_30000"
+      "L. 20,000 - L. 30,000"
+    when "range_30000_40000", "30000_40000"
+      "L. 30,000 - L. 40,000"
+    when "more_than_40000", "more_than_40000"
+      "Más de L. 40,000"
+    else
+      salary_range.to_s.humanize
+    end
+  end
+
   private
 
   def generate_application_number
-    date_part = Time.current.strftime("%Y%m%d")
-    sequence = CreditApplication.where("created_at >= ?", Date.today.beginning_of_day).count + 1
-    self.application_number = "APP-#{date_part}-#{sequence.to_s.rjust(6, '0')}"
+    max_retries = 10
+    retries = 0
+
+    while retries < max_retries
+      date_part = Time.current.strftime("%Y%m%d")
+      base_number = "APP-#{date_part}-"
+
+      # Try to get an advisory lock for this date to prevent race conditions
+      lock_key = Zlib.crc32(date_part) & 0x7fffffff
+      lock_acquired = false
+
+      begin
+        # Try to acquire PostgreSQL advisory lock
+        result = ActiveRecord::Base.connection.select_one("SELECT pg_try_advisory_lock(#{lock_key}) as locked")
+        lock_acquired = result["locked"] if result
+      rescue => e
+        Rails.logger.warn "Could not use advisory lock: #{e.message}"
+      end
+
+      sequence = nil
+
+      if lock_acquired
+        begin
+          # Get the highest sequence number for today
+          last_number = CreditApplication
+            .where("application_number LIKE ?", "#{base_number}%")
+            .order(application_number: :desc)
+            .limit(1)
+            .pluck(:application_number)
+            .first
+
+          if last_number && last_number.start_with?(base_number)
+            # Extract sequence part (last 6 digits)
+            seq_str = last_number[base_number.length..-1]
+            current_seq = seq_str.to_i
+            sequence = current_seq + 1 if current_seq > 0
+          end
+
+          # If no sequence found or extraction failed, count records from today
+          unless sequence
+            sequence = CreditApplication.where("created_at >= ?", Time.current.beginning_of_day).count + 1
+          end
+
+          # Ensure sequence is at least 1
+          sequence = 1 if sequence < 1
+
+          self.application_number = "#{base_number}#{sequence.to_s.rjust(6, '0')}"
+        ensure
+          ActiveRecord::Base.connection.execute("SELECT pg_advisory_unlock(#{lock_key})")
+        end
+      else
+        # Fallback without lock: use timestamp with microseconds
+        timestamp = Time.current.strftime("%Y%m%d-%H%M%S-%6N")
+        random_suffix = SecureRandom.hex(2).upcase
+        self.application_number = "APP-#{timestamp}-#{random_suffix}"
+      end
+
+      # Double-check uniqueness
+      unless CreditApplication.where(application_number: application_number).exists?
+        Rails.logger.info "Generated application number: #{application_number}"
+        return
+      end
+
+      # If we get here, the number already exists (should be rare with lock)
+      retries += 1
+      Rails.logger.warn "Duplicate application number #{application_number}, retry #{retries}/#{max_retries}"
+      sleep(0.1 * retries)
+    end
+
+    # Last resort: use timestamp with random component
+    self.application_number = "APP-#{Time.current.strftime('%Y%m%d-%H%M%S-%6N')}-#{SecureRandom.hex(4).upcase}"
+    Rails.logger.error "Used fallback application number after #{max_retries} retries: #{application_number}"
   end
 end

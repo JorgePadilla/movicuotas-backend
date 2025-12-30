@@ -1,5 +1,12 @@
 <% content_for :title, "Solicitud Aprobada - MOVICUOTAS" %>
 
+<%# Redirect if status has changed to rejected (prevents stale pages) %>
+<% if @credit_application.rejected? %>
+  <script>
+    window.location.href = '<%= rejected_vendor_credit_application_path(@credit_application) %>';
+  </script>
+<% end %>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="text-center">
     <!-- Success Icon -->
@@ -45,7 +52,7 @@
 
     <!-- Action Buttons -->
     <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <%= link_to "Proceder a Catálogo de Teléfonos", vendor_customer_search_path, class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      <%= link_to "Proceder a Catálogo de Teléfonos", vendor_device_selection_path(@credit_application), class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
       <%= link_to "Ver Detalles de la Solicitud", vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-[#125282] text-[#125282] font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200" %>
       <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
     </div>

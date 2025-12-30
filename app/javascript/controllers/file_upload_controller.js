@@ -1,0 +1,74 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["input", "button", "fileName", "area"]
+  static values = {
+    required: { type: Boolean, default: false }
+  }
+
+  connect() {
+    // Add pointer cursor to the clickable area
+    if (this.hasAreaTarget) {
+      this.areaTarget.style.cursor = 'pointer'
+    }
+
+    // If there's already a file selected, show its name
+    this.updateFileName()
+  }
+
+  // Trigger file input when custom button/area is clicked
+  openFilePicker() {
+    this.inputTarget.click()
+  }
+
+  // Update displayed file name when a file is selected
+  updateFileName() {
+    const file = this.inputTarget.files[0]
+    if (file) {
+      const fileName = file.name
+      const fileSize = this.formatFileSize(file.size)
+
+      if (this.hasFileNameTarget) {
+        this.fileNameTarget.textContent = `${fileName} (${fileSize})`
+        this.fileNameTarget.classList.remove('hidden')
+      }
+
+      // Add visual feedback that file is selected
+      if (this.hasAreaTarget) {
+        this.areaTarget.classList.add('border-green-500', 'bg-green-50')
+        this.areaTarget.classList.remove('border-gray-300', 'hover:border-[#125282]')
+      }
+    } else {
+      if (this.hasFileNameTarget) {
+        this.fileNameTarget.textContent = ''
+        this.fileNameTarget.classList.add('hidden')
+      }
+
+      // Reset visual feedback
+      if (this.hasAreaTarget) {
+        this.areaTarget.classList.remove('border-green-500', 'bg-green-50')
+        this.areaTarget.classList.add('border-gray-300', 'hover:border-[#125282]')
+      }
+    }
+  }
+
+  // Handle file selection
+  handleFileSelect(event) {
+    this.updateFileName()
+  }
+
+  // Format file size for display
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  // Clear the selected file
+  clearFile() {
+    this.inputTarget.value = ''
+    this.updateFileName()
+  }
+}

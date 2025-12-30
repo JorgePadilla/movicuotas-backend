@@ -74,6 +74,10 @@ class CreditApplicationPolicy < ApplicationPolicy
     show?  # Read-only view of rejected page
   end
 
+  def confirmation?
+    show?  # Read-only view of confirmation step
+  end
+
   # Scope: Filter applications based on role
   # - Admin: All applications
   # - Vendedor: Only applications they created

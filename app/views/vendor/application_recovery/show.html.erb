@@ -141,7 +141,7 @@
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row justify-between gap-4">
         <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
-        <%= link_to "Proceder a Catálogo de Teléfonos", vendor_customer_search_path, class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+        <%= link_to "Proceder a Catálogo de Teléfonos", vendor_device_selection_path(@credit_application), class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
       </div>
     </div>
   <% elsif @application_number.present? && flash[:alert].present? %>

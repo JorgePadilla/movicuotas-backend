@@ -9,7 +9,7 @@
     <div>
       <% status_color = @credit_application.approved? ? "bg-green-100 text-green-800" : @credit_application.rejected? ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800" %>
       <span class="px-4 py-2 rounded-full text-sm font-semibold <%= status_color %>">
-        <%= @credit_application.status.humanize %>
+        <%= @credit_application.human_enum_name(:status) %>
       </span>
     </div>
   </div>
@@ -38,7 +38,7 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Género</p>
-            <p class="font-medium"><%= @credit_application.customer.gender.humanize %></p>
+            <p class="font-medium"><%= @credit_application.customer.human_enum_name(:gender) %></p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Teléfono</p>
@@ -61,30 +61,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p class="text-sm text-gray-500">Situación Laboral</p>
-            <p class="font-medium"><%= @credit_application.employment_status.humanize %></p>
+            <p class="font-medium"><%= @credit_application.human_enum_name(:employment_status) %></p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Rango Salarial Mensual</p>
             <p class="font-medium">
-              <%= case @credit_application.salary_range
-                  when "less_than_10000"
-                    "Menos de L. 10,000"
-                  when "range_10000_20000"
-                    "L. 10,000 - L. 20,000"
-                  when "range_20000_30000"
-                    "L. 20,000 - L. 30,000"
-                  when "range_30000_40000"
-                    "L. 30,000 - L. 40,000"
-                  when "more_than_40000"
-                    "Más de L. 40,000"
-                  else
-                    @credit_application.salary_range.humanize
-                  end %>
+              <%= @credit_application.human_salary_range %>
             </p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Método de Verificación</p>
-            <p class="font-medium"><%= @credit_application.verification_method.humanize %></p>
+            <p class="font-medium"><%= @credit_application.human_enum_name(:verification_method) %></p>
           </div>
         </div>
       </div>
@@ -199,7 +186,7 @@
           <% end %>
 
           <% if @credit_application.approved? %>
-            <%= link_to "Proceder a Catálogo", vendor_customer_search_path, class: "block w-full text-center px-4 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200" %>
+            <%= link_to "Proceder a Catálogo", vendor_device_selection_path(@credit_application), class: "block w-full text-center px-4 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200" %>
           <% end %>
 
           <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "block w-full text-center px-4 py-3 border border-[#125282] text-[#125282] font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200" %>

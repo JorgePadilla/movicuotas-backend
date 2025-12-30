@@ -1,11 +1,11 @@
 class Contract < ApplicationRecord
   # Associations
-  belongs_to :loan
+  belongs_to :loan, optional: true
   has_one_attached :contract_document
   has_one_attached :signature_image
 
   # Validations
-  validates :loan, presence: true, uniqueness: true
+  validates :loan, uniqueness: true, allow_nil: true
 
   # Callbacks
   before_save :set_signed_at, if: -> { signature_image.attached? && signed_at.blank? }

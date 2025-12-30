@@ -1,14 +1,13 @@
 class Device < ApplicationRecord
   # Associations
-  belongs_to :loan
+  belongs_to :loan, optional: true
   belongs_to :phone_model
   belongs_to :locked_by, class_name: "User", optional: true
   has_one :mdm_blueprint, dependent: :destroy
 
   # Validations
   validates :imei, presence: true, uniqueness: true,
-            format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" },
-            length: { is: 15 }
+            format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }
   validates :brand, presence: true
   validates :model, presence: true
   validates :lock_status, presence: true, inclusion: { in: %w[unlocked pending locked] }

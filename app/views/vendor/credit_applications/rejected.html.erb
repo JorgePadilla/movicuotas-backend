@@ -1,5 +1,12 @@
 <% content_for :title, "Solicitud Rechazada - MOVICUOTAS" %>
 
+<%# Redirect if status has changed to approved (prevents stale pages) %>
+<% if @credit_application.approved? %>
+  <script>
+    window.location.href = '<%= approved_vendor_credit_application_path(@credit_application) %>';
+  </script>
+<% end %>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="text-center">
     <!-- Error Icon -->
