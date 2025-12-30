@@ -37,9 +37,18 @@ module Vendor
         temp_file.rewind
 
         # Attach to contract
-        if @contract.sign!(temp_file, @contract.loan.customer.full_name)
+        if @contract.sign!(temp_file, @contract.loan.customer.full_name, current_user)
           # Update loan status if needed (loan should already be active)
           @contract.loan.update(status: 'active') if @contract.loan.draft?
+
+          # Create notification for customer
+          Notification.create!(
+            customer: @contract.loan.customer,
+            title: 'Contrato Firmado',
+            body: "Tu contrato de crédito #{@contract.loan.contract_number} ha sido firmado exitosamente. Tu crédito está ahora activo.",
+            notification_type: 'contract_signed',
+            sent_at: Time.current
+          )
 
           redirect_to success_vendor_contract_path(@contract),
                       notice: 'Firma guardada exitosamente. ¡Crédito aplicado!'
