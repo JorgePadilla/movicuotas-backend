@@ -1,32 +1,260 @@
 <% content_for :title, "Admin Dashboard - MOVICUOTAS" %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h1 class="text-3xl font-bold text-[#125282] mb-6">Admin Dashboard</h1>
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Dashboard de Administrador</h1>
+    <p class="text-gray-600 mt-2">Estadísticas del sistema y gestión administrativa</p>
+  </div>
 
-  <div class="bg-white shadow rounded-lg p-6">
-    <p class="text-gray-700">
-      Esta es la pantalla de administrador. Aquí se mostrarán estadísticas, gestión de usuarios y otras funciones administrativas.
-    </p>
-    <p class="mt-4 text-sm text-gray-500">
-      Esta funcionalidad será implementada en <strong>Phase 3: Admin Interface</strong>.
-    </p>
+  <!-- Quick actions -->
+  <div class="mb-8 flex flex-wrap gap-4">
+    <%= link_to "Gestión de Usuarios", "#", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Gestión de Clientes", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Reportes del Sistema", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Configuración", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+  </div>
 
-    <div class="mt-8 pt-8 border-t border-gray-200">
-      <h2 class="text-lg font-medium text-gray-900 mb-4">Acciones rápidas</h2>
-      <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <li class="bg-gray-50 p-4 rounded">
-          <h3 class="font-medium text-gray-900">Gestión de Usuarios</h3>
-          <p class="text-sm text-gray-500">Crear y administrar usuarios (admin, vendedor, cobrador)</p>
-        </li>
-        <li class="bg-gray-50 p-4 rounded">
-          <h3 class="font-medium text-gray-900">Reportes del Sistema</h3>
-          <p class="text-sm text-gray-500">Ver reportes de ventas, pagos y mora</p>
-        </li>
-        <li class="bg-gray-50 p-4 rounded">
-          <h3 class="font-medium text-gray-900">Configuración</h3>
-          <p class="text-sm text-gray-500">Configurar parámetros del sistema</p>
-        </li>
-      </ul>
+  <!-- Metrics grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Users card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">👥 Usuarios</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @total_users %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Administradores</span>
+          <span class="font-medium text-gray-800"><%= @admin_users %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Vendedores</span>
+          <span class="font-medium text-gray-800"><%= @vendor_users %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Cobradores</span>
+          <span class="font-medium text-gray-800"><%= @collector_users %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Activos (30 días)</span>
+          <span class="font-medium text-green-600"><%= @active_users %></span>
+        </div>
+      </div>
     </div>
+
+    <!-- Customers card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">👤 Clientes</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @total_customers %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Con préstamos activos</span>
+          <span class="font-medium text-green-600"><%= @customers_with_active_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Suspendidos</span>
+          <span class="font-medium text-orange-500"><%= @suspended_customers %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Bloqueados</span>
+          <span class="font-medium text-red-600"><%= @blocked_customers %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loans card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">💰 Préstamos</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @total_loans %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Activos</span>
+          <span class="font-medium text-green-600"><%= @active_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Completados</span>
+          <span class="font-medium text-blue-600"><%= @completed_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">En mora</span>
+          <span class="font-medium text-red-600"><%= @overdue_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Valor total activos</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@total_loan_value, delimiter: ',') %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">💳 Pagos</h3>
+        <div class="text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@payments_this_month, delimiter: ',') %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Ingresos totales</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@total_revenue, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Monto en mora</span>
+          <span class="font-medium text-red-600">L. <%= number_with_delimiter(@overdue_amount, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Métodos de pago</span>
+          <div class="text-right">
+            <div class="text-xs">
+              <span class="text-gray-600">Efectivo: <%= @cash_payments %></span> |
+              <span class="text-gray-600">Tarjeta: <%= @card_payments %></span> |
+              <span class="text-gray-600">Transferencia: <%= @transfer_payments %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second row: Devices & Branch statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Devices card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">📱 Dispositivos</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @total_devices %></div>
+      </div>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Asignados</span>
+          <span class="font-medium text-gray-800"><%= @assigned_devices %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Disponibles</span>
+          <span class="font-medium text-green-600"><%= @available_devices %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Branch statistics card -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#125282]">🏢 Estadísticas por Sucursal</h3>
+      </div>
+      <div class="space-y-3">
+        <% if @loans_by_branch.any? %>
+          <% @loans_by_branch.each do |branch_number, loan_count| %>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Sucursal <%= branch_number %></span>
+              <div class="text-right">
+                <div class="font-medium text-gray-800"><%= loan_count %> préstamos</div>
+                <div class="text-xs text-gray-500">
+                  <% revenue = @revenue_by_branch[branch_number] || 0 %>
+                  L. <%= number_with_delimiter(revenue, delimiter: ',') %> recaudado
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-gray-500 text-sm">No hay datos de sucursales</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three-column layout for recent activity -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent loans -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-[#125282]">Préstamos Recientes</h3>
+        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <% if @recent_loans.any? %>
+        <div class="space-y-3">
+          <% @recent_loans.each do |loan| %>
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0">
+              <div>
+                <div class="font-medium text-gray-900"><%= loan.contract_number %></div>
+                <div class="text-xs text-gray-500"><%= loan.customer.full_name %></div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium text-gray-800">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></div>
+                <div class="text-xs text-gray-500"><%= loan.created_at.strftime("%d/%m/%Y") %></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-8">No hay préstamos recientes</p>
+      <% end %>
+    </div>
+
+    <!-- Recent payments -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-[#125282]">Pagos Recientes</h3>
+        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <% if @recent_payments.any? %>
+        <div class="space-y-3">
+          <% @recent_payments.each do |payment| %>
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0">
+              <div>
+                <div class="font-medium text-gray-900"><%= payment.loan.customer.full_name %></div>
+                <div class="text-xs text-gray-500"><%= payment.payment_date.strftime("%d/%m/%Y") %></div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium text-gray-800">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></div>
+                <div class="text-xs">
+                  <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-xs"><%= payment.payment_method.titleize %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-8">No hay pagos recientes</p>
+      <% end %>
+    </div>
+
+    <!-- Recent users -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold text-[#125282]">Usuarios Recientes</h3>
+        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+      </div>
+      <% if @recent_users.any? %>
+        <div class="space-y-3">
+          <% @recent_users.each do |user| %>
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0">
+              <div>
+                <div class="font-medium text-gray-900"><%= user.full_name %></div>
+                <div class="text-xs text-gray-500"><%= user.email %></div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm">
+                  <span class="px-2 py-1 text-xs rounded-full <%= user.role == 'admin' ? 'bg-purple-100 text-purple-800' : user.role == 'vendedor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
+                    <%= user.role.titleize %>
+                  </span>
+                </div>
+                <div class="text-xs text-gray-500"><%= user.created_at.strftime("%d/%m/%Y") %></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-8">No hay usuarios recientes</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Footer note -->
+  <div class="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+    <p>Dashboard de administrador • Actualizado en tiempo real • Última actualización: <%= Time.current.strftime("%d/%m/%Y %H:%M") %></p>
   </div>
 </div>
