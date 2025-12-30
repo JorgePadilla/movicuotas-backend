@@ -1,0 +1,160 @@
+<% content_for :title, "Fotografías - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Progress Bar -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282] mb-2">Solicitud de Crédito - Paso 2 de 4</h1>
+    <p class="text-gray-600 mb-4">Fotografías de Identificación</p>
+
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">1</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Generales</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">2</div>
+        <span class="ml-2 font-medium text-[#125282]">Fotografías</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">3</div>
+        <span class="ml-2 font-medium text-gray-500">Datos Laborales</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">4</div>
+        <span class="ml-2 font-medium text-gray-500">Resumen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <%= form_with model: @credit_application, url: update_photos_vendor_credit_application_path(@credit_application), method: :patch, class: "space-y-8" do |f| %>
+      <div class="space-y-6">
+        <!-- ID Front Image -->
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
+             data-controller="file-upload"
+             data-file-upload-target="area"
+             data-action="click->file-upload#openFilePicker">
+          <div class="mb-4">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía del Frente de la Identificación *</h3>
+          <p class="text-sm text-gray-500 mb-4">Sube una imagen clara del frente de la identificación (DNI, licencia, etc.)</p>
+          <p class="text-xs text-[#125282] mb-4 font-medium">✨ Haz clic en cualquier parte de este área para seleccionar archivo</p>
+
+          <%= f.file_field :id_front_image,
+                accept: "image/*",
+                class: "hidden",
+                required: true,
+                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+
+          <button type="button"
+                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]"
+                  data-file-upload-target="button"
+                  data-action="click->file-upload#openFilePicker">
+            Seleccionar archivo
+          </button>
+
+          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+
+          <% if @credit_application.id_front_image.attached? %>
+            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+          <% end %>
+        </div>
+
+        <!-- ID Back Image -->
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
+             data-controller="file-upload"
+             data-file-upload-target="area"
+             data-action="click->file-upload#openFilePicker">
+          <div class="mb-4">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía del Reverso de la Identificación *</h3>
+          <p class="text-sm text-gray-500 mb-4">Sube una imagen clara del reverso de la identificación</p>
+          <p class="text-xs text-[#125282] mb-4 font-medium">✨ Haz clic en cualquier parte de este área para seleccionar archivo</p>
+
+          <%= f.file_field :id_back_image,
+                accept: "image/*",
+                class: "hidden",
+                required: true,
+                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+
+          <button type="button"
+                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]"
+                  data-file-upload-target="button"
+                  data-action="click->file-upload#openFilePicker">
+            Seleccionar archivo
+          </button>
+
+          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+
+          <% if @credit_application.id_back_image.attached? %>
+            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+          <% end %>
+        </div>
+
+        <!-- Facial Verification Image -->
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
+             data-controller="file-upload"
+             data-file-upload-target="area"
+             data-action="click->file-upload#openFilePicker">
+          <div class="mb-4">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía de Verificación Facial *</h3>
+          <p class="text-sm text-gray-500 mb-4">Sube una selfie del cliente sosteniendo la identificación cerca del rostro</p>
+          <%= f.file_field :facial_verification_image,
+                accept: "image/*",
+                class: "hidden",
+                required: true,
+                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+
+          <button type="button"
+                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]"
+                  data-file-upload-target="button"
+                  data-action="click->file-upload#openFilePicker">
+            Seleccionar archivo
+          </button>
+
+          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+          <% if @credit_application.facial_verification_image.attached? %>
+            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Verification Method -->
+      <div class="pt-6 border-t border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Método de Verificación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <% CreditApplication.verification_methods.each_key do |method| %>
+            <label class="relative flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-[#125282] transition-colors duration-200">
+              <%= f.radio_button :verification_method, method,
+                    class: "h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]",
+                    required: true %>
+              <span class="ml-3 text-sm font-medium text-gray-900">
+                <%= method.humanize %>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">Selecciona cómo el cliente recibirá el código de verificación</p>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between pt-6 border-t border-gray-200">
+        <%= link_to "← Anterior", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      </div>
+    <% end %>
+  </div>
+</div>

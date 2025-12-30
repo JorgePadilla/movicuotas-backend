@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <title><%= content_for(:title) || "Movicuotas Backend" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -20,6 +20,94 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Flatpickr CSS for date picker %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" data-turbo-track="reload">
+    <%# Pikaday CSS for date picker %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" data-turbo-track="reload">
+    <style>
+      /* Custom styles for Flatpickr calendar */
+      .flatpickr-calendar {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+      }
+      .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+        background-color: #125282;
+        border-color: #125282;
+      }
+      .flatpickr-day.today {
+        border-color: #125282;
+        color: #125282;
+      }
+      .flatpickr-day.today:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .flatpickr-months .flatpickr-month {
+        color: #125282;
+      }
+      .flatpickr-current-month .flatpickr-monthDropdown-months {
+        color: #125282;
+      }
+      .flatpickr-weekdays {
+        background-color: #f9fafb;
+      }
+      .flatpickr-weekday {
+        color: #6b7280;
+        font-weight: 600;
+      }
+
+      /* Custom styles for Pikaday calendar */
+      .pikaday-es-calendar .pika-single {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+      }
+      .pikaday-es-calendar .pika-title {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-label {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-select {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-prev,
+      .pikaday-es-calendar .pika-next {
+        color: #125282;
+      }
+      .pikaday-es-calendar .pika-prev:hover,
+      .pikaday-es-calendar .pika-next:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .pika-table th {
+        color: #125282;
+        font-weight: 600;
+      }
+      .pikaday-es-calendar .is-selected .pika-button {
+        background-color: #125282;
+        border-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .pika-button:hover {
+        background-color: #125282;
+        color: white;
+      }
+      .pikaday-es-calendar .is-today .pika-button {
+        color: #125282;
+        font-weight: bold;
+        border-color: #125282;
+      }
+      .pikaday-es-calendar .is-disabled .pika-button {
+        color: #9ca3af;
+      }
+      .pikaday-es-calendar .is-outside-current-month .pika-button {
+        color: #d1d5db;
+      }
+    </style>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -55,9 +143,7 @@
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <a href="<%= root_path %>" class="flex items-center space-x-2">
-            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+            <%= image_tag "FullLogo_Transparent_NoBuffer-3-cut.png", alt: "MOVICUOTAS Logo", class: "h-8 w-auto" %>
             <span class="text-xl font-bold">MOVICUOTAS</span>
           </a>
           <span class="text-sm opacity-80">Tu Crédito, Tu Móvil</span>
@@ -73,7 +159,11 @@
                 </span>
               </div>
               <div class="h-6 w-px bg-white/30"></div>
-              <%= link_to "Cerrar Sesión", logout_path, method: :delete, class: "text-sm hover:bg-white/10 px-3 py-1 rounded transition-colors" %>
+              <% if current_user.admin? %>
+                <%= link_to "Admin", admin_dashboard_path, class: "text-sm hover:bg-white/10 px-3 py-1 rounded transition-colors" %>
+                <div class="h-6 w-px bg-white/30"></div>
+              <% end %>
+              <%= link_to "Cerrar Sesión", logout_path, data: { turbo_method: :delete }, class: "text-sm hover:bg-white/10 px-3 py-1 rounded transition-colors" %>
             </div>
             <div class="md:hidden">
               <button id="mobile-menu-button" class="p-1 rounded hover:bg-white/10">
@@ -83,14 +173,16 @@
               </button>
             </div>
           <% else %>
-            <%= link_to "Iniciar Sesión", login_path, class: "text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded transition-colors" %>
+            <% unless current_page?(login_path) %>
+              <%= link_to "Iniciar Sesión", login_path, class: "text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded transition-colors" %>
+            <% end %>
           <% end %>
         </div>
       </div>
 
       <!-- Mobile menu (hidden by default) -->
       <% if current_user %>
-        <div id="mobile-menu" class="hidden md:hidden bg-[#0f4670] px-4 py-3 border-t border-white/10">
+        <div id="mobile-menu" class="hidden md:hidden bg-[#0f4670] px-3 py-3 border-t border-white/10">
           <div class="space-y-3">
             <div class="text-sm">
               <p class="font-medium"><%= current_user.full_name %></p>
@@ -113,7 +205,7 @@
                     </span>
                   <% end %>
 
-                  <%= link_to "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" do %>
+                  <%= link_to vendor_dashboard_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(vendor_dashboard_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
                     <span class="flex items-center">
                       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -122,7 +214,7 @@
                     </span>
                   <% end %>
 
-                  <%= link_to "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" do %>
+                  <%= link_to vendor_customer_search_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(vendor_customer_search_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
                     <span class="flex items-center">
                       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13 0h-6"/>
@@ -131,7 +223,7 @@
                     </span>
                   <% end %>
 
-                  <%= link_to "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" do %>
+                  <%= link_to vendor_loans_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(vendor_loans_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
                     <span class="flex items-center">
                       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
@@ -140,7 +232,7 @@
                     </span>
                   <% end %>
 
-                  <%= link_to "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" do %>
+                  <%= link_to vendor_payments_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(vendor_payments_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
                     <span class="flex items-center">
                       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -149,7 +241,7 @@
                     </span>
                   <% end %>
 
-                  <%= link_to "#", class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" do %>
+                  <%= link_to vendor_dashboard_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(vendor_dashboard_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
                     <span class="flex items-center">
                       <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -160,22 +252,37 @@
                 </div>
               </div>
             <% end %>
+            <% if current_user.admin? %>
+              <div class="pt-3 border-t border-white/10">
+                <h4 class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">Admin</h4>
+                <div class="space-y-1">
+                  <%= link_to admin_dashboard_path, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{current_page?(admin_dashboard_path) ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
+                    <span class="flex items-center">
+                      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                      </svg>
+                      Dashboard
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
 
             <div class="pt-3 border-t border-white/10">
-              <%= link_to "Cerrar Sesión", logout_path, method: :delete, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" %>
+              <%= link_to "Cerrar Sesión", logout_path, data: { turbo_method: :delete }, class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors text-white/90" %>
             </div>
           </div>
         </div>
       <% end %>
     </header>
 
-    <main class="container mx-auto mt-28 px-5 flex">
-      <% if current_user&.vendedor? %>
+    <main class="container mx-auto mt-28 px-5 md:pl-0 md:pr-5 flex">
+      <% if current_user&.vendedor? || current_user&.admin? %>
         <%# Vendor Sidebar Navigation %>
-        <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-28">
+        <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-28 md:left-0">
           <div class="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
             <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <nav class="flex-1 px-4 space-y-2">
+              <nav class="flex-1 px-6 space-y-2">
                 <%= link_to vendor_customer_search_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_customer_search_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -183,35 +290,35 @@
                   Buscar Cliente
                 <% end %>
 
-                <%= link_to "#", class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100" do %>
+                <%= link_to vendor_dashboard_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_dashboard_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                   </svg>
                   Dashboard
                 <% end %>
 
-                <%= link_to "#", class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100" do %>
+                <%= link_to vendor_customer_search_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_customer_search_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13 0h-6"/>
                   </svg>
                   Clientes
                 <% end %>
 
-                <%= link_to "#", class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100" do %>
+                <%= link_to vendor_loans_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_loans_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                   </svg>
                   Préstamos
                 <% end %>
 
-                <%= link_to "#", class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100" do %>
+                <%= link_to vendor_payments_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_payments_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                   </svg>
                   Pagos
                 <% end %>
 
-                <%= link_to "#", class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100" do %>
+                <%= link_to vendor_dashboard_path, class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{current_page?(vendor_dashboard_path) ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
                   <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
@@ -223,7 +330,7 @@
         </div>
 
         <%# Main content area with sidebar offset %>
-        <div class="md:pl-64 flex-1">
+        <div class="md:pl-60 flex-1">
           <%= yield %>
         </div>
       <% else %>

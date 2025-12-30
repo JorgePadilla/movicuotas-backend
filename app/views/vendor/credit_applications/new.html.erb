@@ -1,0 +1,191 @@
+<% content_for :title, "Datos Generales - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Progress Bar -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282] mb-2">Solicitud de Crédito - Paso 1 de 4</h1>
+    <p class="text-gray-600 mb-4">Datos Generales del Cliente</p>
+
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">1</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Generales</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">2</div>
+        <span class="ml-2 font-medium text-gray-500">Fotografías</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">3</div>
+        <span class="ml-2 font-medium text-gray-500">Datos Laborales</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">4</div>
+        <span class="ml-2 font-medium text-gray-500">Resumen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @credit_application.errors.any? || @customer.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              Por favor corrige los siguientes errores:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <% @credit_application.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+                <% @customer.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @credit_application, url: vendor_credit_applications_path, class: "space-y-6" do |f| %>
+      <%= f.fields_for :customer, @customer do |customer_fields| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Identification Number -->
+          <div>
+            <%= customer_fields.label :identification_number, "Número de Identidad *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :identification_number,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: 0801199012345 (13 dígitos)",
+                  required: true,
+                  pattern: "\\d{13}",
+                  title: "Debe tener 13 dígitos numéricos" %>
+            <p class="mt-1 text-sm text-gray-500">13 dígitos sin guiones ni espacios</p>
+          </div>
+
+          <!-- Full Name -->
+          <div>
+            <%= customer_fields.label :full_name, "Nombre Completo *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :full_name,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: Juan Pérez García",
+                  required: true %>
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <%= customer_fields.label :gender, "Género *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.select :gender,
+                  options_for_select(Customer.genders.map { |key, value| [Customer.human_enum_name(:gender, key), key] }, @customer.gender),
+                  { include_blank: "Seleccionar..." },
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  required: true %>
+          </div>
+
+          <!-- Date of Birth -->
+          <div>
+            <%= customer_fields.label :date_of_birth, "Fecha de Nacimiento *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <div data-controller="pikaday-es"
+                 data-pikaday-es-max-value="<%= Date.today.iso8601 %>"
+                 data-pikaday-es-placeholder-value="DD/MM/AAAA"
+                 <% if @customer.date_of_birth.present? %>
+                 data-pikaday-es-initial-value-value="<%= @customer.date_of_birth.iso8601 %>"
+                 <% end %>>
+              <%= customer_fields.date_field :date_of_birth,
+                    class: "hidden",
+                    max: Date.today.iso8601,
+                    data: { pikaday_es_target: "dateInput" } %>
+              <div class="relative">
+                <%= text_field_tag nil, nil,
+                      class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                      required: true,
+                      placeholder: "DD/MM/AAAA",
+                      data: { pikaday_es_target: "input" } %>
+                <button type="button"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        data-action="click->pikaday-es#show"
+                        data-pikaday-es-target="button">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <p class="mt-1 text-sm text-gray-500">Formato: DD/MM/AAAA. Debe ser mayor de edad (18+ años)</p>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div>
+            <%= customer_fields.label :address, "Dirección *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :address,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: Colonia Los Alamos, Calle Principal",
+                  required: true %>
+          </div>
+
+          <!-- City -->
+          <div>
+            <%= customer_fields.label :city, "Ciudad *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :city,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: Tegucigalpa",
+                  required: true %>
+          </div>
+
+          <!-- Department -->
+          <div>
+            <%= customer_fields.label :department, "Departamento *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :department,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: Francisco Morazán",
+                  required: true %>
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <%= customer_fields.label :phone, "Teléfono *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.text_field :phone,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "Ej: 98765432 (8 dígitos)",
+                  required: true,
+                  pattern: "\\d{8}",
+                  title: "Debe tener 8 dígitos numéricos" %>
+            <p class="mt-1 text-sm text-gray-500">8 dígitos sin guiones ni espacios</p>
+          </div>
+
+          <!-- Email (Optional) -->
+          <div>
+            <%= customer_fields.label :email, "Correo Electrónico (Opcional)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= customer_fields.email_field :email,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  placeholder: "ejemplo@correo.com" %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Notes -->
+      <div class="pt-4 border-t border-gray-200">
+        <%= f.label :notes, "Notas Adicionales (Opcional)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :notes,
+              rows: 3,
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+              placeholder: "Observaciones o comentarios sobre esta solicitud..." %>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between pt-6 border-t border-gray-200">
+        <%= link_to "← Cancelar", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      </div>
+    <% end %>
+  </div>
+</div>

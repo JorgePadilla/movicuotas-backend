@@ -5,6 +5,12 @@ class PagesController < ApplicationController
 
   def home
     # Root page with identity search
+    # Redirect to customer search if user is already logged in
+    if current_user
+      redirect_to root_path
+      return
+    end
+
     authorize :page
   end
 end

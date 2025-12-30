@@ -29,7 +29,7 @@
           <p class="text-xl font-semibold text-gray-900">L. <%= number_with_delimiter((@approved_amount - @phone_price).round(2), delimiter: ",") %></p>
         </div>
         <div>
-          <p class="text-sm font-medium text-gray-500">Tasa de Interés Anual</p>
+          <p class="text-sm font-medium text-gray-500">Tasa de Interés Quincenal</p>
           <p class="text-lg font-semibold text-gray-900"><%= BiweeklyCalculatorService::DEFAULT_INTEREST_RATE %>%</p>
         </div>
       </div>
@@ -150,14 +150,26 @@
   <%# Navigation %>
   <div class="flex flex-col md:flex-row justify-between items-center mt-8 pt-8 border-t border-gray-200">
     <div>
-      <%= link_to "← Volver a selección de teléfono", vendor_device_selection_path, class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+      <% if @credit_application_id.present? %>
+        <%= link_to "← Volver a selección de teléfono", vendor_device_selection_path(@credit_application_id), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+      <% else %>
+        <%= link_to "← Volver a búsqueda de cliente", vendor_customer_search_path, class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+      <% end %>
     </div>
     <div>
       <% if @result && @result[:success] %>
-        <%= button_to "Continuar al Contrato →",
-                      vendor_payment_calculator_path,
-                      method: :post,
-                      class: "bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600" %>
+        <%= form_with url: vendor_payment_calculator_path, method: :post, class: "inline" do |f| %>
+          <%= hidden_field_tag :phone_price, @phone_price %>
+          <%= hidden_field_tag :approved_amount, @approved_amount %>
+          <%= hidden_field_tag :date_of_birth, @date_of_birth %>
+          <%= hidden_field_tag :down_payment_percentage, @down_payment_percentage %>
+          <%= hidden_field_tag :number_of_installments, @number_of_installments %>
+          <%= hidden_field_tag :credit_application_id, @credit_application_id %>
+          <button type="submit"
+                  class="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">
+            Continuar al Contrato →
+          </button>
+        <% end %>
       <% else %>
         <button disabled class="bg-gray-300 text-gray-500 font-semibold py-3 px-8 rounded-lg cursor-not-allowed">
           Continuar al Contrato →

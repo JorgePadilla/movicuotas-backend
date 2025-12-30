@@ -1,0 +1,113 @@
+<% content_for :title, "Datos Laborales - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Progress Bar -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282] mb-2">Solicitud de Crédito - Paso 3 de 4</h1>
+    <p class="text-gray-600 mb-4">Datos Laborales del Cliente</p>
+
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">1</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Generales</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">2</div>
+        <span class="ml-2 font-medium text-[#125282]">Fotografías</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">3</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Laborales</span>
+      </div>
+      <div class="h-1 w-8 bg-gray-300"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">4</div>
+        <span class="ml-2 font-medium text-gray-500">Resumen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @credit_application.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              Por favor corrige los siguientes errores:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <% @credit_application.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @credit_application, url: update_employment_vendor_credit_application_path(@credit_application), method: :patch, class: "space-y-8" do |f| %>
+      <!-- Employment Status -->
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Situación Laboral *</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% CreditApplication.employment_statuses.each_key do |status| %>
+            <label class="relative flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-[#125282] transition-colors duration-200">
+              <%= f.radio_button :employment_status, status,
+                    class: "h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]",
+                    required: true %>
+              <span class="ml-3 text-sm font-medium text-gray-900">
+                <%= CreditApplication.human_enum_name(:employment_status, status) %>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Salary Range -->
+      <div class="pt-6 border-t border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Rango Salarial Mensual (L.) *</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% CreditApplication.salary_ranges.each_key do |key| %>
+            <label class="relative flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-[#125282] transition-colors duration-200">
+              <%= f.radio_button :salary_range, key,
+                    class: "h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]",
+                    required: true %>
+              <span class="ml-3 text-sm font-medium text-gray-900">
+                <%= case key.to_s
+                    when "less_than_10000"
+                      "Menos de L. 10,000"
+                    when "range_10000_20000"
+                      "L. 10,000 - L. 20,000"
+                    when "range_20000_30000"
+                      "L. 20,000 - L. 30,000"
+                    when "range_30000_40000"
+                      "L. 30,000 - L. 40,000"
+                    when "more_than_40000"
+                      "Más de L. 40,000"
+                    else
+                      key.to_s.humanize
+                    end %>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">Selecciona el rango salarial mensual del cliente</p>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between pt-6 border-t border-gray-200">
+        <%= link_to "← Anterior", photos_vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      </div>
+    <% end %>
+  </div>
+</div>

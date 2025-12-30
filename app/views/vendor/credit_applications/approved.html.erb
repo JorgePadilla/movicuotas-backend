@@ -1,0 +1,60 @@
+<% content_for :title, "Solicitud Aprobada - MOVICUOTAS" %>
+
+<%# Redirect if status has changed to rejected (prevents stale pages) %>
+<% if @credit_application.rejected? %>
+  <script>
+    window.location.href = '<%= rejected_vendor_credit_application_path(@credit_application) %>';
+  </script>
+<% end %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="text-center">
+    <!-- Success Icon -->
+    <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-6">
+      <svg class="h-12 w-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-green-600 mb-4">¡Solicitud Aprobada!</h1>
+
+    <!-- Application Number -->
+    <div class="inline-block bg-green-50 border border-green-200 rounded-lg px-6 py-4 mb-6">
+      <p class="text-sm text-green-700 mb-1">Número de Solicitud</p>
+      <p class="text-2xl font-bold text-green-900"><%= @credit_application.application_number %></p>
+    </div>
+
+    <!-- Message -->
+    <div class="max-w-2xl mx-auto mb-8">
+      <p class="text-lg text-gray-700 mb-4">
+        La solicitud de crédito para <span class="font-semibold"><%= @credit_application.customer.full_name %></span> ha sido aprobada exitosamente.
+      </p>
+      <p class="text-gray-600">
+        El cliente puede proceder a seleccionar un teléfono del catálogo. <strong class="text-green-700">No compartas el monto aprobado con el cliente</strong> - el sistema validará automáticamente que el precio del teléfono seleccionado no exceda el límite aprobado.
+      </p>
+    </div>
+
+    <!-- Important Note -->
+    <div class="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+      <div class="flex">
+        <svg class="h-6 w-6 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <h3 class="text-sm font-medium text-blue-900">Información Importante</h3>
+          <p class="mt-1 text-sm text-blue-700">
+            El monto aprobado está almacenado en el sistema para validación interna. <strong>No se muestra en pantalla</strong> para mantener la confidencialidad. El cliente seleccionará un teléfono y el sistema validará que el precio no exceda el límite.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <%= link_to "Proceder a Catálogo de Teléfonos", vendor_device_selection_path(@credit_application), class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+      <%= link_to "Ver Detalles de la Solicitud", vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-[#125282] text-[#125282] font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200" %>
+      <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+    </div>
+  </div>
+</div>

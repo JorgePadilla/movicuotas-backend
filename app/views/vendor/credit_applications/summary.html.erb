@@ -1,0 +1,176 @@
+<% content_for :title, "Resumen Solicitud - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Progress Bar -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282] mb-2">Solicitud de Crédito - Paso 4 de 4</h1>
+    <p class="text-gray-600 mb-4">Resumen de la Solicitud</p>
+
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">1</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Generales</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">2</div>
+        <span class="ml-2 font-medium text-[#125282]">Fotografías</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">3</div>
+        <span class="ml-2 font-medium text-[#125282]">Datos Laborales</span>
+      </div>
+      <div class="h-1 w-8 bg-[#125282]"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">4</div>
+        <span class="ml-2 font-medium text-[#125282]">Resumen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <!-- Customer Data Summary -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Datos del Cliente</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Nombre Completo</p>
+          <p class="font-medium"><%= @credit_application.customer.full_name %></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Número de Identidad</p>
+          <p class="font-medium"><%= @credit_application.customer.identification_number %></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Fecha de Nacimiento / Edad</p>
+          <p class="font-medium">
+            <%= @credit_application.customer.date_of_birth.strftime("%d/%m/%Y") %>
+            (<%= @credit_application.customer.age %> años)
+          </p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Teléfono</p>
+          <p class="font-medium"><%= @credit_application.customer.phone %></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Dirección</p>
+          <p class="font-medium"><%= @credit_application.customer.address %>, <%= @credit_application.customer.city %>, <%= @credit_application.customer.department %></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Correo Electrónico</p>
+          <p class="font-medium"><%= @credit_application.customer.email.presence || "No proporcionado" %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photos Summary -->
+    <div class="mb-8 pt-6 border-t border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Fotografías de Identificación</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg text-center">
+          <div class="mb-2">
+            <% if @credit_application.id_front_image.attached? %>
+              <svg class="mx-auto h-8 w-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-green-600 font-medium">Subida</p>
+            <% else %>
+              <svg class="mx-auto h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-red-600 font-medium">Pendiente</p>
+            <% end %>
+          </div>
+          <p class="text-sm font-medium text-gray-900">Frente de Identificación</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg text-center">
+          <div class="mb-2">
+            <% if @credit_application.id_back_image.attached? %>
+              <svg class="mx-auto h-8 w-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-green-600 font-medium">Subida</p>
+            <% else %>
+              <svg class="mx-auto h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-red-600 font-medium">Pendiente</p>
+            <% end %>
+          </div>
+          <p class="text-sm font-medium text-gray-900">Reverso de Identificación</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg text-center">
+          <div class="mb-2">
+            <% if @credit_application.facial_verification_image.attached? %>
+              <svg class="mx-auto h-8 w-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-green-600 font-medium">Subida</p>
+            <% else %>
+              <svg class="mx-auto h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-red-600 font-medium">Pendiente</p>
+            <% end %>
+          </div>
+          <p class="text-sm font-medium text-gray-900">Verificación Facial</p>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-500">Método de verificación: <span class="font-medium"><%= @credit_application.human_enum_name(:verification_method) %></span></p>
+    </div>
+
+    <!-- Employment Data Summary -->
+    <div class="mb-8 pt-6 border-t border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Datos Laborales</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Situación Laboral</p>
+          <p class="font-medium"><%= @credit_application.human_enum_name(:employment_status) %></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Rango Salarial Mensual</p>
+          <p class="font-medium">
+            <%= @credit_application.human_salary_range %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <% if @credit_application.notes.present? %>
+      <div class="mb-8 pt-6 border-t border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Notas Adicionales</h2>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-gray-700"><%= @credit_application.notes %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Submit Form -->
+    <div class="pt-6 border-t border-gray-200">
+      <%= form_with model: @credit_application, url: submit_vendor_credit_application_path(@credit_application), method: :post, class: "space-y-6" do |f| %>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="flex">
+            <svg class="h-5 w-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div>
+              <h3 class="text-sm font-medium text-blue-900">Confirmación de Envío</h3>
+              <p class="mt-1 text-sm text-blue-700">
+                Al enviar esta solicitud, el sistema evaluará automáticamente la elegibilidad del cliente.
+                Recibirás una notificación de aprobación o rechazo inmediatamente.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between">
+          <%= link_to "← Editar Datos Laborales", employment_vendor_credit_application_path(@credit_application), class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
+          <%= f.submit "Enviar Solicitud", class: "px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

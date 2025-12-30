@@ -1,0 +1,197 @@
+<%# app/views/vendor/contracts/signature.html.erb - Step 14: Digital Signature %>
+<% content_for :title, "Firma Digital - Movicuotas" %>
+<% content_for :head do %>
+  <%= javascript_import_module_tag "controllers/signature_controller" %>
+<% end %>
+
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Firma Digital del Contrato</h1>
+    <p class="text-gray-600 mt-2">Capture la firma del cliente en el área designada. La firma será almacenada digitalmente y adjuntada al contrato.</p>
+
+    <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <svg class="h-6 w-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+          </svg>
+          <div>
+            <p class="font-medium text-blue-800">Cliente: <%= @contract.loan.customer.full_name %></p>
+            <p class="text-sm text-blue-600">Contrato: <%= @contract.loan.contract_number %></p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-blue-700">Paso 14 de 18</p>
+          <p class="text-xs text-blue-600">Firma Digital</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Canvas Container -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-gray-200">
+    <!-- Canvas Header -->
+    <div class="bg-[#125282] text-white p-4">
+      <h2 class="text-xl font-bold text-center">FIRMA DEL CLIENTE</h2>
+      <p class="text-center text-sm opacity-90 mt-1">Firme con el dedo o mouse en el área de abajo</p>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="p-6">
+      <div data-controller="signature"
+           data-signature-save-url="<%= save_signature_vendor_contract_path(@contract) %>"
+           data-action="
+             mousedown->signature#startDrawing
+             mousemove->signature#draw
+             mouseup->signature#stopDrawing
+             mouseleave->signature#stopDrawing
+             touchstart->signature#startDrawing
+             touchmove->signature#draw
+             touchend->signature#stopDrawing
+           ">
+
+        <!-- Canvas -->
+        <div class="mb-6">
+          <canvas id="signatureCanvas"
+                  data-signature-target="canvas"
+                  class="w-full h-96 border-4 border-[#125282] rounded-lg bg-white touch-none"
+                  width="800"
+                  height="400">
+            Su navegador no soporta el elemento canvas.
+          </canvas>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 class="font-bold text-gray-700 mb-2 flex items-center">
+            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Instrucciones:
+          </h3>
+          <ul class="list-disc pl-5 text-gray-600 space-y-1">
+            <li>Use el mouse o su dedo para firmar en el área blanca arriba.</li>
+            <li>La firma debe ser clara y legible.</li>
+            <li>Si comete un error, use el botón "Limpiar" para empezar de nuevo.</li>
+            <li>Al guardar, la firma se adjuntará permanentemente al contrato.</li>
+          </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 justify-between items-center">
+          <div class="flex flex-wrap gap-4">
+            <button type="button"
+                    data-action="signature#clear"
+                    class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Limpiar
+            </button>
+
+            <button type="button"
+                    data-action="signature#undo"
+                    class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+              Deshacer
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-4">
+            <%= link_to "← Volver al Contrato", vendor_contract_path(@contract), class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" %>
+
+            <button type="button"
+                    data-action="signature#save"
+                    class="px-6 py-3 bg-[#10b981] text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              Guardar Firma
+            </button>
+          </div>
+        </div>
+
+        <!-- Hidden form for submission -->
+        <%= form_with url: save_signature_vendor_contract_path(@contract), method: :post, id: "signatureForm", class: "hidden" do |f| %>
+          <%= f.hidden_field :signature_data, id: "signatureData", data: { signature_target: "data" } %>
+        <% end %>
+
+        <!-- Status messages -->
+        <div class="mt-6">
+          <div data-signature-target="status" class="hidden p-4 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signature Preview (if already signed) -->
+  <% if @contract.signature_image.attached? %>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-gray-200">
+      <div class="bg-green-50 text-green-800 p-4">
+        <h3 class="font-bold text-lg flex items-center">
+          <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Firma Ya Guardada
+        </h3>
+        <p class="mt-1">Este contrato ya tiene una firma digital registrada.</p>
+      </div>
+      <div class="p-6">
+        <p class="text-gray-600 mb-4">Firma actual:</p>
+        <div class="flex items-center space-x-6">
+          <div class="border border-gray-300 rounded-lg p-4 bg-white">
+            <%= image_tag @contract.signature_image, class: "max-h-32" %>
+          </div>
+          <div class="text-sm text-gray-500">
+            <p>Guardada el: <%= @contract.signed_at&.strftime("%d/%m/%Y %H:%M") %></p>
+            <p>Por: <%= @contract.signed_by_name %></p>
+          </div>
+        </div>
+        <div class="mt-6">
+          <%= link_to "Continuar al Siguiente Paso →", "#", class: "px-6 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Legal Disclaimer -->
+  <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
+    <h3 class="font-bold text-gray-700 text-lg mb-3">Validez Legal de la Firma Digital</h3>
+    <div class="prose prose-sm text-gray-600">
+      <p>De acuerdo con la <strong>Ley de Firma Electrónica de Honduras</strong> (Decreto No. 101-2013), la firma digital capturada en este sistema tiene la misma validez jurídica que una firma autógrafa, siempre que:</p>
+      <ul>
+        <li>Sea capturada directamente por el cliente</li>
+        <li>Se almacene con integridad y sin alteraciones</li>
+        <li>Se registre la fecha y hora exacta de la firma</li>
+        <li>Se mantenga un registro de auditoría del proceso</li>
+      </ul>
+      <p class="text-sm italic mt-4">MOVICUOTAS garantiza la seguridad e integridad del proceso de firma digital mediante tecnología de encriptación y almacenamiento seguro en AWS S3.</p>
+    </div>
+  </div>
+
+  <!-- Progress Indicator -->
+  <div class="mt-12">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">13</div>
+        <span class="ml-3 font-medium text-gray-500">Contrato</span>
+      </div>
+      <div class="h-1 flex-1 mx-4 bg-gray-200">
+        <div class="h-1 bg-[#125282] w-full"></div>
+      </div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">14</div>
+        <span class="ml-3 font-medium text-gray-700">Firma Digital</span>
+      </div>
+      <div class="h-1 flex-1 mx-4 bg-gray-200"></div>
+      <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">15</div>
+        <span class="ml-3 font-medium text-gray-500">Crédito Aplicado</span>
+      </div>
+    </div>
+    <p class="text-center text-sm text-gray-500 mt-2">Paso 14 de 18 - Flujo de Venta</p>
+  </div>
+</div>

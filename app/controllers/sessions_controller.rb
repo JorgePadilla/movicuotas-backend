@@ -1,24 +1,64 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate, only: [ :new, :create ]
-  skip_after_action :verify_authorized, only: [ :new ]
+  skip_after_action :verify_authorized, only: [ :new, :create ]
 
   def new
     # Login form
   end
 
   def create
-    authorize Session  # Login is public, policy allows create? true
+    Rails.logger.info "SessionsController#create - Starting login for email: #{params[:email]}"
 
-    user = User.find_by(email: params[:email])
+    begin
+      authorize Session  # Login is public, policy allows create? true
+      Rails.logger.info "SessionsController#create - Authorization passed"
+    rescue Pundit::NotAuthorizedError => e
+      Rails.logger.error "SessionsController#create - Authorization failed: #{e.message}"
+      raise
+    end
 
-    if user&.authenticate(params[:password])
-      session = user.sessions.create!
-      cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
+    email = params[:email]&.strip
+    password = params[:password]&.strip
 
-      redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente"
+    # Sanitized email for logging (show first 3 chars only)
+    log_email = email.present? ? "#{email[0..2]}...#{email.split('@').last}" : "blank"
+    Rails.logger.info "SessionsController#create - Login attempt for email: #{log_email}"
+
+    user = email.present? ? User.where('email ILIKE ?', email).first : nil
+
+    if user
+      Rails.logger.info "SessionsController#create - User found: id=#{user.id}, active=#{user.active}, role=#{user.role}"
+      auth_result = user.authenticate(password)
+      user_active = user.active
     else
-      flash.now[:alert] = "Email o contraseña incorrectos"
-      render :new, status: :unprocessable_entity
+      Rails.logger.warn "SessionsController#create - User NOT FOUND for email: #{log_email}"
+      auth_result = false
+      user_active = false
+    end
+
+    Rails.logger.info "SessionsController#create - Password present: #{password.present?}, length: #{password&.length}"
+    Rails.logger.info "SessionsController#create - Authentication result: #{auth_result.inspect}"
+
+    respond_to do |format|
+      if auth_result && user_active
+        Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
+        session = user.sessions.create!
+        cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
+
+        format.html { redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente" }
+        format.turbo_stream { redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente" }
+      elsif auth_result && !user_active
+        Rails.logger.warn "SessionsController#create - User #{user.id} is not active"
+        flash.now[:alert] = "Tu cuenta está desactivada. Contacta al administrador."
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+      else
+        # Authentication failed (wrong password or user not found)
+        Rails.logger.warn "SessionsController#create - Authentication FAILED - User: #{user&.id || 'not found'}, Active: #{user_active}, Auth result: #{auth_result.inspect}"
+        flash.now[:alert] = "Email o contraseña incorrectos"
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -32,15 +72,6 @@ class SessionsController < ApplicationController
   private
 
   def after_sign_in_path_for(user)
-    case user.role
-    when "admin"
-      admin_dashboard_path
-    when "vendedor"
-      vendor_customer_search_path  # Main screen for vendors
-    when "cobrador"
-      cobrador_dashboard_path
-    else
-      root_path
-    end
+    root_path  # HomeController will redirect based on role
   end
 end
