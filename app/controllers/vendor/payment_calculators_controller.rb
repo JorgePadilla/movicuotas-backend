@@ -142,6 +142,10 @@ module Vendor
       down_payment_percentage = params[:down_payment_percentage]&.to_i || 30
       number_of_installments = params[:number_of_installments]&.to_i || 6
       date_of_birth = params[:date_of_birth] || fetch_date_of_birth
+      Rails.logger.info "date_of_birth value: #{date_of_birth.inspect}"
+      if date_of_birth.blank?
+        return Loan.new.tap { |l| l.errors.add(:base, "Fecha de nacimiento del cliente no disponible. Por favor, verifica la solicitud de crédito.") }
+      end
       credit_application_id = params[:credit_application_id] || session[:credit_application_id]
 
       Rails.logger.info "create_loan_from_calculator: phone_price=#{phone_price}, approved_amount=#{approved_amount}, down_payment_percentage=#{down_payment_percentage}, number_of_installments=#{number_of_installments}, credit_application_id=#{credit_application_id}"
@@ -156,7 +160,7 @@ module Vendor
         return Loan.new.tap { |l| l.errors.add(:base, "No se pudo encontrar el cliente. Por favor, verifica la solicitud de crédito.") }
       end
 
-      Rails.logger.info "Using customer: id=#{customer.id}, name=#{customer.try(:name) || customer.try(:full_name) || 'N/A'}"
+      Rails.logger.info "Using customer: id=#{customer.id}, name=#{customer.full_name || 'N/A'}"
 
       # Validate phone price against approved amount
       if phone_price > approved_amount
@@ -206,6 +210,15 @@ module Vendor
       # Save loan and create installments
       if loan.save
         create_installments_for_loan(loan, result[:installments])
+
+        # Create device from credit application selected phone
+        if credit_application && credit_application.selected_phone_model_id && credit_application.selected_imei
+          create_device_for_loan(loan, credit_application)
+        else
+          Rails.logger.error "Cannot create device: missing selected phone data in credit application #{credit_application_id}. selected_phone_model_id: #{credit_application&.selected_phone_model_id}, selected_imei: #{credit_application&.selected_imei}"
+          # Add error to loan but don't fail completely (device can be added later)
+          loan.errors.add(:base, "Datos del dispositivo incompletos. Por favor, verifica la selección del teléfono.")
+        end
       else
         Rails.logger.info "Loan save failed: errors=#{loan.errors.full_messages}, contract_number=#{loan.contract_number}"
         # Check if save failed due to contract number uniqueness
@@ -258,26 +271,88 @@ module Vendor
       end
     end
 
+    # Create device for loan from credit application selected phone
+    def create_device_for_loan(loan, credit_application)
+      Rails.logger.info "Creating device for loan #{loan.id} from credit application #{credit_application.id}"
+
+      phone_model = credit_application.selected_phone_model
+      imei = credit_application.selected_imei
+      color = credit_application.selected_color || phone_model.color
+
+      # Check if device with same IMEI already exists
+      existing_device = Device.find_by(imei: imei)
+      if existing_device
+        Rails.logger.warn "Device with IMEI #{imei} already exists: id=#{existing_device.id}, loan_id=#{existing_device.loan_id}"
+        if existing_device.loan_id.nil?
+          # Device exists but not assigned to a loan, assign to this loan
+          existing_device.update!(loan: loan)
+          return existing_device
+        else
+          # Device already assigned to another loan - this is an error
+          loan.errors.add(:base, "El IMEI #{imei} ya está asignado a otro dispositivo.")
+          return nil
+        end
+      end
+
+      # Create new device
+      device = Device.new(
+        loan: loan,
+        phone_model: phone_model,
+        imei: imei,
+        brand: phone_model.brand,
+        model: phone_model.model,
+        color: color,
+        lock_status: 'unlocked'
+      )
+
+      if device.save
+        Rails.logger.info "Device created: id=#{device.id}, imei=#{device.imei}"
+        device
+      else
+        Rails.logger.error "Failed to create device: #{device.errors.full_messages}"
+        loan.errors.add(:base, "Error al crear dispositivo: #{device.errors.full_messages.join(', ')}")
+        nil
+      end
+    end
+
     # Fetch customer date of birth from credit application
     def fetch_date_of_birth
+      Rails.logger.info "fetch_date_of_birth called, params[:date_of_birth]: #{params[:date_of_birth].inspect}, session[:date_of_birth]: #{session[:date_of_birth].inspect}"
       # Try to get from params first
-      return params[:date_of_birth] if params[:date_of_birth].present?
+      if params[:date_of_birth].present?
+        Rails.logger.info "Found date_of_birth in params: #{params[:date_of_birth]}"
+        return params[:date_of_birth]
+      end
 
       # Try to get from session
-      return session[:date_of_birth] if session[:date_of_birth].present?
+      if session[:date_of_birth].present?
+        Rails.logger.info "Found date_of_birth in session: #{session[:date_of_birth]}"
+        return session[:date_of_birth]
+      end
 
       # Try to get from credit application
       if @credit_application_id.present?
+        Rails.logger.info "Looking up credit application #{@credit_application_id}"
         credit_application = CreditApplication.find_by(id: @credit_application_id)
-        return credit_application.customer.date_of_birth if credit_application&.customer
+        if credit_application&.customer
+          dob = credit_application.customer.date_of_birth
+          Rails.logger.info "Found date_of_birth from credit application customer: #{dob}"
+          return dob
+        end
       end
 
       # Try to get from customer in session
       if session[:customer_id].present?
+        Rails.logger.info "Looking up customer from session #{session[:customer_id]}"
         customer = Customer.find_by(id: session[:customer_id])
-        return customer.date_of_birth if customer
+        if customer
+          dob = customer.date_of_birth
+          Rails.logger.info "Found date_of_birth from session customer: #{dob}"
+          return dob
+        end
       end
 
+      Rails.logger.warn "No date_of_birth found in any source"
       nil
     end
   end

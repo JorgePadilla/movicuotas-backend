@@ -1,0 +1,153 @@
+<% content_for :title, "Código QR - Configuración MDM - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# Progress Indicator %>
+  <div class="mb-12">
+    <div class="flex items-center justify-center">
+      <div class="flex items-center">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#125282] text-white font-bold">
+          16
+        </div>
+        <div class="w-24 h-1 bg-[#125282]"></div>
+      </div>
+      <div class="text-sm font-medium text-[#125282] ml-3">Paso 16 de 18: Código QR para Configuración MDM</div>
+    </div>
+  </div>
+
+  <%# Main Card %>
+  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-[#125282]">
+    <div class="bg-gradient-to-r from-[#125282] to-[#0f4670] p-8 text-center">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-6">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-white mb-4">Código QR para Configuración MDM</h1>
+      <p class="text-xl text-blue-100 mb-2">Escanee este código QR con el teléfono del cliente para iniciar la configuración del dispositivo.</p>
+      <p class="text-blue-100">El código QR contiene la configuración necesaria para bloquear el dispositivo con el sistema MDM.</p>
+    </div>
+
+    <div class="p-8">
+      <%# QR Code Display %>
+      <div class="flex flex-col items-center mb-10">
+        <% if @mdm_blueprint.qr_code_image.attached? %>
+          <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+            <%= image_tag url_for(@mdm_blueprint.qr_code_image), alt: "QR Code para configuración MDM", class: "w-64 h-64 object-contain" %>
+          </div>
+        <% else %>
+          <div class="bg-gray-100 p-12 rounded-xl mb-6 text-center">
+            <p class="text-gray-600">Generando código QR...</p>
+          </div>
+        <% end %>
+
+        <div class="text-center max-w-2xl">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Instrucciones de Escaneo</h3>
+          <ol class="text-left list-decimal pl-6 space-y-3 text-gray-700">
+            <li>Abra la cámara del teléfono del cliente o una aplicación de escáner QR.</li>
+            <li>Apunte la cámara al código QR mostrado arriba.</li>
+            <li>Espere a que el sistema detecte el código y abra el enlace de configuración.</li>
+            <li>Siga las instrucciones en pantalla para completar la configuración MDM.</li>
+            <li>Confirme que la aplicación MDM esté instalada y funcionando antes de continuar.</li>
+          </ol>
+        </div>
+      </div>
+
+      <%# Device & Loan Information %>
+      <div class="bg-gray-50 rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Información del Dispositivo</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Cliente</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
+            <p class="text-gray-600"><%= @customer.identification_number %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Contrato</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
+            <p class="text-gray-600">Inicio: <%= l(@loan.start_date, format: :long) %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Dispositivo</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
+            <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Estado MDM</p>
+            <p class="text-lg font-semibold text-[#125282]">
+              <% if @device.locked? %>
+                <span class="text-green-600">✓ Bloqueado</span>
+              <% elsif @device.pending? %>
+                <span class="text-yellow-600">⏳ Pendiente</span>
+              <% else %>
+                <span class="text-blue-600">🔓 No bloqueado</span>
+              <% end %>
+            </p>
+            <p class="text-gray-600">Configuración requerida</p>
+          </div>
+        </div>
+      </div>
+
+      <%# Action Buttons %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <%# Proceed to Checklist (Step 17) %>
+        <%= link_to "javascript:void(0)",
+                    class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center",
+                    title: "Próximamente: Checklist Final (Paso 17)" do %>
+          <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+          <h3 class="text-xl font-bold mb-2">Continuar a Checklist Final</h3>
+          <p class="text-indigo-100">Verifica la configuración del dispositivo antes de finalizar la venta.</p>
+          <span class="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/20">
+            Paso 17: Checklist Final
+          </span>
+        <% end %>
+
+        <%# Download QR Code (optional) %>
+        <% if @mdm_blueprint.qr_code_image.attached? %>
+          <%= link_to url_for(@mdm_blueprint.qr_code_image), download: "qr_code_mdm_#{@device.imei}.png",
+                      class: "group flex flex-col items-center justify-center p-8 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-200 text-white text-center" do %>
+            <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="text-xl font-bold mb-2">Descargar QR Code</h3>
+            <p class="text-green-100">Guarda el código QR como imagen para referencia.</p>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Important Notes %>
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">Importante: Verificación MDM</h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <li>El código QR debe escanearse con el teléfono del cliente, no con el del vendedor.</li>
+                <li>Después del escaneo, verifica que la aplicación MDM esté instalada y muestre el estado "Dispositivo protegido".</li>
+                <li>Si el cliente tiene problemas escaneando, intenta aumentar el brillo de la pantalla o imprime el código QR.</li>
+                <li>No entregues el dispositivo hasta que el checklist final esté completo.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Navigation %>
+      <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200">
+        <div>
+          <%= link_to "← Volver al contrato", vendor_contract_path(@loan.contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <%= link_to "Nueva Búsqueda de Cliente", vendor_customer_search_path,
+                      class: "bg-gray-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

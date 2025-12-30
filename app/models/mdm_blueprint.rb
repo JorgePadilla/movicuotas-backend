@@ -28,11 +28,18 @@ class MdmBlueprint < ApplicationRecord
   end
 
   def generate_qr_code_image
-    # This would call a service to generate QR code image
-    # QrCodeGeneratorService.new(qr_code_data).generate
-    # For now, we'll just set a placeholder
-    self.generated_at = Time.current
-    save
+    return if qr_code_data.blank?
+
+    # Generate QR code and attach to ActiveStorage attachment
+    service = QrCodeGeneratorService.new(qr_code_data, fill: "#125282", background: "#ffffff")
+    success = service.attach_to(qr_code_image, format: :png)
+
+    if success
+      self.generated_at = Time.current
+      save
+    else
+      Rails.logger.error "Failed to generate QR code image for MdmBlueprint #{id}"
+    end
   end
 
   def expired?

@@ -2,9 +2,8 @@
 
 module Vendor
   class ContractsController < ApplicationController
-    before_action :set_contract, except: [:new, :create]
+    before_action :set_contract
     after_action :verify_authorized, except: [:signature, :save_signature]
-    after_action :verify_policy_scoped, only: :index
 
     # Step 13: Display contract for review
     def show
@@ -92,6 +91,12 @@ module Vendor
       @loan = @contract.loan
       @customer = @loan.customer
       @device = @loan.device
+      # Ensure MDM blueprint exists for QR code generation (Step 16)
+      if @device.present?
+        @mdm_blueprint = @device.mdm_blueprint || @device.create_mdm_blueprint
+      else
+        @mdm_blueprint = nil
+      end
     end
 
     private

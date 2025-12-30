@@ -44,8 +44,13 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Dispositivo</p>
-            <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
-            <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+            <% if @device.present? %>
+              <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
+              <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+            <% else %>
+              <p class="text-lg font-semibold text-gray-400">No seleccionado</p>
+              <p class="text-gray-400">Por favor, completa los datos del dispositivo en el paso anterior.</p>
+            <% end %>
           </div>
           <div>
             <p class="text-sm font-medium text-gray-500">Próximo Pago</p>
@@ -76,18 +81,27 @@
           <p class="text-blue-100">Guarda una copia del contrato firmado en tu dispositivo.</p>
         <% end %>
 
-        <%# Proceed to Device Configuration Button (Placeholder for Step 16) %>
-        <%= link_to "javascript:void(0)",
-                    class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center",
-                    title: "Próximamente: Configuración de Teléfono (Paso 16)" do %>
-          <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-          </svg>
-          <h3 class="text-xl font-bold mb-2">Proceder a Configuración de Teléfono</h3>
-          <p class="text-indigo-100">Continúa con la configuración del dispositivo del cliente.</p>
-          <span class="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/20">
-            Paso 16: Código QR
-          </span>
+        <%# Proceed to Device Configuration Button (Step 16) %>
+        <% if @mdm_blueprint.present? %>
+          <%= link_to vendor_mdm_blueprint_path(@mdm_blueprint),
+                      class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center" do %>
+            <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            <h3 class="text-xl font-bold mb-2">Proceder a Configuración de Teléfono</h3>
+            <p class="text-indigo-100">Continúa con la configuración del dispositivo del cliente.</p>
+            <span class="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/20">
+              Paso 16: Código QR
+            </span>
+          <% end %>
+        <% else %>
+          <div class="group flex flex-col items-center justify-center p-8 bg-gray-300 rounded-xl text-gray-600 text-center cursor-not-allowed">
+            <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            <h3 class="text-xl font-bold mb-2">Configuración de Teléfono No Disponible</h3>
+            <p class="text-gray-500">Completa los datos del dispositivo para habilitar esta función.</p>
+          </div>
         <% end %>
       </div>
 

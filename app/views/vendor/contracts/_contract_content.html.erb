@@ -1,7 +1,7 @@
 <%# app/views/vendor/contracts/_contract_content.html.erb %>
 <%# This partial is used by ContractGeneratorService to render contract content %>
 
-<div class="contract-content" style="font-family: 'Inter', 'Calibri', sans-serif; color: #1f2937;">
+<div class="contract-content" style="font-family: 'Inter', 'Calibri', sans-serif; color: #1f2937; padding: 2rem;">
   <!-- Header with corporate blue -->
   <div class="contract-header" style="background-color: #125282; color: white; padding: 2rem; border-radius: 0.5rem 0.5rem 0 0; margin-bottom: 2rem;">
     <h1 style="font-size: 28pt; font-weight: bold; margin: 0; text-align: center;">
@@ -35,24 +35,24 @@
         </h3>
         <table style="width: 100%; font-size: 12pt;">
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Nombre Completo:</td>
-            <td style="padding: 0.25rem 0;"><%= customer.full_name %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Nombre Completo:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= customer.full_name %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">No. Identidad:</td>
-            <td style="padding: 0.25rem 0;"><%= customer.identification_number %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">No. Identidad:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= customer.identification_number %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Edad:</td>
-            <td style="padding: 0.25rem 0;"><%= service.customer_age %> años</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Edad:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= service.customer_age %> años</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Teléfono:</td>
-            <td style="padding: 0.25rem 0;"><%= customer.phone %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Teléfono:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= customer.phone %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Dirección:</td>
-            <td style="padding: 0.25rem 0;"><%= customer.address %>, <%= customer.city %>, <%= customer.department %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Dirección:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= customer.address %>, <%= customer.city %>, <%= customer.department %></td>
           </tr>
         </table>
       </div>
@@ -63,24 +63,24 @@
         </h3>
         <table style="width: 100%; font-size: 12pt;">
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Empresa:</td>
-            <td style="padding: 0.25rem 0;">MOVICUOTAS - Tu Crédito, Tu Móvil</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Empresa:</td>
+            <td style="padding: 0.25rem 0.5rem;">MOVICUOTAS - Tu Crédito, Tu Móvil</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Sucursal:</td>
-            <td style="padding: 0.25rem 0;"><%= loan.branch_number %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Sucursal:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= loan.branch_number %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Representante:</td>
-            <td style="padding: 0.25rem 0;"><%= loan.user&.full_name || 'Vendedor Autorizado' %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Representante:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= loan.user&.full_name || 'Vendedor Autorizado' %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Teléfono:</td>
-            <td style="padding: 0.25rem 0;">+504 2234-5678</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Teléfono:</td>
+            <td style="padding: 0.25rem 0.5rem;">+504 2234-5678</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0;">Dirección:</td>
-            <td style="padding: 0.25rem 0;">Tegucigalpa, Honduras</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Dirección:</td>
+            <td style="padding: 0.25rem 0.5rem;">Tegucigalpa, Honduras</td>
           </tr>
         </table>
       </div>
@@ -88,6 +88,7 @@
   </div>
 
   <!-- Device Information -->
+  <% if device.present? %>
   <div class="device-section" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       DISPOSITIVO FINANCIADO
@@ -95,23 +96,24 @@
 
     <table style="width: 100%; font-size: 12pt; margin-top: 1rem;">
       <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0; width: 30%;">Marca:</td>
-        <td style="padding: 0.5rem 0;"><%= device.brand %></td>
+        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; width: 30%;">Marca:</td>
+        <td style="padding: 0.5rem 0.5rem;"><%= device.brand %></td>
       </tr>
       <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Modelo:</td>
-        <td style="padding: 0.5rem 0;"><%= device.model %></td>
+        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Modelo:</td>
+        <td style="padding: 0.5rem 0.5rem;"><%= device.model %></td>
       </tr>
       <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Color:</td>
-        <td style="padding: 0.5rem 0;"><%= device.color %></td>
+        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Color:</td>
+        <td style="padding: 0.5rem 0.5rem;"><%= device.color %></td>
       </tr>
       <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">IMEI:</td>
-        <td style="padding: 0.5rem 0; font-family: monospace;"><%= device.imei %></td>
+        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">IMEI:</td>
+        <td style="padding: 0.5rem 0.5rem; font-family: monospace;"><%= device.imei %></td>
       </tr>
     </table>
   </div>
+  <% end %>
 
   <!-- Financial Terms -->
   <div class="financial-section" style="margin-bottom: 2rem;">
@@ -126,20 +128,20 @@
         </h3>
         <table style="width: 100%; font-size: 12pt;">
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Precio Total:</td>
-            <td style="padding: 0.5rem 0; text-align: right; font-weight: bold;"><%= service.format_currency(loan.total_amount) %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Precio Total:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right; font-weight: bold;"><%= service.format_currency(loan.total_amount) %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Porcentaje de Enganche:</td>
-            <td style="padding: 0.5rem 0; text-align: right;"><%= loan.down_payment_percentage %>%</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Porcentaje de Enganche:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.down_payment_percentage %>%</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Monto de Enganche:</td>
-            <td style="padding: 0.5rem 0; text-align: right;"><%= service.format_currency(loan.down_payment_amount) %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Monto de Enganche:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= service.format_currency(loan.down_payment_amount) %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0; border-top: 1px solid #d1d5db;">Monto Financiado:</td>
-            <td style="padding: 0.5rem 0; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; border-top: 1px solid #d1d5db;">Monto Financiado:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
               <%= service.format_currency(loan.financed_amount) %>
             </td>
           </tr>
@@ -152,20 +154,20 @@
         </h3>
         <table style="width: 100%; font-size: 12pt;">
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Tasa de Interés Anual:</td>
-            <td style="padding: 0.5rem 0; text-align: right;"><%= loan.interest_rate %>%</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Tasa de Interés Anual:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.interest_rate %>%</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Número de Cuotas:</td>
-            <td style="padding: 0.5rem 0; text-align: right;"><%= loan.number_of_installments %> (quincenales)</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Número de Cuotas:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.number_of_installments %> (quincenales)</td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0;">Fecha de Inicio:</td>
-            <td style="padding: 0.5rem 0; text-align: right;"><%= I18n.l(loan.start_date, format: :long) %></td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Fecha de Inicio:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= I18n.l(loan.start_date, format: :long) %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0; border-top: 1px solid #d1d5db;">Cuota Quincenal:</td>
-            <td style="padding: 0.5rem 0; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
+            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; border-top: 1px solid #d1d5db;">Cuota Quincenal:</td>
+            <td style="padding: 0.5rem 0.5rem; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
               <%= service.format_currency(loan.installments.first&.amount || loan.financed_amount / loan.number_of_installments) %>
             </td>
           </tr>
@@ -198,7 +200,7 @@
               <td style="padding: 0.75rem; border: 1px solid #d1d5db; text-align: right;"><%= installment[:amount] %></td>
               <td style="padding: 0.75rem; border: 1px solid #d1d5db; text-align: center;">
                 <span style="<%= service.installment_status_style(installment[:status]) %>">
-                  <%= installment[:status].titleize %>
+                  <%= I18n.t("installment.status.#{installment[:status]}", default: installment[:status].titleize) %>
                 </span>
               </td>
             </tr>

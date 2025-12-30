@@ -95,7 +95,7 @@ class ContractGeneratorService
             inst.installment_number,
             inst.due_date.strftime('%d/%m/%Y'),
             format_currency(inst.amount),
-            inst.status.upcase
+            I18n.t("installment.status.#{inst.status}", default: inst.status).upcase
           ]
         end
 
@@ -192,6 +192,8 @@ class ContractGeneratorService
       "color: #ef4444; font-weight: bold;"
     when "pending"
       "color: #f59e0b; font-weight: bold;"
+    when "cancelled"
+      "color: #9ca3af; font-weight: bold;"
     else
       "color: #6b7280;"
     end
