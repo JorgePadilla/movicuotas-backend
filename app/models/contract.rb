@@ -15,12 +15,19 @@ class Contract < ApplicationRecord
     signature_image.attached? && signed_at.present?
   end
 
-  def sign!(signature_image_file, signed_by_name = nil)
+  def sign!(signature_image_file, signed_by_name = nil, user = nil)
     transaction do
       self.signature_image.attach(signature_image_file)
       self.signed_by_name = signed_by_name if signed_by_name
       self.signed_at = Time.current
       save!
+
+      # Audit log
+      AuditLog.log(user || User.system_user, 'contract_signed', self, {
+        signed_by_name: signed_by_name,
+        signed_at: signed_at,
+        loan_id: loan_id
+      }) if Rails.env.production? || Rails.env.development?
     end
   end
 
