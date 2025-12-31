@@ -154,7 +154,7 @@ class LoanFinalizationService
 
     # Handle zero interest rate (simple division)
     if biweekly_interest_rate.zero?
-      return (financed_amount / n).round(2)
+      return (financed_amount / n).ceil
     end
 
     # Calculate using annuity formula
@@ -162,7 +162,7 @@ class LoanFinalizationService
     denominator = (1 + biweekly_interest_rate) ** n - 1
     installment = financed_amount * (numerator / denominator)
 
-    installment.round(2)
+    installment.ceil
   end
 
   def assign_device_to_loan(loan)

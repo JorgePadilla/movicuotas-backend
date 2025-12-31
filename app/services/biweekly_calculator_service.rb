@@ -120,7 +120,7 @@ class BiweeklyCalculatorService
 
       {
         success: true,
-        installment_amount: installment_amount.round(2),
+        installment_amount: installment_amount.ceil,
         down_payment_amount: down_payment_amount.round(2),
         financed_amount: financed_amount.round(2),
         total_interest: (installment_amount * @number_of_installments - financed_amount).round(2),
@@ -144,7 +144,7 @@ class BiweeklyCalculatorService
   # @return [Numeric, nil] Installment amount or nil if invalid
   def installment_amount
     return unless valid?
-    calculate_installment_amount.round(2)
+    calculate_installment_amount.ceil
   end
 
   # Calculate down payment amount
@@ -291,7 +291,7 @@ class BiweeklyCalculatorService
       schedule << {
         installment_number: i + 1,
         due_date: due_date,
-        amount: installment_amount.round(2),
+        amount: installment_amount.ceil,
         status: "pending"
       }
     end

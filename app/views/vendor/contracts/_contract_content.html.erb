@@ -22,157 +22,295 @@
     </p>
   </div>
 
-  <!-- Parties Section -->
-  <div class="parties-section" style="margin-bottom: 2rem;">
+  <!-- Introductory Paragraph -->
+  <div class="introductory-paragraph" style="margin-bottom: 2rem;">
+    <p style="font-size: 11pt; line-height: 1.6; text-align: justify;">
+      Nosotros, MoviCuotas S. de R.L., que en adelante se denominará "LA EMPRESA", y el cliente, identificado en este documento en la Sección 1, que en adelante se denominará "EL CLIENTE", hemos convenido en celebrar como al efecto por este acto celebramos el presente CONTRATO DE CRÉDITO.
+    </p>
+    <p style="font-size: 11pt; line-height: 1.6; text-align: justify; margin-top: 0.5rem;">
+      Este contrato regula los términos bajo los cuales LA EMPRESA otorga a EL CLIENTE un crédito quincenal para la compra del dispositivo móvil descrito en la Sección 1.
+    </p>
+  </div>
+
+  <!-- Section 1: Datos del Cliente y del Crédito -->
+  <div class="section-1" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
-      PARTES CONTRATANTES
+      1. Datos del Cliente y del Crédito
     </h2>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
-      <div>
-        <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
-          CLIENTE
-        </h3>
-        <table style="width: 100%; font-size: 12pt;">
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Nombre Completo:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= customer.full_name %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">No. Identidad:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= customer.identification_number %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Edad:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= service.customer_age %> años</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Teléfono:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= customer.phone %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Dirección:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= customer.address %>, <%= customer.city %>, <%= customer.department %></td>
-          </tr>
-        </table>
-      </div>
+    <div style="margin-top: 1rem;">
+      <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
+        Datos del Cliente
+      </h3>
+      <table style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Nombre del Cliente:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= customer.full_name %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Identidad:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= customer.identification_number %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Teléfono:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= customer.phone %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Correo electrónico:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= customer.email.present? ? customer.email : '_______________________________________' %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Dirección:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= customer.address %>, <%= customer.city %>, <%= customer.department %></td>
+        </tr>
+      </table>
 
-      <div>
-        <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
-          MOVICUOTAS
-        </h3>
-        <table style="width: 100%; font-size: 12pt;">
+      <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
+        Datos del Dispositivo
+      </h3>
+      <% if device.present? %>
+        <table style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Empresa:</td>
-            <td style="padding: 0.25rem 0.5rem;">MOVICUOTAS - Tu Crédito, Tu Móvil</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Marca / Modelo:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= device.brand %> / <%= device.model %></td>
           </tr>
           <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Sucursal:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= loan.branch_number %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Representante:</td>
-            <td style="padding: 0.25rem 0.5rem;"><%= loan.user&.full_name || 'Vendedor Autorizado' %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Teléfono:</td>
-            <td style="padding: 0.25rem 0.5rem;">+504 2234-5678</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Dirección:</td>
-            <td style="padding: 0.25rem 0.5rem;">Tegucigalpa, Honduras</td>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">IMEI:</td>
+            <td style="padding: 0.25rem 0.5rem; font-family: monospace;"><%= device.imei %></td>
           </tr>
         </table>
-      </div>
+      <% else %>
+        <table style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Marca / Modelo:</td>
+            <td style="padding: 0.25rem 0.5rem;">_________________________________________</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">IMEI:</td>
+            <td style="padding: 0.25rem 0.5rem; font-family: monospace;">_________________________________________________</td>
+          </tr>
+        </table>
+      <% end %>
+
+      <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
+        Datos del Crédito (Quincenal)
+      </h3>
+      <table style="width: 100%; font-size: 11pt;">
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Precio al contado:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= service.format_currency(loan.total_amount) %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Prima:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= service.format_currency(loan.down_payment_amount) %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Monto financiado:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= service.format_currency(loan.financed_amount) %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Número total de cuotas quincenales:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= loan.number_of_installments %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Cuota quincenal:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= service.format_currency((loan.installments.first&.amount || loan.financed_amount / loan.number_of_installments).ceil) %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Fecha de inicio del contrato:</td>
+          <td style="padding: 0.25rem 0.5rem;"><%= I18n.l(loan.start_date, format: :long) %></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Fecha de pago quincenal:</td>
+          <td style="padding: 0.25rem 0.5rem;">Cada 15 Días comenzando a partir de la fecha de inicio del contrato.</td>
+        </tr>
+      </table>
     </div>
   </div>
 
-  <!-- Device Information -->
-  <% if device.present? %>
-  <div class="device-section" style="margin-bottom: 2rem;">
+  <!-- Section 2: Objeto del Contrato -->
+  <div class="section-2" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
-      DISPOSITIVO FINANCIADO
+      2. Objeto del Contrato
     </h2>
-
-    <table style="width: 100%; font-size: 12pt; margin-top: 1rem;">
-      <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; width: 30%;">Marca:</td>
-        <td style="padding: 0.5rem 0.5rem;"><%= device.brand %></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Modelo:</td>
-        <td style="padding: 0.5rem 0.5rem;"><%= device.model %></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Color:</td>
-        <td style="padding: 0.5rem 0.5rem;"><%= device.color %></td>
-      </tr>
-      <tr>
-        <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">IMEI:</td>
-        <td style="padding: 0.5rem 0.5rem; font-family: monospace;"><%= device.imei %></td>
-      </tr>
-    </table>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">LA EMPRESA otorga a EL CLIENTE un crédito con pagos quincenales para adquirir un dispositivo móvil.</p>
+      <p>EL CLIENTE acepta pagar las cuotas cada quincena según los montos y fechas acordadas.</p>
+    </div>
   </div>
-  <% end %>
 
-  <!-- Financial Terms -->
-  <div class="financial-section" style="margin-bottom: 2rem;">
+  <!-- Section 3: Compromisos y Obligaciones del Cliente -->
+  <div class="section-3" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
-      TÉRMINOS FINANCIEROS
+      3. Compromisos y Obligaciones del Cliente
     </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">EL CLIENTE se compromete a:</p>
+      <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+        <li style="margin-bottom: 0.5rem;">Realizar los pagos cada quincena, en la fecha acordada.</li>
+        <li style="margin-bottom: 0.5rem;">Cumplir con la prima inicial.</li>
+        <li style="margin-bottom: 0.5rem;">Mantener actualizado su teléfono y dirección.</li>
+        <li style="margin-bottom: 0.5rem;">No manipular, desactivar, eliminar o interferir con el software de control instalado en el dispositivo.</li>
+        <li>No ceder, vender o transferir el dispositivo hasta pagar totalmente el crédito.</li>
+      </ol>
+    </div>
+  </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
-      <div>
-        <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
-          MONTO DEL CRÉDITO
-        </h3>
-        <table style="width: 100%; font-size: 12pt;">
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Precio Total:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right; font-weight: bold;"><%= service.format_currency(loan.total_amount) %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Porcentaje de Enganche:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.down_payment_percentage %>%</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Monto de Enganche:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= service.format_currency(loan.down_payment_amount) %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; border-top: 1px solid #d1d5db;">Monto Financiado:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
-              <%= service.format_currency(loan.financed_amount) %>
-            </td>
-          </tr>
-        </table>
-      </div>
+  <!-- Section 4: Bloqueo Remoto del Dispositivo -->
+  <div class="section-4" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      4. Bloqueo Remoto del Dispositivo
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">EL CLIENTE acepta que:</p>
+      <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+        <li style="margin-bottom: 0.5rem;">El dispositivo incluye un software de gestión y control remoto (MoviCuotas).</li>
+        <li style="margin-bottom: 0.5rem;">Si EL CLIENTE no realiza el pago quincenal en la fecha indicada, LA EMPRESA podrá:</li>
+        <ul style="padding-left: 2rem; margin-bottom: 0.5rem;">
+          <li style="margin-bottom: 0.25rem;">Notificar automáticamente el retraso.</li>
+          <li>Bloquear el dispositivo de forma remota al confirmarse el vencimiento de la cuota.</li>
+        </ul>
+        <li style="margin-bottom: 0.5rem;">El dispositivo bloqueado podrá:</li>
+        <ul style="padding-left: 2rem; margin-bottom: 0.5rem;">
+          <li style="margin-bottom: 0.25rem;">Mostrar notificaciones de mora</li>
+          <li style="margin-bottom: 0.25rem;">Mostrar el saldo pendiente</li>
+          <li style="margin-bottom: 0.25rem;">Permitir llamar al servicio al cliente</li>
+          <li>Permitir enviar comprobantes de pago</li>
+        </ul>
+        <li style="margin-bottom: 0.5rem;">El bloqueo se mantendrá hasta que EL CLIENTE se ponga al día.</li>
+        <li style="margin-bottom: 0.5rem;">El bloqueo no afecta llamadas de emergencia (911).</li>
+        <li>EL CLIENTE declara que comprende y autoriza esta medida como parte del acceso al crédito de MoviCuotas.</li>
+      </ol>
+    </div>
+  </div>
 
-      <div>
-        <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
-          DETALLES DEL PAGO
-        </h3>
-        <table style="width: 100%; font-size: 12pt;">
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Tasa de Interés Anual:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.interest_rate %>%</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Número de Cuotas:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= loan.number_of_installments %> (quincenales)</td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem;">Fecha de Inicio:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right;"><%= I18n.l(loan.start_date, format: :long) %></td>
-          </tr>
-          <tr>
-            <td style="font-weight: bold; color: #6b7280; padding: 0.5rem 0.5rem; border-top: 1px solid #d1d5db;">Cuota Quincenal:</td>
-            <td style="padding: 0.5rem 0.5rem; text-align: right; border-top: 1px solid #d1d5db; font-weight: bold; color: #125282;">
-              <%= service.format_currency(loan.installments.first&.amount || loan.financed_amount / loan.number_of_installments) %>
-            </td>
-          </tr>
-        </table>
-      </div>
+  <!-- Section 5: Política de Privacidad y Uso de Datos -->
+  <div class="section-5" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      5. Política de Privacidad y Uso de Datos
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">LA EMPRESA recopila la siguiente información:</p>
+      <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+        <li style="margin-bottom: 0.25rem;">Datos personales proporcionados por EL CLIENTE</li>
+        <li style="margin-bottom: 0.25rem;">Fotografía del documento de identidad</li>
+        <li style="margin-bottom: 0.25rem;">Historial del crédito y los pagos quincenales</li>
+        <li style="margin-bottom: 0.25rem;">Identificación del dispositivo (IMEI, marca, modelo)</li>
+        <li>Información técnica necesaria para el bloqueo/desbloqueo</li>
+      </ul>
+      <p style="font-weight: bold; margin-bottom: 0.5rem;">Finalidad del uso de datos</p>
+      <p style="margin-bottom: 0.5rem;">Los datos serán utilizados para:</p>
+      <ol style="padding-left: 1.5rem; margin-bottom: 1rem;">
+        <li style="margin-bottom: 0.25rem;">Evaluación del crédito.</li>
+        <li style="margin-bottom: 0.25rem;">Gestión del cronograma quincenal de pagos.</li>
+        <li style="margin-bottom: 0.25rem;">Verificación de identidad.</li>
+        <li style="margin-bottom: 0.25rem;">Envío de notificaciones y recordatorios.</li>
+        <li>Activación y desactivación del control remoto del dispositivo.</li>
+      </ol>
+      <p>LA EMPRESA no vende ni comparte los datos con terceros, salvo requerimientos legales o servicios estrictamente necesarios para la operación del sistema MoviCuotas.</p>
+    </div>
+  </div>
+
+  <!-- Section 6: Pagos, Atrasos y Penalidades -->
+  <div class="section-6" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      6. Pagos, Atrasos y Penalidades (Quincenales)
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <ol style="padding-left: 1.5rem; margin-bottom: 1rem;">
+        <li style="margin-bottom: 0.5rem;">El pago debe realizarse quincenalmente en las fechas acordadas.</li>
+        <li style="margin-bottom: 0.5rem;">En caso de retraso, LA EMPRESA podrá aplicar:</li>
+        <ul style="padding-left: 2rem; margin-bottom: 0.5rem;">
+          <li>Bloqueo del dispositivo hasta ponerse al día</li>
+        </ul>
+        <li style="margin-bottom: 0.5rem;">Si un atraso supera dos quincenas consecutivas, LA EMPRESA podrá:</li>
+        <ul style="padding-left: 2rem; margin-bottom: 1.5rem;">
+          <li style="margin-bottom: 0.25rem;">Declarar la deuda vencida</li>
+          <li style="margin-bottom: 0.25rem;">Exigir devolución del dispositivo</li>
+          <li>Proceder a cobro extrajudicial o judicial</li>
+        </ul>
+      </ol>
+      <h3 style="font-size: 14pt; font-weight: bold; color: #1f2937; margin-bottom: 0.75rem;">
+        6A. Garantía del Dispositivo y Relación con el Crédito
+      </h3>
+      <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+        <li style="margin-bottom: 0.5rem;">EL CLIENTE reconoce y acepta que el dispositivo adquirido cuenta con una garantía limitada, cuyos términos, condiciones, exclusiones y alcances se encuentran detallados en un documento independiente denominado "Certificado de Garantía", el cual ha sido entregado, leído y aceptado por EL CLIENTE.</li>
+        <li style="margin-bottom: 0.5rem;">EL CLIENTE declara expresamente que acepta en su totalidad todas las condiciones establecidas en el Certificado de Garantía, el cual forma parte integral del presente contrato, aunque se encuentre en documento separado.</li>
+        <li style="margin-bottom: 0.5rem;">En caso de que el dispositivo presente un desperfecto y deba ingresar a diagnóstico, revisión o reparación en el taller técnico de LA EMPRESA o en un taller autorizado por el fabricante, dicha situación no suspende, interrumpe ni anula la obligación de EL CLIENTE de pagar puntualmente las cuotas quincenales del crédito.</li>
+        <li style="margin-bottom: 0.5rem;">EL CLIENTE acepta que el tiempo que el dispositivo permanezca en diagnóstico o reparación no genera prórroga, descuento, compensación ni exoneración de las cuotas del crédito, intereses, cargos o cualquier otra obligación derivada del presente contrato.</li>
+        <li style="margin-bottom: 0.5rem;">La garantía no cubre daños ocasionados por golpes, humedad, manipulación de software no autorizado, intentos de eliminación o alteración del sistema de control remoto de MoviCuotas, ni cualquier otra causal detallada en el Certificado de Garantía.</li>
+        <li>En caso de que el dispositivo sea declarado fuera de garantía, EL CLIENTE continuará siendo responsable del pago total del crédito otorgado, independientemente del estado funcional del dispositivo.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Section 7: Cancelación del Crédito -->
+  <div class="section-7" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      7. Cancelación del Crédito
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p>El crédito se considera finalizado cuando:</p>
+      <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+        <li style="margin-bottom: 0.5rem;">EL CLIENTE paga todas las cuotas quincenales.</li>
+        <li style="margin-bottom: 0.5rem;">LA EMPRESA registra el pago final.</li>
+        <li>El dispositivo es desbloqueado de forma permanente.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Section 8: Propiedad del Dispositivo -->
+  <div class="section-8" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      8. Propiedad del Dispositivo
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">El dispositivo sigue siendo propiedad de LA EMPRESA mientras exista saldo pendiente.</p>
+      <p>Una vez pagado el crédito, se transfiere a EL CLIENTE de forma definitiva.</p>
+    </div>
+  </div>
+
+  <!-- Section 9: Comunicaciones, Notificaciones y Alertas -->
+  <div class="section-9" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      9. Comunicaciones, Notificaciones y Alertas
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">EL CLIENTE acepta recibir:</p>
+      <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+        <li style="margin-bottom: 0.25rem;">Recordatorios de pago quincenal</li>
+        <li style="margin-bottom: 0.25rem;">Alertas de mora</li>
+        <li style="margin-bottom: 0.25rem;">Notificaciones de bloqueo/desbloqueo</li>
+        <li>Comunicaciones administrativas</li>
+      </ul>
+      <p>Las comunicaciones pueden enviarse por SMS, WhatsApp, llamadas telefónicas o mensajes desde la app MoviCuotas.</p>
+    </div>
+  </div>
+
+  <!-- Section 10: Jurisdicción -->
+  <div class="section-10" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      10. Jurisdicción
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">Este contrato se rige por las leyes de la República de Honduras.</p>
+      <p>Cualquier disputa será resuelta en los juzgados competentes del domicilio de LA EMPRESA.</p>
+    </div>
+  </div>
+
+  <!-- Section 11: Aceptación y Firma -->
+  <div class="section-11" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
+      11. Aceptación y Firma
+    </h2>
+    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
+      <p style="margin-bottom: 0.5rem;">Firmando este documento, EL CLIENTE declara haber leído, entendido y aceptado:</p>
+      <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+        <li style="margin-bottom: 0.25rem;">Las condiciones del crédito quincenal</li>
+        <li style="margin-bottom: 0.25rem;">La Política de Privacidad</li>
+        <li style="margin-bottom: 0.25rem;">La autorización para bloqueo remoto del dispositivo</li>
+        <li>La totalidad de los términos y obligaciones aquí descritos</li>
+      </ul>
     </div>
   </div>
 
@@ -210,52 +348,41 @@
     </div>
   </div>
 
-  <!-- Terms and Conditions -->
-  <div class="terms-section" style="margin-bottom: 2rem;">
-    <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
-      TÉRMINOS Y CONDICIONES
-    </h2>
-
-    <div style="font-size: 11pt; line-height: 1.6; margin-top: 1rem;">
-      <ol style="padding-left: 1.5rem; margin-bottom: 1.5rem;">
-        <li style="margin-bottom: 0.75rem;">El cliente se compromete a realizar los pagos quincenales según el cronograma establecido.</li>
-        <li style="margin-bottom: 0.75rem;">En caso de mora, se aplicará un recargo del 5% sobre el monto de la cuota atrasada.</li>
-        <li style="margin-bottom: 0.75rem;">MOVICUOTAS se reserva el derecho de bloquear el dispositivo mediante MDM en caso de mora mayor a 30 días.</li>
-        <li style="margin-bottom: 0.75rem;">El cliente autoriza a MOVICUOTAS a verificar su información crediticia y laboral.</li>
-        <li style="margin-bottom: 0.75rem;">El dispositivo permanecerá bloqueado hasta que se regularice la deuda.</li>
-        <li style="margin-bottom: 0.75rem;">Cualquier modificación a este contrato debe ser por escrito y firmada por ambas partes.</li>
-        <li style="margin-bottom: 0.75rem;">El cliente reconoce haber recibido el dispositivo en buen estado y funcionamiento.</li>
-        <li style="margin-bottom: 0.75rem;">Este contrato se rige por las leyes de la República de Honduras.</li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- Signatures Area (for printed version) -->
+  <!-- Signatures Area -->
   <div class="signatures-section" style="margin-top: 3rem; page-break-inside: avoid;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding-top: 2rem; border-top: 2px solid #125282;">
       <div style="text-align: center;">
-        <div style="height: 100px; border-bottom: 1px solid #d1d5db; margin-bottom: 1rem;"></div>
+        <div style="height: 80px; border-bottom: 1px solid #d1d5db; margin-bottom: 1rem;"></div>
         <p style="font-weight: bold; color: #125282; margin-bottom: 0.25rem;">
           <%= customer.full_name %>
         </p>
         <p style="font-size: 10pt; color: #6b7280;">
-          CLIENTE
+          EL CLIENTE
         </p>
         <p style="font-size: 10pt; color: #6b7280; margin-top: 0.5rem;">
           No. Identidad: <%= customer.identification_number %>
         </p>
+        <p style="font-size: 10pt; color: #6b7280; margin-top: 0.5rem;">
+          Firma: ___________________________________
+        </p>
       </div>
 
       <div style="text-align: center;">
-        <div style="height: 100px; border-bottom: 1px solid #d1d5db; margin-bottom: 1rem;"></div>
+        <div style="height: 80px; border-bottom: 1px solid #d1d5db; margin-bottom: 1rem;"></div>
         <p style="font-weight: bold; color: #125282; margin-bottom: 0.25rem;">
           MOVICUOTAS
         </p>
         <p style="font-size: 10pt; color: #6b7280;">
-          REPRESENTANTE AUTORIZADO
+          LA EMPRESA
+        </p>
+        <p style="font-size: 10pt; color: #6b7280; margin-top: 0.5rem;">
+          Representante: <%= loan.user&.full_name || 'Vendedor Autorizado' %>
         </p>
         <p style="font-size: 10pt; color: #6b7280; margin-top: 0.5rem;">
           Sucursal: <%= loan.branch_number %>
+        </p>
+        <p style="font-size: 10pt; color: #6b7280; margin-top: 0.5rem;">
+          Firma: ___________________________________
         </p>
       </div>
     </div>

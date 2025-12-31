@@ -57,7 +57,7 @@
             <p class="text-lg font-semibold text-[#125282]">
               <% next_installment = @loan.next_installment %>
               <% if next_installment %>
-                L. <%= number_with_delimiter(next_installment.amount.round(2), delimiter: ",") %>
+                L. <%= number_with_delimiter(next_installment.amount.ceil, delimiter: ",") %>
                 <span class="block text-sm font-normal text-gray-600">
                   <%= l(next_installment.due_date, format: :long) %>
                 </span>

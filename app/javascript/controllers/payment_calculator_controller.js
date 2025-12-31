@@ -23,11 +23,41 @@ export default class extends Controller {
 
     // Update continue button state based on existing results
     this.updateContinueButtonStateBasedOnDOM()
+
+    // Calculate automatically if values are selected but no results shown yet
+    this.calculateAutomaticallyIfNeeded()
+  }
+
+  // Check if we should calculate automatically on page load
+  calculateAutomaticallyIfNeeded() {
+    // Check if results are already shown (not placeholder)
+    const resultsElement = document.getElementById('calculator_results')
+    const hasResults = resultsElement && resultsElement.querySelector('.bg-white.shadow-lg')
+
+    if (hasResults) {
+      console.log("Results already shown, skipping auto-calculation")
+      return
+    }
+
+    // Check if values are selected
+    const downPaymentChecked = this.element.querySelector('input[name="down_payment_percentage"]:checked')
+    const installmentsChecked = this.element.querySelector('input[name="number_of_installments"]:checked')
+
+    if (!downPaymentChecked || !installmentsChecked) {
+      console.log("No values selected, skipping auto-calculation")
+      return
+    }
+
+    console.log("Values selected but no results shown, calculating automatically...")
+    // Call calculate without event
+    this.calculate()
   }
 
   // Calculate installment amount when any input changes
   calculate(event) {
-    event.preventDefault()
+    if (event) {
+      event.preventDefault()
+    }
     console.log("Payment calculator: calculate triggered")
 
     // Get form data

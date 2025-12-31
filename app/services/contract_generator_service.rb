@@ -44,48 +44,48 @@ class ContractGeneratorService
       pdf.text "Fecha: #{Date.today.strftime('%d/%m/%Y')}", align: :right
       pdf.move_down 30
 
-      # Parties section
-      pdf.font_size 16
-      pdf.text 'PARTES', style: :bold
-      pdf.move_down 10
+      # Introductory Paragraph
       pdf.font_size 12
-      pdf.text "1. <b>CLIENTE:</b> #{@customer.full_name}", inline_format: true
-      pdf.text "   Identificación: #{@customer.identification_number}"
-      pdf.text "   Teléfono: #{@customer.phone}"
-      pdf.text "   Dirección: #{@customer.address}, #{@customer.city}, #{@customer.department}"
+      pdf.text "Nosotros, MoviCuotas S. de R.L., que en adelante se denominará \"LA EMPRESA\", y el cliente, identificado en este documento en la Sección 1, que en adelante se denominará \"EL CLIENTE\", hemos convenido en celebrar como al efecto por este acto celebramos el presente CONTRATO DE CRÉDITO.", align: :justify
       pdf.move_down 10
-      pdf.text "2. <b>MOVICUOTAS:</b> Tu Crédito, Tu Móvil", inline_format: true
-      pdf.text "   Representante: Sistema de Crédito Automatizado"
+      pdf.text "Este contrato regula los términos bajo los cuales LA EMPRESA otorga a EL CLIENTE un crédito quincenal para la compra del dispositivo móvil descrito en la Sección 1.", align: :justify
       pdf.move_down 30
 
-      # Device information
+      # Section 1: Datos del Cliente y del Crédito
       pdf.font_size 16
-      pdf.text 'EQUIPO ADQUIRIDO', style: :bold
-      pdf.move_down 10
-      pdf.font_size 12
-      pdf.text "Marca: #{@device.brand}"
-      pdf.text "Modelo: #{@device.model}"
-      pdf.text "Color: #{@device.color}" if @device.color.present?
-      pdf.text "IMEI: #{@device.imei}"
-      pdf.text "Precio Total: #{format_currency(@loan.total_amount)}"
-      pdf.move_down 30
+      pdf.text "1. Datos del Cliente y del Crédito", style: :bold
+      pdf.move_down 15
 
-      # Financial terms
-      pdf.font_size 16
-      pdf.text 'TÉRMINOS FINANCIEROS', style: :bold
-      pdf.move_down 10
       pdf.font_size 12
-      pdf.text "Pago Inicial: #{@loan.down_payment_percentage}% (#{format_currency(@loan.down_payment_amount)})"
-      pdf.text "Monto Financiado: #{format_currency(@loan.financed_amount)}"
-      pdf.text "Tasa de Interés Quincenal: #{@loan.interest_rate}%"
-      pdf.text "Número de Cuotas: #{@loan.number_of_installments} (quincenales)"
-      pdf.text "Fecha de Inicio: #{@loan.start_date.strftime('%d/%m/%Y')}"
-      pdf.text "Fecha de Finalización: #{@loan.end_date.strftime('%d/%m/%Y')}"
+      pdf.text "<b>Datos del Cliente</b>", inline_format: true
+      pdf.move_down 5
+      pdf.text "Nombre del Cliente: #{@customer.full_name}"
+      pdf.text "Identidad: #{@customer.identification_number}"
+      pdf.text "Teléfono: #{@customer.phone}"
+      pdf.text "Correo electrónico: #{@customer.email.present? ? @customer.email : '_______________________________________'}"
+      pdf.text "Dirección: #{@customer.address}, #{@customer.city}, #{@customer.department}"
+      pdf.move_down 10
+
+      pdf.text "<b>Datos del Dispositivo</b>", inline_format: true
+      pdf.move_down 5
+      pdf.text "Marca / Modelo: #{@device.present? ? "#{@device.brand} / #{@device.model}" : '_________________________________________'}"
+      pdf.text "IMEI: #{@device.present? ? @device.imei : '_________________________________________________'}"
+      pdf.move_down 10
+
+      pdf.text "<b>Datos del Crédito (Quincenal)</b>", inline_format: true
+      pdf.move_down 5
+      pdf.text "Precio al contado: #{format_currency(@loan.total_amount)}"
+      pdf.text "Prima: #{format_currency(@loan.down_payment_amount)}"
+      pdf.text "Monto financiado: #{format_currency(@loan.financed_amount)}"
+      pdf.text "Número total de cuotas quincenales: #{@loan.number_of_installments}"
+      pdf.text "Cuota quincenal: #{format_currency((@loan.installments.first&.amount || @loan.financed_amount / @loan.number_of_installments).ceil)}"
+      pdf.text "Fecha de inicio del contrato: #{@loan.start_date.strftime('%d/%m/%Y')}"
+      pdf.text "Fecha de pago quincenal: Cada 15 Días comenzando a partir de la fecha de inicio del contrato."
       pdf.move_down 30
 
       # Installment schedule
       pdf.font_size 16
-      pdf.text 'CALENDARIO DE PAGOS', style: :bold
+      pdf.text 'CRONOGRAMA DE PAGOS', style: :bold
       pdf.move_down 10
 
       if @loan.installments.any?
@@ -94,7 +94,7 @@ class ContractGeneratorService
           data << [
             inst.installment_number,
             inst.due_date.strftime('%d/%m/%Y'),
-            format_currency(inst.amount),
+            format_currency(inst.amount.ceil),
             I18n.t("installment.status.#{inst.status}", default: inst.status).upcase
           ]
         end
@@ -109,35 +109,153 @@ class ContractGeneratorService
 
       pdf.move_down 30
 
-      # Terms and conditions
+      # Sections 2-11 from new contract
       pdf.font_size 16
-      pdf.text 'TÉRMINOS Y CONDICIONES', style: :bold
+      pdf.text "2. Objeto del Contrato", style: :bold
       pdf.move_down 10
-      pdf.font_size 10
-      terms = [
-        "1. El cliente se compromete a realizar los pagos quincenales en las fechas establecidas.",
-        "2. En caso de mora, se aplicará un recargo del 10% sobre la cuota vencida.",
-        "3. MOVICUOTAS se reserva el derecho de bloquear el dispositivo mediante MDM en caso de mora mayor a 30 días.",
-        "4. El cliente autoriza a MOVICUOTAS a verificar su información crediticia y laboral.",
-        "5. Este contrato es válido por la duración del financiamiento y se rige por las leyes de Honduras.",
-        "6. Cualquier disputa será resuelta mediante arbitraje en la ciudad de Tegucigalpa.",
-        "7. El cliente acepta las políticas de privacidad y tratamiento de datos de MOVICUOTAS.",
-        "8. Este documento tiene validez legal como contrato firmado digitalmente."
-      ]
+      pdf.font_size 12
+      pdf.text "LA EMPRESA otorga a EL CLIENTE un crédito con pagos quincenales para adquirir un dispositivo móvil.", align: :justify
+      pdf.text "EL CLIENTE acepta pagar las cuotas cada quincena según los montos y fechas acordadas.", align: :justify
+      pdf.move_down 15
 
-      terms.each do |term|
-        pdf.text term, indent_paragraphs: 20
-      end
+      pdf.font_size 16
+      pdf.text "3. Compromisos y Obligaciones del Cliente", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "EL CLIENTE se compromete a:", align: :justify
+      pdf.text "1. Realizar los pagos cada quincena, en la fecha acordada."
+      pdf.text "2. Cumplir con la prima inicial."
+      pdf.text "3. Mantener actualizado su teléfono y dirección."
+      pdf.text "4. No manipular, desactivar, eliminar o interferir con el software de control instalado en el dispositivo."
+      pdf.text "5. No ceder, vender o transferir el dispositivo hasta pagar totalmente el crédito."
+      pdf.move_down 15
 
-      pdf.move_down 40
+      pdf.font_size 16
+      pdf.text "4. Bloqueo Remoto del Dispositivo", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "EL CLIENTE acepta que:", align: :justify
+      pdf.text "1. El dispositivo incluye un software de gestión y control remoto (MoviCuotas)."
+      pdf.text "2. Si EL CLIENTE no realiza el pago quincenal en la fecha indicada, LA EMPRESA podrá:"
+      pdf.text "   a) Notificar automáticamente el retraso."
+      pdf.text "   b) Bloquear el dispositivo de forma remota al confirmarse el vencimiento de la cuota."
+      pdf.text "3. El dispositivo bloqueado podrá:"
+      pdf.text "   a) Mostrar notificaciones de mora"
+      pdf.text "   b) Mostrar el saldo pendiente"
+      pdf.text "   c) Permitir llamar al servicio al cliente"
+      pdf.text "   d) Permitir enviar comprobantes de pago"
+      pdf.text "4. El bloqueo se mantendrá hasta que EL CLIENTE se ponga al día."
+      pdf.text "5. El bloqueo no afecta llamadas de emergencia (911)."
+      pdf.text "6. EL CLIENTE declara que comprende y autoriza esta medida como parte del acceso al crédito de MoviCuotas."
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "5. Política de Privacidad y Uso de Datos", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "LA EMPRESA recopila la siguiente información:", align: :justify
+      pdf.text "• Datos personales proporcionados por EL CLIENTE"
+      pdf.text "• Fotografía del documento de identidad"
+      pdf.text "• Historial del crédito y los pagos quincenales"
+      pdf.text "• Identificación del dispositivo (IMEI, marca, modelo)"
+      pdf.text "• Información técnica necesaria para el bloqueo/desbloqueo"
+      pdf.move_down 5
+      pdf.text "<b>Finalidad del uso de datos</b>", inline_format: true
+      pdf.text "Los datos serán utilizados para:", align: :justify
+      pdf.text "1. Evaluación del crédito."
+      pdf.text "2. Gestión del cronograma quincenal de pagos."
+      pdf.text "3. Verificación de identidad."
+      pdf.text "4. Envío de notificaciones y recordatorios."
+      pdf.text "5. Activación y desactivación del control remoto del dispositivo."
+      pdf.move_down 5
+      pdf.text "LA EMPRESA no vende ni comparte los datos con terceros, salvo requerimientos legales o servicios estrictamente necesarios para la operación del sistema MoviCuotas.", align: :justify
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "6. Pagos, Atrasos y Penalidades (Quincenales)", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "1. El pago debe realizarse quincenalmente en las fechas acordadas."
+      pdf.text "2. En caso de retraso, LA EMPRESA podrá aplicar:"
+      pdf.text "   a) Bloqueo del dispositivo hasta ponerse al día"
+      pdf.text "3. Si un atraso supera dos quincenas consecutivas, LA EMPRESA podrá:"
+      pdf.text "   a) Declarar la deuda vencida"
+      pdf.text "   b) Exigir devolución del dispositivo"
+      pdf.text "   c) Proceder a cobro extrajudicial o judicial"
+      pdf.move_down 5
+      pdf.font_size 14
+      pdf.text "6A. Garantía del Dispositivo y Relación con el Crédito", style: :bold
+      pdf.font_size 12
+      pdf.text "1. EL CLIENTE reconoce y acepta que el dispositivo adquirido cuenta con una garantía limitada, cuyos términos, condiciones, exclusiones y alcances se encuentran detallados en un documento independiente denominado \"Certificado de Garantía\", el cual ha sido entregado, leído y aceptado por EL CLIENTE."
+      pdf.text "2. EL CLIENTE declara expresamente que acepta en su totalidad todas las condiciones establecidas en el Certificado de Garantía, el cual forma parte integral del presente contrato, aunque se encuentre en documento separado."
+      pdf.text "3. En caso de que el dispositivo presente un desperfecto y deba ingresar a diagnóstico, revisión o reparación en el taller técnico de LA EMPRESA o en un taller autorizado por el fabricante, dicha situación no suspende, interrumpe ni anula la obligación de EL CLIENTE de pagar puntualmente las cuotas quincenales del crédito."
+      pdf.text "4. EL CLIENTE acepta que el tiempo que el dispositivo permanezca en diagnóstico o reparación no genera prórroga, descuento, compensación ni exoneración de las cuotas del crédito, intereses, cargos o cualquier otra obligación derivada del presente contrato."
+      pdf.text "5. La garantía no cubre daños ocasionados por golpes, humedad, manipulación de software no autorizado, intentos de eliminación o alteración del sistema de control remoto de MoviCuotas, ni cualquier otra causal detallada en el Certificado de Garantía."
+      pdf.text "6. En caso de que el dispositivo sea declarado fuera de garantía, EL CLIENTE continuará siendo responsable del pago total del crédito otorgado, independientemente del estado funcional del dispositivo."
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "7. Cancelación del Crédito", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "El crédito se considera finalizado cuando:", align: :justify
+      pdf.text "1. EL CLIENTE paga todas las cuotas quincenales."
+      pdf.text "2. LA EMPRESA registra el pago final."
+      pdf.text "3. El dispositivo es desbloqueado de forma permanente."
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "8. Propiedad del Dispositivo", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "El dispositivo sigue siendo propiedad de LA EMPRESA mientras exista saldo pendiente.", align: :justify
+      pdf.text "Una vez pagado el crédito, se transfiere a EL CLIENTE de forma definitiva.", align: :justify
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "9. Comunicaciones, Notificaciones y Alertas", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "EL CLIENTE acepta recibir:", align: :justify
+      pdf.text "• Recordatorios de pago quincenal"
+      pdf.text "• Alertas de mora"
+      pdf.text "• Notificaciones de bloqueo/desbloqueo"
+      pdf.text "• Comunicaciones administrativas"
+      pdf.move_down 5
+      pdf.text "Las comunicaciones pueden enviarse por SMS, WhatsApp, llamadas telefónicas o mensajes desde la app MoviCuotas.", align: :justify
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "10. Jurisdicción", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "Este contrato se rige por las leyes de la República de Honduras.", align: :justify
+      pdf.text "Cualquier disputa será resuelta en los juzgados competentes del domicilio de LA EMPRESA.", align: :justify
+      pdf.move_down 15
+
+      pdf.font_size 16
+      pdf.text "11. Aceptación y Firma", style: :bold
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "Firmando este documento, EL CLIENTE declara haber leído, entendido y aceptado:", align: :justify
+      pdf.text "• Las condiciones del crédito quincenal"
+      pdf.text "• La Política de Privacidad"
+      pdf.text "• La autorización para bloqueo remoto del dispositivo"
+      pdf.text "• La totalidad de los términos y obligaciones aquí descritos"
+      pdf.move_down 30
 
       # Signature lines
       pdf.font_size 12
       pdf.text '___________________________', align: :left
-      pdf.text 'Firma del Cliente', align: :left
+      pdf.text 'EL CLIENTE', align: :left
+      pdf.text "#{@customer.full_name}", align: :left
+      pdf.text "No. Identidad: #{@customer.identification_number}", align: :left
       pdf.move_down 20
       pdf.text '___________________________', align: :right
-      pdf.text 'MOVICUOTAS - Tu Crédito, Tu Móvil', align: :right
+      pdf.text 'LA EMPRESA', align: :right
+      pdf.text 'MOVICUOTAS', align: :right
+      pdf.text "Representante: #{@loan.user&.full_name || 'Vendedor Autorizado'}", align: :right
+      pdf.text "Sucursal: #{@loan.branch_number}", align: :right
 
       # Footer
       pdf.repeat(:all) do
@@ -158,7 +276,7 @@ class ContractGeneratorService
       {
         number: installment.installment_number,
         due_date: I18n.l(installment.due_date, format: :long),
-        amount: format_currency(installment.amount),
+        amount: format_currency(installment.amount.ceil),
         status: installment.status
       }
     end
@@ -166,7 +284,12 @@ class ContractGeneratorService
 
   # Format currency in Honduran Lempiras
   def format_currency(amount)
-    "L. #{amount.to_f.round(2)}"
+    amount_float = amount.to_f
+    if amount_float % 1 == 0
+      "L. #{amount_float.to_i}"
+    else
+      "L. #{amount_float.round(2)}"
+    end
   end
 
   # Format date

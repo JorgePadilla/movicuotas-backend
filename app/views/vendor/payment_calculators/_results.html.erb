@@ -7,12 +7,12 @@
   <%# Main Installment Amount - Large Display %>
   <div class="text-center mb-8">
     <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Cuota Quincenal</p>
-    <p class="text-5xl font-bold text-green-600 mt-2">L. <%= number_with_delimiter(result[:installment_amount].round(2), delimiter: ",") %></p>
+    <p class="text-5xl font-bold text-green-600 mt-2">L. <%= number_with_delimiter(result[:installment_amount].ceil, delimiter: ",") %></p>
     <p class="text-gray-600 mt-2">Cada 15 días durante <%= result[:number_of_installments] %> pagos</p>
   </div>
 
   <%# Calculation Summary %>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <div class="bg-gray-50 p-4 rounded-lg">
       <p class="text-sm font-medium text-gray-500">Pago Inicial</p>
       <p class="text-xl font-semibold text-[#125282]">L. <%= number_with_delimiter(result[:down_payment_amount].round(2), delimiter: ",") %></p>
@@ -25,17 +25,7 @@
       <p class="text-sm text-gray-600 mt-1">A pagar en cuotas</p>
     </div>
 
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <p class="text-sm font-medium text-gray-500">Tasa Quincenal</p>
-      <p class="text-xl font-semibold text-orange-600"><%= result[:bi_weekly_rate_percentage] %>%</p>
-      <p class="text-sm text-gray-600 mt-1">Bi-semanal</p>
-    </div>
 
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <p class="text-sm font-medium text-gray-500">Interés Total</p>
-      <p class="text-xl font-semibold text-orange-600">L. <%= number_with_delimiter(result[:total_interest].round(2), delimiter: ",") %></p>
-      <p class="text-sm text-gray-600 mt-1">Costo financiero</p>
-    </div>
 
     <div class="bg-gray-50 p-4 rounded-lg">
       <p class="text-sm font-medium text-gray-500">Edad Cliente</p>
@@ -49,11 +39,6 @@
       </p>
     </div>
 
-    <div class="bg-gray-50 p-4 rounded-lg">
-      <p class="text-sm font-medium text-gray-500">Pago Total</p>
-      <p class="text-xl font-semibold text-gray-900">L. <%= number_with_delimiter(result[:total_payment].round(2), delimiter: ",") %></p>
-      <p class="text-sm text-gray-600 mt-1">Incluye precio + interés</p>
-    </div>
   </div>
 
   <%# Installment Schedule (First 3 installments) %>
@@ -67,7 +52,7 @@
             <p class="text-sm text-gray-600"><%= installment[:due_date].strftime("%d/%m/%Y") %></p>
           </div>
           <div class="text-right">
-            <p class="text-lg font-semibold text-[#125282]">L. <%= number_with_delimiter(installment[:amount].round(2), delimiter: ",") %></p>
+            <p class="text-lg font-semibold text-[#125282]">L. <%= number_with_delimiter(installment[:amount].ceil, delimiter: ",") %></p>
             <p class="text-sm text-gray-600">Quincenal</p>
           </div>
         </div>
@@ -95,7 +80,7 @@
       </div>
       <div class="ml-3">
         <p class="text-sm font-medium text-green-800">
-          ¡Cálculo completado! Tu cuota quincenal es de <strong>L. <%= number_with_delimiter(result[:installment_amount].round(2), delimiter: ",") %></strong>.
+          ¡Cálculo completado! Tu cuota quincenal es de <strong>L. <%= number_with_delimiter(result[:installment_amount].ceil, delimiter: ",") %></strong>.
         </p>
         <p class="text-sm text-green-700 mt-1">
           Puedes continuar al contrato o ajustar las opciones de pago para ver diferentes escenarios.
