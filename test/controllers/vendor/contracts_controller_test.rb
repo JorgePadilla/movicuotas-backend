@@ -6,7 +6,11 @@ module Vendor
 
     setup do
       # Load seed data for test (if not already loaded)
-      load "#{Rails.root}/db/seeds.rb" if Rails.env.test?
+      begin
+        load "#{Rails.root}/db/seeds.rb" if Rails.env.test?
+      rescue IOError
+        # File already loaded or closed, ignore
+      end
 
       @contract = Contract.first
       @loan = @contract.loan

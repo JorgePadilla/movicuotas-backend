@@ -2,25 +2,27 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-# Only seed in development and test environments
-if Rails.env.development? || Rails.env.test?
-  # Clear existing data (optional - comment out if you want to preserve data)
-  puts "Clearing existing data..."
-  # Uncomment the following lines to clear data before seeding
-  PaymentInstallment.delete_all
-  Payment.delete_all
-  Installment.delete_all
-  MdmBlueprint.delete_all
-  Device.delete_all
-  Contract.delete_all
-  Notification.delete_all
-  Loan.delete_all
-  CreditApplication.delete_all
-  Customer.delete_all
-  PhoneModel.delete_all
-  AuditLog.delete_all
-  Session.delete_all
-  User.delete_all
+# Only seed in development, test, and production environments
+if Rails.env.development? || Rails.env.test? || Rails.env.production?
+  # Clear existing data only in development and test (optional - comment out if you want to preserve data)
+  if Rails.env.development? || Rails.env.test?
+    puts "Clearing existing data..."
+    # Uncomment the following lines to clear data before seeding
+    PaymentInstallment.delete_all
+    Payment.delete_all
+    Installment.delete_all
+    MdmBlueprint.delete_all
+    Device.delete_all
+    Contract.delete_all
+    Notification.delete_all
+    Loan.delete_all
+    CreditApplication.delete_all
+    Customer.delete_all
+    PhoneModel.delete_all
+    AuditLog.delete_all
+    Session.delete_all
+    User.delete_all
+  end
 
   puts "Seeding data..."
 
@@ -109,6 +111,46 @@ phone_models = [
     storage: '256GB',
     color: 'Blanco',
     price: 18_500.00,
+    active: true
+  },
+  {
+    brand: 'Samsung',
+    model: 'A16 128GB',
+    storage: '128GB',
+    color: 'Negro',
+    price: 4_500.00,
+    active: true
+  },
+  {
+    brand: 'Samsung',
+    model: 'A07 128GB',
+    storage: '128GB',
+    color: 'Negro',
+    price: 4_000.00,
+    active: true
+  },
+  {
+    brand: 'Samsung',
+    model: 'A07 64GB',
+    storage: '64GB',
+    color: 'Negro',
+    price: 3_500.00,
+    active: true
+  },
+  {
+    brand: 'Samsung',
+    model: 'A06 128GB',
+    storage: '128GB',
+    color: 'Negro',
+    price: 3_500.00,
+    active: true
+  },
+  {
+    brand: 'Samsung',
+    model: 'A06 64GB',
+    storage: '64GB',
+    color: 'Negro',
+    price: 3_000.00,
     active: true
   }
 ]

@@ -27,6 +27,25 @@ class ContractPolicy < ApplicationPolicy
     admin?  # Only admin can delete contracts
   end
 
+  # Digital signature actions
+  def signature?
+    show?  # If you can view the contract, you can access signature page
+  end
+
+  def save_signature?
+    # Vendedor can sign contracts for loans they created
+    # Admin can sign any contract
+    admin? || (vendedor? && record.loan.present? && record.loan.user == user)
+  end
+
+  def success?
+    show?  # Confirmation page after signature
+  end
+
+  def download?
+    show?  # PDF download permission
+  end
+
   # Scope: Filter contracts based on role
   # - Admin: All contracts
   # - Vendedor: Contracts for loans they created

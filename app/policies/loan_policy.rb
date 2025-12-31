@@ -34,6 +34,10 @@ class LoanPolicy < ApplicationPolicy
     admin?  # Only admin can manually approve loans (vendedor submissions are auto-approved)
   end
 
+  def download_contract?
+    show?  # If you can view the loan, you can download its contract
+  end
+
   # Scope: Filter loans based on role
   # - Admin: All loans
   # - Vendedor: Only loans in their branch
