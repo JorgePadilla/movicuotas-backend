@@ -57,9 +57,19 @@ module Admin
         return
       end
 
-      # Load and enqueue the job
-      job_class = load_job_class(job_class_name)
-      job_class.perform_later
+      # Directly invoke the job based on class name
+      case job_class_name
+      when "MarkInstallmentsOverdueJob"
+        MarkInstallmentsOverdueJob.perform_later
+      when "SendOverdueNotificationJob"
+        SendOverdueNotificationJob.perform_later
+      when "SendLatePaymentWarningJob"
+        SendLatePaymentWarningJob.perform_later
+      when "NotifyCobradorosJob"
+        NotifyCobradorosJob.perform_later
+      when "AutoBlockDeviceJob"
+        AutoBlockDeviceJob.perform_later
+      end
 
       redirect_to admin_jobs_path, notice: "#{job_class_name} ha sido encolado exitosamente."
     rescue StandardError => e
@@ -93,12 +103,6 @@ module Admin
 
     def valid_job_class?(job_class)
       ALLOWED_JOB_CLASSES.include?(job_class)
-    end
-
-    def load_job_class(job_class_name)
-      # Rails autoloads the class when constantize is called
-      # The class is already loaded when the server starts
-      job_class_name.constantize
     end
 
     def load_job_metrics
