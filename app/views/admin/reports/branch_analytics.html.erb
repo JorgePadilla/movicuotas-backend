@@ -11,9 +11,9 @@
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
     <label class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Sucursal:</label>
     <div class="flex gap-2 flex-wrap">
-      <%= link_to "Todas las Sucursales", admin_branch_analytics_path, class: "#{@selected_branch.blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-4 py-2 rounded-lg font-medium text-sm transition-colors" %>
+      <%= link_to "Todas las Sucursales", branch_analytics_admin_reports_path, class: "#{@selected_branch.blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-4 py-2 rounded-lg font-medium text-sm transition-colors" %>
       <% @branches.each do |branch| %>
-        <%= link_to "Sucursal #{branch}", admin_branch_analytics_path(branch: branch), class: "#{@selected_branch.to_s == branch.to_s ? 'bg-[#125282] text-white' : 'bg-white border border-gray-300 text-gray-700'} px-4 py-2 rounded-lg font-medium text-sm transition-colors hover:border-[#125282]" %>
+        <%= link_to "Sucursal #{branch}", branch_analytics_admin_reports_path(branch: branch), class: "#{@selected_branch.to_s == branch.to_s ? 'bg-[#125282] text-white' : 'bg-white border border-gray-300 text-gray-700'} px-4 py-2 rounded-lg font-medium text-sm transition-colors hover:border-[#125282]" %>
       <% end %>
     </div>
   </div>
