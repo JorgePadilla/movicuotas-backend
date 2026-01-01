@@ -103,6 +103,14 @@ Rails.application.routes.draw do
 
   namespace :cobrador do
     get "dashboard", to: "dashboard#index"
+    resources :overdue_devices, only: [:index, :show] do
+      member do
+        get :block
+        post :confirm_block
+      end
+    end
+    get "bulk-operations", to: "bulk_operations#show", as: "bulk_operations"
+    post "bulk-operations/confirm", to: "bulk_operations#confirm_bulk_block", as: "confirm_bulk_operations"
     # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
 end

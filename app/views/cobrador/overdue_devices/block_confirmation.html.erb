@@ -1,0 +1,100 @@
+<% content_for :title, "Confirmar Bloqueo de Dispositivo - MOVICUOTAS" %>
+
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white shadow rounded-lg p-8">
+    <div class="flex items-center justify-center mb-6">
+      <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Confirmar Bloqueo de Dispositivo</h1>
+    <p class="text-center text-gray-600 mb-8">
+      Está a punto de bloquear el dispositivo del cliente. Esta acción es importante para la recuperación de pagos.
+    </p>
+
+    <!-- Device Information -->
+    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Información del Dispositivo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm text-gray-500">IMEI</p>
+          <p class="text-lg font-mono font-semibold text-gray-900"><%= @device_details[:device][:imei] %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Modelo</p>
+          <p class="text-lg font-semibold text-gray-900">
+            <%= "#{@device_details[:device][:brand]} #{@device_details[:device][:model]}" %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Información del Cliente</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm text-gray-500">Nombre</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @device_details[:customer][:name] %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Teléfono</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @device_details[:customer][:phone] %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue Information -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold text-red-900 mb-4">Información de Mora</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <p class="text-sm text-red-600">Total en Mora</p>
+          <p class="text-2xl font-bold text-red-600">
+            RD$ <%= number_with_precision(@device_details[:overdue][:total_overdue], precision: 2) %>
+          </p>
+        </div>
+        <div>
+          <p class="text-sm text-red-600">Días de Atraso</p>
+          <p class="text-2xl font-bold text-red-600"><%= @device_details[:overdue][:days_since_first] %> días</p>
+        </div>
+        <div>
+          <p class="text-sm text-red-600">Cuotas Vencidas</p>
+          <p class="text-2xl font-bold text-red-600"><%= @device_details[:overdue][:installments]&.count || 0 %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Advertencia Importante</h3>
+          <p class="mt-2 text-sm text-yellow-700">
+            Al bloquear este dispositivo, el cliente recibirá una notificación. El dispositivo se bloqueará a través del sistema MDM y no podrá ser usado hasta que los pagos se regularicen.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4">
+      <%= form_with url: cobrador_overdue_device_confirm_block_path(@device), method: :post, local: true, class: "flex-1" do |f| %>
+        <%= f.submit "🔴 Confirmar Bloqueo",
+                     class: "w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
+      <% end %>
+
+      <%= link_to "Cancelar",
+                  cobrador_overdue_device_path(@device),
+                  class: "flex-1 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+
 module Vendor
   class DashboardController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
@@ -18,22 +20,26 @@ module Vendor
 
       # Loan statistics
       @active_loans = loans_scope.where(status: "active").count
-      @total_loan_value = loans_scope.where(status: "active").sum(:total_amount)
-      @average_loan_amount = @active_loans.positive? ? @total_loan_value / @active_loans : 0
+      total_loan_bd = BigDecimal(loans_scope.where(status: "active").sum(:total_amount).to_s)
+      @total_loan_value = format_currency(total_loan_bd)
+      @average_loan_amount = @active_loans.positive? ? format_currency(total_loan_bd / BigDecimal(@active_loans)) : "0.00"
 
       # Payment statistics (this month)
-      @payments_this_month = Payment.joins(:loan)
+      payments_bd = BigDecimal(Payment.joins(:loan)
                                     .where(loans: { id: loans_scope.select(:id) })
                                     .where("payment_date >= ?", Date.today.beginning_of_month)
-                                    .sum(:amount)
+                                    .sum(:amount).to_s)
+      @payments_this_month = format_currency(payments_bd)
+
       @overdue_installments = Installment.joins(:loan)
                                          .where(loans: { id: loans_scope.select(:id) })
                                          .where(status: "overdue")
                                          .count
-      @overdue_amount = Installment.joins(:loan)
+      overdue_bd = BigDecimal(Installment.joins(:loan)
                                    .where(loans: { id: loans_scope.select(:id) })
                                    .where(status: "overdue")
-                                   .sum(:amount)
+                                   .sum(:amount).to_s)
+      @overdue_amount = format_currency(overdue_bd)
 
       # Recent payments (last 10)
       @recent_payments = Payment.joins(loan: :customer)
@@ -52,6 +58,13 @@ module Vendor
 
     private
 
+    def format_currency(value)
+      # Format BigDecimal to exactly 2 decimal places with thousand separators
+      bd = value.is_a?(BigDecimal) ? value : BigDecimal(value.to_s)
+      rounded = bd.round(2)
+      number_to_delimited(rounded, delimiter: ',', separator: '.')
+    end
+
     def loans_scope
       if current_user.admin?
         Loan.all
@@ -67,8 +80,6 @@ module Vendor
     def devices_scope
       Device.joins(:loan).where(loans: { id: loans_scope.select(:id) })
     end
-
-    private
 
     def pundit_policy_class
       Vendor::DashboardPolicy
