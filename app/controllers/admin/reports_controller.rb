@@ -95,7 +95,7 @@ module Admin
       # Top collecting agents (by user who created the loan)
       @top_vendors = Payment.joins(:loan)
                             .where('payment_date >= ? AND payment_date <= ?', date_from, date_to)
-                            .group('loans.user_id')
+                            .group('loans.user_id, users.full_name')
                             .select('loans.user_id, users.full_name, COUNT(payments.id) as payment_count, SUM(payments.amount) as total_collected')
                             .joins('INNER JOIN users ON loans.user_id = users.id')
                             .order('total_collected DESC')
