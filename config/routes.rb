@@ -41,6 +41,11 @@ Rails.application.routes.draw do
         get :export_report
       end
     end
+    resources :jobs, only: [:index, :show] do  # Background job monitoring (Phase 5)
+      member do
+        post :retry
+      end
+    end
   end
 
   namespace :vendor do

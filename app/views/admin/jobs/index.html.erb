@@ -1,0 +1,220 @@
+<% content_for :title, "Monitoreo de Jobs - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">📊 Monitoreo de Jobs</h1>
+    <p class="text-gray-600 mt-2">Estado y gestión de tareas en segundo plano</p>
+  </div>
+
+  <!-- Metrics grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Jobs Hoy -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282] mb-2">📋 Total Hoy</h3>
+      <p class="text-3xl font-bold text-gray-800"><%= @total_jobs_today %></p>
+      <p class="text-sm text-gray-600 mt-2">Jobs encolados en las últimas 24 horas</p>
+    </div>
+
+    <!-- Completed Jobs -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-green-600 mb-2">✅ Completados</h3>
+      <p class="text-3xl font-bold text-green-700"><%= @completed_jobs %></p>
+      <p class="text-sm text-gray-600 mt-2">Hoy</p>
+    </div>
+
+    <!-- Failed Jobs -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-red-600 mb-2">❌ Fallidos</h3>
+      <p class="text-3xl font-bold text-red-700"><%= @failed_jobs %></p>
+      <p class="text-sm text-gray-600 mt-2">
+        <%= link_to "Ver detalles", admin_jobs_path(status: 'failed'), class: "text-[#125282] hover:underline font-medium" %>
+      </p>
+    </div>
+
+    <!-- Running Jobs -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-blue-600 mb-2">🔄 En Ejecución</h3>
+      <p class="text-3xl font-bold text-blue-700"><%= @running_jobs %></p>
+      <p class="text-sm text-gray-600 mt-2">En este momento</p>
+    </div>
+  </div>
+
+  <!-- Secondary metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Pending Jobs -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-yellow-600 mb-2">⏳ Pendientes</h3>
+      <p class="text-2xl font-bold text-yellow-700"><%= @pending_jobs %></p>
+    </div>
+
+    <!-- Scheduled Jobs -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-purple-600 mb-2">📅 Programados</h3>
+      <p class="text-2xl font-bold text-purple-700"><%= @scheduled_jobs %></p>
+    </div>
+
+    <!-- Queue Health -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282] mb-2">🔌 Colas Activas</h3>
+      <p class="text-2xl font-bold text-[#125282]"><%= @queues.count %></p>
+    </div>
+  </div>
+
+  <!-- Filter and search section -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-[#125282] mb-4">Filtros y Búsqueda</h3>
+
+    <%= form_with url: admin_jobs_path, method: :get, local: true, class: "space-y-4" do |f| %>
+      <!-- Status filters -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-3">Estado</label>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to "Todos", admin_jobs_path,
+              class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-gray-300 text-gray-700 hover:border-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+          <%= link_to "Pendientes", admin_jobs_path(status: 'pending'),
+              class: "#{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-white border border-yellow-200 text-yellow-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+          <%= link_to "En Ejecución", admin_jobs_path(status: 'running'),
+              class: "#{params[:status] == 'running' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+          <%= link_to "Completados", admin_jobs_path(status: 'completed'),
+              class: "#{params[:status] == 'completed' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+          <%= link_to "Fallidos", admin_jobs_path(status: 'failed'),
+              class: "#{params[:status] == 'failed' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+          <%= link_to "Programados", admin_jobs_path(status: 'scheduled'),
+              class: "#{params[:status] == 'scheduled' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+        </div>
+      </div>
+
+      <!-- Search and dropdowns -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Search field -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Búsqueda</label>
+          <%= f.search_field :search, placeholder: "Buscar por ID o clase de job",
+              value: params[:search],
+              class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        </div>
+
+        <!-- Queue filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Cola</label>
+          <%= f.select :queue, [["Todas las colas", ""]] + @queues.map { |q| [q, q] },
+              { selected: params[:queue] },
+              class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        </div>
+
+        <!-- Job class filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Job</label>
+          <%= f.select :job_class, [["Todos los jobs", ""]] + @job_classes.map { |c| [c, c] },
+              { selected: params[:job_class] },
+              class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        </div>
+      </div>
+
+      <!-- Search button -->
+      <div>
+        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Jobs table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Class</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cola</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Finalizado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @jobs.any? %>
+            <% @jobs.each do |job| %>
+              <% status = determine_job_status(job) %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= link_to job.id, admin_job_path(job), class: "text-[#125282] hover:underline" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= job.class_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <span class="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800">
+                    <%= job.queue_name %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% case status %>
+                  <% when 'completed' %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-green-100 text-green-800">✓ Completado</span>
+                  <% when 'failed' %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-red-100 text-red-800">✕ Fallido</span>
+                  <% when 'running' %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">● En ejecución</span>
+                  <% when 'pending' %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800">⏳ Pendiente</span>
+                  <% when 'scheduled' %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-800">📅 Programado</span>
+                  <% else %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800"><%= status %></span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= job.created_at.strftime("%d/%m/%Y %H:%M") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <% if job.finished_at %>
+                    <%= job.finished_at.strftime("%d/%m/%Y %H:%M") %>
+                  <% else %>
+                    <span class="text-gray-400">-</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <%= link_to "Ver", admin_job_path(job), class: "text-[#125282] hover:underline font-medium" %>
+                  <% if status == 'failed' %>
+                    <%= link_to "Reintentar", admin_job_retry_path(job), method: :post,
+                        data: { confirm: "¿Reintentar este job?" },
+                        class: "text-orange-600 hover:underline font-medium" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                No hay jobs que coincidan con tu búsqueda
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination footer -->
+    <% if @jobs.any? %>
+      <div class="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-600">
+          Mostrando <strong><%= @jobs.offset_value + 1 %></strong> a
+          <strong><%= [@jobs.offset_value + @jobs.size, @jobs.total_count].min %></strong> de
+          <strong><%= @jobs.total_count %></strong> jobs
+        </div>
+        <div class="flex gap-2">
+          <%= paginate @jobs %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="mt-8 pt-8 border-t border-gray-200">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path,
+        class: "text-[#125282] hover:underline font-medium" %>
+  </div>
+</div>
