@@ -134,7 +134,7 @@
   </div>
 
   <!-- Filter and search section -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+  <div id="filters-section" class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
     <h3 class="text-lg font-semibold text-[#125282] mb-4">Filtros y Búsqueda</h3>
 
     <%= form_with url: admin_jobs_path, method: :get, local: true, class: "space-y-4" do |f| %>
@@ -142,17 +142,17 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-3">Estado</label>
         <div class="flex flex-wrap gap-4 mb-6">
-          <%= link_to "Todos", admin_jobs_path,
+          <%= link_to "Todos", admin_jobs_path(anchor: 'filters-section'),
               class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
-          <%= link_to "Pendientes", admin_jobs_path(status: 'pending'),
+          <%= link_to "Pendientes", admin_jobs_path(status: 'pending', anchor: 'filters-section'),
               class: "#{params[:status] == 'pending' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
-          <%= link_to "En Ejecución", admin_jobs_path(status: 'running'),
+          <%= link_to "En Ejecución", admin_jobs_path(status: 'running', anchor: 'filters-section'),
               class: "#{params[:status] == 'running' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
-          <%= link_to "Completados", admin_jobs_path(status: 'completed'),
+          <%= link_to "Completados", admin_jobs_path(status: 'completed', anchor: 'filters-section'),
               class: "#{params[:status] == 'completed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
-          <%= link_to "Fallidos", admin_jobs_path(status: 'failed'),
+          <%= link_to "Fallidos", admin_jobs_path(status: 'failed', anchor: 'filters-section'),
               class: "#{params[:status] == 'failed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
-          <%= link_to "Programados", admin_jobs_path(status: 'scheduled'),
+          <%= link_to "Programados", admin_jobs_path(status: 'scheduled', anchor: 'filters-section'),
               class: "#{params[:status] == 'scheduled' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
         </div>
       </div>
@@ -186,9 +186,21 @@
 
       <!-- Search button -->
       <div>
-        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors", data: { "turbo-action": "replace" } %>
       </div>
     <% end %>
+
+    <script>
+      // Keep focus on filters section when filtering
+      document.querySelector('form').addEventListener('submit', function() {
+        setTimeout(() => {
+          const filtersSection = document.getElementById('filters-section');
+          if (filtersSection) {
+            filtersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      });
+    </script>
   </div>
 
   <!-- Jobs table -->
@@ -284,7 +296,7 @@
         <div class="flex gap-2">
           <!-- Previous page -->
           <% if @jobs.current_page > 1 %>
-            <%= link_to "← Anterior", admin_jobs_path(params.merge(page: @jobs.current_page - 1)),
+            <%= link_to "← Anterior", admin_jobs_path(params.merge(page: @jobs.current_page - 1, anchor: 'filters-section')),
                 class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
           <% end %>
 
@@ -293,10 +305,10 @@
             <% if page_num == @jobs.current_page %>
               <span class="px-4 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page_num %></span>
             <% elsif (page_num - @jobs.current_page).abs <= 2 %>
-              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num)),
+              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num, anchor: 'filters-section')),
                   class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
             <% elsif page_num == 1 || page_num == @jobs.total_pages %>
-              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num)),
+              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num, anchor: 'filters-section')),
                   class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
             <% elsif (page_num == 2 && @jobs.current_page > 3) || (page_num == @jobs.total_pages - 1 && @jobs.current_page < @jobs.total_pages - 2) %>
               <span class="px-4 py-2 text-gray-500">...</span>
@@ -305,7 +317,7 @@
 
           <!-- Next page -->
           <% if @jobs.current_page < @jobs.total_pages %>
-            <%= link_to "Siguiente →", admin_jobs_path(params.merge(page: @jobs.current_page + 1)),
+            <%= link_to "Siguiente →", admin_jobs_path(params.merge(page: @jobs.current_page + 1, anchor: 'filters-section')),
                 class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
           <% end %>
         </div>
