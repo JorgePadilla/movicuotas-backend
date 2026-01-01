@@ -64,15 +64,21 @@ module Vendor
             # Update loan status if needed (loan should already be active)
             @contract.loan.update(status: 'active') if @contract.loan.draft?
 
-            # Create notification for customer
-            Notification.create!(
-              customer: @contract.loan.customer,
-              title: 'Contrato Firmado',
-              body: "Tu contrato de crédito #{@contract.loan.contract_number} ha sido firmado exitosamente. Tu crédito está ahora activo.",
-              notification_type: 'contract_signed',
-              sent_at: Time.current
-            )
+            # Create notification for customer (non-blocking - don't prevent redirect if fails)
+            begin
+              Notification.create!(
+                customer: @contract.loan.customer,
+                title: 'Contrato Firmado',
+                body: "Tu contrato de crédito #{@contract.loan.contract_number} ha sido firmado exitosamente. Tu crédito está ahora activo.",
+                notification_type: 'contract_signed',
+                sent_at: Time.current
+              )
+            rescue StandardError => notification_error
+              Rails.logger.warn "Failed to create signature notification: #{notification_error.class.name}: #{notification_error.message}"
+              # Continue anyway - signature was successfully saved
+            end
 
+            # Redirect to success page (signature is saved, notification is secondary)
             redirect_to success_vendor_contract_path(@contract),
                         notice: 'Firma guardada exitosamente. ¡Crédito aplicado!'
           else
