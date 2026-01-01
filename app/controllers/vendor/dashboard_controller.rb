@@ -19,7 +19,7 @@ module Vendor
       # Loan statistics
       @active_loans = loans_scope.where(status: "active").count
       @total_loan_value = loans_scope.where(status: "active").sum(:total_amount).to_f
-      @average_loan_amount = @active_loans.positive? ? (@total_loan_value / @active_loans).round(2) : 0.0
+      @average_loan_amount = @active_loans.positive? ? ((@total_loan_value / @active_loans) * 100).round / 100.0 : 0.0
 
       # Payment statistics (this month)
       @payments_this_month = Payment.joins(:loan)
