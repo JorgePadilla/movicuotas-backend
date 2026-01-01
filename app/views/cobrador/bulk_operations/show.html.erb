@@ -1,0 +1,117 @@
+<% content_for :title, "Operaciones en Lote - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-[#125282]">Operaciones en Lote</h1>
+    <%= link_to "← Volver a Lista", cobrador_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Resumen de Operación</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <p class="text-sm text-gray-500">Dispositivos Seleccionados</p>
+        <p class="text-3xl font-bold text-gray-900"><%= @devices.length %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Monto Total en Mora (RD$)</p>
+        <p class="text-3xl font-bold text-red-600">RD$ <%= number_with_precision(@total_amount, precision: 2) %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Dispositivos a Bloquear</p>
+        <p class="text-3xl font-bold text-yellow-600">
+          <%= @devices.select { |d| d.lock_status == "unlocked" }.length %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devices List -->
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Dispositivos Incluidos</h2>
+    </div>
+    <% if @devices.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IMEI</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Modelo</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto (RD$)</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @devices.each do |device| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= device.customer_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 text-xs">
+                  <%= device.imei[-5..] %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= "#{device.brand} #{device.model}".truncate(20) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
+                  RD$ <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% if device.lock_status == "locked" %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      🔴 Bloqueado
+                    </span>
+                  <% elsif device.lock_status == "pending" %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      🟡 Pendiente
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      ✓ Desbloqueado
+                    </span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Warning Section -->
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-yellow-800">Advertencia Importante</h3>
+        <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside">
+          <li>Se bloquearán todos los dispositivos desbloqueados (<%= @devices.select { |d| d.lock_status == "unlocked" }.length %>)</li>
+          <li>Los dispositivos ya bloqueados serán ignorados</li>
+          <li>Los clientes recibirán notificación del bloqueo</li>
+          <li>Esta acción no se puede deshacer sin autorización de Administrador</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex gap-4">
+    <%= form_with url: cobrador_confirm_bulk_operations_path, method: :post, local: true, class: "flex-1" do |f| %>
+      <%= hidden_field_tag :device_ids, @device_ids.join(',') %>
+      <%= f.submit "🔴 Confirmar Bloqueo de #{@devices.select { |d| d.lock_status == 'unlocked' }.length} Dispositivos",
+                   class: "w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
+    <% end %>
+
+    <%= link_to "Cancelar",
+                cobrador_overdue_devices_path,
+                class: "flex-1 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+  </div>
+</div>

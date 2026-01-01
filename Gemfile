@@ -25,6 +25,9 @@ gem "bcrypt", "~> 3.1.7"
 # Authorization with Pundit [https://github.com/varvet/pundit]
 gem "pundit"
 
+# Pagination with Kaminari [https://github.com/kaminari/kaminari]
+gem "kaminari"
+
 # View components for Rails [https://viewcomponent.org/]
 gem "view_component", "~> 4.0"
 
