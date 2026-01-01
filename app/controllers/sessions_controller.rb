@@ -43,7 +43,18 @@ class SessionsController < ApplicationController
     if auth_result && user_active
       Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
       session = user.sessions.create!
-      cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
+
+      # Handle "Remember me" checkbox
+      remember_me = params[:remember_me] == '1'
+      Rails.logger.info "SessionsController#create - Remember me checked: #{remember_me}"
+
+      if remember_me
+        # Permanent cookie: expires in 30 days
+        cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
+      else
+        # Session cookie: expires when browser closes
+        cookies.signed[:session_token] = { value: session.id, httponly: true }
+      end
 
       redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente"
     elsif auth_result && !user_active

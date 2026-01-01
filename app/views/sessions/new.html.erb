@@ -21,6 +21,13 @@
     </div>
 
     <div>
+      <label class="flex items-center">
+        <%= f.check_box :remember_me, { class: "rounded border-gray-300 text-[#125282] focus:ring-[#125282]" } %>
+        <span class="ml-2 text-sm text-gray-700">Recuérdame en este dispositivo</span>
+      </label>
+    </div>
+
+    <div>
       <%= f.submit "Iniciar Sesión", class: "w-full py-3 px-4 bg-[#125282] hover:bg-[#0f4670] text-white font-semibold rounded-lg transition duration-200 cursor-pointer" %>
     </div>
   <% end %>
