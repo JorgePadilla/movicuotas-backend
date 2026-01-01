@@ -83,21 +83,21 @@ module Admin
       redirect_to admin_jobs_path, alert: "Job no encontrado."
     end
 
-    JOB_CLASS_MAP = {
-      "MarkInstallmentsOverdueJob" => "mark_installments_overdue_job",
-      "SendOverdueNotificationJob" => "send_overdue_notification_job",
-      "SendLatePaymentWarningJob" => "send_late_payment_warning_job",
-      "NotifyCobradorosJob" => "notify_cobradores_job",
-      "AutoBlockDeviceJob" => "auto_block_device_job"
-    }.freeze
+    ALLOWED_JOB_CLASSES = [
+      "MarkInstallmentsOverdueJob",
+      "SendOverdueNotificationJob",
+      "SendLatePaymentWarningJob",
+      "NotifyCobradorosJob",
+      "AutoBlockDeviceJob"
+    ].freeze
 
     def valid_job_class?(job_class)
-      JOB_CLASS_MAP.key?(job_class)
+      ALLOWED_JOB_CLASSES.include?(job_class)
     end
 
     def load_job_class(job_class_name)
-      file_name = JOB_CLASS_MAP[job_class_name]
-      require Rails.root.join("app/jobs/#{file_name}.rb").to_s
+      # Rails autoloads classes from app/jobs automatically
+      # Just use constantize without require to avoid constant validation errors
       job_class_name.constantize
     end
 
