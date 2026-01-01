@@ -1,0 +1,60 @@
+<%= form_with model: [:admin, @user], local: true, class: "space-y-6" do |f| %>
+  <% if @user.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <h3 class="text-sm font-medium text-red-800 mb-2">Se encontraron los siguientes errores:</h3>
+      <ul class="list-disc pl-5 text-sm text-red-700">
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Full Name -->
+  <div>
+    <%= f.label :full_name, "Nombre Completo" %>
+    <%= f.text_field :full_name, placeholder: "Ej: Juan García López", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+  </div>
+
+  <!-- Email -->
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email, placeholder: "Ej: juan.garcia@example.com", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+  </div>
+
+  <!-- Phone Number -->
+  <div>
+    <%= f.label :phone_number, "Teléfono" %>
+    <%= f.telephone_field :phone_number, placeholder: "Ej: +504 9876-5432", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+  </div>
+
+  <!-- Role -->
+  <div>
+    <%= f.label :role, "Función" %>
+    <%= f.select :role, [['Administrador', 'admin'], ['Vendedor', 'vendedor'], ['Cobrador', 'cobrador']], { prompt: 'Selecciona una función' }, class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+  </div>
+
+  <!-- Password (only on new) -->
+  <% if @user.new_record? %>
+    <div class="border-t pt-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Credenciales de Acceso</h3>
+
+      <div>
+        <%= f.label :password %>
+        <%= f.password_field :password, placeholder: "Mínimo 8 caracteres", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        <p class="text-sm text-gray-600 mt-2">La contraseña debe tener al menos 8 caracteres</p>
+      </div>
+
+      <div class="mt-4">
+        <%= f.label :password_confirmation, "Confirmar Contraseña" %>
+        <%= f.password_field :password_confirmation, placeholder: "Repite la contraseña", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Submit button -->
+  <div class="flex gap-4 pt-6 border-t">
+    <%= f.submit @user.new_record? ? "Crear Usuario" : "Actualizar Usuario", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Cancelar", admin_users_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-medium transition-colors" %>
+  </div>
+<% end %>

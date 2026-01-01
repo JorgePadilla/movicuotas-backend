@@ -25,8 +25,15 @@ Rails.application.routes.draw do
 
   # Role-specific routes (placeholders for future branches)
   namespace :admin do
-    get "dashboard", to: "dashboard#index"
-    # ... other admin routes will be added in phase3-admin-* branches
+    root to: "dashboard#index"
+    get "dashboard", to: "dashboard#index", as: :dashboard
+
+    # Admin management routes (Phase 3)
+    resources :users  # User management
+    resources :customers  # Customer management
+    resources :loans, only: [:index, :show]  # Loan management (view only)
+    resources :payments, only: [:index, :show]  # Payment tracking
+    resources :reports, only: [:index]  # Reports & analytics
   end
 
   namespace :vendor do
