@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+
 module Vendor
   class DashboardController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
@@ -18,23 +20,26 @@ module Vendor
 
       # Loan statistics
       @active_loans = loans_scope.where(status: "active").count
-      @total_loan_value = sprintf("%.2f", loans_scope.where(status: "active").sum(:total_amount).to_f).to_f
-      average = @active_loans.positive? ? @total_loan_value / @active_loans : 0.0
-      @average_loan_amount = sprintf("%.2f", average).to_f
+      total_loan_bd = BigDecimal(loans_scope.where(status: "active").sum(:total_amount).to_s)
+      @total_loan_value = (total_loan_bd.round(2)).to_f
+      @average_loan_amount = @active_loans.positive? ? (total_loan_bd / BigDecimal(@active_loans)).round(2).to_f : 0.0
 
       # Payment statistics (this month)
-      @payments_this_month = sprintf("%.2f", Payment.joins(:loan)
+      payments_bd = BigDecimal(Payment.joins(:loan)
                                     .where(loans: { id: loans_scope.select(:id) })
                                     .where("payment_date >= ?", Date.today.beginning_of_month)
-                                    .sum(:amount).to_f).to_f
+                                    .sum(:amount).to_s)
+      @payments_this_month = (payments_bd.round(2)).to_f
+
       @overdue_installments = Installment.joins(:loan)
                                          .where(loans: { id: loans_scope.select(:id) })
                                          .where(status: "overdue")
                                          .count
-      @overdue_amount = sprintf("%.2f", Installment.joins(:loan)
+      overdue_bd = BigDecimal(Installment.joins(:loan)
                                    .where(loans: { id: loans_scope.select(:id) })
                                    .where(status: "overdue")
-                                   .sum(:amount).to_f).to_f
+                                   .sum(:amount).to_s)
+      @overdue_amount = (overdue_bd.round(2)).to_f
 
       # Recent payments (last 10)
       @recent_payments = Payment.joins(loan: :customer)
