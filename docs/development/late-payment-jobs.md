@@ -29,6 +29,8 @@ processes:
 
 ## Jobs Overview
 
+**Total Jobs Implemented**: 5
+
 ### 1. MarkInstallmentsOverdueJob
 
 **Schedule**: Daily at 12:00 AM (midnight)
@@ -273,133 +275,33 @@ AuditLog.create!(
 
 ---
 
-### 6. CalculateLateFeesJob
-
-**Schedule**: Weekly on Monday at 12:00 AM
-**Queue**: `default`
-**Priority**: Standard
-
-**Status**: 🔴 **BUSINESS DECISION PENDING** - Infrastructure ready, no fees applied yet
-
-**Responsibility**:
-- Framework ready for late fee calculation when business defines rules
-- Job runs on schedule but does NOT apply fees
-- Database fields prepared for future implementation
-- Infrastructure ready for audit logging
-
-**Current Status**:
-The job is scheduled and running, but **NO LATE FEES are being calculated or applied** because business rules have not been defined yet.
-
-**Pending Business Decisions**:
-1. **When should fees start?** (e.g., 7 days overdue, 14 days, 30 days)
-2. **How should they be calculated?**
-   - Fixed amount per period?
-   - Percentage of overdue amount?
-   - Tiered based on days overdue?
-3. **What are the limits/caps?**
-   - Minimum fee per installment?
-   - Maximum fee per installment?
-   - Maximum as percentage of original amount?
-4. **How often should they compound?**
-   - Once only?
-   - Weekly?
-   - Monthly?
-   - Daily?
-5. **Customer notifications?**
-   - Notify customers when fees are applied?
-   - Include fees in overdue warnings?
-   - Separate notification?
-
-**Implementation Ready When Business Rules Defined**:
-
-Once the business team defines late fee rules, implementation is straightforward:
-
-```ruby
-# 1. Uncomment the implementation in app/jobs/calculate_late_fees_job.rb
-# 2. Update the calculate_late_fee_amount method with your rules
-# 3. Update tests to verify calculations
-# 4. Deploy
-
-# Example implementation (to be customized):
-def calculate_late_fee_amount(installment, days_overdue)
-  # DEFINE YOUR BUSINESS RULES HERE:
-  # base_fee = ...
-  # max_fee = ...
-  # return [base_fee, max_fee].min
-end
-```
-
-**Database Fields Ready**:
-```sql
--- These fields exist and are ready for late fee tracking:
-ALTER TABLE installments ADD COLUMN late_fee_amount DECIMAL(10,2) DEFAULT 0;
-ALTER TABLE installments ADD COLUMN late_fee_calculated_at TIMESTAMP;
-```
-
-**Audit Trail Ready**:
-```ruby
-# When business rules are defined, this audit log will be created:
-AuditLog.create!(
-  user_id: system_user.id,
-  action: "late_fee_calculated",
-  resource_type: "Installment",
-  resource_id: installment.id,
-  change_details: {
-    late_fee_amount: 5.0,
-    days_overdue: 15,
-    original_amount: 100.0,
-    new_total: 105.0
-  }
-)
-```
-
-**Key Features (Ready for Implementation)**:
-- ✅ Job scheduled weekly
-- ✅ Database fields prepared
-- ✅ Audit log infrastructure ready
-- ✅ Error handling framework in place
-- ✅ Code comments document implementation steps
-- ⏳ Calculation logic waiting for business input
-
----
-
 ## Execution Schedule
 
 ### Daily Job Sequence
 
-```timeline
-00:00 - MarkInstallmentsOverdueJob
-        └─ Identifies pending installments with past due dates
-        └─ Marks them as overdue
-        └─ Updates loan statuses
+```
+00:00 ► MarkInstallmentsOverdueJob
+        Identify pending installments with past due dates
+        └─ Update status to 'overdue'
 
-00:15 - SendOverdueNotificationJob
-        └─ Sends notifications at milestone days (1, 7, 14, 30+)
-        └─ Respects customer preferences
-        └─ Escalates warnings at critical thresholds
+00:15 ► SendOverdueNotificationJob
+        Send notifications at 1, 7, 14, 30+ day milestones
+        └─ Respect preferences & quiet hours
 
-06:00 - SendLatePaymentWarningJob
-        └─ Sends escalating warnings (3, 7, 14, 27 days)
-        └─ Pre-emptive blocking warnings
-        └─ Highest urgency at day 27
+06:00 ► SendLatePaymentWarningJob
+        Escalating warnings at 3, 7, 14, 27 days
+        └─ Pre-emptive blocking alerts
 
-07:00 - NotifyCobradorosJob
-        └─ Sends daily collection report to all cobradores
-        └─ Includes actionable metrics
-        └─ Drives collection activities
+07:00 ► NotifyCobradorosJob
+        Daily collection report with metrics
+        └─ Actionable insights for collection team
 
-08:00 - AutoBlockDeviceJob
-        └─ Auto-blocks devices 30+ days overdue
-        └─ Sends notifications to customers
-        └─ Creates audit logs
-
-00:00 (Monday) - CalculateLateFeesJob
-                 └─ Calculates weekly late fees
-                 └─ Applies to 7+ days overdue
-                 └─ Creates audit trail
+08:00 ► AutoBlockDeviceJob
+        Auto-block 30+ days overdue devices
+        └─ Send notifications & create audit logs
 ```
 
-### Key Dependencies
+### Job Dependencies
 
 ```
 MarkInstallmentsOverdueJob (00:00)
@@ -415,22 +317,9 @@ AutoBlockDeviceJob (08:00)
 
 ---
 
-## Database Schema Changes
+## Database Schema
 
-### Installments Table
-```sql
-ALTER TABLE installments ADD COLUMN late_fee_amount DECIMAL(10,2) DEFAULT 0;
-ALTER TABLE installments ADD COLUMN late_fee_calculated_at TIMESTAMP;
-CREATE INDEX idx_installments_overdue_fee_calculation
-  ON installments(status, late_fee_calculated_at);
-```
-
-### Devices Table
-```sql
-ALTER TABLE devices ADD COLUMN auto_block_notified_at TIMESTAMP;
-CREATE INDEX idx_devices_auto_block_tracking
-  ON devices(lock_status, auto_block_notified_at);
-```
+No database schema changes required. The system uses existing columns in the Installment and Device models.
 
 ---
 
@@ -492,10 +381,9 @@ preference.quiet_hours_end = "07:00"
 test/jobs/
 ├── mark_installments_overdue_job_test.rb
 ├── send_overdue_notification_job_test.rb
-├── notify_cobradores_job_test.rb
-├── auto_block_device_job_test.rb
 ├── send_late_payment_warning_job_test.rb
-└── calculate_late_fees_job_test.rb
+├── notify_cobradores_job_test.rb
+└── auto_block_device_job_test.rb
 ```
 
 ### Running Tests
@@ -578,34 +466,12 @@ log/
 
 ---
 
-## Late Fee Configuration
-
-### Current Settings
-
-```ruby
-LATE_FEE_PERCENTAGE = 5          # 5% of overdue amount
-LATE_FEE_MAX_PERCENTAGE = 20     # Cap at 20% of original amount
-CALCULATION_INTERVAL_DAYS = 7    # Run weekly (7 day minimum)
-```
-
-### Business Review
-
-These settings should be reviewed and adjusted with business stakeholders:
-
-- Should late fees be applied daily, weekly, or monthly?
-- Should the percentage be fixed or tiered (by days overdue)?
-- Should there be a grace period before fees apply?
-- Should notification preferences affect fee calculation?
-
----
-
 ## Phase 5 Completion Checklist
 
-- ✅ 6 background jobs implemented
+- ✅ 5 background jobs implemented
 - ✅ Solid Queue integration complete
 - ✅ Job scheduling configured
-- ✅ Database migrations created
-- ✅ Comprehensive test suite (40+ tests)
+- ✅ Comprehensive test suite (35+ tests)
 - ✅ Notification system integration
 - ✅ Device auto-blocking integration
 - ✅ Audit logging for compliance
@@ -620,10 +486,10 @@ These settings should be reviewed and adjusted with business stakeholders:
 - SMS notifications support (complementing FCM)
 - Email notification fallback
 - Device unblocking after payment
-- Late fee waiver rules
 - Selective blocking (specific regions/branches)
 - Advanced cobrador assignment
 - Payment plan suggestions
+- Late fees (when business rules are defined)
 
 ---
 
