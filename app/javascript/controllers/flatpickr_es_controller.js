@@ -9,9 +9,9 @@ export default class extends Controller {
     min: String,
     placeholder: { type: String, default: "DD/MM/AAAA" },
     initialValue: String,
-    dateFormat: { type: String, default: "dd/mm/Y" },
-    altFormat: { type: String, default: "dd/mm/Y" },
-    altInput: { type: Boolean, default: false }
+    dateFormat: { type: String, default: "Y-m-d" },
+    altFormat: { type: String, default: "d/m/Y" },
+    altInput: { type: Boolean, default: true }
   }
 
   connect() {
@@ -42,36 +42,18 @@ export default class extends Controller {
       position: "auto", // "auto" positions relative to input
       defaultDate: "2000-07-01", // Default calendar view: July 1, 2000
       onChange: (selectedDates, dateStr, instance) => {
-        // Always ensure the date is formatted correctly using the selected Date object
+        // With altInput: true, dateStr is in dateFormat (Y-m-d), selectedDates contains Date object
         if (selectedDates.length > 0) {
           const date = selectedDates[0]
-          const day = String(date.getDate()).padStart(2, '0')
-          const month = String(date.getMonth() + 1).padStart(2, '0')
-          const year = date.getFullYear()
-          const correctDate = `${day}/${month}/${year}`
-          const isoDate = `${year}-${month}-${day}`
+          const isoDate = date.toISOString().split('T')[0] // YYYY-MM-DD
 
-          // Check if the displayed date string is corrupted
-          if (dateStr !== correctDate) {
-            console.warn("Date corruption detected:", dateStr, "-> correcting to:", correctDate)
-
-            // Check for specific corruption patterns
-            const yearPart = dateStr.split('/')[2]
-            if (yearPart && yearPart.length === 4 && yearPart.slice(0, 2) === yearPart.slice(2, 4)) {
-              console.warn("Year duplication detected:", yearPart)
-            }
-
-            // Set the correct date in the input
-            self.inputTarget.value = correctDate
-
-            // Update Flatpickr's internal state to prevent infinite loop
-            instance.setDate(date, false)
-          }
-
-          // Update hidden date input with ISO format for form submission
+          // Update hidden date input with ISO format for Rails form submission
           if (self.hasDateInputTarget) {
             self.dateInputTarget.value = isoDate
           }
+
+          // The original input (hidden by Flatpickr) already has dateFormat value (Y-m-d)
+          // The alt input (visible) shows altFormat (d/m/Y) - managed by Flatpickr
         }
       },
       onOpen: (selectedDates, dateStr, instance) => {
@@ -97,31 +79,19 @@ export default class extends Controller {
     }
 
     try {
-      // Clear input value to prevent Flatpickr from corrupting existing value
-      this.inputTarget.value = ''
-
-      // Initialize Flatpickr
+      // Initialize Flatpickr (clearing input not needed - Flatpickr handles it)
       this.picker = flatpickr(this.inputTarget, options)
 
-      // Set initial value if provided (after initialization to avoid corruption)
+      // Set initial value if provided
       if (this.hasInitialValue && this.initialValue) {
         this.picker.setDate(this.initialValue, false)
-        // Also update hidden date input with ISO format
+        // Update hidden date input with ISO format for Rails form submission
         if (this.hasDateInputTarget) {
           this.dateInputTarget.value = this.initialValue
         }
-        // Format and set visible input with dd/mm/yyyy
-        const date = new Date(this.initialValue)
-        if (!isNaN(date.getTime())) {
-          const day = String(date.getDate()).padStart(2, '0')
-          const month = String(date.getMonth() + 1).padStart(2, '0')
-          const year = date.getFullYear()
-          const correctDate = `${day}/${month}/${year}`
-          this.inputTarget.value = correctDate
-        }
       }
 
-      // Set placeholder if provided
+      // Set placeholder if provided (will apply to alt input)
       if (this.hasPlaceholderValue) {
         this.inputTarget.placeholder = this.placeholderValue
       }
