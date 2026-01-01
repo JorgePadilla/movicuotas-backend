@@ -3,10 +3,10 @@
 module Admin
   class UsersController < ApplicationController
     before_action :set_user, only: [:show, :edit, :update, :destroy]
-    before_action :authorize_user_management
+    before_action :authorize_user_management, except: [:index]
 
     def index
-      @users = User.order(created_at: :desc)
+      @users = policy_scope(User).order(created_at: :desc)
       @users = @users.where(role: params[:role]) if params[:role].present?
     end
 
