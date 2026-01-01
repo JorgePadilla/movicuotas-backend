@@ -3,6 +3,7 @@
 module Admin
   class ReportsController < ApplicationController
     before_action :authorize_admin
+    skip_after_action :verify_policy_scoped
 
     def index
       # Load summary data for report dashboard
