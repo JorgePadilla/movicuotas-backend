@@ -279,56 +279,66 @@ AuditLog.create!(
 **Queue**: `default`
 **Priority**: Standard
 
+**Status**: 🔴 **BUSINESS DECISION PENDING** - Infrastructure ready, no fees applied yet
+
 **Responsibility**:
-- Calculates and applies late fees to overdue installments
-- Runs weekly to prevent duplicate charging
-- Creates audit logs for all financial transactions
-- Respects existing fee calculations
+- Framework ready for late fee calculation when business defines rules
+- Job runs on schedule but does NOT apply fees
+- Database fields prepared for future implementation
+- Infrastructure ready for audit logging
 
-**Fee Calculation Logic**:
+**Current Status**:
+The job is scheduled and running, but **NO LATE FEES are being calculated or applied** because business rules have not been defined yet.
+
+**Pending Business Decisions**:
+1. **When should fees start?** (e.g., 7 days overdue, 14 days, 30 days)
+2. **How should they be calculated?**
+   - Fixed amount per period?
+   - Percentage of overdue amount?
+   - Tiered based on days overdue?
+3. **What are the limits/caps?**
+   - Minimum fee per installment?
+   - Maximum fee per installment?
+   - Maximum as percentage of original amount?
+4. **How often should they compound?**
+   - Once only?
+   - Weekly?
+   - Monthly?
+   - Daily?
+5. **Customer notifications?**
+   - Notify customers when fees are applied?
+   - Include fees in overdue warnings?
+   - Separate notification?
+
+**Implementation Ready When Business Rules Defined**:
+
+Once the business team defines late fee rules, implementation is straightforward:
 
 ```ruby
-# Base calculation
-late_fee = installment.amount * 5 / 100  # 5% of overdue amount
+# 1. Uncomment the implementation in app/jobs/calculate_late_fees_job.rb
+# 2. Update the calculate_late_fee_amount method with your rules
+# 3. Update tests to verify calculations
+# 4. Deploy
 
-# Cap at maximum
-max_fee = installment.amount * 20 / 100   # 20% of original amount
-final_fee = [late_fee, max_fee].min
-
-# Only apply if:
-# - Installment is overdue
-# - 7+ days overdue
-# - No previous fee calculation (or recalc interval passed)
+# Example implementation (to be customized):
+def calculate_late_fee_amount(installment, days_overdue)
+  # DEFINE YOUR BUSINESS RULES HERE:
+  # base_fee = ...
+  # max_fee = ...
+  # return [base_fee, max_fee].min
+end
 ```
 
-**Eligibility Criteria**:
+**Database Fields Ready**:
 ```sql
--- Overdue 7+ days, no recent fee calculation
-SELECT *
-FROM installments
-WHERE status = 'overdue'
-  AND (CURRENT_DATE - due_date) >= 7
-  AND (late_fee_calculated_at IS NULL
-       OR late_fee_calculated_at < NOW() - INTERVAL '7 days')
+-- These fields exist and are ready for late fee tracking:
+ALTER TABLE installments ADD COLUMN late_fee_amount DECIMAL(10,2) DEFAULT 0;
+ALTER TABLE installments ADD COLUMN late_fee_calculated_at TIMESTAMP;
 ```
 
-**Fee Examples**:
-| Amount | Calculation | Max Cap | Applied Fee |
-|--------|-------------|---------|------------|
-| L. 100.00 | 5% = L. 5.00 | 20% = L. 20.00 | L. 5.00 |
-| L. 500.00 | 5% = L. 25.00 | 20% = L. 100.00 | L. 25.00 |
-| L. 1000.00 | 5% = L. 50.00 | 20% = L. 200.00 | L. 50.00 |
-
-**Database Updates**:
-```sql
-UPDATE installments
-SET late_fee_amount = $1,
-    late_fee_calculated_at = NOW()
-WHERE id = $2
-```
-
-**Audit Log Entry**:
+**Audit Trail Ready**:
 ```ruby
+# When business rules are defined, this audit log will be created:
 AuditLog.create!(
   user_id: system_user.id,
   action: "late_fee_calculated",
@@ -343,13 +353,13 @@ AuditLog.create!(
 )
 ```
 
-**Key Features**:
-- ✅ Weekly execution (prevents duplicate fees)
-- ✅ Configurable percentage and cap
-- ✅ Audit trail for financial compliance
-- ✅ Transaction-safe (atomic updates)
-- ✅ Idempotent (won't recalculate if already done)
-- ✅ Error handling per-installment
+**Key Features (Ready for Implementation)**:
+- ✅ Job scheduled weekly
+- ✅ Database fields prepared
+- ✅ Audit log infrastructure ready
+- ✅ Error handling framework in place
+- ✅ Code comments document implementation steps
+- ⏳ Calculation logic waiting for business input
 
 ---
 
