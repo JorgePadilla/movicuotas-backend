@@ -42,6 +42,9 @@ Rails.application.routes.draw do
       end
     end
     resources :jobs, only: [:index, :show] do  # Background job monitoring (Phase 5)
+      collection do
+        post :trigger
+      end
       member do
         post :retry
       end

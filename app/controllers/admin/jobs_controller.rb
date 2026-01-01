@@ -5,7 +5,7 @@ require "ostruct"
 module Admin
   class JobsController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
-    skip_after_action :verify_authorized, only: [:index, :show, :retry]
+    skip_after_action :verify_authorized, only: [:index, :show, :retry, :trigger]
     before_action :require_login
     before_action :authorize_admin
     before_action :set_job, only: [:show, :retry]
@@ -38,6 +38,24 @@ module Admin
       end
     end
 
+    def trigger
+      job_class = params[:job_class]
+
+      # Validate job class
+      unless valid_job_class?(job_class)
+        redirect_to admin_jobs_path, alert: "Job no válido."
+        return
+      end
+
+      # Enqueue the job
+      job_class.constantize.perform_later
+
+      redirect_to admin_jobs_path, notice: "#{job_class} ha sido encolado exitosamente."
+    rescue StandardError => e
+      Rails.logger.error "Error triggering job: #{e.message}"
+      redirect_to admin_jobs_path, alert: "Error al encolar el job: #{e.message}"
+    end
+
     private
 
     def require_login
@@ -52,6 +70,17 @@ module Admin
       @job = SolidQueue::Job.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       redirect_to admin_jobs_path, alert: "Job no encontrado."
+    end
+
+    def valid_job_class?(job_class)
+      allowed_jobs = [
+        "MarkInstallmentsOverdueJob",
+        "SendOverdueNotificationJob",
+        "SendLatePaymentWarningJob",
+        "NotifyCobradorosJob",
+        "AutoBlockDeviceJob"
+      ].freeze
+      allowed_jobs.include?(job_class)
     end
 
     def load_job_metrics

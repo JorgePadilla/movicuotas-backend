@@ -14,6 +14,10 @@ module Admin
       user.admin?
     end
 
+    def trigger?
+      user.admin?
+    end
+
     class Scope < Scope
       def resolve
         scope.none
