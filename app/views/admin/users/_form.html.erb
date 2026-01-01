@@ -22,10 +22,11 @@
     <%= f.email_field :email, placeholder: "Ej: juan.garcia@example.com", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
   </div>
 
-  <!-- Phone Number -->
+  <!-- Branch Number -->
   <div>
-    <%= f.label :phone_number, "Teléfono" %>
-    <%= f.telephone_field :phone_number, placeholder: "Ej: +504 9876-5432", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <%= f.label :branch_number, "Sucursal (Código)" %>
+    <%= f.text_field :branch_number, placeholder: "Ej: S01, S02, etc.", class: "mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <p class="text-sm text-gray-600 mt-2">Opcional. Solo para Vendedores y Cobradores.</p>
   </div>
 
   <!-- Role -->
