@@ -108,7 +108,7 @@
                 <tr>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= payment.payment_date.strftime("%d/%m/%Y") %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= payment.loan.customer.full_name %></td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_to_delimited(payment.amount, delimiter: ',', separator: '.') %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_with_delimiter(payment.amount, delimiter: ',', separator: '.') %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm">
                     <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"><%= payment.payment_method.titleize %></span>
                   </td>
@@ -145,7 +145,7 @@
                 <tr>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= installment.loan.customer.full_name %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= installment.due_date.strftime("%d/%m/%Y") %></td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_to_delimited(installment.amount, delimiter: ',', separator: '.') %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_with_delimiter(installment.amount, delimiter: ',', separator: '.') %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm">
                     <% if days_until <= 3 %>
                       <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">En <%= days_until %> días</span>
