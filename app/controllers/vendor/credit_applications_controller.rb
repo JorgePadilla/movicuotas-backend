@@ -199,6 +199,9 @@ module Vendor
     def credit_application_params
       params.require(:credit_application).permit(
         :notes,
+        :selected_phone_model_id,
+        :selected_imei,
+        :selected_color,
         customer_attributes: [
           :id,
           :identification_number,
