@@ -111,6 +111,8 @@ Rails.application.routes.draw do
     end
     get "bulk-operations", to: "bulk_operations#show", as: "bulk_operations"
     post "bulk-operations/confirm", to: "bulk_operations#confirm_bulk_block", as: "confirm_bulk_operations"
+    get "loans/:loan_id/payment-history", to: "payment_history#show", as: "loan_payment_history"
+    get "collection-reports", to: "collection_reports#index", as: "collection_reports"
     # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
 end
