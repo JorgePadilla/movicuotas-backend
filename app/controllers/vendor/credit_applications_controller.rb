@@ -92,10 +92,18 @@ module Vendor
 
     # Step 5 submission: Upload photos
     def update_photos
+      Rails.logger.info "Updating photos for credit application #{@credit_application.id}"
+      Rails.logger.info "Photos params: #{photos_params.inspect}"
+      Rails.logger.info "Permitted params keys: #{photos_params.keys.inspect}"
+
       if @credit_application.update(photos_params)
+        Rails.logger.info "Photos updated successfully for credit application #{@credit_application.id}"
         redirect_to employment_vendor_credit_application_path(@credit_application),
                     notice: "Fotografías subidas. Completa los datos laborales."
       else
+        Rails.logger.error "Failed to update photos for credit application #{@credit_application.id}"
+        Rails.logger.error "Errors: #{@credit_application.errors.full_messages.inspect}"
+        flash.now[:alert] = "Error: #{@credit_application.errors.full_messages.join(', ')}"
         render :photos, status: :unprocessable_entity
       end
     end
