@@ -1,0 +1,67 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+customer_one:
+  identification_number: "1234567890123"
+  full_name: "Juan Carlos Pérez"
+  date_of_birth: 1990-05-15
+  phone: "78945612"
+  email: "juan.perez@example.com"
+  gender: male
+  address: "Calle Principal 123"
+  city: "San Salvador"
+  status: active
+
+customer_two:
+  identification_number: "9876543210987"
+  full_name: "María López González"
+  date_of_birth: 1985-03-22
+  phone: "72456789"
+  email: "maria.lopez@example.com"
+  gender: female
+  address: "Avenida Central 456"
+  city: "Santa Ana"
+  status: active
+
+customer_inactive:
+  identification_number: "5555666677778"
+  full_name: "Carlos Mendoza"
+  date_of_birth: 1988-07-10
+  phone: "71234567"
+  email: "carlos@example.com"
+  gender: male
+  address: "Calle Secundaria 789"
+  city: "San Miguel"
+  status: suspended
+
+customer_blocked:
+  identification_number: "4444333322221"
+  full_name: "Ana García"
+  date_of_birth: 1992-11-20
+  phone: "74567890"
+  email: "ana@example.com"
+  gender: female
+  address: "Boulevard 321"
+  city: "Cuscatlán"
+  status: blocked
+
+customer_young:
+  identification_number: "3333222211110"
+  full_name: "Roberto Silva"
+  date_of_birth: 2002-01-01
+  phone: "75678901"
+  email: "roberto@example.com"
+  gender: male
+  address: "Calle Joven 999"
+  city: "La Libertad"
+  status: active
+
+customer_old:
+  identification_number: "2222111100009"
+  full_name: "Doña Teresa Rodríguez"
+  date_of_birth: 1960-12-31
+  phone: "76789012"
+  email: "teresa@example.com"
+  gender: female
+  address: "Calle Antigua 111"
+  city: "Chalatenango"
+  status: active

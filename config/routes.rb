@@ -33,6 +33,12 @@ Rails.application.routes.draw do
     resources :customers  # Customer management
     resources :loans, only: [:index, :show]  # Loan management (view only)
     resources :payments, only: [:index, :show]  # Payment tracking
+    resources :contracts, only: [:index, :show, :edit] do  # Contract & QR code management
+      member do
+        patch :update_qr_code
+        get :download_qr_code
+      end
+    end
     resources :reports, only: [:index] do  # Reports & analytics
       collection do
         get :branch_analytics

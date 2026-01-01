@@ -1,0 +1,169 @@
+<% content_for :title, "Detalles del Contrato - Admin" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# Header with Back Button %>
+  <div class="mb-8">
+    <%= link_to "← Volver a contratos", admin_contracts_path, class: "text-[#125282] hover:text-[#0f4670] font-medium mb-4 inline-block" %>
+    <h1 class="text-4xl font-bold text-gray-900">Detalles del Contrato</h1>
+    <p class="mt-2 text-gray-600">ID del Contrato: <%= @contract.id %></p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <%# Contract Information Card %>
+    <div class="bg-white shadow-lg rounded-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Información del Contrato</h2>
+
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Número de Contrato</p>
+          <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number if @loan %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Estado de Firma</p>
+          <p>
+            <% if @contract.signed? %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                ✓ Firmado
+              </span>
+            <% else %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                ⚠ Sin Firmar
+              </span>
+            <% end %>
+          </p>
+        </div>
+
+        <% if @contract.signed_at %>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Fecha de Firma</p>
+            <p class="text-lg font-semibold text-gray-900"><%= l(@contract.signed_at, format: :long) %></p>
+          </div>
+        <% end %>
+
+        <% if @contract.signed_by_name %>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Firmado Por</p>
+            <p class="text-lg font-semibold text-gray-900"><%= @contract.signed_by_name %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Customer Information Card %>
+    <div class="bg-white shadow-lg rounded-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Información del Cliente</h2>
+
+      <% if @customer %>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Nombre Completo</p>
+            <p class="text-lg font-semibold text-gray-900"><%= @customer.full_name %></p>
+          </div>
+
+          <div>
+            <p class="text-sm font-medium text-gray-500">Cédula/ID</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @customer.identification_number %></p>
+          </div>
+
+          <div>
+            <p class="text-sm font-medium text-gray-500">Teléfono</p>
+            <p class="text-lg font-semibold text-gray-900"><%= @customer.phone %></p>
+          </div>
+
+          <div>
+            <p class="text-sm font-medium text-gray-500">Correo Electrónico</p>
+            <p class="text-lg font-semibold text-gray-900"><%= @customer.email %></p>
+          </div>
+        </div>
+      <% else %>
+        <p class="text-gray-500">Sin información de cliente disponible</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# QR Code Section %>
+  <div class="bg-white shadow-lg rounded-lg p-8 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Código QR para Configuración del Dispositivo</h2>
+
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8">
+      <% if @contract.qr_code_present? %>
+        <div class="flex flex-col items-center">
+          <%# Display QR Code Image %>
+          <div class="mb-6 p-6 bg-gray-50 rounded-lg">
+            <img src="<%= rails_blob_path(@contract.qr_code, disposition: 'inline') %>"
+                 alt="QR Code"
+                 class="w-64 h-64 border-4 border-[#125282]">
+          </div>
+
+          <div class="text-center mb-6">
+            <p class="text-sm text-gray-600 mb-2">
+              <strong>Cargado:</strong> <%= l(@contract.qr_code_uploaded_at, format: :long) if @contract.qr_code_uploaded_at %>
+            </p>
+            <p class="text-sm text-gray-600 mb-4">
+              <strong>Cargado por:</strong> <%= @contract.qr_code_uploaded_by&.full_name %>
+            </p>
+          </div>
+
+          <div class="flex gap-4">
+            <%= link_to "Descargar", download_admin_contract_qr_code_path(@contract),
+                        class: "px-6 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium",
+                        download: true %>
+            <%= link_to "Reemplazar", edit_admin_contract_path(@contract),
+                        class: "px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium" %>
+          </div>
+        </div>
+      <% else %>
+        <div class="text-center">
+          <svg class="w-24 h-24 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <p class="text-lg text-gray-600 mb-6">No hay código QR cargado aún</p>
+          <%= link_to "Cargar Código QR", edit_admin_contract_path(@contract),
+                      class: "px-6 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Loan Information Card %>
+  <div class="bg-white shadow-lg rounded-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Información del Préstamo</h2>
+
+    <% if @loan %>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Monto Aprobado</p>
+          <p class="text-lg font-semibold text-[#125282]">L. <%= number_with_delimiter(@loan.approved_amount, delimiter: ",") %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Monto Financiado</p>
+          <p class="text-lg font-semibold text-gray-900">L. <%= number_with_delimiter(@loan.financed_amount, delimiter: ",") %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Cuotas</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @loan.number_of_installments %> cuotas</p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Tasa de Interés</p>
+          <p class="text-lg font-semibold text-gray-900"><%= number_with_precision(@loan.interest_rate, precision: 2) %>%</p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Estado del Préstamo</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @loan.status %></p>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-gray-500">Fecha de Inicio</p>
+          <p class="text-lg font-semibold text-gray-900"><%= l(@loan.start_date, format: :long) %></p>
+        </div>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Sin información de préstamo disponible</p>
+    <% end %>
+  </div>
+</div>

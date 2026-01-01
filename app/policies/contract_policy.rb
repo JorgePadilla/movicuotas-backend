@@ -46,6 +46,18 @@ class ContractPolicy < ApplicationPolicy
     show?  # PDF download permission
   end
 
+  def edit?
+    admin?  # Only admin can edit QR codes
+  end
+
+  def update_qr_code?
+    admin?  # Only admin can upload QR codes
+  end
+
+  def download_qr_code?
+    show?  # Anyone with view access can download QR code
+  end
+
   # Scope: Filter contracts based on role
   # - Admin: All contracts
   # - Vendedor: Contracts for loans they created
