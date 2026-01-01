@@ -5,7 +5,7 @@ class SendOverdueNotificationJob < ApplicationJob
   set_priority :high
 
   # Milestone days for escalating notifications
-  NOTIFICATION_THRESHOLDS = [1, 7, 14, 30].freeze
+  NOTIFICATION_THRESHOLDS = [ 1, 7, 14, 30 ].freeze
 
   def perform
     log_execution("Starting: Sending overdue payment notifications")

@@ -83,17 +83,17 @@ class SendLatePaymentWarningJob < ApplicationJob
     title = config[:title]
 
     message = case days_overdue
-              when 3
+    when 3
                 "Tu pago está próximo a vencer. Monto: L. #{format('%.2f', total_amount)}. ¡Paga ahora!"
-              when 7
+    when 7
                 "Tu pago lleva 7 días en mora. Monto: L. #{format('%.2f', total_amount)}. Evita cargos adicionales."
-              when 14
+    when 14
                 "IMPORTANTE: Tu pago lleva 14 días en mora. Monto: L. #{format('%.2f', total_amount)}. Tu dispositivo corre peligro de bloqueo."
-              when 27
+    when 27
                 "⚠️ CRÍTICO: Tu dispositivo será BLOQUEADO en 3 DÍAS por mora de #{days_overdue} días. Monto: L. #{format('%.2f', total_amount)}. ¡PAGA AHORA!"
-              else
+    else
                 "Tu pago está en mora por #{days_overdue} días. Por favor, realiza el pago cuanto antes."
-              end
+    end
 
     Notification.new(
       customer: customer,

@@ -42,7 +42,7 @@ class AutoBlockDeviceJob < ApplicationJob
     Device.joins(loan: :installments)
           .where(installments: { status: :overdue })
           .where("CAST(CURRENT_DATE AS date) - installments.due_date >= ?", OVERDUE_THRESHOLD_DAYS)
-          .where(lock_status: [:unlocked, nil])
+          .where(lock_status: [ :unlocked, nil ])
           .distinct
   end
 
