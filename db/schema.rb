@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_071552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -107,7 +107,27 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.string "phone", null: false
     t.string "status", default: "active"
     t.datetime "updated_at", null: false
+    t.index ["full_name"], name: "idx_customers_full_name"
     t.index ["identification_number"], name: "index_customers_on_identification_number", unique: true
+  end
+
+  create_table "device_tokens", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.string "app_version"
+    t.datetime "created_at", null: false
+    t.string "device_name"
+    t.datetime "invalidated_at"
+    t.datetime "last_used_at"
+    t.string "os_version"
+    t.string "platform", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["active"], name: "index_device_tokens_on_active"
+    t.index ["platform", "active"], name: "idx_device_tokens_by_platform_and_status"
+    t.index ["token"], name: "index_device_tokens_on_token", unique: true
+    t.index ["user_id", "active"], name: "idx_device_tokens_by_user_and_status"
+    t.index ["user_id"], name: "index_device_tokens_on_user_id"
   end
 
   create_table "devices", force: :cascade do |t|
@@ -123,8 +143,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.text "notes"
     t.bigint "phone_model_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["imei"], name: "idx_devices_imei"
     t.index ["imei"], name: "index_devices_on_imei", unique: true
+    t.index ["loan_id"], name: "idx_devices_loan_id"
     t.index ["loan_id"], name: "index_devices_on_loan_id"
+    t.index ["lock_status", "locked_at"], name: "idx_devices_lock_status_locked_at"
     t.index ["lock_status"], name: "index_devices_on_lock_status"
     t.index ["locked_by_id"], name: "index_devices_on_locked_by_id"
     t.index ["phone_model_id"], name: "index_devices_on_phone_model_id"
@@ -145,7 +168,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.index ["due_date", "status"], name: "index_installments_on_due_date_and_status"
     t.index ["due_date"], name: "index_installments_on_due_date"
     t.index ["loan_id", "installment_number"], name: "index_installments_on_loan_id_and_installment_number", unique: true
+    t.index ["loan_id"], name: "idx_installments_loan_id"
     t.index ["loan_id"], name: "index_installments_on_loan_id"
+    t.index ["status", "due_date"], name: "idx_installments_status_due_date"
     t.index ["status"], name: "index_installments_on_status"
   end
 
@@ -167,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.decimal "total_amount", precision: 10, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.index ["branch_number"], name: "idx_loans_branch_number"
     t.index ["branch_number"], name: "index_loans_on_branch_number"
     t.index ["contract_number"], name: "index_loans_on_contract_number", unique: true
     t.index ["customer_id"], name: "index_loans_on_customer_id"
@@ -186,20 +212,52 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.index ["status"], name: "index_mdm_blueprints_on_status"
   end
 
-  create_table "notifications", force: :cascade do |t|
-    t.text "body", null: false
+  create_table "notification_preferences", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "customer_id", null: false
+    t.boolean "daily_reminders", default: true
+    t.boolean "device_blocking_alerts", default: true
+    t.string "language", default: "es"
+    t.integer "max_notifications_per_day", default: 10
+    t.boolean "overdue_warnings", default: true
+    t.boolean "payment_confirmations", default: true
+    t.boolean "promotional_messages", default: false
+    t.time "quiet_hours_end"
+    t.time "quiet_hours_start"
+    t.boolean "receive_email_notifications", default: true
+    t.boolean "receive_fcm_notifications", default: true
+    t.boolean "receive_sms_notifications", default: false
+    t.string "reminder_frequency", default: "daily"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "idx_notification_preferences_by_user"
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id"
+    t.jsonb "data", default: {}
+    t.string "delivery_method", default: "fcm"
+    t.text "error_message"
+    t.text "message", null: false
     t.text "metadata"
     t.string "notification_type", null: false
     t.datetime "read_at"
+    t.bigint "recipient_id"
+    t.string "recipient_type"
     t.datetime "sent_at"
+    t.string "status", default: "pending"
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "idx_notifications_recent"
     t.index ["customer_id"], name: "index_notifications_on_customer_id"
+    t.index ["delivery_method"], name: "index_notifications_on_delivery_method"
+    t.index ["notification_type", "created_at"], name: "idx_notifications_by_type_and_date"
     t.index ["notification_type"], name: "index_notifications_on_notification_type"
     t.index ["read_at"], name: "index_notifications_on_read_at"
+    t.index ["recipient_id", "recipient_type", "created_at"], name: "idx_notifications_by_recipient_and_date"
     t.index ["sent_at"], name: "index_notifications_on_sent_at"
+    t.index ["status", "sent_at"], name: "idx_notifications_pending_unsent"
   end
 
   create_table "payment_installments", force: :cascade do |t|
@@ -250,6 +308,135 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "solid_queue_blocked_executions", force: :cascade do |t|
+    t.string "concurrency_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
+    t.index ["expires_at", "concurrency_key"], name: "idx_on_expires_at_concurrency_key_c20fd0827b"
+    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_claimed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.bigint "process_id"
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+  end
+
+  create_table "solid_queue_failed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.bigint "job_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+  end
+
+  create_table "solid_queue_jobs", force: :cascade do |t|
+    t.string "active_job_id"
+    t.text "arguments"
+    t.string "class_name", null: false
+    t.string "concurrency_key"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at"
+    t.datetime "updated_at", null: false
+    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
+    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
+    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
+    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_on_queue_name_and_finished_at"
+    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_on_scheduled_at_and_finished_at"
+  end
+
+  create_table "solid_queue_pauses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+  end
+
+  create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hostname"
+    t.string "kind", null: false
+    t.datetime "last_heartbeat_at", null: false
+    t.text "metadata"
+    t.string "name", null: false
+    t.integer "pid", null: false
+    t.bigint "supervisor_id"
+    t.datetime "updated_at", null: false
+    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
+    t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
+    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+  end
+
+  create_table "solid_queue_ready_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+    t.index ["priority", "job_id"], name: "index_solid_queue_ready_executions_on_priority_and_job_id"
+    t.index ["queue_name", "priority", "job_id"], name: "idx_on_queue_name_priority_job_id_b116c992cd"
+  end
+
+  create_table "solid_queue_recurring_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "run_at", null: false
+    t.string "task_key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+  end
+
+  create_table "solid_queue_recurring_tasks", force: :cascade do |t|
+    t.text "arguments"
+    t.string "class_name"
+    t.string "command", limit: 2048
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.string "schedule", null: false
+    t.boolean "static", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
+    t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
+  end
+
+  create_table "solid_queue_scheduled_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+    t.index ["scheduled_at", "priority", "job_id"], name: "idx_on_scheduled_at_priority_job_id_cf978ceebd"
+  end
+
+  create_table "solid_queue_semaphores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.integer "value", default: 1, null: false
+    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
+    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
+    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "branch_number"
@@ -269,6 +456,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
   add_foreign_key "credit_applications", "customers"
   add_foreign_key "credit_applications", "phone_models", column: "selected_phone_model_id"
   add_foreign_key "credit_applications", "users", column: "vendor_id"
+  add_foreign_key "device_tokens", "users"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"
   add_foreign_key "devices", "users", column: "locked_by_id"
@@ -276,9 +464,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_045047) do
   add_foreign_key "loans", "customers"
   add_foreign_key "loans", "users"
   add_foreign_key "mdm_blueprints", "devices"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "customers"
   add_foreign_key "payment_installments", "installments"
   add_foreign_key "payment_installments", "payments"
   add_foreign_key "payments", "loans"
   add_foreign_key "sessions", "users"
+  add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
 end

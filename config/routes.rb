@@ -124,4 +124,19 @@ Rails.application.routes.draw do
     get "collection-reports", to: "collection_reports#index", as: "collection_reports"
     # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
+
+  # Mobile API (Phase 6)
+  namespace :api do
+    namespace :v1 do
+      # Authentication
+      post "auth/login", to: "auth#login"
+      get "auth/forgot_contract", to: "auth#forgot_contract"
+
+      # Customer endpoints
+      get "dashboard", to: "dashboard#show"
+      get "installments", to: "installments#index"
+      post "payments", to: "payments#create"
+      get "notifications", to: "notifications#index"
+    end
+  end
 end

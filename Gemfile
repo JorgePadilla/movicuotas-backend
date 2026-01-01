@@ -25,6 +25,9 @@ gem "bcrypt", "~> 3.1.7"
 # Authorization with Pundit [https://github.com/varvet/pundit]
 gem "pundit"
 
+# JWT for API authentication [https://github.com/jwt/ruby-jwt]
+gem "jwt"
+
 # Pagination with Kaminari [https://github.com/kaminari/kaminari]
 gem "kaminari"
 
