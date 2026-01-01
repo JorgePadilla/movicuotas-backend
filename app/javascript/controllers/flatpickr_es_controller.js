@@ -28,7 +28,9 @@ export default class extends Controller {
 
     // Configure options
     const options = {
-      dateFormat: this.dateFormatValue, // Display and submission format: "dd/mm/yyyy"
+      dateFormat: this.dateFormatValue, // Hidden input format for form submission: "Y-m-d" (ISO)
+      altFormat: this.altFormatValue, // Visible display format: "d/m/Y" (Honduras format)
+      altInput: this.altInputValue, // Show alternate input with formatted date
       locale: "es",
       allowInput: true,
       clickOpens: true,
@@ -40,7 +42,6 @@ export default class extends Controller {
       nextArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
       // Ensure calendar is positioned correctly
       position: "auto", // "auto" positions relative to input
-      defaultDate: "2000-07-01", // Default calendar view: July 1, 2000
       onChange: (selectedDates, dateStr, instance) => {
         // With altInput: true, dateStr is in dateFormat (Y-m-d), selectedDates contains Date object
         if (selectedDates.length > 0) {
