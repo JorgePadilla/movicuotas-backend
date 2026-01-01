@@ -78,7 +78,7 @@ Rails.application.routes.draw do
     end
 
     # Credit Application Workflow (Steps 4-9)
-    resources :credit_applications, only: [ :new, :create, :show, :edit, :update ] do
+    resources :credit_applications, only: [ :new, :create, :show ] do
       member do
         get :photos, as: :photos
         patch :update_photos, as: :update_photos
