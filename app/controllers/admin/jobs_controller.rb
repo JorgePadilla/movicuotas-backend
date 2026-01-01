@@ -96,21 +96,8 @@ module Admin
     end
 
     def load_job_class(job_class_name)
-      # Use require with absolute path to load the job file
-      job_file_path = case job_class_name
-                      when "MarkInstallmentsOverdueJob"
-                        Rails.root.join("app/jobs/mark_installments_overdue_job")
-                      when "SendOverdueNotificationJob"
-                        Rails.root.join("app/jobs/send_overdue_notification_job")
-                      when "SendLatePaymentWarningJob"
-                        Rails.root.join("app/jobs/send_late_payment_warning_job")
-                      when "NotifyCobradorosJob"
-                        Rails.root.join("app/jobs/notify_cobradores_job")
-                      when "AutoBlockDeviceJob"
-                        Rails.root.join("app/jobs/auto_block_device_job")
-                      end
-
-      load job_file_path.to_s + ".rb"
+      # Rails autoloads the class when constantize is called
+      # The class is already loaded when the server starts
       job_class_name.constantize
     end
 
