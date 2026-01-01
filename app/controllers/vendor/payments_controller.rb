@@ -9,6 +9,9 @@ module Vendor
     def index
       authorize :payment, :index?
       @payments = policy_scope(Payment).includes(:loan, loan: :customer).order(payment_date: :desc)
+
+      # Paginate results (20 per page)
+      @payments = @payments.page(params[:page]).per(20)
     end
 
     # Note: Additional actions (show, create, etc.) can be added as needed

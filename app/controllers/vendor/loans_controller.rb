@@ -82,6 +82,9 @@ module Vendor
         Rails.logger.info "Filtered loans count: #{@loans.count}"
       end
 
+      # Paginate results (20 per page)
+      @loans = @loans.page(params[:page]).per(20)
+
       authorize :loan, :index?
     end
 
