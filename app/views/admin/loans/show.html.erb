@@ -1,0 +1,238 @@
+<% content_for :title, "Detalles del Préstamo - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-[#125282]"><%= @loan.contract_number %></h1>
+      <p class="text-gray-600 mt-2"><%= @loan.customer.full_name %> • Sucursal <%= @loan.branch_number %></p>
+    </div>
+    <div>
+      <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @loan.active? ? 'bg-green-100 text-green-800' : @loan.paid? ? 'bg-blue-100 text-blue-800' : @loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+        <%= @loan.status.titleize %>
+      </span>
+    </div>
+  </div>
+
+  <!-- Loan details grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Customer Info -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Cliente</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Nombre</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.customer.full_name %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Identidad</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.customer.identification_number %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Teléfono</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.customer.phone %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Email</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.customer.email || "—" %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Edad</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.customer.age %> años</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Amounts -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Montos</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Monto Total</label>
+          <p class="text-2xl font-bold text-gray-900 mt-1">L. <%= number_with_delimiter(@loan.total_amount, delimiter: ',') %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Prima (<%= @loan.down_payment_percentage %>%)</label>
+          <p class="text-lg text-gray-900 mt-1">L. <%= number_with_delimiter(@loan.down_payment_amount, delimiter: ',') %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Monto Financiado</label>
+          <p class="text-lg text-gray-900 mt-1">L. <%= number_with_delimiter(@loan.financed_amount, delimiter: ',') %></p>
+        </div>
+        <div class="border-t pt-4">
+          <label class="block text-sm font-medium text-gray-600">Total Pagado</label>
+          <p class="text-lg font-semibold text-green-600 mt-1">L. <%= number_with_delimiter(@loan.total_paid, delimiter: ',') %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Balance Pendiente</label>
+          <p class="text-lg font-semibold <%= @loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %> mt-1">
+            L. <%= number_with_delimiter(@loan.remaining_balance, delimiter: ',') %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loan Details -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Detalles</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Tasa de Interés (Quincenal)</label>
+          <p class="text-lg text-gray-900 mt-1"><%= (@loan.interest_rate * 100).round(2) %>%</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Cuotas</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.number_of_installments %> quincenales</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Fecha de Inicio</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.start_date.strftime("%d/%m/%Y") %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Creado por</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.user.full_name %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Sucursal</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.branch_number %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device Info (if assigned) -->
+  <% if @loan.device %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Dispositivo Asignado</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Marca y Modelo</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.device.brand %> <%= @loan.device.model %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">IMEI</label>
+          <p class="text-lg text-gray-900 mt-1"><code><%= @loan.device.imei %></code></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Estado MDM</label>
+          <p class="text-lg text-gray-900 mt-1">
+            <% if @loan.device.locked? %>
+              <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">✓ Bloqueado</span>
+            <% elsif @loan.device.pending? %>
+              <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-sm font-medium">⏳ Pendiente</span>
+            <% else %>
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">🔓 No bloqueado</span>
+            <% end %>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Color</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @loan.device.color || "—" %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Installments Schedule -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">Cronograma de Cuotas</h2>
+
+    <% if @loan.installments.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cuota</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha de Vencimiento</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monto</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagado</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @loan.installments.order(:due_date).each_with_index do |installment, index| %>
+              <tr>
+                <td class="px-4 py-3">
+                  <span class="font-medium text-gray-900">#<%= index + 1 %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm text-gray-600"><%= installment.due_date.strftime("%d/%m/%Y") %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(installment.amount, delimiter: ',') %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm text-gray-600">
+                    <% payment = @loan.payments.find { |p| p.installments.include?(installment) } %>
+                    <% if payment %>
+                      L. <%= number_with_delimiter(payment.amount, delimiter: ',') %>
+                    <% else %>
+                      L. 0.00
+                    <% end %>
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="px-2 py-1 text-xs rounded-full <%= installment.paid? ? 'bg-green-100 text-green-800' : installment.overdue? ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' %>">
+                    <%= installment.status.titleize %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay cuotas registradas</p>
+    <% end %>
+  </div>
+
+  <!-- Payment History -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">Historial de Pagos</h2>
+
+    <% if @loan.payments.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha de Pago</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monto</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Método</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referencia</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @loan.payments.order(payment_date: :desc).each do |payment| %>
+              <tr>
+                <td class="px-4 py-3">
+                  <span class="text-sm font-medium text-gray-900"><%= payment.payment_date.strftime("%d/%m/%Y") %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm text-gray-600"><%= payment.payment_method.titleize %></span>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="text-sm text-gray-600"><%= payment.reference_number || "—" %></span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay pagos registrados</p>
+    <% end %>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver a Préstamos", admin_loans_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+  </div>
+</div>

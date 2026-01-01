@@ -1,0 +1,152 @@
+<% content_for :title, "Gestión de Préstamos - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-[#125282]">Gestión de Préstamos</h1>
+      <p class="text-gray-600 mt-2">Visualiza y administra todos los préstamos del sistema</p>
+    </div>
+  </div>
+
+  <!-- Search and filter section -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <!-- Search -->
+      <%= form_with url: admin_loans_path, method: :get, local: true, class: "md:col-span-2 flex gap-2" do |f| %>
+        <div class="flex-1">
+          <%= f.search_field :search, placeholder: "Buscar por número de contrato o nombre del cliente...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        </div>
+        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+      <% end %>
+    </div>
+
+    <!-- Status and Branch filters -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Status filter -->
+      <div class="flex gap-2 flex-wrap">
+        <span class="text-sm font-medium text-gray-700 leading-10">Estado:</span>
+        <%= link_to "Todos", admin_loans_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
+        <%= link_to "Activos", admin_loans_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
+        <%= link_to "Completados", admin_loans_path(status: 'paid'), class: "#{params[:status] == 'paid' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
+        <%= link_to "En Mora", admin_loans_path(status: 'overdue'), class: "#{params[:status] == 'overdue' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
+      </div>
+
+      <!-- Branch filter -->
+      <div>
+        <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex gap-2" do |f| %>
+          <%= f.select :branch, [['Todas', '']] + @branches.map { |b| [b, b] }, { selected: params[:branch] }, class: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+          <%= f.hidden_field :search, value: params[:search] %>
+          <%= f.submit "Filtrar", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loans table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @loans.any? %>
+            <% @loans.each do |loan| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="font-medium text-[#125282]"><%= loan.contract_number %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
+                  <div class="text-xs text-gray-600"><%= loan.customer.identification_number %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-600"><%= loan.branch_number %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(loan.total_paid, delimiter: ',') %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
+                    L. <%= number_with_delimiter(loan.remaining_balance, delimiter: ',') %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 text-sm rounded-full <%= loan.active? ? 'bg-green-100 text-green-800' : loan.paid? ? 'bg-blue-100 text-blue-800' : loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+                    <%= loan.status.titleize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% paid = loan.paid_installments.count %>
+                  <% total = loan.installments.count %>
+                  <span class="font-medium"><%= paid %></span>/<span class="text-gray-600"><%= total %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= loan.created_at.strftime("%d/%m/%Y") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <%= link_to "Ver", admin_loan_path(loan), class: "text-[#125282] hover:underline font-medium" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+                No hay préstamos que coincidan con tu búsqueda
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">Total Préstamos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-green-600">Activos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'active').count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-blue-600">Completados</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'paid').count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-red-600">En Mora</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'overdue').count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">Valor Total</h3>
+      <p class="text-xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(Loan.sum(:total_amount), delimiter: ',') %></p>
+    </div>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+    <div class="text-sm text-gray-500">
+      Total de préstamos mostrados: <%= @loans.count %>
+    </div>
+  </div>
+</div>
