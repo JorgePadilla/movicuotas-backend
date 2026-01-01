@@ -57,23 +57,16 @@ module Admin
         return
       end
 
-      # Directly invoke the job based on class name
-      case job_class_name
-      when "MarkInstallmentsOverdueJob"
-        ::MarkInstallmentsOverdueJob.perform_later
-      when "SendOverdueNotificationJob"
-        ::SendOverdueNotificationJob.perform_later
-      when "SendLatePaymentWarningJob"
-        ::SendLatePaymentWarningJob.perform_later
-      when "NotifyCobradorosJob"
-        ::NotifyCobradorosJob.perform_later
-      when "AutoBlockDeviceJob"
-        ::AutoBlockDeviceJob.perform_later
-      end
+      # Use constantize to get the class and call perform_later
+      job_class = job_class_name.constantize
+      job_class.perform_later
 
       redirect_to admin_jobs_path, notice: "#{job_class_name} ha sido encolado exitosamente."
+    rescue NameError => e
+      Rails.logger.error "Error triggering job - Class not found: #{e.message}"
+      redirect_to admin_jobs_path, alert: "Error: Job class no encontrado. Por favor reinicia el servidor."
     rescue StandardError => e
-      Rails.logger.error "Error triggering job: #{e.message}"
+      Rails.logger.error "Error triggering job: #{e.class} - #{e.message}"
       redirect_to admin_jobs_path, alert: "Error al encolar el job: #{e.message}"
     end
 
