@@ -3,12 +3,11 @@
 module Admin
   class ContractsController < ApplicationController
     before_action :set_contract, only: [:show, :edit, :update_qr_code, :download_qr_code]
-    before_action :verify_authorized
+    after_action :verify_authorized, except: [:index]
 
     # Admin contracts index with filtering and search
     def index
-      authorize Contract
-      @contracts = Contract.all
+      @contracts = policy_scope(Contract)
       @contracts = @contracts.joins(:loan).where('loans.contract_number ILIKE ?', "%#{params[:search]}%") if params[:search].present?
       @contracts = @contracts.order(created_at: :desc).page(params[:page]).per(25)
     end
