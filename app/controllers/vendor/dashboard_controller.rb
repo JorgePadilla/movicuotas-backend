@@ -18,14 +18,14 @@ module Vendor
 
       # Loan statistics
       @active_loans = loans_scope.where(status: "active").count
-      @total_loan_value = loans_scope.where(status: "active").sum(:total_amount)
-      @average_loan_amount = @active_loans.positive? ? @total_loan_value / @active_loans : 0
+      @total_loan_value = loans_scope.where(status: "active").sum(:total_amount).to_f
+      @average_loan_amount = @active_loans.positive? ? (@total_loan_value / @active_loans).round(2) : 0.0
 
       # Payment statistics (this month)
       @payments_this_month = Payment.joins(:loan)
                                     .where(loans: { id: loans_scope.select(:id) })
                                     .where("payment_date >= ?", Date.today.beginning_of_month)
-                                    .sum(:amount)
+                                    .sum(:amount).to_f
       @overdue_installments = Installment.joins(:loan)
                                          .where(loans: { id: loans_scope.select(:id) })
                                          .where(status: "overdue")
@@ -33,7 +33,7 @@ module Vendor
       @overdue_amount = Installment.joins(:loan)
                                    .where(loans: { id: loans_scope.select(:id) })
                                    .where(status: "overdue")
-                                   .sum(:amount)
+                                   .sum(:amount).to_f
 
       # Recent payments (last 10)
       @recent_payments = Payment.joins(loan: :customer)
