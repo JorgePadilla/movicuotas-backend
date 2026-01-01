@@ -15,6 +15,9 @@ module Admin
         search_term = "%#{params[:search]}%"
         @customers = @customers.where("identification_number ILIKE ? OR full_name ILIKE ?", search_term, search_term)
       end
+
+      # Paginate results (20 per page)
+      @customers = @customers.page(params[:page]).per(20)
     end
 
     def show
