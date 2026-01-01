@@ -9,33 +9,28 @@
 
   <!-- Quick actions -->
   <div class="mb-6 flex flex-wrap gap-6">
-    <%# Users Management %>
+    <% button_class = "px-6 py-3 rounded-lg font-medium transition-colors hover:bg-[#125282]" %>
+
     <%= link_to "Gestión de Usuarios", admin_users_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'users'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'users'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'users'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'users' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Customers Management %>
     <%= link_to "Gestión de Clientes", admin_customers_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'customers'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'customers'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'customers'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'customers' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Contracts Management %>
     <%= link_to "Gestión de Contratos", admin_contracts_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'contracts'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'contracts'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'contracts'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'contracts' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Default QR Code Management -->
     <%= link_to "QR por Defecto", admin_default_qr_codes_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'default_qr_codes'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'default_qr_codes'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'default_qr_codes'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'default_qr_codes' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Reports %>
     <%= link_to "Reportes del Sistema", admin_reports_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'reports'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'reports'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'reports'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'reports' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Loans -->
     <%= link_to "Préstamos y Pagos", admin_loans_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'loans'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'loans'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'loans'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'loans' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
-    <%# Jobs -->
     <%= link_to "Monitoreo de Jobs", admin_jobs_path,
-        class: "#{"bg-[#125282] text-white" if controller_name == 'jobs'} #{"bg-white border border-[#125282] text-[#125282]" unless controller_name == 'jobs'} hover:bg-[#125282] #{"hover:text-white" unless controller_name == 'jobs'} px-6 py-3 rounded-lg font-medium transition-colors" %>
+        class: "#{controller_name == 'jobs' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
   </div>
 
   <!-- Metrics grid -->
