@@ -63,48 +63,73 @@
 
   <!-- Manual Job Triggers -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <h3 class="text-lg font-semibold text-[#125282] mb-4">⚡ Ejecutar Jobs Manualmente</h3>
-    <p class="text-sm text-gray-600 mb-4">Encolar jobs para ejecución inmediata</p>
+    <h3 class="text-lg font-semibold text-[#125282] mb-2">⚡ Ejecutar Jobs Manualmente</h3>
+    <p class="text-sm text-gray-600 mb-6">Encolar jobs para ejecución inmediata. Cada botón ejecuta una tarea específica.</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-        <%= f.hidden_field :job_class, value: "MarkInstallmentsOverdueJob" %>
-        <%= f.submit "▶ Marcar Cuotas Vencidas",
-            class: "bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-medium transition-colors w-full",
-            data: { confirm: "¿Ejecutar MarkInstallmentsOverdueJob ahora?" } %>
-      <% end %>
+      <!-- 1. Mark Installments Overdue -->
+      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <h4 class="font-medium text-gray-900 mb-2">📋 Marcar Cuotas Vencidas</h4>
+        <p class="text-xs text-gray-600 mb-3">Identifica todas las cuotas con fecha de vencimiento pasada y las marca como vencidas.</p>
+        <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :job_class, value: "MarkInstallmentsOverdueJob" %>
+          <%= f.submit "Ejecutar Ahora",
+              class: "bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
+              data: { confirm: "¿Ejecutar ahora? Esto marcará todas las cuotas vencidas." } %>
+        <% end %>
+      </div>
 
-      <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-        <%= f.hidden_field :job_class, value: "SendOverdueNotificationJob" %>
-        <%= f.submit "▶ Notificar Pagos Vencidos",
-            class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors w-full",
-            data: { confirm: "¿Ejecutar SendOverdueNotificationJob ahora?" } %>
-      <% end %>
+      <!-- 2. Send Overdue Notifications -->
+      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <h4 class="font-medium text-gray-900 mb-2">📢 Enviar Notificaciones de Mora</h4>
+        <p class="text-xs text-gray-600 mb-3">Envía notificaciones a clientes en mora (1, 7, 14, 30+ días). Respeta preferencias de notificación.</p>
+        <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :job_class, value: "SendOverdueNotificationJob" %>
+          <%= f.submit "Ejecutar Ahora",
+              class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
+              data: { confirm: "¿Ejecutar ahora? Enviará notificaciones a clientes con mora." } %>
+        <% end %>
+      </div>
 
-      <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-        <%= f.hidden_field :job_class, value: "SendLatePaymentWarningJob" %>
-        <%= f.submit "▶ Enviar Advertencias de Mora",
-            class: "bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-medium transition-colors w-full",
-            data: { confirm: "¿Ejecutar SendLatePaymentWarningJob ahora?" } %>
-      <% end %>
+      <!-- 3. Send Late Payment Warnings -->
+      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <h4 class="font-medium text-gray-900 mb-2">⚠️ Enviar Advertencias de Mora</h4>
+        <p class="text-xs text-gray-600 mb-3">Envía advertencias escaladas de mora (3, 7, 14, 27 días). Más agresivo que notificaciones.</p>
+        <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :job_class, value: "SendLatePaymentWarningJob" %>
+          <%= f.submit "Ejecutar Ahora",
+              class: "bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
+              data: { confirm: "¿Ejecutar ahora? Enviará advertencias de mora a clientes." } %>
+        <% end %>
+      </div>
 
-      <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-        <%= f.hidden_field :job_class, value: "NotifyCobradorosJob" %>
-        <%= f.submit "▶ Notificar a Cobradores",
-            class: "bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors w-full",
-            data: { confirm: "¿Ejecutar NotifyCobradorosJob ahora?" } %>
-      <% end %>
+      <!-- 4. Notify Cobradores -->
+      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <h4 class="font-medium text-gray-900 mb-2">📊 Reporte Diario para Cobradores</h4>
+        <p class="text-xs text-gray-600 mb-3">Envía reporte de mora a todos los cobradores con estadísticas y dispositivos bloqueados.</p>
+        <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :job_class, value: "NotifyCobradorosJob" %>
+          <%= f.submit "Ejecutar Ahora",
+              class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
+              data: { confirm: "¿Ejecutar ahora? Enviará reporte a los cobradores." } %>
+        <% end %>
+      </div>
 
-      <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-        <%= f.hidden_field :job_class, value: "AutoBlockDeviceJob" %>
-        <%= f.submit "▶ Auto-Bloquear Dispositivos",
-            class: "bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium transition-colors w-full",
-            data: { confirm: "¿Ejecutar AutoBlockDeviceJob ahora? Esto bloqueará dispositivos con 30+ días en mora." } %>
-      <% end %>
+      <!-- 5. Auto Block Device -->
+      <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <h4 class="font-medium text-gray-900 mb-2">🔒 Auto-Bloquear Dispositivos</h4>
+        <p class="text-xs text-gray-600 mb-3">Bloquea automáticamente dispositivos con 30+ días en mora. Usa servicio MDM.</p>
+        <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :job_class, value: "AutoBlockDeviceJob" %>
+          <%= f.submit "Ejecutar Ahora",
+              class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
+              data: { confirm: "⚠️ ACCIÓN CRÍTICA: Esto bloqueará dispositivos con 30+ días en mora. ¿Continuar?" } %>
+        <% end %>
+      </div>
     </div>
 
-    <p class="text-xs text-gray-500 mt-4">
-      ⚠️ Los jobs se encolarán inmediatamente y se ejecutarán según la disponibilidad de workers.
+    <p class="text-xs text-gray-500 mt-6 p-3 bg-gray-50 rounded border border-gray-200">
+      <strong>ℹ️ Cómo funciona:</strong> Al hacer clic en "Ejecutar Ahora", el job se encola inmediatamente. Se ejecutará según la disponibilidad de workers (generalmente en segundos). Puedes ver el estado en la tabla de jobs abajo.
     </p>
   </div>
 
