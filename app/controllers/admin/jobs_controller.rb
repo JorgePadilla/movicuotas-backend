@@ -85,8 +85,6 @@ module Admin
     end
 
     def load_job_class(job_class_name)
-      job_file_name = job_class_name.underscore
-      require_dependency "app/jobs/#{job_file_name}"
       job_class_name.constantize
     end
 
