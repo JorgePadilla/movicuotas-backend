@@ -23,7 +23,7 @@
       </div>
     <% end %>
 
-    <%= form_with model: [:admin, @default_qr_code], local: true, method: :patch, action: admin_default_qr_codes_path do |form| %>
+    <%= form_with model: [:admin, @default_qr_code], local: true, method: :patch do |form| %>
       <div class="mb-8">
         <label class="block text-sm font-medium text-gray-700 mb-4">
           Imagen del Código QR
