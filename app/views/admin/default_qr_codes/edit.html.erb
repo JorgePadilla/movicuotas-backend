@@ -1,0 +1,164 @@
+<% content_for :title, "Cargar QR por Defecto - Admin" %>
+
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# Header with Back Button %>
+  <div class="mb-8">
+    <%= link_to "← Volver", admin_default_qr_codes_path, class: "text-[#125282] hover:text-[#0f4670] font-medium mb-4 inline-block" %>
+    <h1 class="text-4xl font-bold text-gray-900">Cargar Código QR por Defecto</h1>
+    <p class="mt-2 text-gray-600">Este código QR se mostrará a todos los clientes</p>
+  </div>
+
+  <%# File Upload Form %>
+  <div class="bg-white shadow-lg rounded-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Subir Nueva Imagen de Código QR</h2>
+
+    <% if @default_qr_code.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <h3 class="text-sm font-medium text-red-800 mb-2">Se encontraron <%= pluralize(@default_qr_code.errors.count, 'error') %>:</h3>
+        <ul class="list-disc list-inside text-sm text-red-700">
+          <% @default_qr_code.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: [:admin, @default_qr_code], local: true, method: :patch, action: admin_default_qr_codes_path do |form| %>
+      <div class="mb-8">
+        <label class="block text-sm font-medium text-gray-700 mb-4">
+          Imagen del Código QR
+        </label>
+
+        <%# File Input with Drag & Drop %>
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-[#125282] hover:bg-blue-50 transition-colors"
+             id="qr-drop-zone">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+
+          <p class="text-lg font-medium text-gray-900 mb-2">
+            Arrastra la imagen del código QR aquí
+          </p>
+          <p class="text-sm text-gray-600 mb-6">
+            o haz clic para seleccionar un archivo
+          </p>
+
+          <%= form.file_field :qr_code,
+              accept: "image/*",
+              class: "hidden",
+              id: "qr-file-input",
+              onchange: "updateQrFileName(this)" %>
+
+          <button type="button"
+                  onclick="document.getElementById('qr-file-input').click()"
+                  class="inline-block px-6 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium">
+            Seleccionar Archivo
+          </button>
+
+          <p class="text-xs text-gray-500 mt-4">
+            Formatos soportados: PNG, JPG, GIF (máximo 10MB)
+          </p>
+        </div>
+
+        <div id="qr-file-name" class="mt-4 text-sm text-gray-600"></div>
+      </div>
+
+      <%# Current QR Code Preview (if exists) %>
+      <% if @default_qr_code.qr_code_present? %>
+        <div class="mb-8 p-6 bg-gray-50 rounded-lg border-l-4 border-green-500">
+          <h3 class="text-sm font-medium text-gray-700 mb-4">Código QR Actual</h3>
+          <div class="flex items-start gap-6">
+            <div class="flex-shrink-0">
+              <img src="<%= rails_blob_path(@default_qr_code.qr_code, disposition: 'inline') %>"
+                   alt="QR Code"
+                   class="w-32 h-32 border-2 border-gray-300 rounded">
+            </div>
+            <div class="flex-grow">
+              <p class="text-sm text-gray-600 mb-2">
+                <strong>Nombre:</strong> <%= @default_qr_code.qr_code.filename %>
+              </p>
+              <p class="text-sm text-gray-600 mb-2">
+                <strong>Tamaño:</strong> <%= number_to_human_size(@default_qr_code.qr_code.byte_size) %>
+              </p>
+              <p class="text-sm text-gray-600">
+                <strong>Cargado:</strong> <%= l(@default_qr_code.qr_code_uploaded_at, format: :long) if @default_qr_code.qr_code_uploaded_at %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Buttons %>
+      <div class="flex gap-4">
+        <%= form.submit "Cargar Código QR",
+            class: "px-8 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-bold cursor-pointer" %>
+        <%= link_to "Cancelar",
+            admin_default_qr_codes_path,
+            class: "px-8 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Instructions %>
+  <div class="mt-8 bg-blue-50 border-l-4 border-blue-400 p-6">
+    <h3 class="text-sm font-bold text-blue-900 mb-3">Instrucciones para Cargar el Código QR</h3>
+    <ul class="text-sm text-blue-800 space-y-2">
+      <li>• El código QR debe ser una imagen clara y legible (PNG, JPG o GIF)</li>
+      <li>• El tamaño máximo de la imagen es de 10MB</li>
+      <li>• Asegúrate de que el código QR sea para la configuración del dispositivo MDM</li>
+      <li>• Una vez cargado, el código QR será visible para todos los clientes</li>
+      <li>• Los clientes podrán escanear el código QR para configurar sus dispositivos</li>
+      <li>• Puedes reemplazar el código QR en cualquier momento</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Handle drag and drop
+  const dropZone = document.getElementById('qr-drop-zone');
+  const fileInput = document.getElementById('qr-file-input');
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+  });
+
+  function highlight(e) {
+    dropZone.classList.add('border-[#125282]', 'bg-blue-50');
+  }
+
+  function unhighlight(e) {
+    dropZone.classList.remove('border-[#125282]', 'bg-blue-50');
+  }
+
+  dropZone.addEventListener('drop', handleDrop, false);
+
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    fileInput.files = files;
+    updateQrFileName({ files: files });
+  }
+
+  function updateQrFileName(input) {
+    const fileNameDiv = document.getElementById('qr-file-name');
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      fileNameDiv.innerHTML = `<strong>Archivo seleccionado:</strong> ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+    } else {
+      fileNameDiv.innerHTML = '';
+    }
+  }
+</script>

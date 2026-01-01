@@ -39,6 +39,11 @@ Rails.application.routes.draw do
         get :download_qr_code
       end
     end
+    resources :default_qr_codes, only: [:index, :edit, :update] do  # Default QR code for all contracts
+      member do
+        get :download
+      end
+    end
     resources :reports, only: [:index] do  # Reports & analytics
       collection do
         get :branch_analytics

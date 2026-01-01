@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_202842) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_205722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,6 +112,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_202842) do
     t.datetime "updated_at", null: false
     t.index ["full_name"], name: "idx_customers_full_name"
     t.index ["identification_number"], name: "index_customers_on_identification_number", unique: true
+  end
+
+  create_table "default_qr_codes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "qr_code_filename"
+    t.datetime "qr_code_uploaded_at"
+    t.integer "qr_code_uploaded_by_id"
+    t.datetime "updated_at", null: false
   end
 
   create_table "device_tokens", force: :cascade do |t|
@@ -460,6 +468,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_202842) do
   add_foreign_key "credit_applications", "customers"
   add_foreign_key "credit_applications", "phone_models", column: "selected_phone_model_id"
   add_foreign_key "credit_applications", "users", column: "vendor_id"
+  add_foreign_key "default_qr_codes", "users", column: "qr_code_uploaded_by_id"
   add_foreign_key "device_tokens", "users"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"
