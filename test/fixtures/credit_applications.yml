@@ -1,0 +1,27 @@
+credit_app_one:
+  customer: customer_one
+  vendor: vendedor
+  status: pending
+  application_number: APP-20250101-000001
+  employment_status: employed
+  salary_range: range_20000_30000
+  verification_method: sms
+
+credit_app_approved:
+  customer: customer_two
+  vendor: vendedor
+  status: approved
+  application_number: APP-20250101-000002
+  approved_amount: 5000.00
+  employment_status: self_employed
+  salary_range: range_10000_20000
+  verification_method: whatsapp
+
+credit_app_rejected:
+  customer: customer_one
+  vendor: vendedor
+  status: rejected
+  application_number: APP-20250101-000003
+  rejection_reason: Insufficient income
+  employment_status: unemployed
+  verification_method: email

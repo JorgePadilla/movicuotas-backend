@@ -1,0 +1,28 @@
+installment_one:
+  loan: loan_one
+  installment_number: 1
+  amount: 583.33
+  due_date: 2025-02-01
+  status: pending
+
+installment_two:
+  loan: loan_one
+  installment_number: 2
+  amount: 583.33
+  due_date: 2025-03-01
+  status: pending
+
+installment_three:
+  loan: loan_one
+  installment_number: 3
+  amount: 583.34
+  due_date: 2025-04-01
+  status: paid
+  paid_at: 2025-04-01 10:00:00
+
+installment_four:
+  loan: loan_two
+  installment_number: 1
+  amount: 625.00
+  due_date: 2025-02-01
+  status: pending

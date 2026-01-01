@@ -46,5 +46,10 @@ xiaomi_13:
   brand: Xiaomi
   model: Mi 13
   price: 599.99
-  inactive:
-    inactive: false
+  active: false
+
+iphone_14_pro:
+  brand: Apple
+  model: iPhone 14 Pro
+  price: 999.99
+  active: true

@@ -1,0 +1,20 @@
+device_one:
+  phone_model: iphone_14
+  imei: "123456789012345"
+  brand: Apple
+  model: iPhone 14
+  lock_status: unlocked
+
+device_two:
+  phone_model: samsung_s24
+  imei: "987654321098765"
+  brand: Samsung
+  model: Galaxy S24
+  lock_status: unlocked
+
+device_three:
+  phone_model: google_pixel_8
+  imei: "555666777888999"
+  brand: Google
+  model: Pixel 8
+  lock_status: locked

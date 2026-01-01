@@ -1,0 +1,21 @@
+notification_one:
+  customer: customer_one
+  title: "Recordatorio de pago"
+  body: "Tu pago de L. 583.33 vence el 01/02/2025."
+  notification_type: payment_reminder
+  sent_at: 2025-01-20 10:00:00
+
+notification_two:
+  customer: customer_one
+  title: "Pago confirmado"
+  body: "Tu pago de L. 583.33 ha sido confirmado."
+  notification_type: payment_confirmation
+  sent_at: 2025-01-15 12:00:00
+  read_at: 2025-01-15 14:00:00
+
+notification_three:
+  customer: customer_two
+  title: "Advertencia de bloqueo de dispositivo"
+  body: "Tu dispositivo será bloqueado en 3 días debido a pagos atrasados."
+  notification_type: device_lock
+  sent_at: 2025-01-25 09:00:00

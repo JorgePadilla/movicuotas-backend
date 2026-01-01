@@ -1,0 +1,10 @@
+contract_one:
+  loan: loan_one
+  signed_by_name: "Juan Perez"
+  signed_at: 2025-01-01 10:00:00
+
+contract_two:
+  loan: loan_two
+
+contract_unsigned:
+  loan: loan_completed
