@@ -39,18 +39,19 @@ module Admin
     end
 
     def trigger
-      job_class = params[:job_class]
+      job_class_name = params[:job_class]
 
       # Validate job class
-      unless valid_job_class?(job_class)
+      unless valid_job_class?(job_class_name)
         redirect_to admin_jobs_path, alert: "Job no válido."
         return
       end
 
-      # Enqueue the job
-      job_class.constantize.perform_later
+      # Load and enqueue the job
+      job_class = load_job_class(job_class_name)
+      job_class.perform_later
 
-      redirect_to admin_jobs_path, notice: "#{job_class} ha sido encolado exitosamente."
+      redirect_to admin_jobs_path, notice: "#{job_class_name} ha sido encolado exitosamente."
     rescue StandardError => e
       Rails.logger.error "Error triggering job: #{e.message}"
       redirect_to admin_jobs_path, alert: "Error al encolar el job: #{e.message}"
@@ -81,6 +82,12 @@ module Admin
         "AutoBlockDeviceJob"
       ].freeze
       allowed_jobs.include?(job_class)
+    end
+
+    def load_job_class(job_class_name)
+      job_file_name = job_class_name.underscore
+      require_dependency "app/jobs/#{job_file_name}"
+      job_class_name.constantize
     end
 
     def load_job_metrics

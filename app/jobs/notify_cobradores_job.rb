@@ -64,10 +64,10 @@ class NotifyCobradorosJob < ApplicationJob
       total_overdue_count: overdue_installments.count,
       total_overdue_amount: overdue_installments.sum(:amount),
       by_days: {
-        "1_to_7": count_by_range(1, 7),
-        "8_to_15": count_by_range(8, 15),
-        "16_to_30": count_by_range(16, 30),
-        "30_plus": count_by_range(31, 999)
+        "1_to_7" => count_by_range(1, 7),
+        "8_to_15" => count_by_range(8, 15),
+        "16_to_30" => count_by_range(16, 30),
+        "30_plus" => count_by_range(31, 999)
       },
       blocked_devices_count: Device.where(lock_status: :locked).count,
       blocked_today_count: Device.where(lock_status: :locked)
@@ -91,10 +91,10 @@ class NotifyCobradorosJob < ApplicationJob
       📦 Cuotas en mora: #{stats[:total_overdue_count]}
 
       Desglose por antigüedad:
-      • 1-7 días: #{stats[:by_days][:"1_to_7"]} cuotas
-      • 8-15 días: #{stats[:by_days][:"8_to_15"]} cuotas
-      • 16-30 días: #{stats[:by_days][:"16_to_30"]} cuotas
-      • 30+ días: #{stats[:by_days][:"30_plus"]} cuotas
+      • 1-7 días: #{stats[:by_days]["1_to_7"]} cuotas
+      • 8-15 días: #{stats[:by_days]["8_to_15"]} cuotas
+      • 16-30 días: #{stats[:by_days]["16_to_30"]} cuotas
+      • 30+ días: #{stats[:by_days]["30_plus"]} cuotas
 
       🔒 Dispositivos bloqueados: #{stats[:blocked_devices_count]}
       ⏳ Bloqueos pendientes: #{stats[:pending_blocks_count]}
