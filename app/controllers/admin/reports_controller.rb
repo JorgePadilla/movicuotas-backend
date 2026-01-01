@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 module Admin
   class ReportsController < ApplicationController
     before_action :authorize_admin
@@ -191,7 +189,7 @@ module Admin
     end
 
     def generate_loans_csv(loans)
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ['Número de Contrato', 'Cliente', 'Estado', 'Monto Total', 'Monto Pagado', 'Balance', 'Cuotas', 'Fecha de Inicio', 'Sucursal']
         loans.each do |loan|
           csv << [
@@ -210,7 +208,7 @@ module Admin
     end
 
     def generate_payments_csv(payments)
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ['Fecha de Pago', 'Cliente', 'Contrato', 'Monto', 'Método', 'Estado', 'Referencia']
         payments.each do |payment|
           csv << [
@@ -227,7 +225,7 @@ module Admin
     end
 
     def generate_customers_csv(customers)
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ['Nombre', 'Identidad', 'Email', 'Teléfono', 'Estado', 'Préstamos Activos', 'Fecha de Creación']
         customers.each do |customer|
           csv << [
