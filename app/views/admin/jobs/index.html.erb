@@ -120,15 +120,15 @@
           <%= link_to "Todos", admin_jobs_path,
               class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Pendientes", admin_jobs_path(status: 'pending'),
-              class: "#{params[:status] == 'pending' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'pending' ? 'bg-orange-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "En Ejecución", admin_jobs_path(status: 'running'),
-              class: "#{params[:status] == 'running' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'running' ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Completados", admin_jobs_path(status: 'completed'),
-              class: "#{params[:status] == 'completed' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'completed' ? 'bg-green-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Fallidos", admin_jobs_path(status: 'failed'),
-              class: "#{params[:status] == 'failed' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'failed' ? 'bg-red-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Programados", admin_jobs_path(status: 'scheduled'),
-              class: "#{params[:status] == 'scheduled' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'scheduled' ? 'bg-indigo-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
         </div>
       </div>
 
