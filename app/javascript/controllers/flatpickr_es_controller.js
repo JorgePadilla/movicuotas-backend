@@ -3,14 +3,14 @@ import flatpickr from "flatpickr"
 import Spanish from "flatpickr/dist/l10n/es"
 
 export default class extends Controller {
-  static targets = ["input"]
+  static targets = ["input", "dateInput", "button"]
   static values = {
     max: String,
     min: String,
     placeholder: { type: String, default: "DD/MM/AAAA" },
     initialValue: String,
-    dateFormat: { type: String, default: "dd/mm/yyyy" },
-    altFormat: { type: String, default: "dd/mm/yyyy" },
+    dateFormat: { type: String, default: "dd/mm/Y" },
+    altFormat: { type: String, default: "dd/mm/Y" },
     altInput: { type: Boolean, default: false }
   }
 
@@ -42,7 +42,6 @@ export default class extends Controller {
       position: "auto", // "auto" positions relative to input
       defaultDate: "2000-07-01", // Default calendar view: July 1, 2000
       onChange: (selectedDates, dateStr, instance) => {
-
         // Always ensure the date is formatted correctly using the selected Date object
         if (selectedDates.length > 0) {
           const date = selectedDates[0]
@@ -50,6 +49,7 @@ export default class extends Controller {
           const month = String(date.getMonth() + 1).padStart(2, '0')
           const year = date.getFullYear()
           const correctDate = `${day}/${month}/${year}`
+          const isoDate = `${year}-${month}-${day}`
 
           // Check if the displayed date string is corrupted
           if (dateStr !== correctDate) {
@@ -66,6 +66,11 @@ export default class extends Controller {
 
             // Update Flatpickr's internal state to prevent infinite loop
             instance.setDate(date, false)
+          }
+
+          // Update hidden date input with ISO format for form submission
+          if (self.hasDateInputTarget) {
+            self.dateInputTarget.value = isoDate
           }
         }
       },
@@ -101,6 +106,19 @@ export default class extends Controller {
       // Set initial value if provided (after initialization to avoid corruption)
       if (this.hasInitialValue && this.initialValue) {
         this.picker.setDate(this.initialValue, false)
+        // Also update hidden date input with ISO format
+        if (this.hasDateInputTarget) {
+          this.dateInputTarget.value = this.initialValue
+        }
+        // Format and set visible input with dd/mm/yyyy
+        const date = new Date(this.initialValue)
+        if (!isNaN(date.getTime())) {
+          const day = String(date.getDate()).padStart(2, '0')
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          const year = date.getFullYear()
+          const correctDate = `${day}/${month}/${year}`
+          this.inputTarget.value = correctDate
+        }
       }
 
       // Set placeholder if provided
@@ -110,6 +128,13 @@ export default class extends Controller {
 
     } catch (error) {
       console.error("Failed to initialize Flatpickr:", error)
+    }
+  }
+
+  // Open the date picker (called by button click)
+  open() {
+    if (this.picker) {
+      this.picker.open()
     }
   }
 
