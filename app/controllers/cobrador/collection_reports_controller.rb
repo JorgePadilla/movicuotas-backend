@@ -5,6 +5,7 @@ module Cobrador
     def index
       @date_range = parse_date_range
       @report_data = fetch_collection_reports(@date_range)
+      @recent_blocks = fetch_recent_blocks_paginated(@date_range)
     end
 
     private
@@ -95,6 +96,15 @@ module Cobrador
           brand_model: "#{device.brand} #{device.model}"
         }
       end
+    end
+
+    def fetch_recent_blocks_paginated(date_range)
+      Device.locked
+            .where("locked_at >= ?", date_range.begin)
+            .includes(loan: :customer)
+            .order(locked_at: :desc)
+            .page(params[:page])
+            .per(20)
     end
 
     def calculate_recovery_rate(date_range)
