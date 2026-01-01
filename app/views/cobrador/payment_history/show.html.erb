@@ -1,0 +1,166 @@
+<% content_for :title, "Historial de Pagos - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-[#125282]">Historial de Pagos (Solo Lectura)</h1>
+    <%= link_to "Volver", :back, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
+  </div>
+
+  <!-- Customer Header Card -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Cliente</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm text-gray-500">Nombre del Cliente</p>
+        <p class="text-lg font-semibold text-gray-900"><%= @payment_history[:customer][:name] %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Número de Contrato</p>
+        <p class="text-lg font-semibold text-gray-900"><%= @payment_history[:customer][:contract_number] %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="bg-white shadow rounded-lg p-4">
+      <p class="text-sm text-gray-500">Total Cuotas</p>
+      <p class="text-2xl font-bold text-gray-900"><%= @payment_history[:summary][:total_installments] %></p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4">
+      <p class="text-sm text-gray-500">Pagadas</p>
+      <p class="text-2xl font-bold text-green-600"><%= @payment_history[:summary][:paid_installments] %></p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4">
+      <p class="text-sm text-gray-500">Pendientes</p>
+      <p class="text-2xl font-bold text-yellow-600"><%= @payment_history[:summary][:pending_installments] %></p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4">
+      <p class="text-sm text-gray-500">Vencidas</p>
+      <p class="text-2xl font-bold text-red-600"><%= @payment_history[:summary][:overdue_installments] %></p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-4">
+      <p class="text-sm text-gray-500">Total Pagado</p>
+      <p class="text-lg font-bold text-gray-900">
+        RD$ <%= number_with_precision(@payment_history[:summary][:total_paid], precision: 2) %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Installments Table -->
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Cuotas</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuota #</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Vencimiento</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (RD$)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Pago</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Pagado (RD$)</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @payment_history[:installments].each do |inst| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">#<%= inst[:number] %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= l inst[:due_date], format: :short %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                RD$ <%= number_with_precision(inst[:amount], precision: 2) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <% case inst[:status] %>
+                <% when "paid" %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✅ Pagada</span>
+                <% when "pending" %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">⏳ Pendiente</span>
+                <% when "overdue" %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">⚠️ Vencida</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"><%= inst[:status] %></span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <% if inst[:paid_date].present? %>
+                  <%= l inst[:paid_date], format: :short %>
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                <% if inst[:paid_amount] > 0 %>
+                  RD$ <%= number_with_precision(inst[:paid_amount], precision: 2) %>
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payments History Table -->
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Historial de Pagos Registrados</h2>
+    </div>
+    <% if @payment_history[:payments].any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (RD$)</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verificado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comprobante</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @payment_history[:payments].each do |payment| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= l payment[:date], format: :short %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  RD$ <%= number_with_precision(payment[:amount], precision: 2) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= payment[:method] %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono"><%= payment[:reference] %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% if payment[:verified] %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✅ Verificado</span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">⏳ Pendiente</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% if payment[:receipt_url].present? %>
+                    <a href="#" class="text-[#125282] hover:text-blue-700 font-medium">Ver</a>
+                  <% else %>
+                    <span class="text-gray-400">-</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-6 py-12 text-center">
+        <p class="text-gray-500">No hay pagos registrados para este préstamo.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6 text-center">
+    <p class="text-sm text-gray-500">
+      <strong>Nota:</strong> Este es un historial de solo lectura. Los cobradores no pueden editar ni eliminar registros de pago.
+    </p>
+  </div>
+</div>

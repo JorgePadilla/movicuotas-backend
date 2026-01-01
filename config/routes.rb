@@ -103,6 +103,14 @@ Rails.application.routes.draw do
 
   namespace :cobrador do
     get "dashboard", to: "dashboard#index"
+    resources :overdue_devices, only: [:index, :show] do
+      member do
+        get :block
+        post :confirm_block
+      end
+    end
+    get "loans/:loan_id/payment-history", to: "payment_history#show", as: "loan_payment_history"
+    get "collection-reports", to: "collection_reports#index", as: "collection_reports"
     # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
 end
