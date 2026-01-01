@@ -1,0 +1,50 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+iphone_14:
+  brand: Apple
+  model: iPhone 14
+  price: 799.99
+  active: true
+
+iphone_15:
+  brand: Apple
+  model: iPhone 15
+  price: 899.99
+  active: true
+
+samsung_s24:
+  brand: Samsung
+  model: Galaxy S24
+  price: 799.99
+  active: true
+
+samsung_a54:
+  brand: Samsung
+  model: Galaxy A54
+  price: 449.99
+  active: true
+
+google_pixel_8:
+  brand: Google
+  model: Pixel 8
+  price: 699.99
+  active: true
+
+google_pixel_7a:
+  brand: Google
+  model: Pixel 7a
+  price: 399.99
+  active: true
+
+moto_g73:
+  brand: Motorola
+  model: Moto G73
+  price: 199.99
+  active: true
+
+xiaomi_13:
+  brand: Xiaomi
+  model: Mi 13
+  price: 599.99
+  inactive:
+    inactive: false
