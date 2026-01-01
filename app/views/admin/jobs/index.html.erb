@@ -226,12 +226,12 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                   <%= link_to "Ver", admin_job_path(job), class: "text-[#125282] hover:underline font-medium" %>
                   <% if status == 'failed' %>
-                    <%= link_to "Reintentar", admin_job_retry_path(job), method: :post,
-                        data: { confirm: "¿Reintentar este job?" },
+                    <%= link_to "Reintentar", admin_job_retry_path(job),
+                        data: { turbo_method: :post, confirm: "¿Reintentar este job?" },
                         class: "text-orange-600 hover:underline font-medium" %>
                   <% elsif ['pending', 'scheduled'].include?(status) %>
-                    <%= link_to "Cancelar", cancel_admin_job_path(job), method: :post,
-                        data: { confirm: "¿Cancelar este job?" },
+                    <%= link_to "Cancelar", cancel_admin_job_path(job),
+                        data: { turbo_method: :post, confirm: "¿Cancelar este job?" },
                         class: "text-red-600 hover:underline font-medium" %>
                   <% end %>
                 </td>
