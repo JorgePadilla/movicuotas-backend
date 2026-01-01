@@ -60,15 +60,15 @@ module Admin
       # Directly invoke the job based on class name
       case job_class_name
       when "MarkInstallmentsOverdueJob"
-        MarkInstallmentsOverdueJob.perform_later
+        ::MarkInstallmentsOverdueJob.perform_later
       when "SendOverdueNotificationJob"
-        SendOverdueNotificationJob.perform_later
+        ::SendOverdueNotificationJob.perform_later
       when "SendLatePaymentWarningJob"
-        SendLatePaymentWarningJob.perform_later
+        ::SendLatePaymentWarningJob.perform_later
       when "NotifyCobradorosJob"
-        NotifyCobradorosJob.perform_later
+        ::NotifyCobradorosJob.perform_later
       when "AutoBlockDeviceJob"
-        AutoBlockDeviceJob.perform_later
+        ::AutoBlockDeviceJob.perform_later
       end
 
       redirect_to admin_jobs_path, notice: "#{job_class_name} ha sido encolado exitosamente."
