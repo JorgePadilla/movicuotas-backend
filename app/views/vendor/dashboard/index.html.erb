@@ -10,8 +10,8 @@
   <!-- Quick actions -->
   <div class="mb-8 flex flex-wrap gap-4">
     <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
-    <%= link_to "Ver Todos los Préstamos", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
-    <%= link_to "Ver Pagos Recientes", "#", class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Ver Todos los Préstamos", vendor_loans_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Ver Pagos Recientes", vendor_payments_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
   </div>
 
   <!-- Metrics grid -->
@@ -90,7 +90,7 @@
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold text-[#125282]">Pagos Recientes</h3>
-        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+        <%= link_to "Ver todos", vendor_payments_path, class: "text-sm text-[#125282] hover:underline" %>
       </div>
       <% if @recent_payments.any? %>
         <div class="overflow-x-auto">
@@ -126,7 +126,7 @@
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold text-[#125282]">Próximos Vencimientos</h3>
-        <%= link_to "Ver todos", "#", class: "text-sm text-[#125282] hover:underline" %>
+        <%= link_to "Ver todos", vendor_loans_path, class: "text-sm text-[#125282] hover:underline" %>
       </div>
       <% if @upcoming_installments.any? %>
         <div class="overflow-x-auto">
