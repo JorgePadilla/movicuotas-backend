@@ -100,39 +100,39 @@
 
   <!-- Pagination -->
   <% if @customers.total_pages > 1 %>
-    <div class="mt-6 mb-8 flex justify-center items-center gap-1">
-      <div class="flex items-center gap-1">
+    <div class="mt-6 mb-8 flex justify-center items-center gap-2">
+      <div class="flex items-center gap-2">
         <% if @customers.first_page? %>
-          <span class="px-2 py-1 text-xs text-gray-400 cursor-not-allowed">← Anterior</span>
+          <span class="px-2.5 py-1.5 text-sm text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page - 1), class: "px-2 py-1 text-xs bg-[#125282] text-white rounded font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page - 1), class: "px-2.5 py-1.5 text-sm bg-[#125282] text-white rounded font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
 
-        <div class="flex items-center gap-0.5">
+        <div class="flex items-center gap-1">
           <% (1..@customers.total_pages).each do |page| %>
             <% if page == @customers.current_page %>
-              <span class="px-2 py-1 text-xs bg-[#125282] text-white rounded font-medium">
+              <span class="px-2.5 py-1.5 text-sm bg-[#125282] text-white rounded font-medium">
                 <%= page %>
               </span>
             <% elsif (page - @customers.current_page).abs <= 1 || page == 1 || page == @customers.total_pages %>
-              <%= link_to page, admin_customers_path(status: params[:status], search: params[:search], page: page), class: "px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_customers_path(status: params[:status], search: params[:search], page: page), class: "px-2.5 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @customers.current_page > 3 %>
-              <span class="px-1 py-1 text-xs text-gray-500">...</span>
+              <span class="px-1.5 py-1.5 text-sm text-gray-500">...</span>
             <% elsif page == @customers.total_pages - 1 && @customers.current_page < @customers.total_pages - 2 %>
-              <span class="px-1 py-1 text-xs text-gray-500">...</span>
+              <span class="px-1.5 py-1.5 text-sm text-gray-500">...</span>
             <% end %>
           <% end %>
         </div>
 
         <% if @customers.last_page? %>
-          <span class="px-2 py-1 text-xs text-gray-400 cursor-not-allowed">Siguiente →</span>
+          <span class="px-2.5 py-1.5 text-sm text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page + 1), class: "px-2 py-1 text-xs bg-[#125282] text-white rounded font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page + 1), class: "px-2.5 py-1.5 text-sm bg-[#125282] text-white rounded font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
     </div>
 
-    <div class="text-center text-xs text-gray-500 mb-8">
+    <div class="text-center text-sm text-gray-500 mb-8">
       Página <%= @customers.current_page %> de <%= @customers.total_pages %> • Mostrando <%= @customers.size %> de <%= @customers.total_count %> clientes
     </div>
   <% end %>
