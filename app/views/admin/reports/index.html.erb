@@ -95,7 +95,7 @@
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-600">Ingresos por Sucursal</span>
-          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@revenue_by_branch.values.sum, delimiter: ',') %></span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(number_with_precision(@revenue_by_branch.values.sum, precision: 2), delimiter: ',', separator: '.') %></span>
         </div>
       </div>
       <%= link_to "Ver Análisis Detallado", admin_branch_analytics_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>

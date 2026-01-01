@@ -28,8 +28,8 @@ module Admin
       @customers_with_active_loans = Customer.joins(:loans).where('loans.status': 'active').distinct.count('customers.id')
 
       # Branch data
-      @loans_by_branch = Loan.group(:branch_number).count.sort
-      @revenue_by_branch = Payment.joins(:loan).group('loans.branch_number').sum(:amount).sort
+      @loans_by_branch = Loan.group(:branch_number).count
+      @revenue_by_branch = Payment.joins(:loan).group('loans.branch_number').sum(:amount)
     end
 
     def branch_analytics
