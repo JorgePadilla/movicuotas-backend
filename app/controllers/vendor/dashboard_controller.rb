@@ -62,7 +62,7 @@ module Vendor
       # Format BigDecimal to exactly 2 decimal places with thousand separators
       bd = value.is_a?(BigDecimal) ? value : BigDecimal(value.to_s)
       rounded = bd.round(2)
-      view_context.number_to_delimited(rounded, delimiter: ',', separator: '.')
+      view_context.number_with_delimiter(rounded, delimiter: ',', separator: '.')
     end
 
     def loans_scope
