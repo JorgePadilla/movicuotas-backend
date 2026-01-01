@@ -5,10 +5,10 @@ require "ostruct"
 module Admin
   class JobsController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
-    skip_after_action :verify_authorized, only: [:index, :show, :retry, :trigger]
+    skip_after_action :verify_authorized, only: [:index, :show, :retry, :trigger, :cancel]
     before_action :require_login
     before_action :authorize_admin
-    before_action :set_job, only: [:show, :retry]
+    before_action :set_job, only: [:show, :retry, :cancel]
 
     def index
       # Load job metrics
@@ -35,6 +35,16 @@ module Admin
         redirect_to admin_jobs_path, notice: "Job reiniciado exitosamente."
       else
         redirect_to admin_jobs_path, alert: "No se pudo reiniciar el job."
+      end
+    end
+
+    def cancel
+      if can_cancel_job?(@job)
+        cancel_job!(@job)
+        redirect_to admin_jobs_path, notice: "Job cancelado exitosamente."
+      else
+        status = determine_job_status(@job)
+        redirect_to admin_jobs_path, alert: "No se puede cancelar un job en estado: #{status}"
       end
     end
 
@@ -179,6 +189,23 @@ module Admin
       return "completed" if job.finished_at.present?
 
       "unknown"
+    end
+
+    def can_cancel_job?(job)
+      # Can only cancel pending or scheduled jobs
+      SolidQueue::ReadyExecution.exists?(job_id: job.id) ||
+        SolidQueue::ScheduledExecution.exists?(job_id: job.id)
+    end
+
+    def cancel_job!(job)
+      # Delete from pending execution queue
+      SolidQueue::ReadyExecution.where(job_id: job.id).destroy_all
+
+      # Delete from scheduled execution queue
+      SolidQueue::ScheduledExecution.where(job_id: job.id).destroy_all
+
+      # Mark job as cancelled by updating finished_at
+      job.update!(finished_at: Time.current)
     end
   end
 end

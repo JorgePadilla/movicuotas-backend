@@ -18,6 +18,10 @@ module Admin
       user.admin?
     end
 
+    def cancel?
+      user.admin?
+    end
+
     class Scope < Scope
       def resolve
         scope.none

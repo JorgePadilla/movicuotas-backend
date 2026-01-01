@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       end
       member do
         post :retry
+        post :cancel
       end
     end
   end
