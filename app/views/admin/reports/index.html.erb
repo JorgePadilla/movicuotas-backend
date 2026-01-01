@@ -120,7 +120,7 @@
           <span class="font-medium text-green-600">L. <%= number_with_delimiter(@verified_payments, delimiter: ',') %></span>
         </div>
       </div>
-      <%= link_to "Ver Reporte de Ingresos", admin_revenue_report_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Ver Reporte de Ingresos", admin_reports_revenue_report_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
     </div>
 
     <!-- Customer Portfolio Report -->
@@ -142,7 +142,7 @@
           <span class="font-medium text-gray-800"><%= Customer.joins(:loans).where('loans.status': 'active').distinct.count %></span>
         </div>
       </div>
-      <%= link_to "Ver Cartera", admin_customer_portfolio_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Ver Cartera", admin_reports_customer_portfolio_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
     </div>
 
     <!-- Export Data -->
@@ -155,9 +155,9 @@
         <span class="text-3xl">📥</span>
       </div>
       <div class="space-y-2 mb-6">
-        <%= link_to "📄 Exportar Préstamos CSV", admin_export_report_path(report_type: 'loans', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
-        <%= link_to "💳 Exportar Pagos CSV", admin_export_report_path(report_type: 'payments', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
-        <%= link_to "👥 Exportar Clientes CSV", admin_export_report_path(report_type: 'customers', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+        <%= link_to "📄 Exportar Préstamos CSV", admin_reports_export_report_path(report_type: 'loans', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+        <%= link_to "💳 Exportar Pagos CSV", admin_reports_export_report_path(report_type: 'payments', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+        <%= link_to "👥 Exportar Clientes CSV", admin_reports_export_report_path(report_type: 'customers', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
       </div>
     </div>
   </div>
@@ -189,7 +189,7 @@
                   <span class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(@revenue_by_branch[branch_number] || 0, delimiter: ',') %></span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <%= link_to "Analizar", admin_branch_analytics_path(branch: branch_number), class: "text-[#125282] hover:underline font-medium text-sm" %>
+                  <%= link_to "Analizar", admin_reports_branch_analytics_path(branch: branch_number), class: "text-[#125282] hover:underline font-medium text-sm" %>
                 </td>
               </tr>
             <% end %>
