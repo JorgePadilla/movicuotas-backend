@@ -1,15 +1,44 @@
-# examples:
-#   periodic_cleanup:
-#     class: CleanSoftDeletedRecordsJob
-#     queue: background
-#     args: [ 1000, { batch_size: 500 } ]
-#     schedule: every hour
-#   periodic_cleanup_with_command:
-#     command: "SoftDeletedRecord.due.delete_all"
-#     priority: 2
-#     schedule: at 5am every day
-
-production:
+default: &default
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+
+development:
+  <<: *default
+  # Optional: Add dev-specific recurring jobs
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+  # Phase 5: Background Jobs & Notifications
+  daily_collection_reminders:
+    class: DailyCollectionReminderJob
+    queue: reminders
+    schedule: at 9am every day
+    description: "Send daily collection reminders to customers with overdue installments"
+
+  auto_block_overdue_devices:
+    class: AutoBlockOverdueDevicesJob
+    queue: blocking
+    schedule: at 8am every day
+    description: "Automatically block devices 30+ days overdue"
+
+  check_payment_confirmations:
+    class: CheckPaymentConfirmationsJob
+    queue: notifications
+    schedule: every 30 minutes
+    description: "Check for pending payment confirmations and send notifications"
+
+  cleanup_old_notifications:
+    class: CleanupOldNotificationsJob
+    queue: default
+    schedule: at 2am every day
+    description: "Archive and clean up old notification records"
+
+  sync_overdue_status:
+    class: SyncOverdueStatusJob
+    queue: default
+    schedule: every 6 hours
+    description: "Synchronize overdue status for all installments"

@@ -3,16 +3,54 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: "*"
+    # Default queue for standard jobs
+    - queues: ["default", "mailers"]
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
+    # Notifications queue (FCM, SMS)
+    - queues: ["notifications"]
+      threads: 5
+      processes: <%= ENV.fetch("NOTIFICATION_CONCURRENCY", 1) %>
+      polling_interval: 0.1
+    # Reminders and scheduled jobs
+    - queues: ["reminders"]
+      threads: 2
+      processes: <%= ENV.fetch("REMINDER_CONCURRENCY", 1) %>
+      polling_interval: 1
+    # Device blocking (lower priority)
+    - queues: ["blocking"]
+      threads: 2
+      processes: <%= ENV.fetch("BLOCKING_CONCURRENCY", 1) %>
+      polling_interval: 0.5
 
 development:
   <<: *default
+  workers:
+    - queues: "*"
+      threads: 3
+      processes: 1
+      polling_interval: 0.1
 
 test:
-  <<: *default
+  mode: inline
 
 production:
   <<: *default
+  workers:
+    - queues: ["default", "mailers"]
+      threads: 5
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 2) %>
+      polling_interval: 0.1
+    - queues: ["notifications"]
+      threads: 10
+      processes: <%= ENV.fetch("NOTIFICATION_CONCURRENCY", 2) %>
+      polling_interval: 0.1
+    - queues: ["reminders"]
+      threads: 3
+      processes: <%= ENV.fetch("REMINDER_CONCURRENCY", 1) %>
+      polling_interval: 1
+    - queues: ["blocking"]
+      threads: 2
+      processes: <%= ENV.fetch("BLOCKING_CONCURRENCY", 1) %>
+      polling_interval: 0.5
