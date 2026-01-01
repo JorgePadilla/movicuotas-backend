@@ -39,26 +39,21 @@ class SessionsController < ApplicationController
     Rails.logger.info "SessionsController#create - Password present: #{password.present?}, length: #{password&.length}"
     Rails.logger.info "SessionsController#create - Authentication result: #{auth_result.inspect}"
 
-    respond_to do |format|
-      if auth_result && user_active
-        Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
-        session = user.sessions.create!
-        cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
+    if auth_result && user_active
+      Rails.logger.info "SessionsController#create - Authentication SUCCESS for user #{user.id}"
+      session = user.sessions.create!
+      cookies.signed.permanent[:session_token] = { value: session.id, httponly: true }
 
-        format.html { redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente" }
-        format.turbo_stream { redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente" }
-      elsif auth_result && !user_active
-        Rails.logger.warn "SessionsController#create - User #{user.id} is not active"
-        flash.now[:alert] = "Tu cuenta está desactivada. Contacta al administrador."
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :new, status: :unprocessable_entity }
-      else
-        # Authentication failed (wrong password or user not found)
-        Rails.logger.warn "SessionsController#create - Authentication FAILED - User: #{user&.id || 'not found'}, Active: #{user_active}, Auth result: #{auth_result.inspect}"
-        flash.now[:alert] = "Email o contraseña incorrectos"
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :new, status: :unprocessable_entity }
-      end
+      redirect_to after_sign_in_path_for(user), notice: "Sesión iniciada correctamente"
+    elsif auth_result && !user_active
+      Rails.logger.warn "SessionsController#create - User #{user.id} is not active"
+      flash.now[:alert] = "Tu cuenta está desactivada. Contacta al administrador."
+      render :new, status: :unprocessable_entity
+    else
+      # Authentication failed (wrong password or user not found)
+      Rails.logger.warn "SessionsController#create - Authentication FAILED - User: #{user&.id || 'not found'}, Active: #{user_active}, Auth result: #{auth_result.inspect}"
+      flash.now[:alert] = "Email o contraseña incorrectos"
+      render :new, status: :unprocessable_entity
     end
   end
 
