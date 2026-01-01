@@ -135,8 +135,8 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <% if @jobs.any? %>
-            <% @jobs.each do |job| %>
+          <% if @jobs.records.any? %>
+            <% @jobs.records.each do |job| %>
               <% status = determine_job_status(job) %>
               <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -198,7 +198,7 @@
     </div>
 
     <!-- Pagination footer -->
-    <% if @jobs.any? %>
+    <% if @jobs.records.any? %>
       <div class="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div class="text-sm text-gray-600">
           Mostrando <strong><%= @jobs.offset_value + 1 %></strong> a
@@ -206,7 +206,32 @@
           <strong><%= @jobs.total_count %></strong> jobs
         </div>
         <div class="flex gap-2">
-          <%= paginate @jobs %>
+          <!-- Previous page -->
+          <% if @jobs.current_page > 1 %>
+            <%= link_to "← Anterior", admin_jobs_path(params.merge(page: @jobs.current_page - 1)),
+                class: "px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium" %>
+          <% end %>
+
+          <!-- Page numbers -->
+          <% (1..@jobs.total_pages).each do |page_num| %>
+            <% if page_num == @jobs.current_page %>
+              <span class="px-4 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page_num %></span>
+            <% elsif (page_num - @jobs.current_page).abs <= 2 %>
+              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num)),
+                  class: "px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium" %>
+            <% elsif page_num == 1 || page_num == @jobs.total_pages %>
+              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num)),
+                  class: "px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium" %>
+            <% elsif (page_num == 2 && @jobs.current_page > 3) || (page_num == @jobs.total_pages - 1 && @jobs.current_page < @jobs.total_pages - 2) %>
+              <span class="px-4 py-2 text-gray-500">...</span>
+            <% end %>
+          <% end %>
+
+          <!-- Next page -->
+          <% if @jobs.current_page < @jobs.total_pages %>
+            <%= link_to "Siguiente →", admin_jobs_path(params.merge(page: @jobs.current_page + 1)),
+                class: "px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium" %>
+          <% end %>
         </div>
       </div>
     <% end %>

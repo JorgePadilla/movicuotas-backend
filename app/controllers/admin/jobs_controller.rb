@@ -90,8 +90,25 @@ module Admin
         jobs = jobs.where("class_name ILIKE ? OR id::text LIKE ?", search_term, search_term)
       end
 
-      # Paginate
-      jobs.page(params[:page]).per(25)
+      # Manual pagination (Solid Queue models don't work well with Kaminari)
+      total_count = jobs.count
+      page = (params[:page] || 1).to_i
+      per_page = 25
+      offset = (page - 1) * per_page
+
+      jobs_page = jobs.limit(per_page).offset(offset).to_a
+
+      # Create a simple paginated collection
+      OpenStruct.new(
+        records: jobs_page,
+        total_count: total_count,
+        current_page: page,
+        total_pages: (total_count.to_f / per_page).ceil,
+        per_page: per_page,
+        offset_value: offset,
+        size: jobs_page.size,
+        any?: jobs_page.any?
+      )
     end
 
     def apply_status_filter(jobs)
