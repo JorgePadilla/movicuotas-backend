@@ -69,19 +69,19 @@
       <!-- Status filters -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-3">Estado</label>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-3">
           <%= link_to "Todos", admin_jobs_path,
-              class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-gray-300 text-gray-700 hover:border-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-gray-300 text-gray-700 hover:border-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Pendientes", admin_jobs_path(status: 'pending'),
-              class: "#{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-white border border-yellow-200 text-yellow-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-white border border-yellow-200 text-yellow-600'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "En Ejecución", admin_jobs_path(status: 'running'),
-              class: "#{params[:status] == 'running' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status] == 'running' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Completados", admin_jobs_path(status: 'completed'),
-              class: "#{params[:status] == 'completed' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status] == 'completed' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Fallidos", admin_jobs_path(status: 'failed'),
-              class: "#{params[:status] == 'failed' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status] == 'failed' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Programados", admin_jobs_path(status: 'scheduled'),
-              class: "#{params[:status] == 'scheduled' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+              class: "#{params[:status] == 'scheduled' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
         </div>
       </div>
 
