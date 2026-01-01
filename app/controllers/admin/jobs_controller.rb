@@ -73,18 +73,21 @@ module Admin
       redirect_to admin_jobs_path, alert: "Job no encontrado."
     end
 
+    JOB_CLASS_MAP = {
+      "MarkInstallmentsOverdueJob" => "mark_installments_overdue_job",
+      "SendOverdueNotificationJob" => "send_overdue_notification_job",
+      "SendLatePaymentWarningJob" => "send_late_payment_warning_job",
+      "NotifyCobradorosJob" => "notify_cobradores_job",
+      "AutoBlockDeviceJob" => "auto_block_device_job"
+    }.freeze
+
     def valid_job_class?(job_class)
-      allowed_jobs = [
-        "MarkInstallmentsOverdueJob",
-        "SendOverdueNotificationJob",
-        "SendLatePaymentWarningJob",
-        "NotifyCobradorosJob",
-        "AutoBlockDeviceJob"
-      ].freeze
-      allowed_jobs.include?(job_class)
+      JOB_CLASS_MAP.key?(job_class)
     end
 
     def load_job_class(job_class_name)
+      file_name = JOB_CLASS_MAP[job_class_name]
+      require Rails.root.join("app/jobs/#{file_name}.rb").to_s
       job_class_name.constantize
     end
 
