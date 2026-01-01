@@ -1,20 +1,20 @@
 <%# app/views/vendor/contracts/show.html.erb - Step 13: Contract Display %>
 <% content_for :title, "Contrato - Movicuotas" %>
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6">
   <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Contrato de Crédito</h1>
-    <p class="text-gray-600 mt-2">Revise los términos y condiciones del contrato antes de proceder a la firma digital.</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Contrato de Crédito</h1>
+    <p class="text-gray-600 mt-2 text-sm sm:text-base">Revise los términos y condiciones del contrato antes de proceder a la firma digital.</p>
 
-    <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0">
+        <svg class="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div>
-          <p class="font-medium text-blue-800">Cliente: <%= @contract.loan.customer.full_name %></p>
-          <p class="text-sm text-blue-600">Contrato: <%= @contract.loan.contract_number %></p>
+          <p class="font-medium text-blue-800 text-sm sm:text-base">Cliente: <%= @contract.loan.customer.full_name %></p>
+          <p class="text-xs sm:text-sm text-blue-600">Contrato: <%= @contract.loan.contract_number %></p>
         </div>
       </div>
     </div>
@@ -23,14 +23,14 @@
   <!-- Contract Display -->
   <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 border border-gray-200">
     <!-- Contract Header Bar -->
-    <div class="bg-[#125282] text-white p-4 flex justify-between items-center">
+    <div class="bg-[#125282] text-white p-3 sm:p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
       <div>
-        <h2 class="text-xl font-bold">CONTRATO MOVICUOTAS</h2>
-        <p class="text-sm opacity-90">Documento legal - Paso 13 de 18</p>
+        <h2 class="text-lg sm:text-xl font-bold">CONTRATO MOVICUOTAS</h2>
+        <p class="text-xs sm:text-sm opacity-90">Documento legal - Paso 13 de 18</p>
       </div>
-      <div class="text-right">
-        <p class="text-sm">Válido hasta: <%= I18n.l(Date.today + 30.days, format: :long) %></p>
-        <p class="text-xs opacity-80">Generado el <%= I18n.l(Date.today, format: :long) %></p>
+      <div class="text-right text-xs sm:text-sm">
+        <p>Válido hasta: <%= I18n.l(Date.today + 30.days, format: :long) %></p>
+        <p class="opacity-80 text-xs">Generado el <%= I18n.l(Date.today, format: :long) %></p>
       </div>
     </div>
 
@@ -40,10 +40,10 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="p-6 border-t border-gray-200 bg-gray-50">
-      <div class="flex justify-between items-center">
+    <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
         <div>
-          <p class="text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             <span class="font-medium">Estado:</span>
             <% if @contract.signed? %>
               <span class="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Firmado</span>
@@ -53,13 +53,13 @@
           </p>
         </div>
 
-        <div class="flex space-x-4">
-          <%= link_to "← Volver", vendor_customer_search_path, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" %>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <%= link_to "← Volver", vendor_customer_search_path, class: "px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base text-center" %>
 
           <% if @contract.signed? %>
-            <%= link_to "Continuar →", "#", class: "px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium" %>
+            <%= link_to "Continuar →", "#", class: "px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm sm:text-base text-center" %>
           <% else %>
-            <%= link_to "Aceptar y Proceder a Firma →", signature_vendor_contract_path(@contract), class: "px-6 py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium" %>
+            <%= link_to "Aceptar y Proceder a Firma →", signature_vendor_contract_path(@contract), class: "px-4 sm:px-6 py-2 sm:py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium text-sm sm:text-base text-center" %>
           <% end %>
         </div>
       </div>
@@ -67,14 +67,14 @@
   </div>
 
   <!-- Important Notes -->
-  <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
-    <h3 class="font-bold text-amber-800 text-lg mb-3 flex items-center">
-      <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+    <h3 class="font-bold text-amber-800 text-base sm:text-lg mb-3 flex items-center">
+      <svg class="h-4 sm:h-5 w-4 sm:w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.342 16.5c-.77.833.192 2.5 1.732 2.5z"/>
       </svg>
       Notas Importantes
     </h3>
-    <ul class="list-disc pl-5 text-amber-700 space-y-2">
+    <ul class="list-disc pl-5 text-amber-700 space-y-2 text-xs sm:text-sm">
       <li>Este contrato es un documento legal vinculante. Asegúrese de entender todos los términos antes de firmar.</li>
       <li>La firma digital tiene la misma validez legal que una firma física.</li>
       <li>Una vez firmado, el contrato se almacenará digitalmente y podrá descargarse en cualquier momento.</li>
@@ -84,25 +84,25 @@
   </div>
 
   <!-- Progress Indicator -->
-  <div class="mt-12">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">13</div>
-        <span class="ml-3 font-medium text-gray-700">Contrato</span>
+  <div class="mt-8 sm:mt-12 overflow-x-auto">
+    <div class="flex items-center justify-between gap-1 sm:gap-4 mb-4 min-w-min sm:min-w-0">
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">13</div>
+        <span class="font-medium text-gray-700 text-xs sm:text-base">Contrato</span>
       </div>
-      <div class="h-1 flex-1 mx-4 bg-gray-200">
-        <div class="h-1 bg-[#125282] w-1/2"></div>
+      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200">
+        <div class="h-1 bg-[#125282] w-full"></div>
       </div>
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">14</div>
-        <span class="ml-3 font-medium text-gray-500">Firma Digital</span>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs sm:text-sm">14</div>
+        <span class="font-medium text-gray-500 text-xs sm:text-base">Firma</span>
       </div>
-      <div class="h-1 flex-1 mx-4 bg-gray-200"></div>
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">15</div>
-        <span class="ml-3 font-medium text-gray-500">Crédito Aplicado</span>
+      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200"></div>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs sm:text-sm">15</div>
+        <span class="font-medium text-gray-500 text-xs sm:text-base">Crédito</span>
       </div>
     </div>
-    <p class="text-center text-sm text-gray-500 mt-2">Paso 13 de 18 - Flujo de Venta</p>
+    <p class="text-center text-xs sm:text-sm text-gray-500 mt-2">Paso 13 de 18 - Flujo de Venta</p>
   </div>
 </div>
