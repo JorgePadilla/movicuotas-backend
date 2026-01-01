@@ -108,7 +108,7 @@
         <h4 class="font-medium text-gray-900 mb-2">📊 Reporte Diario para Cobradores</h4>
         <p class="text-xs text-gray-600 mb-3">Envía reporte de mora a todos los cobradores con estadísticas y dispositivos bloqueados.</p>
         <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-          <%= f.hidden_field :job_class, value: "NotifyCobradorosJob" %>
+          <%= f.hidden_field :job_class, value: "NotifyCobradoresJob" %>
           <%= f.submit "Ejecutar Ahora",
               class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium transition-colors w-full text-sm",
               data: { confirm: "¿Ejecutar ahora? Enviará reporte a los cobradores." } %>

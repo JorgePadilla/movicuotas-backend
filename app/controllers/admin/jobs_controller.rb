@@ -90,7 +90,7 @@ module Admin
       "MarkInstallmentsOverdueJob",
       "SendOverdueNotificationJob",
       "SendLatePaymentWarningJob",
-      "NotifyCobradorosJob",
+      "NotifyCobradoresJob",
       "AutoBlockDeviceJob"
     ].freeze
 
