@@ -1,6 +1,7 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate, only: [ :new, :create ]
   skip_after_action :verify_authorized, only: [ :new, :create ]
+  layout "login", only: [ :new, :create ]
 
   def new
     # Login form
