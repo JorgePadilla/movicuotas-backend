@@ -1,0 +1,130 @@
+<% content_for :title, "Gestión de Clientes - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-[#125282]">Gestión de Clientes</h1>
+      <p class="text-gray-600 mt-2">Visualiza y administra todos los clientes del sistema</p>
+    </div>
+  </div>
+
+  <!-- Search and filter section -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Search -->
+      <%= form_with url: admin_customers_path, method: :get, local: true, class: "flex gap-4" do |f| %>
+        <div class="flex-1">
+          <%= f.search_field :search, placeholder: "Buscar por número de identidad o nombre...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+        </div>
+        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+      <% end %>
+    </div>
+
+    <!-- Status filter -->
+    <div class="flex gap-4 mt-4">
+      <%= link_to "Todos", admin_customers_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Activos", admin_customers_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Suspendidos", admin_customers_path(status: 'suspended'), class: "#{params[:status] == 'suspended' ? 'bg-orange-600 text-white' : 'bg-white border border-orange-200 text-orange-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= link_to "Bloqueados", admin_customers_path(status: 'blocked'), class: "#{params[:status] == 'blocked' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+  </div>
+
+  <!-- Customers table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identidad</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Préstamos Activos</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @customers.any? %>
+            <% @customers.each do |customer| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="font-medium text-gray-900"><%= customer.full_name %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-600"><%= customer.identification_number %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-600"><%= customer.phone %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-600"><%= customer.email || "—" %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 text-sm rounded-full <%= customer.active? ? 'bg-green-100 text-green-800' : customer.suspended? ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800' %>">
+                    <%= customer.status.titleize %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% active_loans_count = customer.loans.where(status: 'active').count %>
+                  <% if active_loans_count > 0 %>
+                    <span class="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">
+                      <%= active_loans_count %>
+                    </span>
+                  <% else %>
+                    <span class="text-sm text-gray-600">Ninguno</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= customer.created_at.strftime("%d/%m/%Y") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3">
+                  <%= link_to "Ver", admin_customer_path(customer), class: "text-[#125282] hover:underline font-medium" %>
+                  <%= link_to "Editar", edit_admin_customer_path(customer), class: "text-green-600 hover:underline font-medium" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                No hay clientes que coincidan con tu búsqueda
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">Total Clientes</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-green-600">Activos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'active').count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-orange-600">Suspendidos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'suspended').count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-red-600">Bloqueados</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'blocked').count %></p>
+    </div>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+    <div class="text-sm text-gray-500">
+      Total de clientes: <%= @customers.count %>
+    </div>
+  </div>
+</div>
