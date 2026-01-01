@@ -3,7 +3,7 @@ import flatpickr from "flatpickr"
 import Spanish from "flatpickr/dist/l10n/es"
 
 export default class extends Controller {
-  static targets = ["input", "dateInput", "button"]
+  static targets = ["input", "button"]
   static values = {
     max: String,
     min: String,
@@ -11,7 +11,7 @@ export default class extends Controller {
     initialValue: String,
     dateFormat: { type: String, default: "Y-m-d" },
     altFormat: { type: String, default: "d/m/Y" },
-    altInput: { type: Boolean, default: true }
+    altInput: { type: Boolean, default: false }
   }
 
   connect() {
@@ -43,19 +43,9 @@ export default class extends Controller {
       // Ensure calendar is positioned correctly
       position: "auto", // "auto" positions relative to input
       onChange: (selectedDates, dateStr, instance) => {
-        // With altInput: true, dateStr is in dateFormat (Y-m-d), selectedDates contains Date object
-        if (selectedDates.length > 0) {
-          const date = selectedDates[0]
-          const isoDate = date.toISOString().split('T')[0] // YYYY-MM-DD
-
-          // Update hidden date input with ISO format for Rails form submission
-          if (self.hasDateInputTarget) {
-            self.dateInputTarget.value = isoDate
-          }
-
-          // The original input (hidden by Flatpickr) already has dateFormat value (Y-m-d)
-          // The alt input (visible) shows altFormat (d/m/Y) - managed by Flatpickr
-        }
+        // Flatpickr automatically updates the input value
+        // The input target now has the ISO date value in dateFormat (Y-m-d)
+        // which is what Rails expects for the date field
       },
       onOpen: (selectedDates, dateStr, instance) => {
         // Add custom class to calendar for styling
@@ -86,10 +76,6 @@ export default class extends Controller {
       // Set initial value if provided
       if (this.hasInitialValue && this.initialValue) {
         this.picker.setDate(this.initialValue, false)
-        // Update hidden date input with ISO format for Rails form submission
-        if (this.hasDateInputTarget) {
-          this.dateInputTarget.value = this.initialValue
-        }
       }
 
       // Set placeholder if provided (will apply to alt input)

@@ -100,13 +100,10 @@
                  <% if @customer.date_of_birth.present? %>
                  data-flatpickr-es-initial-value-value="<%= @customer.date_of_birth.iso8601 %>"
                  <% end %>>
-              <%= customer_fields.date_field :date_of_birth,
-                    class: "hidden",
-                    max: Date.today.iso8601,
-                    data: { flatpickr_es_target: "dateInput" } %>
               <div class="relative">
-                <%= text_field_tag nil, nil,
+                <%= customer_fields.date_field :date_of_birth,
                       class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                      max: Date.today.iso8601,
                       required: true,
                       placeholder: "DD/MM/AAAA",
                       data: { flatpickr_es_target: "input" } %>
