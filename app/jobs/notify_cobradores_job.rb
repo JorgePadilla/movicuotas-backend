@@ -7,13 +7,15 @@ class NotifyCobradorosJob < ApplicationJob
   def perform
     log_execution("Starting: Notifying cobradores with daily collection report")
 
-    notification_count = notify_all_cobradores
-    log_execution("Completed: Notified #{notification_count} cobradores", :info, { count: notification_count })
-    track_metric("cobradores_notified", notification_count)
-  rescue StandardError => e
-    log_execution("Error notifying cobradores: #{e.message}", :error)
-    notify_error(e, { job: self.class.name })
-    raise
+    begin
+      notification_count = notify_all_cobradores
+      log_execution("Completed: Notified #{notification_count} cobradores", :info, { count: notification_count })
+      track_metric("cobradores_notified", notification_count)
+    rescue StandardError => e
+      log_execution("Error notifying cobradores: #{e.message}", :error)
+      notify_error(e, { job: self.class.name })
+      raise
+    end
   end
 
   private
@@ -21,9 +23,13 @@ class NotifyCobradorosJob < ApplicationJob
   def notify_all_cobradores
     notification_count = 0
 
-    User.where(role: "cobrador").active.find_each do |cobrador|
-      count = send_daily_report_to_cobrador(cobrador)
-      notification_count += count
+    begin
+      User.where(role: "cobrador").active.find_each do |cobrador|
+        count = send_daily_report_to_cobrador(cobrador)
+        notification_count += count
+      end
+    rescue StandardError => e
+      log_execution("Error fetching cobradores: #{e.message}", :error)
     end
 
     notification_count
@@ -32,29 +38,31 @@ class NotifyCobradorosJob < ApplicationJob
   def send_daily_report_to_cobrador(cobrador)
     return 0 unless cobrador.present?
 
-    # Calculate overdue statistics
-    stats = calculate_overdue_statistics
+    begin
+      # Calculate overdue statistics
+      stats = calculate_overdue_statistics
 
-    return 0 if stats[:total_overdue_count].zero?
+      return 0 if stats[:total_overdue_count].zero?
 
-    # Create daily report notification
-    title = "📊 Reporte Diario de Mora"
-    message = build_report_message(stats)
+      # Create daily report notification
+      title = "📊 Reporte Diario de Mora"
+      message = build_report_message(stats)
 
-    notification = Notification.create!(
-      recipient: cobrador,
-      title: title,
-      message: message,
-      notification_type: "daily_reminder",
-      delivery_method: "fcm",
-      status: "pending",
-      data: stats
-    )
+      notification = Notification.create!(
+        recipient: cobrador,
+        title: title,
+        message: message,
+        notification_type: "daily_reminder",
+        delivery_method: "fcm",
+        status: "pending",
+        data: stats
+      )
 
-    notification.persisted? ? 1 : 0
-  rescue StandardError => e
-    log_execution("Error creating daily report for cobrador #{cobrador.id}: #{e.message}", :error)
-    0
+      notification.persisted? ? 1 : 0
+    rescue StandardError => e
+      log_execution("Error creating daily report for cobrador #{cobrador.id}: #{e.message}", :error)
+      0
+    end
   end
 
   def calculate_overdue_statistics
@@ -75,12 +83,25 @@ class NotifyCobradorosJob < ApplicationJob
                                   .count,
       pending_blocks_count: Device.where(lock_status: :pending).count
     }
+  rescue StandardError => e
+    log_execution("Error calculating overdue statistics: #{e.message}", :error)
+    {
+      total_overdue_count: 0,
+      total_overdue_amount: 0,
+      by_days: { "1_to_7" => 0, "8_to_15" => 0, "16_to_30" => 0, "30_plus" => 0 },
+      blocked_devices_count: 0,
+      blocked_today_count: 0,
+      pending_blocks_count: 0
+    }
   end
 
   def count_by_range(min_days, max_days)
     Installment.overdue
                .where("CAST(CURRENT_DATE AS date) - due_date BETWEEN ? AND ?", min_days, max_days)
                .count
+  rescue StandardError => e
+    log_execution("Error counting by range (#{min_days}-#{max_days} days): #{e.message}", :error)
+    0
   end
 
   def build_report_message(stats)
