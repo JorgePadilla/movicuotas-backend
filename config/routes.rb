@@ -77,8 +77,10 @@ Rails.application.routes.draw do
         get :download_contract
       end
     end
-    # MDM Blueprint (Step 16) - placeholder for now
-    resources :mdm_blueprints, only: [ :show ], param: :id
+    # MDM Blueprint (Step 16) and Checklist (Step 17)
+    resources :mdm_blueprints, only: [ :show ], param: :id do
+      resource :mdm_checklist, only: [ :show, :create ]
+    end
     # Payment tracking (Step 18)
     resources :payments, only: [ :index ]
 

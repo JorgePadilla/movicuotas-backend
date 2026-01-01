@@ -90,9 +90,8 @@
       <%# Action Buttons %>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <%# Proceed to Checklist (Step 17) %>
-        <%= link_to "javascript:void(0)",
-                    class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center",
-                    title: "Próximamente: Checklist Final (Paso 17)" do %>
+        <%= link_to vendor_mdm_blueprint_mdm_checklist_path(@mdm_blueprint),
+                    class: "group flex flex-col items-center justify-center p-8 bg-[#6366f1] hover:bg-[#4f46e5] rounded-xl transition-colors duration-200 text-white text-center" do %>
           <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
           </svg>

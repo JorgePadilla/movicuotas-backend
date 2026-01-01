@@ -1,0 +1,159 @@
+<% content_for :title, "Checklist Final - Configuración del Cliente - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <%# Progress Indicator %>
+  <div class="mb-12">
+    <div class="flex items-center justify-center">
+      <div class="flex items-center">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#125282] text-white font-bold">
+          17
+        </div>
+        <div class="w-24 h-1 bg-[#125282]"></div>
+      </div>
+      <div class="text-sm font-medium text-[#125282] ml-3">Paso 17 de 18: Verificación de Configuración del Cliente</div>
+    </div>
+  </div>
+
+  <%# Main Card %>
+  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-[#125282]">
+    <div class="bg-gradient-to-r from-[#125282] to-[#0f4670] p-8 text-center">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-6">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-white mb-4">Verificación de Configuración del Cliente</h1>
+      <p class="text-xl text-blue-100">Confirma que todos los elementos de configuración han sido completados antes de finalizar la venta.</p>
+    </div>
+
+    <div class="p-8">
+      <%# Customer Information %>
+      <div class="bg-gray-50 rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Información del Cliente</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Cliente</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
+            <p class="text-gray-600"><%= @customer.identification_number %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Dispositivo</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
+            <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Contrato</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
+            <p class="text-gray-600">Inicio: <%= l(@loan.start_date, format: :long) %></p>
+          </div>
+        </div>
+      </div>
+
+      <%# Checklist Form %>
+      <%= form_with scope: :mdm_checklist, url: vendor_mdm_blueprint_mdm_checklist_path(@mdm_blueprint), method: :post, local: true, class: "space-y-6" do |f| %>
+        <%# Error Messages %>
+        <% if @mdm_blueprint.errors.any? %>
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 class="text-sm font-medium text-red-800 mb-2">Se encontraron los siguientes errores:</h3>
+            <ul class="list-disc pl-5 text-sm text-red-700">
+              <% @mdm_blueprint.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Checklist Items %>
+        <div class="bg-white border-2 border-gray-200 rounded-xl p-6 space-y-4">
+          <h3 class="text-xl font-bold text-gray-900 mb-6">Lista de Verificación</h3>
+
+          <%# Item 1: BluePrint Scanned %>
+          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+            <div class="flex items-center h-6 mt-1">
+              <%= f.check_box :blueprint_scanned, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+            </div>
+            <div class="ml-4 flex-1">
+              <label class="flex items-center cursor-pointer">
+                <span class="text-lg font-semibold text-gray-900">BluePrint escaneado y configuración realizada</span>
+              </label>
+              <p class="text-sm text-gray-600 mt-1">El cliente ha escaneado el código QR y el sistema MDM ha iniciado la configuración del dispositivo.</p>
+            </div>
+          </div>
+
+          <%# Item 2: MDM App Installed %>
+          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+            <div class="flex items-center h-6 mt-1">
+              <%= f.check_box :mdm_installed, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+            </div>
+            <div class="ml-4 flex-1">
+              <label class="flex items-center cursor-pointer">
+                <span class="text-lg font-semibold text-gray-900">Aplicación MDM instalada y confirmada</span>
+              </label>
+              <p class="text-sm text-gray-600 mt-1">Verifica que la aplicación MDM aparezca en la lista de aplicaciones y muestre el estado "Dispositivo protegido".</p>
+            </div>
+          </div>
+
+          <%# Item 3: MoviCuotas App Installed & Logged In %>
+          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+            <div class="flex items-center h-6 mt-1">
+              <%= f.check_box :movicuotas_installed, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+            </div>
+            <div class="ml-4 flex-1">
+              <label class="flex items-center cursor-pointer">
+                <span class="text-lg font-semibold text-gray-900">Aplicación MoviCuotas instalada y Log-in realizado</span>
+              </label>
+              <p class="text-sm text-gray-600 mt-1">El cliente ha iniciado sesión en la aplicación MoviCuotas usando sus credenciales y puede ver el estado de sus cuotas.</p>
+            </div>
+          </div>
+        </div>
+
+        <%# Important Notes %>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-yellow-800">Importante</h3>
+              <div class="mt-2 text-sm text-yellow-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>No entregues el dispositivo hasta completar todos los puntos del checklist.</li>
+                  <li>Si el cliente tiene problemas con la configuración MDM, intenta escanear el código QR nuevamente.</li>
+                  <li>Asegúrate de que el cliente tenga un número de teléfono confirmado para recibir notificaciones de pagos.</li>
+                  <li>Una vez completado este checklist, el dispositivo estará protegido por MDM.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%# Action Buttons %>
+        <div class="flex flex-col md:flex-row gap-4 pt-8">
+          <div class="flex-1">
+            <%= link_to "← Volver al Código QR", vendor_mdm_blueprint_path(@mdm_blueprint), class: "w-full text-center bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+          </div>
+          <div class="flex-1">
+            <%= f.submit "Finalizar Proceso de Venta", name: "commit",
+                        class: "w-full bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  input[type="checkbox"]:checked {
+    background-color: #125282;
+    border-color: #125282;
+  }
+
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+  }
+</style>
