@@ -3,11 +3,11 @@
 module Vendor
   class CreditApplicationsController < ApplicationController
     before_action :set_credit_application, only: [
-      :photos, :update_photos, :employment, :update_employment,
+      :edit, :update, :photos, :update_photos, :employment, :update_employment,
       :summary, :submit, :approved, :rejected, :show
     ]
     before_action :authorize_credit_application, only: [
-      :photos, :update_photos, :employment, :update_employment,
+      :edit, :update, :photos, :update_photos, :employment, :update_employment,
       :summary, :submit, :approved, :rejected, :show
     ]
 
@@ -66,6 +66,22 @@ module Vendor
         Rails.logger.error "Final customer errors: #{@customer.errors.full_messages}" if @customer.errors.any?
 
         render :new, status: :unprocessable_entity
+      end
+    end
+
+    # Step 1: Edit Datos Generales (for going back to previous step)
+    def edit
+      @customer = @credit_application.customer
+    end
+
+    # Update Datos Generales
+    def update
+      if @credit_application.update(credit_application_params)
+        redirect_to photos_vendor_credit_application_path(@credit_application),
+                    notice: "Datos generales actualizados."
+      else
+        @customer = @credit_application.customer
+        render :edit, status: :unprocessable_entity
       end
     end
 
