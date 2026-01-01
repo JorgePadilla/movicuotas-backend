@@ -4,7 +4,6 @@ class CreditApprovalService
   # Business rules for credit approval
   MINIMUM_AGE = 18
   MINIMUM_SALARY_RANGE = "range_10000_20000"  # Minimum salary range required for approval
-  APPROVAL_RATE = 0.85  # 85% of applications are approved (for simulation)
   APPROVED_AMOUNT_RANGES = {
     less_than_10000: 5000..8000,
     range_10000_20000: 8000..12000,
@@ -111,37 +110,11 @@ class CreditApprovalService
     result
   end
 
-  # Business logic decision (simulated)
+  # Business logic decision - deterministic based on clear rules
   def should_approve?
-    # In real system, this would involve credit scoring, external APIs, etc.
-    # For now, use a combination of factors with randomness for simulation
-
-    # Base approval probability
-    probability = APPROVAL_RATE
-
-    # Adjust based on salary range (higher salary = higher probability)
-    raw_salary = @credit_application.salary_range
-    normalized_salary = raw_salary.present? ? (SALARY_RANGE_VALUE_MAPPING[raw_salary] || raw_salary) : nil
-
-    salary_factor = case normalized_salary
-    when "less_than_10000" then 0.7
-    when "10000_20000" then 0.8
-    when "20000_30000" then 0.9
-    when "30000_40000" then 0.95
-    when "more_than_40000" then 1.0
-    else 0.8
-    end
-
-    # Adjust based on employment status
-    employment_factor = case @credit_application.employment_status
-    when "employed" then 1.0
-    when "self_employed" then 0.9
-    when "retired" then 0.8
-    else 0.5
-    end
-
-    final_probability = probability * salary_factor * employment_factor
-    rand <= final_probability
+    # If validation passed, approve. No random rejections.
+    # All business rules are checked in validate_application method.
+    true
   end
 
   def approve_application
