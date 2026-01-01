@@ -50,6 +50,7 @@ module Vendor
         # Create a temporary file
         temp_file = Tempfile.new(['signature', '.png'], encoding: 'ascii-8bit')
         temp_file.write(decoded_signature)
+        temp_file.flush
         temp_file.rewind
 
         # Log tempfile details

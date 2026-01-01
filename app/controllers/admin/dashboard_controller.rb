@@ -13,7 +13,7 @@ module Admin
       @admin_users = User.where(role: 'admin').count
       @vendor_users = User.where(role: 'vendedor').count
       @collector_users = User.where(role: 'cobrador').count
-      @active_users = User.where('last_login_at >= ?', 30.days.ago).count
+      @active_users = User.where('updated_at >= ?', 30.days.ago).count
 
       # Customer statistics (system-wide)
       @total_customers = Customer.count

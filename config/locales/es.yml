@@ -180,6 +180,11 @@ es:
       - vie
       - sáb
 
+  time:
+    formats:
+      long: "%d de %B de %Y a las %H:%M:%S"
+      short: "%d de %b %H:%M"
+
   installment:
     status:
       paid: "Pagado"
