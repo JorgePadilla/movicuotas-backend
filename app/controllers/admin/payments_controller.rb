@@ -28,13 +28,17 @@ module Admin
                              .distinct
       end
 
-      # Calculate summary statistics
-      @total_payments = @payments.sum(:amount)
-      @verified_payments = @payments.verified.sum(:amount)
-      @pending_verification = @payments.pending_verification.sum(:amount)
+      # Calculate summary statistics (from full unfiltered list for accurate totals)
+      payments_for_stats = policy_scope(Payment)
+      @total_payments = payments_for_stats.sum(:amount)
+      @verified_payments = payments_for_stats.verified.sum(:amount)
+      @pending_verification = payments_for_stats.pending_verification.sum(:amount)
 
       # Group by payment method for visualization
-      @payments_by_method = @payments.group(:payment_method).sum(:amount)
+      @payments_by_method = payments_for_stats.group(:payment_method).sum(:amount)
+
+      # Paginate results (20 per page)
+      @payments = @payments.page(params[:page]).per(20)
     end
 
     def show

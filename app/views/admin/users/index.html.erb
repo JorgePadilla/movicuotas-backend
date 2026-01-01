@@ -76,6 +76,45 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <% if @users.total_pages > 1 %>
+      <div class="mt-6 mb-8 flex justify-center items-center gap-2">
+        <div class="flex items-center gap-2">
+          <% if @users.first_page? %>
+            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+          <% else %>
+            <%= link_to "← Anterior", admin_users_path(role: params[:role], page: @users.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <% end %>
+
+          <div class="flex items-center gap-1">
+            <% (1..@users.total_pages).each do |page| %>
+              <% if page == @users.current_page %>
+                <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium">
+                  <%= page %>
+                </span>
+              <% elsif (page - @users.current_page).abs <= 1 || page == 1 || page == @users.total_pages %>
+                <%= link_to page, admin_users_path(role: params[:role], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <% elsif page == 2 && @users.current_page > 3 %>
+                <span class="px-2 py-2 text-gray-500">...</span>
+              <% elsif page == @users.total_pages - 1 && @users.current_page < @users.total_pages - 2 %>
+                <span class="px-2 py-2 text-gray-500">...</span>
+              <% end %>
+            <% end %>
+          </div>
+
+          <% if @users.last_page? %>
+            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+          <% else %>
+            <%= link_to "Siguiente →", admin_users_path(role: params[:role], page: @users.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="text-center text-sm text-gray-500 mb-8">
+        Página <%= @users.current_page %> de <%= @users.total_pages %> • Mostrando <%= @users.size %> de <%= @users.total_count %> usuarios
+      </div>
+    <% end %>
   </div>
 
   <!-- Summary stats -->

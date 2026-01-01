@@ -23,6 +23,9 @@ module Admin
 
       # Get unique branches for filtering
       @branches = Loan.distinct.pluck(:branch_number).sort
+
+      # Paginate results (20 per page)
+      @loans = @loans.page(params[:page]).per(20)
     end
 
     def show

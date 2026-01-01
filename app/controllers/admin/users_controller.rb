@@ -8,6 +8,9 @@ module Admin
     def index
       @users = policy_scope(User).order(created_at: :desc)
       @users = @users.where(role: params[:role]) if params[:role].present?
+
+      # Paginate results (20 per page)
+      @users = @users.page(params[:page]).per(20)
     end
 
     def show
