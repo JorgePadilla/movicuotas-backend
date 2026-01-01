@@ -9,7 +9,7 @@
 
   <!-- Date Range Filter -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <%= form_with url: admin_revenue_report_path, method: :get, local: true, class: "flex gap-4 items-end flex-wrap" do |f| %>
+    <%= form_with url: revenue_report_admin_reports_path, method: :get, local: true, class: "flex gap-4 items-end flex-wrap" do |f| %>
       <div>
         <%= f.label :date_from, "Desde:", class: "block text-sm font-medium text-gray-600" %>
         <%= f.date_field :date_from, value: @date_from, class: "mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
