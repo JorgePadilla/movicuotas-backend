@@ -105,7 +105,7 @@
         <% if @customers.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_customers_path(params.merge(page: @customers.current_page - 1)), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
 
         <div class="flex items-center gap-1">
@@ -115,7 +115,7 @@
                 <%= page %>
               </span>
             <% elsif (page - @customers.current_page).abs <= 1 || page == 1 || page == @customers.total_pages %>
-              <%= link_to page, admin_customers_path(params.merge(page: page)), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_customers_path(status: params[:status], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @customers.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @customers.total_pages - 1 && @customers.current_page < @customers.total_pages - 2 %>
@@ -127,7 +127,7 @@
         <% if @customers.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_customers_path(params.merge(page: @customers.current_page + 1)), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
     </div>
