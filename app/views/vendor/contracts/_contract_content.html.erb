@@ -1,6 +1,53 @@
 <%# app/views/vendor/contracts/_contract_content.html.erb %>
 <%# This partial is used by ContractGeneratorService to render contract content %>
 
+<style>
+  @media (max-width: 640px) {
+    .contract-content {
+      padding: 1rem !important;
+    }
+    .contract-header {
+      padding: 1rem !important;
+    }
+    .contract-header h1 {
+      font-size: 18pt !important;
+    }
+    .contract-header p {
+      font-size: 10pt !important;
+    }
+    .contract-number {
+      padding-bottom: 0.75rem !important;
+    }
+    .contract-number p {
+      font-size: 11pt !important;
+    }
+    h2 {
+      font-size: 16pt !important;
+      padding-bottom: 0.25rem !important;
+    }
+    h3 {
+      font-size: 13pt !important;
+      margin-bottom: 0.75rem !important;
+    }
+    .section-content {
+      font-size: 10pt !important;
+      line-height: 1.5 !important;
+    }
+    table {
+      font-size: 9pt !important;
+    }
+    table td, table th {
+      padding: 0.4rem 0.25rem !important;
+    }
+    .signatures-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 2rem !important;
+      padding-top: 1rem !important;
+    }
+  }
+</style>
+
 <div class="contract-content" style="font-family: 'Inter', 'Calibri', sans-serif; color: #1f2937; padding: 2rem;">
   <!-- Header with corporate blue -->
   <div class="contract-header" style="background-color: #125282; color: white; padding: 2rem; border-radius: 0.5rem 0.5rem 0 0; margin-bottom: 2rem;">
@@ -23,7 +70,7 @@
   </div>
 
   <!-- Introductory Paragraph -->
-  <div class="introductory-paragraph" style="margin-bottom: 2rem;">
+  <div class="introductory-paragraph section-content" style="margin-bottom: 2rem;">
     <p style="font-size: 11pt; line-height: 1.6; text-align: justify;">
       Nosotros, MoviCuotas S. de R.L., que en adelante se denominará "LA EMPRESA", y el cliente, identificado en este documento en la Sección 1, que en adelante se denominará "EL CLIENTE", hemos convenido en celebrar como al efecto por este acto celebramos el presente CONTRATO DE CRÉDITO.
     </p>
@@ -33,7 +80,7 @@
   </div>
 
   <!-- Section 1: Datos del Cliente y del Crédito -->
-  <div class="section-1" style="margin-bottom: 2rem;">
+  <div class="section-1 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       1. Datos del Cliente y del Crédito
     </h2>
@@ -129,7 +176,7 @@
   </div>
 
   <!-- Section 2: Objeto del Contrato -->
-  <div class="section-2" style="margin-bottom: 2rem;">
+  <div class="section-2 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       2. Objeto del Contrato
     </h2>
@@ -140,7 +187,7 @@
   </div>
 
   <!-- Section 3: Compromisos y Obligaciones del Cliente -->
-  <div class="section-3" style="margin-bottom: 2rem;">
+  <div class="section-3 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       3. Compromisos y Obligaciones del Cliente
     </h2>
@@ -157,7 +204,7 @@
   </div>
 
   <!-- Section 4: Bloqueo Remoto del Dispositivo -->
-  <div class="section-4" style="margin-bottom: 2rem;">
+  <div class="section-4 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       4. Bloqueo Remoto del Dispositivo
     </h2>
@@ -185,7 +232,7 @@
   </div>
 
   <!-- Section 5: Política de Privacidad y Uso de Datos -->
-  <div class="section-5" style="margin-bottom: 2rem;">
+  <div class="section-5 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       5. Política de Privacidad y Uso de Datos
     </h2>
@@ -212,7 +259,7 @@
   </div>
 
   <!-- Section 6: Pagos, Atrasos y Penalidades -->
-  <div class="section-6" style="margin-bottom: 2rem;">
+  <div class="section-6 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       6. Pagos, Atrasos y Penalidades (Quincenales)
     </h2>
@@ -245,7 +292,7 @@
   </div>
 
   <!-- Section 7: Cancelación del Crédito -->
-  <div class="section-7" style="margin-bottom: 2rem;">
+  <div class="section-7 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       7. Cancelación del Crédito
     </h2>
@@ -260,7 +307,7 @@
   </div>
 
   <!-- Section 8: Propiedad del Dispositivo -->
-  <div class="section-8" style="margin-bottom: 2rem;">
+  <div class="section-8 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       8. Propiedad del Dispositivo
     </h2>
@@ -271,7 +318,7 @@
   </div>
 
   <!-- Section 9: Comunicaciones, Notificaciones y Alertas -->
-  <div class="section-9" style="margin-bottom: 2rem;">
+  <div class="section-9 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       9. Comunicaciones, Notificaciones y Alertas
     </h2>
@@ -288,7 +335,7 @@
   </div>
 
   <!-- Section 10: Jurisdicción -->
-  <div class="section-10" style="margin-bottom: 2rem;">
+  <div class="section-10 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       10. Jurisdicción
     </h2>
@@ -299,7 +346,7 @@
   </div>
 
   <!-- Section 11: Aceptación y Firma -->
-  <div class="section-11" style="margin-bottom: 2rem;">
+  <div class="section-11 section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       11. Aceptación y Firma
     </h2>
@@ -315,7 +362,7 @@
   </div>
 
   <!-- Payment Schedule -->
-  <div class="payment-schedule" style="margin-bottom: 2rem;">
+  <div class="payment-schedule section-content" style="margin-bottom: 2rem;">
     <h2 style="font-size: 20pt; font-weight: semibold; color: #125282; border-bottom: 1px solid #d1d5db; padding-bottom: 0.5rem;">
       CRONOGRAMA DE PAGOS
     </h2>
@@ -350,7 +397,7 @@
 
   <!-- Signatures Area -->
   <div class="signatures-section" style="margin-top: 3rem; page-break-inside: avoid;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding-top: 2rem; border-top: 2px solid #125282;">
+    <div class="signatures-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding-top: 2rem; border-top: 2px solid #125282;">
       <div style="text-align: center;">
         <div style="height: 80px; border-bottom: 1px solid #d1d5db; margin-bottom: 1rem;"></div>
         <p style="font-weight: bold; color: #125282; margin-bottom: 0.25rem;">
