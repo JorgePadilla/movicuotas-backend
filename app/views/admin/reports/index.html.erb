@@ -1,0 +1,210 @@
+<% content_for :title, "Reportes del Sistema - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Reportes y Análisis</h1>
+    <p class="text-gray-600 mt-2">Genera reportes, exporta datos y analiza el desempeño del sistema</p>
+  </div>
+
+  <!-- Summary Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">📊 Total de Préstamos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @total_loans %></p>
+      <div class="mt-4 space-y-1 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Activos</span>
+          <span class="font-medium text-green-600"><%= @active_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Completados</span>
+          <span class="font-medium text-blue-600"><%= @completed_loans %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">En Mora</span>
+          <span class="font-medium text-red-600"><%= @overdue_loans %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">💰 Ingresos Totales</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@total_revenue, delimiter: ',') %></p>
+      <div class="mt-4 space-y-1 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Verificados</span>
+          <span class="font-medium text-green-600">L. <%= number_with_delimiter(@verified_payments, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Pendientes</span>
+          <span class="font-medium text-yellow-600">L. <%= number_with_delimiter(@pending_payments, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Rechazados</span>
+          <span class="font-medium text-red-600">L. <%= number_with_delimiter(@rejected_payments, delimiter: ',') %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">👥 Total de Clientes</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @total_customers %></p>
+      <div class="mt-4 space-y-1 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Nuevos este mes</span>
+          <span class="font-medium text-gray-800"><%= Loan.where('created_at >= ?', 1.month.ago).joins(:customer).distinct.count %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Con préstamos activos</span>
+          <span class="font-medium text-gray-800"><%= Customer.joins(:loans).where('loans.status': 'active').distinct.count %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">📈 Este Mes</h3>
+      <div class="space-y-2 mt-2">
+        <div>
+          <p class="text-sm text-gray-600">Nuevos Préstamos</p>
+          <p class="text-2xl font-bold text-gray-800"><%= @new_loans_this_month %></p>
+        </div>
+        <div class="border-t pt-2">
+          <p class="text-sm text-gray-600">Ingresos</p>
+          <p class="text-2xl font-bold text-green-600">L. <%= number_with_delimiter(@payments_this_month, delimiter: ',') %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Branch Analytics Report -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold text-[#125282]">🏢 Análisis por Sucursal</h2>
+          <p class="text-sm text-gray-600 mt-1">Desempeño y estadísticas de cada sucursal</p>
+        </div>
+        <span class="text-3xl">📊</span>
+      </div>
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Total de Sucursales</span>
+          <span class="font-medium text-gray-800"><%= @loans_by_branch.count %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Ingresos por Sucursal</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@revenue_by_branch.values.sum, delimiter: ',') %></span>
+        </div>
+      </div>
+      <%= link_to "Ver Análisis Detallado", admin_branch_analytics_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+
+    <!-- Revenue Report -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold text-[#125282]">💳 Reporte de Ingresos</h2>
+          <p class="text-sm text-gray-600 mt-1">Tendencias de cobros y análisis de pagos</p>
+        </div>
+        <span class="text-3xl">💰</span>
+      </div>
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Total Ingresos</span>
+          <span class="font-medium text-gray-800">L. <%= number_with_delimiter(@total_revenue, delimiter: ',') %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Verificado</span>
+          <span class="font-medium text-green-600">L. <%= number_with_delimiter(@verified_payments, delimiter: ',') %></span>
+        </div>
+      </div>
+      <%= link_to "Ver Reporte de Ingresos", admin_revenue_report_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+
+    <!-- Customer Portfolio Report -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold text-[#125282]">👥 Cartera de Clientes</h2>
+          <p class="text-sm text-gray-600 mt-1">Análisis de portafolio y riesgo crediticio</p>
+        </div>
+        <span class="text-3xl">📋</span>
+      </div>
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Total de Clientes</span>
+          <span class="font-medium text-gray-800"><%= @total_customers %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">Con Préstamos Activos</span>
+          <span class="font-medium text-gray-800"><%= Customer.joins(:loans).where('loans.status': 'active').distinct.count %></span>
+        </div>
+      </div>
+      <%= link_to "Ver Cartera", admin_customer_portfolio_path, class: "block w-full text-center bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+
+    <!-- Export Data -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold text-[#125282]">⬇️ Exportar Datos</h2>
+          <p class="text-sm text-gray-600 mt-1">Descarga datos en formato CSV para análisis</p>
+        </div>
+        <span class="text-3xl">📥</span>
+      </div>
+      <div class="space-y-2 mb-6">
+        <%= link_to "📄 Exportar Préstamos CSV", admin_export_report_path(report_type: 'loans', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+        <%= link_to "💳 Exportar Pagos CSV", admin_export_report_path(report_type: 'payments', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+        <%= link_to "👥 Exportar Clientes CSV", admin_export_report_path(report_type: 'customers', format: 'csv'), class: "block text-sm text-[#125282] hover:underline font-medium" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Branch Overview Table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">📊 Resumen por Sucursal</h2>
+    <% if @loans_by_branch.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sucursal</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Préstamos</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ingresos</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @loans_by_branch.each do |branch_number, loan_count| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="font-medium text-gray-900">Sucursal <%= branch_number %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-600"><%= loan_count %> préstamos</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(@revenue_by_branch[branch_number] || 0, delimiter: ',') %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to "Analizar", admin_branch_analytics_path(branch: branch_number), class: "text-[#125282] hover:underline font-medium text-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay datos de sucursales disponibles</p>
+    <% end %>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+  </div>
+</div>

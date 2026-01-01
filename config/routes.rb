@@ -33,7 +33,14 @@ Rails.application.routes.draw do
     resources :customers  # Customer management
     resources :loans, only: [:index, :show]  # Loan management (view only)
     resources :payments, only: [:index, :show]  # Payment tracking
-    resources :reports, only: [:index]  # Reports & analytics
+    resources :reports, only: [:index] do  # Reports & analytics
+      collection do
+        get :branch_analytics
+        get :revenue_report
+        get :customer_portfolio
+        get :export_report
+      end
+    end
   end
 
   namespace :vendor do

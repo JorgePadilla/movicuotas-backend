@@ -1,0 +1,178 @@
+<% content_for :title, "Reporte de Ingresos - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Reporte de Ingresos y Cobranza</h1>
+    <p class="text-gray-600 mt-2">Análisis de tendencias de pagos, métodos de cobro y desempeño de cobradores</p>
+  </div>
+
+  <!-- Date Range Filter -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <%= form_with url: admin_revenue_report_path, method: :get, local: true, class: "flex gap-4 items-end flex-wrap" do |f| %>
+      <div>
+        <%= f.label :date_from, "Desde:", class: "block text-sm font-medium text-gray-600" %>
+        <%= f.date_field :date_from, value: @date_from, class: "mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+      </div>
+      <div>
+        <%= f.label :date_to, "Hasta:", class: "block text-sm font-medium text-gray-600" %>
+        <%= f.date_field :date_to, value: @date_to, class: "mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+      </div>
+      <%= f.submit "Filtrar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+    <% end %>
+  </div>
+
+  <!-- Revenue Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-[#125282]">Total de Ingresos</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@total_payments, delimiter: ',') %></p>
+      <div class="mt-4 pt-4 border-t text-sm text-gray-600">
+        Período: <%= @date_from %> a <%= @date_to %>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-green-600">Pagos Verificados</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@verified_amount, delimiter: ',') %></p>
+      <div class="mt-4 pt-4 border-t text-sm">
+        <% verified_percent = @total_payments > 0 ? ((@verified_amount / @total_payments) * 100).round(2) : 0 %>
+        <span class="text-green-600 font-medium"><%= verified_percent %>% del total</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-yellow-600">Pagos Pendientes</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@pending_amount, delimiter: ',') %></p>
+      <div class="mt-4 pt-4 border-t text-sm">
+        <% pending_percent = @total_payments > 0 ? ((@pending_amount / @total_payments) * 100).round(2) : 0 %>
+        <span class="text-yellow-600 font-medium"><%= pending_percent %>% del total</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h3 class="text-lg font-semibold text-red-600">Pagos Rechazados</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@rejected_amount, delimiter: ',') %></p>
+      <div class="mt-4 pt-4 border-t text-sm">
+        <% rejected_percent = @total_payments > 0 ? ((@rejected_amount / @total_payments) * 100).round(2) : 0 %>
+        <span class="text-red-600 font-medium"><%= rejected_percent %>% del total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Methods Breakdown -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">💳 Métodos de Pago</h2>
+    <% if @payments_by_method.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <% @payments_by_method.each do |method, amount| %>
+          <div class="border border-gray-200 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2"><%= method.titleize %></h3>
+            <p class="text-2xl font-bold text-[#125282] mb-2">L. <%= number_with_delimiter(amount, delimiter: ',') %></p>
+            <% method_percent = @total_payments > 0 ? ((amount / @total_payments) * 100).round(2) : 0 %>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-[#125282] h-2 rounded-full" style="width: <%= method_percent %>%"></div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2"><%= method_percent %>% de ingresos totales</p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay datos de métodos de pago para este período</p>
+    <% end %>
+  </div>
+
+  <!-- Daily Revenue Trend -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">📈 Tendencia Diaria de Ingresos</h2>
+    <% if @daily_revenue.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ingresos</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visualización</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% max_daily = @daily_revenue.map { |d| d[1] }.max || 0 %>
+            <% @daily_revenue.each do |date, amount| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="font-medium text-gray-900"><%= date.strftime("%d/%m/%Y") %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(amount, delimiter: ',') %></span>
+                </td>
+                <td class="px-6 py-4">
+                  <% percentage = max_daily > 0 ? (amount / max_daily * 100).round(0) : 0 %>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: <%= percentage %>%"></div>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay datos de ingresos diarios para este período</p>
+    <% end %>
+  </div>
+
+  <!-- Top Vendors/Collectors -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">🏆 Principales Cobradores</h2>
+    <% if @top_vendors.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cobrador</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagos Procesados</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monto Cobrado</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Promedio por Pago</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @top_vendors.each_with_index do |vendor, index| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center text-sm font-bold mr-3">
+                      <%= index + 1 %>
+                    </div>
+                    <span class="font-medium text-gray-900"><%= vendor.full_name %></span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-600"><%= vendor.payment_count %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(vendor.total_collected, delimiter: ',') %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% avg_payment = vendor.payment_count > 0 ? (vendor.total_collected / vendor.payment_count).round(2) : 0 %>
+                  <span class="text-sm text-gray-600">L. <%= number_with_delimiter(avg_payment, delimiter: ',') %></span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-center py-8">No hay datos de cobradores para este período</p>
+    <% end %>
+  </div>
+
+  <!-- Footer navigation -->
+  <div class="flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+  </div>
+</div>
