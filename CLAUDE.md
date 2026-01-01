@@ -82,7 +82,7 @@ Detailed documentation is organized into focused files:
 ## Current Status (Summary)
 
 **Phase**: Phase 4 (Cobrador Interface Implementation) - In Progress
-**Current Milestone**: Cobrador Dashboard & Collection Management
+**Current Milestone**: Parallel Development with Multiple Worktrees
 **Last Updated**: 2026-01-01
 
 ### Phase 3 Completion (COMPLETED - 2025-12-28)
@@ -94,19 +94,27 @@ Detailed documentation is organized into focused files:
 ✅ **Admin Users Management** - User role and permissions management
 
 ### Phase 4 Progress (In Progress - 2026-01-01)
+
+**Completed Features (7/11):**
 - ✅ Cobrador Dashboard with real-time metrics (overdue count, blocked devices, breakdown by days)
-- ✅ Overdue Devices List with advanced filtering (by days, amount, branch)
+- ✅ Overdue Devices List with advanced filtering, pagination, sorting, CSV export
 - ✅ Device Detail Page with complete overdue and customer information
 - ✅ Device Blocking Service (MdmBlockService) with authorization checks
-- ✅ Block Confirmation UI with safety warnings
-- ✅ Payment History Read-Only View (no edit/delete permissions)
-- ✅ Collection Reports with analytics and recovery rate calculation
-- ✅ Comprehensive test suite for all Cobrador features
-- ⏳ Next: MDM API Integration, Customer Notifications, Batch Operations
+- ✅ Block Confirmation UI with multi-step safety warnings
+- ✅ Bulk Device Selection & Blocking Operations
+- ✅ Database Query Optimization with Strategic Indices
 
-**Completed Features**: 7/11 Phase 4 milestones
-**In Progress**: MDM API Integration, Notifications
-**Upcoming**: Batch operations, Advanced export (PDF/Excel)
+**In Development (4 Parallel Worktrees):**
+- 🔄 **phase4-cobrador-mdm** - MDM API integration for device blocking
+- 🔄 **phase4-cobrador-payments** - Payment history tracking and management
+- 🔄 **phase4-cobrador-reports** - Collection reports and analytics
+- 🔄 **phase4-cobrador-overdue** - Enhanced (pagination, sorting, bulk ops, CSV export)
+
+**Recent Fixes:**
+- 🔧 Fixed vendor dashboard monetary value formatting (BigDecimal precision with format_currency helper)
+- 🔧 All monetary values now display with exactly 2 decimal places (L. 14,166.67)
+
+**Upcoming**: Customer notifications (FCM), Advanced export (PDF/Excel), Reconciliation tools
 
 *Detailed status: [docs/development/project-status.md](docs/development/project-status.md)*
 
