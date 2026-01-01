@@ -21,15 +21,15 @@ module Vendor
       # Loan statistics
       @active_loans = loans_scope.where(status: "active").count
       total_loan_bd = BigDecimal(loans_scope.where(status: "active").sum(:total_amount).to_s)
-      @total_loan_value = (total_loan_bd.round(2)).to_f
-      @average_loan_amount = @active_loans.positive? ? (total_loan_bd / BigDecimal(@active_loans)).round(2).to_f : 0.0
+      @total_loan_value = total_loan_bd.round(2)
+      @average_loan_amount = @active_loans.positive? ? (total_loan_bd / BigDecimal(@active_loans)).round(2) : BigDecimal('0.0')
 
       # Payment statistics (this month)
       payments_bd = BigDecimal(Payment.joins(:loan)
                                     .where(loans: { id: loans_scope.select(:id) })
                                     .where("payment_date >= ?", Date.today.beginning_of_month)
                                     .sum(:amount).to_s)
-      @payments_this_month = (payments_bd.round(2)).to_f
+      @payments_this_month = payments_bd.round(2)
 
       @overdue_installments = Installment.joins(:loan)
                                          .where(loans: { id: loans_scope.select(:id) })
@@ -39,7 +39,7 @@ module Vendor
                                    .where(loans: { id: loans_scope.select(:id) })
                                    .where(status: "overdue")
                                    .sum(:amount).to_s)
-      @overdue_amount = (overdue_bd.round(2)).to_f
+      @overdue_amount = overdue_bd.round(2)
 
       # Recent payments (last 10)
       @recent_payments = Payment.joins(loan: :customer)
