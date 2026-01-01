@@ -69,14 +69,20 @@ Rails.application.routes.draw do
       end
     end
 
-    # Loan finalization (Step 15)
-    resources :loans, only: [ :new, :create, :show ] do
+    # Loan finalization (Step 15) and Loan Tracking (Step 18)
+    resources :loans, only: [ :new, :create, :show, :index ] do
       member do
         get :download_contract
       end
     end
     # MDM Blueprint (Step 16) - placeholder for now
     resources :mdm_blueprints, only: [ :show ], param: :id
+
+    # Payment tracking (Step 18)
+    resources :payments, only: [ :index ]
+
+    # Reports (placeholder for future development)
+    resources :reports, only: [ :index ]
 
     # ... other vendor routes will be added in phase2-vendor-* branches
   end

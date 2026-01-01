@@ -18,6 +18,23 @@ module Vendor
 
     before_action :set_prerequisites, only: [ :create ]
     before_action :set_loan, only: [ :show, :download_contract ]
+    skip_after_action :verify_policy_scoped, only: :index
+
+    # GET /vendor/loans
+    # Step 18: Loan Tracking Dashboard - List all loans for tracking
+    def index
+      Rails.logger.info "Loans index called with status param: #{params[:status].inspect}"
+      @loans = policy_scope(Loan).order(created_at: :desc)
+
+      # Filter by status if provided
+      if params[:status].present? && params[:status] != "Todos los estados"
+        Rails.logger.info "Filtering loans by status: #{params[:status]}"
+        @loans = filter_loans_by_status(@loans, params[:status])
+        Rails.logger.info "Filtered loans count: #{@loans.count}"
+      end
+
+      authorize :loan, :index?
+    end
 
     # GET /vendor/loans/new
     # This would be the entry point from Step 14 (contract signature)
@@ -107,6 +124,28 @@ module Vendor
 
     def set_loan
       @loan = Loan.find(params[:id])
+    end
+
+    def filter_loans_by_status(loans, status_filter)
+      Rails.logger.info "filter_loans_by_status called with: #{status_filter}"
+      case status_filter
+      when "Activos"
+        filtered = loans.where(status: "active")
+        Rails.logger.info "Filtering active loans. SQL: #{filtered.to_sql}"
+        filtered
+      when "Completados"
+        filtered = loans.where(status: "paid")
+        Rails.logger.info "Filtering completed loans. SQL: #{filtered.to_sql}"
+        filtered
+      when "En mora"
+        # Loans with overdue installments
+        filtered = loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+        Rails.logger.info "Filtering overdue loans. SQL: #{filtered.to_sql}"
+        filtered
+      else
+        Rails.logger.info "No filter applied, returning all loans"
+        loans
+      end
     end
 
     def loan_params

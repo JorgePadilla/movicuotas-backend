@@ -1,0 +1,52 @@
+<% content_for :title, "Reportes - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+    <div class="mb-6">
+      <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+    </div>
+
+    <h1 class="text-4xl font-bold text-[#125282] mb-4">Reportes</h1>
+
+    <p class="text-xl text-gray-600 mb-6">
+      Esta sección está en desarrollo y pronto estará disponible con análisis detallados de tus préstamos y pagos.
+    </p>
+
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold text-blue-900 mb-3">Próximas características:</h2>
+      <ul class="text-left max-w-md mx-auto text-blue-800 space-y-2">
+        <li class="flex items-center">
+          <svg class="h-5 w-5 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Reportes de ventas e ingresos
+        </li>
+        <li class="flex items-center">
+          <svg class="h-5 w-5 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Análisis de clientes y cobranza
+        </li>
+        <li class="flex items-center">
+          <svg class="h-5 w-5 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Gráficos y estadísticas mensuales
+        </li>
+        <li class="flex items-center">
+          <svg class="h-5 w-5 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Exportación a archivos (PDF, Excel)
+        </li>
+      </ul>
+    </div>
+
+    <div class="flex justify-center space-x-4">
+      <%= link_to "← Volver", vendor_dashboard_path, class: "px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors" %>
+      <%= link_to "Dashboard", vendor_dashboard_path, class: "px-6 py-3 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+    </div>
+  </div>
+</div>

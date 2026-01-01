@@ -1,0 +1,168 @@
+<% content_for :title, "Tracking de Préstamos - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-[#125282]">Tracking de Préstamos</h1>
+    <p class="text-gray-600 mt-2">Visualiza y gestiona todos los préstamos activos y completados.</p>
+  </div>
+
+  <!-- Stats summary -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-[#125282]">Total Préstamos</h3>
+        <div class="text-2xl font-bold text-gray-800"><%= @loans.count %></div>
+      </div>
+      <p class="text-gray-600 text-sm mt-2">Todos los préstamos asignados</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-[#125282]">Activos</h3>
+        <div class="text-2xl font-bold text-green-600"><%= @loans.where(status: 'active').count %></div>
+      </div>
+      <p class="text-gray-600 text-sm mt-2">Préstamos en curso</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-[#125282]">Completados</h3>
+        <div class="text-2xl font-bold text-blue-600"><%= @loans.where(status: 'completed').count %></div>
+      </div>
+      <p class="text-gray-600 text-sm mt-2">Préstamos pagados en total</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-[#125282]">En Mora</h3>
+        <div class="text-2xl font-bold text-red-600"><%= @loans.joins(:installments).where(installments: { status: 'overdue' }).distinct.count %></div>
+      </div>
+      <p class="text-gray-600 text-sm mt-2">Préstamos con cuotas atrasadas</p>
+    </div>
+  </div>
+
+  <!-- Loans table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="px-4 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-900">Lista de Préstamos</h2>
+        <div class="flex space-x-3">
+          <div class="relative">
+            <%= form_with url: vendor_loans_path, method: :get, local: true, class: "inline-block" do |form| %>
+              <%= form.select :status,
+                  options_for_select([
+                    ["Todos los estados", ""],
+                    ["Activos", "Activos"],
+                    ["Completados", "Completados"],
+                    ["En mora", "En mora"]
+                  ], params[:status]),
+                  {},
+                  { onchange: "this.form.submit()",
+                    class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg" } %>
+            <% end %>
+          </div>
+          <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Próximo Vencimiento</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @loans.any? %>
+            <% @loans.each do |loan| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= loan.contract_number %></div>
+                  <div class="text-xs text-gray-500"><%= loan.branch_number %></div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
+                  <div class="text-xs text-gray-500"><%= loan.customer.identification_number %></div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <% if loan.device %>
+                    <div class="text-sm text-gray-900"><%= loan.device.brand %> <%= loan.device.model %></div>
+                    <div class="text-xs text-gray-500"><%= loan.device.imei %></div>
+                  <% else %>
+                    <span class="text-sm text-gray-500">No asignado</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <% status_class = case loan.status
+                    when 'active' then 'bg-green-100 text-green-800'
+                    when 'completed' then 'bg-blue-100 text-blue-800'
+                    when 'overdue' then 'bg-red-100 text-red-800'
+                    when 'draft' then 'bg-gray-100 text-gray-800'
+                    else 'bg-gray-100 text-gray-800'
+                  end %>
+                  <span class="px-3 py-1 text-xs rounded-full font-medium <%= status_class %>">
+                    <%= loan.status.titleize %>
+                  </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">
+                    <%= loan.installments.paid.count %>/<%= loan.number_of_installments %> pagadas
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    <%= loan.installments.overdue.count %> en mora
+                  </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <% next_installment = loan.installments.pending.order(:due_date).first %>
+                  <% if next_installment %>
+                    <div class="text-sm text-gray-900"><%= next_installment.due_date.strftime("%d/%m/%Y") %></div>
+                    <div class="text-xs text-gray-500">
+                      <% days = (next_installment.due_date - Date.today).to_i %>
+                      <% if days <= 3 %>
+                        <span class="text-orange-600">En <%= days %> días</span>
+                      <% else %>
+                        <span class="text-gray-600">En <%= days %> días</span>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <span class="text-sm text-gray-500">Completado</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                  <%= link_to "Ver", vendor_loan_path(loan), class: "text-[#125282] hover:text-[#0f4670] mr-4" %>
+                  <%= link_to "Contrato", download_contract_vendor_loan_path(loan), class: "text-gray-600 hover:text-gray-900" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                <div class="mb-4">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                <p class="text-lg font-medium text-gray-900 mb-2">No hay préstamos registrados</p>
+                <p class="text-gray-600 mb-6">Comienza una nueva búsqueda de cliente para iniciar un préstamo.</p>
+                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-[#0f4670] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
