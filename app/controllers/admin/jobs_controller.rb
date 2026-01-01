@@ -96,8 +96,20 @@ module Admin
     end
 
     def load_job_class(job_class_name)
-      # Rails autoloads classes from app/jobs automatically
-      # Just use constantize without require to avoid constant validation errors
+      # Manually require the job file first to bypass Zeitwerk validation issues
+      case job_class_name
+      when "MarkInstallmentsOverdueJob"
+        require_dependency "app/jobs/mark_installments_overdue_job"
+      when "SendOverdueNotificationJob"
+        require_dependency "app/jobs/send_overdue_notification_job"
+      when "SendLatePaymentWarningJob"
+        require_dependency "app/jobs/send_late_payment_warning_job"
+      when "NotifyCobradorosJob"
+        require_dependency "app/jobs/notify_cobradores_job"
+      when "AutoBlockDeviceJob"
+        require_dependency "app/jobs/auto_block_device_job"
+      end
+
       job_class_name.constantize
     end
 
