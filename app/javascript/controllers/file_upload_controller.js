@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "button", "fileName", "area"]
+  static targets = ["input", "fileName", "area"]
   static values = {
     required: { type: Boolean, default: false }
   }
