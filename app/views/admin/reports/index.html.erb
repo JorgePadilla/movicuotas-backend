@@ -53,11 +53,11 @@
       <div class="mt-4 space-y-1 text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Nuevos este mes</span>
-          <span class="font-medium text-gray-800"><%= Loan.where('created_at >= ?', 1.month.ago).joins(:customer).distinct.count %></span>
+          <span class="font-medium text-gray-800"><%= Loan.joins(:customer).where('loans.created_at >= ?', 1.month.ago).distinct.count('customers.id') %></span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Con préstamos activos</span>
-          <span class="font-medium text-gray-800"><%= Customer.joins(:loans).where('loans.status': 'active').distinct.count %></span>
+          <span class="font-medium text-gray-800"><%= @customers_with_active_loans %></span>
         </div>
       </div>
     </div>

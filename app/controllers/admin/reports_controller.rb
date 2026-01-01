@@ -21,8 +21,11 @@ module Admin
       @rejected_payments = Payment.where(verification_status: 'rejected').sum(:amount) || 0
 
       # Recent activity
-      @new_loans_this_month = Loan.where('created_at >= ?', 1.month.ago).count
-      @payments_this_month = Payment.where('payment_date >= ?', 1.month.ago).sum(:amount) || 0
+      @new_loans_this_month = Loan.where('loans.created_at >= ?', 1.month.ago).count
+      @payments_this_month = Payment.where('payments.payment_date >= ?', 1.month.ago).sum(:amount) || 0
+
+      # Customers with active loans
+      @customers_with_active_loans = Customer.joins(:loans).where('loans.status': 'active').distinct.count('customers.id')
 
       # Branch data
       @loans_by_branch = Loan.group(:branch_number).count.sort
@@ -106,19 +109,19 @@ module Admin
       @blocked_customers = Customer.where(status: 'blocked').count
 
       # Customer loan statistics
-      @customers_with_loans = Customer.joins(:loans).distinct.count
-      @customers_without_loans = Customer.left_joins(:loans).where('loans.id IS NULL').count
+      @customers_with_loans = Customer.joins(:loans).distinct.count('customers.id')
+      @customers_without_loans = Customer.left_joins(:loans).where('loans.id IS NULL').count('customers.id')
 
       # Portfolio breakdown
       @customers_by_status = Customer.group(:status).count
       @loans_per_customer = Customer.joins(:loans).group('customers.id').count.values.group_by { |x| x }.transform_values(&:count)
 
       # Risk analysis
-      @customers_with_overdue = Customer.joins(:loans).where('loans.status': 'overdue').distinct.count
-      @customers_on_time = Customer.joins(:loans)
+      @customers_with_overdue = Customer.joins(:loans).where('loans.status': 'overdue').distinct.count('customers.id')
+      @customers_on_time = Customer.left_joins(loans: :installments)
                                    .where('loans.status': 'active')
-                                   .select { |c| c.loans.none? { |l| l.installments.any?(&:overdue?) } }
-                                   .count
+                                   .where('installments.status != ? OR installments.id IS NULL', 'overdue')
+                                   .distinct.count('customers.id')
 
       # Top customers by loan value
       @top_customers = Customer.joins(:loans)
