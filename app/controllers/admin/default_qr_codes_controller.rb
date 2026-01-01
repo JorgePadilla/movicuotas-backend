@@ -3,6 +3,7 @@
 module Admin
   class DefaultQrCodesController < ApplicationController
     before_action :set_default_qr_code
+    skip_after_action :verify_policy_scoped, only: [:index]
     after_action :verify_authorized, except: [:index]
 
     # Admin default QR code management
