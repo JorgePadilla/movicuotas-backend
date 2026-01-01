@@ -57,6 +57,22 @@ Pantalla 18: Tracking de Préstamo
 - ✅ CSV data export functionality
 - ✅ Comprehensive Admin Analytics
 
+**Recent Changes (v1.8 - 2026-01-01):**
+- ✅ Fix vendor dashboard monetary value formatting (BigDecimal precision)
+- ✅ Create parallel worktrees for Phase 4 feature development
+  - phase4-cobrador-overdue: Enhanced with pagination, sorting, bulk ops, CSV export
+  - phase4-cobrador-mdm: MDM API integration for device blocking
+  - phase4-cobrador-payments: Payment history tracking and management
+  - phase4-cobrador-reports: Collection reports and analytics
+- ✅ Implement advanced filtering for overdue devices (min days, min amount, date range)
+- ✅ Add pagination with customizable per-page options (10, 25, 50)
+- ✅ Implement multi-column sorting (days, amount, customer name, due date)
+- ✅ Add IMEI and customer name search functionality
+- ✅ Implement bulk device selection with transaction-safe blocking
+- ✅ Add CSV export with filter preservation
+- ✅ Create database indices for query optimization (7 strategic indices)
+- ✅ Implement format_currency helper for consistent monetary formatting
+
 **Recent Changes (v1.7 - 2026-01-01):**
 - ✅ Implement Phase 4: Cobrador Interface
 - ✅ Create Cobrador Dashboard with metrics
