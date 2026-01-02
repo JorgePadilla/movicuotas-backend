@@ -82,16 +82,17 @@
           </div>
 
           <!-- Gender -->
-          <div class="hidden">
+          <div>
             <%= customer_fields.label :gender, "Género *", class: "block text-sm font-medium text-gray-700 mb-1" %>
             <%= customer_fields.select :gender,
                   options_for_select(Customer.genders.map { |key, value| [Customer.human_enum_name(:gender, key), key] }, @customer.gender),
                   { include_blank: "Seleccionar..." },
-                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+                  required: true %>
           </div>
 
           <!-- Date of Birth -->
-          <div class="hidden">
+          <div>
             <%= customer_fields.label :date_of_birth, "Fecha de Nacimiento *", class: "block text-sm font-medium text-gray-700 mb-1" %>
             <div data-controller="flatpickr-es"
                  data-flatpickr-es-max-value="<%= Date.today.iso8601 %>"
@@ -102,6 +103,7 @@
               <%= customer_fields.date_field :date_of_birth,
                     class: "hidden",
                     max: Date.today.iso8601,
+                    required: true,
                     data: { flatpickr_es_target: "input" } %>
               <div class="relative">
                 <input type="text"
