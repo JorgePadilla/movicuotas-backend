@@ -3,15 +3,14 @@ import flatpickr from "flatpickr"
 import Spanish from "flatpickr/dist/l10n/es"
 
 export default class extends Controller {
-  static targets = ["input", "button"]
+  static targets = ["input", "button", "display"]
   static values = {
     max: String,
     min: String,
     placeholder: { type: String, default: "DD/MM/AAAA" },
     initialValue: String,
     dateFormat: { type: String, default: "Y-m-d" },
-    altFormat: { type: String, default: "d/m/Y" },
-    altInput: { type: Boolean, default: true }
+    altFormat: { type: String, default: "d/m/Y" }
   }
 
   connect() {
@@ -30,8 +29,7 @@ export default class extends Controller {
     const options = {
       dateFormat: this.dateFormatValue, // Hidden input format for form submission: "Y-m-d" (ISO)
       altFormat: this.altFormatValue, // Visible display format: "d/m/Y" (Spanish format)
-      altInput: this.altInputValue, // Show alternate input with formatted date
-      altInputClass: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent",
+      altInput: false, // Don't create alt input - we have a manual one in HTML
       locale: "es",
       allowInput: true,
       clickOpens: true,
@@ -42,18 +40,34 @@ export default class extends Controller {
       prevArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>',
       nextArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
       // Ensure calendar is positioned correctly
-      position: "auto", // "auto" positions relative to input
+      position: "absolute", // Position absolutely within the appendTo container
       onChange: (selectedDates, dateStr, instance) => {
-        // Flatpickr automatically updates both inputs:
-        // - The hidden input (this.inputTarget) gets the ISO format value (Y-m-d)
-        // - The alt input gets the Spanish format (d/m/Y)
-        // This ensures Rails receives the correct ISO format for the database
+        // Update the display input with Spanish-formatted date
+        if (self.hasDisplayTarget && selectedDates.length > 0) {
+          const date = selectedDates[0]
+          // Format: DD/MM/YYYY
+          const day = String(date.getDate()).padStart(2, '0')
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          const year = date.getFullYear()
+          self.displayTarget.value = `${day}/${month}/${year}`
+        }
       },
       onOpen: (selectedDates, dateStr, instance) => {
         // Add custom class to calendar for styling
         const calendar = instance.calendarContainer
         if (calendar) {
           calendar.classList.add('flatpickr-es-calendar')
+
+          // Position calendar below the display input
+          if (self.hasDisplayTarget) {
+            const displayRect = self.displayTarget.getBoundingClientRect()
+            const parentRect = self.displayTarget.parentElement.getBoundingClientRect()
+
+            // Set top position to be below the input
+            calendar.style.top = (displayRect.bottom - parentRect.top + 8) + 'px'
+            // Center horizontally relative to input
+            calendar.style.left = (displayRect.left - parentRect.left) + 'px'
+          }
         }
       },
       onClose: (selectedDates, dateStr, instance) => {
@@ -72,29 +86,31 @@ export default class extends Controller {
     }
 
     try {
-      // Initialize Flatpickr
+      // Append calendar to the display input's parent for proper positioning
+      if (this.hasDisplayTarget) {
+        options.appendTo = this.displayTarget.parentElement
+      }
+
+      // Initialize Flatpickr on the hidden input but position relative to display
       this.picker = flatpickr(this.inputTarget, options)
 
       // Set initial value if provided
       if (this.hasInitialValue && this.initialValue) {
         this.picker.setDate(this.initialValue, false)
-      }
 
-      // Set placeholder if provided (will apply to alt input)
-      if (this.hasPlaceholderValue && this.picker.altInput) {
-        this.picker.altInput.placeholder = this.placeholderValue
-      }
-
-      // Position the button over the alt input if it exists
-      if (this.picker.altInput && this.hasButtonTarget) {
-        const altInput = this.picker.altInput
-        const buttonWrapper = this.buttonTarget.parentElement
-
-        // Move the altInput and button into the relative wrapper
-        if (buttonWrapper && buttonWrapper.classList.contains('relative')) {
-          buttonWrapper.insertBefore(altInput, this.buttonTarget)
-          altInput.style.position = 'relative'
+        // Also update the display input with the formatted date
+        const date = new Date(this.initialValue)
+        if (this.hasDisplayTarget && !isNaN(date.getTime())) {
+          const day = String(date.getDate()).padStart(2, '0')
+          const month = String(date.getMonth() + 1).padStart(2, '0')
+          const year = date.getFullYear()
+          this.displayTarget.value = `${day}/${month}/${year}`
         }
+      }
+
+      // Set placeholder on display input
+      if (this.hasPlaceholderValue && this.hasDisplayTarget) {
+        this.displayTarget.placeholder = this.placeholderValue
       }
 
     } catch (error) {
