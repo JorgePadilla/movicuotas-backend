@@ -149,20 +149,6 @@
               Paso 16: Código QR
             </span>
           <% end %>
-        <% else %>
-          <div class="group flex flex-col items-center justify-center p-8 bg-gray-300 rounded-xl text-gray-600 text-center cursor-not-allowed">
-            <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-            </svg>
-            <h3 class="text-xl font-bold mb-2">Configuración de Teléfono No Disponible</h3>
-            <p class="text-gray-500">
-              <% if !@mdm_blueprint.present? %>
-                Completa los datos del dispositivo para habilitar esta función.
-              <% elsif !@contract.qr_code_present? %>
-                El código QR debe ser cargado por el administrador antes de proceder.
-              <% end %>
-            </p>
-          </div>
         <% end %>
       </div>
 
