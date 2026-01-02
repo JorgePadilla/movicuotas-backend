@@ -8,3 +8,32 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Select dropdown fixes for mobile responsiveness */
+select {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Ensure select fits within container and doesn't overflow */
+select:focus {
+  outline: none;
+}
+
+/* Mobile-specific select styling */
+@media (max-width: 640px) {
+  select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    line-height: 1.5;
+    min-height: 44px; /* Touch-friendly size */
+  }
+}
