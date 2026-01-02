@@ -59,30 +59,9 @@
           </div>
         </div>
 
-        <%# Approval status & validation %>
+        <%# Next step info %>
         <div class="md:w-64 flex-shrink-0">
-          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <h4 class="text-sm font-medium text-green-800">Validación Exitosa</h4>
-              </div>
-            </div>
-            <div class="mt-3">
-              <p class="text-sm text-green-700">
-                El precio del teléfono está dentro del monto aprobado.
-              </p>
-              <p class="mt-2 text-xs text-green-600">
-                Monto aprobado: <span class="font-bold">L. <%= number_to_currency(@credit_application.approved_amount, unit: "", delimiter: ",") %></span>
-              </p>
-            </div>
-          </div>
-
-          <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 class="text-sm font-medium text-blue-800 mb-2">Próximo Paso</h4>
             <p class="text-sm text-blue-700">
               Proceder al cálculo de pagos quincenales con opciones de enganche y plazo.
