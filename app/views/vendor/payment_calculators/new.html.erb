@@ -13,15 +13,6 @@
           <p class="text-sm font-medium text-gray-500">Precio del Teléfono</p>
           <p class="text-2xl font-bold text-[#125282]">L. <%= number_with_delimiter(@phone_price.round(2), delimiter: ",") %></p>
         </div>
-        <div>
-          <p class="text-sm font-medium text-gray-500">Monto Aprobado</p>
-          <p class="text-xl font-semibold text-green-600">L. <%= number_with_delimiter(@approved_amount.round(2), delimiter: ",") %></p>
-          <% if @phone_price > @approved_amount %>
-            <p class="text-sm text-red-600 mt-1">⚠️ El precio excede el monto aprobado</p>
-          <% else %>
-            <p class="text-sm text-green-600 mt-1">✓ Dentro del límite aprobado</p>
-          <% end %>
-        </div>
       </div>
       <div class="space-y-4">
         <div>
