@@ -40,7 +40,7 @@ export default class extends Controller {
       prevArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>',
       nextArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
       // Ensure calendar is positioned correctly
-      position: "absolute", // Position absolutely within the appendTo container
+      position: "auto", // Let flatpickr auto-position relative to input
       onChange: (selectedDates, dateStr, instance) => {
         // Update the display input with Spanish-formatted date
         if (self.hasDisplayTarget && selectedDates.length > 0) {
@@ -57,43 +57,8 @@ export default class extends Controller {
         const calendar = instance.calendarContainer
         if (calendar) {
           calendar.classList.add('flatpickr-es-calendar')
-
-          // Position calendar below the display input with mobile safety checks
-          if (self.hasDisplayTarget) {
-            const displayRect = self.displayTarget.getBoundingClientRect()
-            const viewportWidth = window.innerWidth
-            const viewportHeight = window.innerHeight
-
-            // Set top position to be below the input (relative to viewport)
-            let topPos = displayRect.bottom + 8
-
-            // If calendar would go below viewport, position it above the input instead
-            const calendarHeight = 320 // Approximate flatpickr height
-            if (topPos + calendarHeight > viewportHeight - 20) {
-              topPos = displayRect.top - calendarHeight - 8
-            }
-
-            calendar.style.top = topPos + 'px'
-
-            // Calculate left position with mobile edge detection
-            let leftPos = displayRect.left
-
-            // Check if calendar would overflow right edge
-            const calendarWidth = 307 // Flatpickr default width
-            const rightEdge = displayRect.left + calendarWidth
-
-            if (rightEdge > viewportWidth - 10) {
-              // Calendar would overflow right, adjust to fit
-              leftPos = Math.max(10, viewportWidth - calendarWidth - 10)
-            }
-
-            calendar.style.left = leftPos + 'px'
-
-            // Ensure calendar is above other elements and visible
-            calendar.style.zIndex = '9999'
-            calendar.style.position = 'fixed'
-            calendar.style.maxWidth = 'calc(100vw - 20px)'
-          }
+          // Ensure calendar is above other elements
+          calendar.style.zIndex = '9999'
         }
       },
       onClose: (selectedDates, dateStr, instance) => {
@@ -112,8 +77,10 @@ export default class extends Controller {
     }
 
     try {
-      // Append calendar to body for better mobile positioning and visibility
-      options.appendTo = document.body
+      // Append calendar to the display input's container for proper positioning
+      if (this.hasDisplayTarget) {
+        options.appendTo = this.displayTarget.parentElement
+      }
 
       // Initialize Flatpickr on the hidden input but position relative to display
       this.picker = flatpickr(this.inputTarget, options)
