@@ -57,6 +57,23 @@
         color: #6b7280;
         font-weight: 600;
       }
+      /* Fix month/year dropdown z-index on mobile */
+      .flatpickr-months {
+        position: relative;
+        z-index: 10;
+      }
+      .flatpickr-monthDropdown-months,
+      .numInputWrapper {
+        z-index: 20;
+      }
+      .flatpickr-monthDropdown-months {
+        background: white;
+      }
+      /* Ensure calendar content doesn't overlap month selector */
+      .flatpickr-innerContainer {
+        position: relative;
+        z-index: 1;
+      }
 
       /* Custom styles for Pikaday calendar */
       .pikaday-es-calendar .pika-single {
