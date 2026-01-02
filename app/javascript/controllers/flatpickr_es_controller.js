@@ -35,7 +35,7 @@ export default class extends Controller {
       clickOpens: true,
       disableMobile: true, // Use flatpickr on mobile (not native picker) for consistent UX
       inline: false, // Don't show calendar inline, only on click
-      monthSelectorType: "dropdown", // Use dropdown for month/year selection
+      monthSelectorType: "static", // Use arrows for month navigation (avoids z-index issues on mobile)
       showMonths: 1, // Show one month at a time
       prevArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>',
       nextArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
