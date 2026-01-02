@@ -33,14 +33,15 @@ export default class extends Controller {
       locale: "es",
       allowInput: true,
       clickOpens: true,
-      disableMobile: false,
+      disableMobile: true, // Use flatpickr on mobile (not native picker) for consistent UX
       inline: false, // Don't show calendar inline, only on click
       monthSelectorType: "dropdown", // Use dropdown for month/year selection
       showMonths: 1, // Show one month at a time
       prevArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>',
       nextArrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>',
-      // Ensure calendar is positioned correctly
-      position: "auto", // Let flatpickr auto-position relative to input
+      // Position calendar below input, attached to body for proper mobile positioning
+      position: "below",
+      static: false,
       onChange: (selectedDates, dateStr, instance) => {
         // Update the display input with Spanish-formatted date
         if (self.hasDisplayTarget && selectedDates.length > 0) {
@@ -77,9 +78,12 @@ export default class extends Controller {
     }
 
     try {
-      // Append calendar to the display input's container for proper positioning
+      // Append calendar to body for proper mobile positioning (avoids container overflow issues)
+      options.appendTo = document.body
+
+      // Use the display input as the position reference element
       if (this.hasDisplayTarget) {
-        options.appendTo = this.displayTarget.parentElement
+        options.positionElement = this.displayTarget
       }
 
       // Initialize Flatpickr on the hidden input but position relative to display
