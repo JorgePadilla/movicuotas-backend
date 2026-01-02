@@ -108,8 +108,53 @@ export default class extends Controller {
         this.displayTarget.placeholder = this.placeholderValue
       }
 
+      // Handle manual input in DD/MM/YYYY format
+      if (this.hasDisplayTarget) {
+        this.displayTarget.addEventListener('blur', (e) => {
+          this.parseManualInput(e.target.value)
+        })
+        this.displayTarget.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            this.parseManualInput(e.target.value)
+            this.picker.close()
+          }
+        })
+      }
+
     } catch (error) {
       console.error("Failed to initialize Flatpickr:", error)
+    }
+  }
+
+  // Parse manually typed date in DD/MM/YYYY format
+  parseManualInput(value) {
+    if (!value || !this.picker) return
+
+    // Try to parse DD/MM/YYYY format
+    const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+    if (match) {
+      const day = parseInt(match[1], 10)
+      const month = parseInt(match[2], 10) - 1 // JS months are 0-indexed
+      const year = parseInt(match[3], 10)
+      const date = new Date(year, month, day)
+
+      // Validate the date is real
+      if (date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) {
+        this.picker.setDate(date, true)
+        return
+      }
+    }
+
+    // If parsing failed, reset to picker's current value or clear
+    if (this.picker.selectedDates.length > 0) {
+      const date = this.picker.selectedDates[0]
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      this.displayTarget.value = `${day}/${month}/${year}`
+    } else {
+      this.displayTarget.value = ''
     }
   }
 
