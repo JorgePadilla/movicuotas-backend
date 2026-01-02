@@ -58,15 +58,41 @@ export default class extends Controller {
         if (calendar) {
           calendar.classList.add('flatpickr-es-calendar')
 
-          // Position calendar below the display input
+          // Position calendar below the display input with mobile safety checks
           if (self.hasDisplayTarget) {
             const displayRect = self.displayTarget.getBoundingClientRect()
-            const parentRect = self.displayTarget.parentElement.getBoundingClientRect()
+            const viewportWidth = window.innerWidth
+            const viewportHeight = window.innerHeight
 
-            // Set top position to be below the input
-            calendar.style.top = (displayRect.bottom - parentRect.top + 8) + 'px'
-            // Center horizontally relative to input
-            calendar.style.left = (displayRect.left - parentRect.left) + 'px'
+            // Set top position to be below the input (relative to viewport)
+            let topPos = displayRect.bottom + 8
+
+            // If calendar would go below viewport, position it above the input instead
+            const calendarHeight = 320 // Approximate flatpickr height
+            if (topPos + calendarHeight > viewportHeight - 20) {
+              topPos = displayRect.top - calendarHeight - 8
+            }
+
+            calendar.style.top = topPos + 'px'
+
+            // Calculate left position with mobile edge detection
+            let leftPos = displayRect.left
+
+            // Check if calendar would overflow right edge
+            const calendarWidth = 307 // Flatpickr default width
+            const rightEdge = displayRect.left + calendarWidth
+
+            if (rightEdge > viewportWidth - 10) {
+              // Calendar would overflow right, adjust to fit
+              leftPos = Math.max(10, viewportWidth - calendarWidth - 10)
+            }
+
+            calendar.style.left = leftPos + 'px'
+
+            // Ensure calendar is above other elements and visible
+            calendar.style.zIndex = '9999'
+            calendar.style.position = 'fixed'
+            calendar.style.maxWidth = 'calc(100vw - 20px)'
           }
         }
       },
@@ -86,10 +112,8 @@ export default class extends Controller {
     }
 
     try {
-      // Append calendar to the display input's parent for proper positioning
-      if (this.hasDisplayTarget) {
-        options.appendTo = this.displayTarget.parentElement
-      }
+      // Append calendar to body for better mobile positioning and visibility
+      options.appendTo = document.body
 
       // Initialize Flatpickr on the hidden input but position relative to display
       this.picker = flatpickr(this.inputTarget, options)
