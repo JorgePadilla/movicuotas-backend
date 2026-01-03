@@ -4,41 +4,40 @@
   <%= javascript_import_module_tag "controllers/signature_controller" %>
 <% end %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Header -->
-  <div class="mb-6 sm:mb-8">
-    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Firma Digital del Contrato</h1>
-    <p class="text-gray-600 mt-2 text-sm sm:text-base">Capture la firma del cliente en el área designada. La firma será almacenada digitalmente y adjuntada al contrato.</p>
+  <div class="mb-4 sm:mb-8">
+    <h1 class="text-xl sm:text-3xl font-bold text-[#125282]">Firma Digital</h1>
+    <p class="text-gray-600 mt-1 text-xs sm:text-base">Capture la firma del cliente en el área designada.</p>
 
-    <div class="mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-start sm:items-center gap-3">
-          <svg class="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 flex-shrink-0 mt-0.5 sm:mt-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="mt-3 sm:mt-4 p-2.5 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+          <svg class="h-5 w-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
           </svg>
-          <div>
-            <p class="font-medium text-blue-800 text-sm sm:text-base">Cliente: <%= @contract.loan.customer.full_name %></p>
-            <p class="text-xs sm:text-sm text-blue-600">Contrato: <%= @contract.loan.contract_number %></p>
+          <div class="min-w-0">
+            <p class="font-medium text-blue-800 text-xs sm:text-base truncate"><%= @contract.loan.customer.full_name %></p>
+            <p class="text-xs text-blue-600 truncate"><%= @contract.loan.contract_number %></p>
           </div>
         </div>
-        <div class="text-right text-xs sm:text-sm">
-          <p class="text-blue-700">Paso 14 de 19</p>
-          <p class="text-blue-600">Firma Digital</p>
+        <div class="text-right flex-shrink-0 ml-2">
+          <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">14/19</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Signature Canvas Container -->
-  <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 sm:mb-8 border border-gray-200">
+  <div class="bg-white rounded-lg sm:rounded-xl shadow-lg overflow-hidden mb-4 sm:mb-8 border border-gray-200">
     <!-- Canvas Header -->
-    <div class="bg-[#125282] text-white p-3 sm:p-4">
-      <h2 class="text-base sm:text-xl font-bold text-center">FIRMA DEL CLIENTE</h2>
-      <p class="text-center text-xs sm:text-sm opacity-90 mt-1">Firme con el dedo o mouse en el área de abajo</p>
+    <div class="bg-[#125282] text-white p-2.5 sm:p-4">
+      <h2 class="text-sm sm:text-xl font-bold text-center">FIRMA DEL CLIENTE</h2>
+      <p class="text-center text-xs opacity-90 mt-0.5 sm:mt-1">Firme con el dedo en el área de abajo</p>
     </div>
 
     <!-- Canvas Area -->
-    <div class="p-3 sm:p-4 md:p-6">
+    <div class="p-2.5 sm:p-4 md:p-6">
       <div data-controller="signature"
            data-signature-save-url="<%= save_signature_vendor_contract_path(@contract) %>"
            data-action="
@@ -52,40 +51,51 @@
            ">
 
         <!-- Canvas -->
-        <div class="mb-4 sm:mb-6">
+        <div class="mb-3 sm:mb-6">
           <canvas id="signatureCanvas"
                   data-signature-target="canvas"
-                  class="w-full border-2 sm:border-4 border-[#125282] rounded-lg bg-white touch-none"
-                  style="height: 200px; max-height: calc(100vh - 300px);"
+                  class="w-full border-2 border-[#125282] rounded-lg bg-white touch-none"
+                  style="height: 180px;"
                   width="800"
                   height="400">
             Su navegador no soporta el elemento canvas.
           </canvas>
+          <p class="text-center text-xs text-gray-500 mt-1 sm:hidden">Firme con el dedo aquí ↑</p>
         </div>
 
-        <!-- Instructions -->
-        <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 class="font-bold text-gray-700 mb-2 flex items-center text-sm sm:text-base">
-            <svg class="h-5 w-5 mr-2 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Instructions - Collapsible on mobile -->
+        <details class="mb-3 sm:mb-6 bg-gray-50 rounded-lg border border-gray-200">
+          <summary class="p-2.5 sm:p-4 cursor-pointer font-medium text-gray-700 text-xs sm:text-base flex items-center">
+            <svg class="h-4 w-4 mr-2 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            Instrucciones:
-          </h3>
-          <ul class="list-disc pl-5 text-gray-600 space-y-1 text-xs sm:text-sm">
-            <li>Use el mouse o su dedo para firmar en el área blanca arriba.</li>
+            Instrucciones
+          </summary>
+          <ul class="list-disc pl-6 sm:pl-8 pb-2.5 sm:pb-4 pr-2.5 sm:pr-4 text-gray-600 space-y-1 text-xs sm:text-sm">
+            <li>Firme con el dedo o mouse en el área blanca.</li>
             <li>La firma debe ser clara y legible.</li>
-            <li>Si comete un error, use el botón "Limpiar" para empezar de nuevo.</li>
-            <li>Al guardar, la firma se adjuntará permanentemente al contrato.</li>
+            <li>Use "Limpiar" para empezar de nuevo.</li>
           </ul>
-        </div>
+        </details>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 justify-between items-stretch sm:items-center">
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+        <!-- Action Buttons - Mobile optimized -->
+        <div class="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-3 sm:justify-between sm:items-center">
+          <!-- Primary action first on mobile -->
+          <button type="button"
+                  data-action="signature#save"
+                  class="w-full sm:w-auto px-4 py-2.5 bg-[#10b981] text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center text-sm order-1 sm:order-3">
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Guardar Firma
+          </button>
+
+          <!-- Secondary actions -->
+          <div class="flex gap-2 order-2 sm:order-1">
             <button type="button"
                     data-action="signature#clear"
-                    class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
-              <svg class="h-4 sm:h-5 w-4 sm:w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center text-xs sm:text-sm">
+              <svg class="h-4 w-4 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
               Limpiar
@@ -93,26 +103,17 @@
 
             <button type="button"
                     data-action="signature#undo"
-                    class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center sm:justify-start text-sm sm:text-base">
-              <svg class="h-4 sm:h-5 w-4 sm:w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center text-xs sm:text-sm">
+              <svg class="h-4 w-4 mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
               </svg>
               Deshacer
             </button>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-            <%= link_to "← Volver al Contrato", vendor_contract_path(@contract), class: "px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base text-center" %>
-
-            <button type="button"
-                    data-action="signature#save"
-                    class="px-4 sm:px-6 py-2 sm:py-3 bg-[#10b981] text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center text-sm sm:text-base">
-              <svg class="h-4 sm:h-5 w-4 sm:w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
-              Guardar Firma
-            </button>
-          </div>
+          <%= link_to vendor_contract_path(@contract), class: "w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm text-center order-3 sm:order-2" do %>
+            ← Volver
+          <% end %>
         </div>
 
         <!-- Hidden form for submission -->
@@ -121,8 +122,8 @@
         <% end %>
 
         <!-- Status messages -->
-        <div class="mt-6">
-          <div data-signature-target="status" class="hidden p-4 rounded-lg"></div>
+        <div class="mt-4">
+          <div data-signature-target="status" class="hidden p-3 rounded-lg text-sm"></div>
         </div>
       </div>
     </div>
@@ -130,74 +131,76 @@
 
   <!-- Signature Preview (if already signed) -->
   <% if @contract.signature_image.attached? %>
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 sm:mb-8 border border-gray-200">
-      <div class="bg-green-50 text-green-800 p-3 sm:p-4">
-        <h3 class="font-bold text-base sm:text-lg flex items-center">
-          <svg class="h-5 sm:h-6 w-5 sm:w-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg overflow-hidden mb-4 sm:mb-8 border border-gray-200">
+      <div class="bg-green-50 text-green-800 p-2.5 sm:p-4">
+        <h3 class="font-bold text-sm sm:text-lg flex items-center">
+          <svg class="h-5 w-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          Firma Ya Guardada
+          Firma Guardada
         </h3>
-        <p class="mt-1 text-sm">Este contrato ya tiene una firma digital registrada.</p>
       </div>
-      <div class="p-4 sm:p-6">
-        <p class="text-gray-600 mb-4 text-sm sm:text-base">Firma actual:</p>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
-          <div class="border border-gray-300 rounded-lg p-3 sm:p-4 bg-white flex-shrink-0">
-            <%= image_tag @contract.signature_image, class: "max-h-24 sm:max-h-32" %>
+      <div class="p-3 sm:p-6">
+        <div class="flex items-center gap-3 sm:gap-6 mb-4">
+          <div class="border border-gray-300 rounded-lg p-2 sm:p-4 bg-white flex-shrink-0">
+            <%= image_tag @contract.signature_image, class: "max-h-16 sm:max-h-32" %>
           </div>
-          <div class="text-xs sm:text-sm text-gray-500">
-            <p>Guardada el: <%= @contract.signed_at&.strftime("%d/%m/%Y %H:%M") %></p>
-            <p>Por: <%= @contract.signed_by_name %></p>
+          <div class="text-xs text-gray-500">
+            <p><%= @contract.signed_at&.strftime("%d/%m/%Y %H:%M") %></p>
+            <p><%= @contract.signed_by_name %></p>
           </div>
         </div>
-        <div>
-          <%= link_to "Continuar al Siguiente Paso →", success_vendor_contract_path(@contract), class: "w-full sm:w-auto inline-block px-6 py-2 sm:py-3 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium text-sm sm:text-base text-center" %>
-        </div>
+        <%= link_to "Continuar →", success_vendor_contract_path(@contract), class: "w-full sm:w-auto inline-block px-4 py-2.5 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium text-sm text-center" %>
       </div>
     </div>
   <% end %>
 
-  <!-- Legal Disclaimer -->
-  <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-    <h3 class="font-bold text-gray-700 text-base sm:text-lg mb-3">Validez Legal de la Firma Digital</h3>
-    <div class="text-gray-600 text-xs sm:text-sm space-y-2 sm:space-y-3">
-      <p>De acuerdo con la <strong>Ley de Firma Electrónica de Honduras</strong> (Decreto No. 101-2013), la firma digital capturada en este sistema tiene la misma validez jurídica que una firma autógrafa, siempre que:</p>
-      <ul class="list-disc pl-5 space-y-1">
-        <li>Sea capturada directamente por el cliente</li>
-        <li>Se almacene con integridad y sin alteraciones</li>
-        <li>Se registre la fecha y hora exacta de la firma</li>
-        <li>Se mantenga un registro de auditoría del proceso</li>
-      </ul>
-      <p class="italic text-xs">MOVICUOTAS garantiza la seguridad e integridad del proceso de firma digital mediante tecnología de encriptación y almacenamiento seguro en AWS S3.</p>
+  <!-- Legal Disclaimer - Collapsible on mobile -->
+  <details class="bg-gray-50 border border-gray-200 rounded-lg sm:rounded-xl mb-4 sm:mb-8">
+    <summary class="p-3 sm:p-4 cursor-pointer font-medium text-gray-700 text-xs sm:text-base">
+      Validez Legal de la Firma Digital
+    </summary>
+    <div class="px-3 pb-3 sm:px-6 sm:pb-6 text-gray-600 text-xs space-y-2">
+      <p>Según la <strong>Ley de Firma Electrónica de Honduras</strong> (Decreto No. 101-2013), esta firma digital tiene validez jurídica.</p>
+      <p class="italic text-xs text-gray-500">MOVICUOTAS garantiza la seguridad mediante encriptación y almacenamiento seguro.</p>
     </div>
-  </div>
+  </details>
 
-  <!-- Progress Indicator -->
-  <div class="mt-8 sm:mt-12 overflow-x-auto">
-    <div class="flex items-center justify-between gap-1 sm:gap-4 mb-4 min-w-min sm:min-w-0">
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">13</div>
-        <span class="font-medium text-gray-500 text-xs sm:text-base">Contrato</span>
+  <!-- Progress Indicator - Simplified for mobile -->
+  <div class="mt-4 sm:mt-12">
+    <!-- Mobile: Simple indicator -->
+    <div class="sm:hidden text-center">
+      <div class="inline-flex items-center gap-2 bg-[#125282] text-white px-4 py-2 rounded-full">
+        <span class="font-bold">14</span>
+        <span class="text-sm">Firma</span>
       </div>
-      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200">
-        <div class="h-1 bg-[#125282] w-full"></div>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">14</div>
-        <span class="font-medium text-gray-700 text-xs sm:text-base">Firma</span>
-      </div>
-      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200"></div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs sm:text-sm">15</div>
-        <span class="font-medium text-gray-500 text-xs sm:text-base">Prima</span>
-      </div>
-      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200"></div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-xs sm:text-sm">16</div>
-        <span class="font-medium text-gray-500 text-xs sm:text-base">Crédito</span>
-      </div>
+      <p class="text-xs text-gray-500 mt-2">Paso 14 de 19</p>
     </div>
-    <p class="text-center text-xs sm:text-sm text-gray-500 mt-2">Paso 14 de 19 - Flujo de Venta</p>
+
+    <!-- Desktop: Full progress indicator -->
+    <div class="hidden sm:block">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-sm">13</div>
+          <span class="font-medium text-gray-500">Contrato</span>
+        </div>
+        <div class="h-1 flex-1 mx-4 bg-[#125282]"></div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-sm">14</div>
+          <span class="font-medium text-gray-700">Firma</span>
+        </div>
+        <div class="h-1 flex-1 mx-4 bg-gray-200"></div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-sm">15</div>
+          <span class="font-medium text-gray-500">Prima</span>
+        </div>
+        <div class="h-1 flex-1 mx-4 bg-gray-200"></div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold text-sm">16</div>
+          <span class="font-medium text-gray-500">Crédito</span>
+        </div>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-2">Paso 14 de 19 - Flujo de Venta</p>
+    </div>
   </div>
 </div>

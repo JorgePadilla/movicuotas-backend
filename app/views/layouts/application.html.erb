@@ -129,27 +129,37 @@
   </head>
 
   <body>
-    <!-- Flash messages -->
+    <!-- Flash messages with auto-dismiss -->
     <% if flash.any? %>
-      <div class="fixed top-4 right-4 left-4 md:left-auto md:max-w-md z-50">
+      <div class="fixed top-4 right-4 left-4 md:left-auto md:max-w-md z-50" id="flash-container">
         <% flash.each do |type, message| %>
           <% alert_class = case type.to_sym
             when :notice then "bg-green-100 border-green-400 text-green-700"
             when :alert, :error then "bg-red-100 border-red-400 text-red-700"
             else "bg-blue-100 border-blue-400 text-blue-700"
           end %>
-          <div class="<%= alert_class %> border-l-4 p-4 mb-2 rounded shadow-lg" role="alert">
+          <% icon_path = case type.to_sym
+            when :notice then "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            when :alert, :error then "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            else "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          end %>
+          <div class="flash-message <%= alert_class %> border-l-4 p-3 sm:p-4 mb-2 rounded-lg shadow-lg transform transition-all duration-300 ease-out" role="alert">
             <div class="flex items-center">
-              <div class="flex-1">
-                <p class="font-medium"><%= message %></p>
+              <svg class="h-5 w-5 mr-3 flex-shrink-0 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= icon_path %>"/>
+              </svg>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-sm sm:text-base"><%= message %></p>
               </div>
-              <button type="button" class="ml-4 text-gray-500 hover:text-gray-700" onclick="this.parentElement.parentElement.remove()">
+              <button type="button" class="ml-3 flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity" onclick="dismissFlash(this.closest('.flash-message'))">
                 <span class="sr-only">Cerrar</span>
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>
               </button>
             </div>
+            <!-- Progress bar for auto-dismiss -->
+            <div class="flash-progress absolute bottom-0 left-0 h-1 bg-current opacity-30 rounded-b-lg" style="width: 100%;"></div>
           </div>
         <% end %>
       </div>
@@ -325,17 +335,124 @@
     </main>
 
     <script>
+      // Flash message auto-dismiss with animation
+      const FLASH_DURATION = 5000; // 5 seconds
+
+      function initFlashMessages() {
+        const flashMessages = document.querySelectorAll('.flash-message:not([data-initialized])');
+
+        flashMessages.forEach((flash, index) => {
+          // Mark as initialized to prevent double-init
+          flash.setAttribute('data-initialized', 'true');
+
+          // Add relative positioning for progress bar
+          flash.style.position = 'relative';
+          flash.style.overflow = 'hidden';
+
+          // Animate entrance
+          flash.style.opacity = '0';
+          flash.style.transform = 'translateX(100%)';
+
+          setTimeout(() => {
+            flash.style.opacity = '1';
+            flash.style.transform = 'translateX(0)';
+          }, index * 100 + 50);
+
+          // Animate progress bar
+          const progressBar = flash.querySelector('.flash-progress');
+          if (progressBar) {
+            progressBar.style.transition = `width ${FLASH_DURATION}ms linear`;
+            setTimeout(() => {
+              progressBar.style.width = '0%';
+            }, 100);
+          }
+
+          // Store timeout ID so we can cancel on hover
+          let dismissTimeout;
+
+          function startDismissTimer() {
+            dismissTimeout = setTimeout(() => {
+              dismissFlash(flash);
+            }, FLASH_DURATION);
+          }
+
+          // Start the timer
+          startDismissTimer();
+
+          // Pause on hover
+          flash.addEventListener('mouseenter', () => {
+            clearTimeout(dismissTimeout);
+            if (progressBar) {
+              progressBar.style.transitionPlayState = 'paused';
+            }
+          });
+
+          flash.addEventListener('mouseleave', () => {
+            if (progressBar) {
+              progressBar.style.transitionPlayState = 'running';
+            }
+            // Restart timer with remaining time (simplified: restart full timer)
+            startDismissTimer();
+          });
+        });
+      }
+
+      function dismissFlash(element) {
+        if (!element || element.classList.contains('dismissing')) return;
+
+        element.classList.add('dismissing');
+        element.style.transition = 'all 0.3s ease-out';
+        element.style.opacity = '0';
+        element.style.transform = 'translateX(100%)';
+
+        setTimeout(() => {
+          element.style.height = element.offsetHeight + 'px';
+          element.style.marginBottom = '0';
+          element.style.padding = '0';
+          element.style.height = '0';
+
+          setTimeout(() => {
+            element.remove();
+            // Remove container if empty
+            const container = document.getElementById('flash-container');
+            if (container && container.children.length === 0) {
+              container.remove();
+            }
+          }, 200);
+        }, 300);
+      }
+
       // Mobile menu toggle
-      document.addEventListener('DOMContentLoaded', function() {
+      function initMobileMenu() {
         const menuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
 
-        if (menuButton && mobileMenu) {
+        if (menuButton && mobileMenu && !menuButton.hasAttribute('data-initialized')) {
+          menuButton.setAttribute('data-initialized', 'true');
           menuButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
           });
         }
-      });
+      }
+
+      // Initialize on various events to support Turbo
+      function initAll() {
+        initMobileMenu();
+        initFlashMessages();
+      }
+
+      // Regular page load
+      document.addEventListener('DOMContentLoaded', initAll);
+
+      // Turbo page loads (Hotwire)
+      document.addEventListener('turbo:load', initAll);
+      document.addEventListener('turbo:render', initAll);
+      document.addEventListener('turbo:frame-load', initAll);
+
+      // Also run immediately in case DOM is already ready
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initAll, 10);
+      }
     </script>
   </body>
 </html>
