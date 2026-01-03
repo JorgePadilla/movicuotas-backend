@@ -64,96 +64,227 @@
 
     <%= form_with model: @credit_application, url: update_photos_vendor_credit_application_path(@credit_application), method: :patch, class: "space-y-8" do |f| %>
       <div class="space-y-6">
-        <!-- ID Front Image -->
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
-             data-controller="file-upload"
-             data-file-upload-target="area"
-             data-action="click->file-upload#openFilePicker">
-          <div class="mb-4">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- ID Front Image - Back camera -->
+        <div class="border-2 border-gray-300 rounded-lg p-4 md:p-6"
+             data-controller="camera-capture"
+             data-camera-capture-facing-mode-value="environment">
+          <div class="text-center mb-4">
+            <svg class="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
+            <h3 class="text-base md:text-lg font-medium text-gray-900 mt-2">Fotografía del Frente de la Identificación *</h3>
+            <p class="text-sm text-gray-500">Captura una imagen clara del frente de la identificación</p>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía del Frente de la Identificación *</h3>
-          <p class="text-sm text-gray-500 mb-4">Sube una imagen clara del frente de la identificación (DNI, licencia, etc.)</p>
-          <p class="text-xs text-[#125282] mb-4 font-medium">✨ Haz clic en cualquier parte de este área para seleccionar archivo</p>
 
+          <!-- Camera/Preview Area -->
+          <div class="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-4">
+            <!-- Placeholder -->
+            <div data-camera-capture-target="placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div class="text-center text-gray-500">
+                <svg class="mx-auto h-16 w-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <p class="text-sm">Presiona "Iniciar Cámara" para comenzar</p>
+              </div>
+            </div>
+
+            <!-- Video element -->
+            <video data-camera-capture-target="video" class="hidden w-full h-full object-cover" playsinline autoplay muted></video>
+
+            <!-- Canvas for capture (hidden) -->
+            <canvas data-camera-capture-target="canvas" class="hidden"></canvas>
+
+            <!-- Preview image -->
+            <img data-camera-capture-target="preview" class="hidden w-full h-full object-cover" alt="Vista previa">
+          </div>
+
+          <!-- Status message -->
+          <p data-camera-capture-target="status" class="text-center text-sm mb-4 hidden"></p>
+
+          <!-- Hidden file input -->
           <%= f.file_field :id_front_image,
                 accept: "image/*",
                 class: "hidden",
-                required: true,
-                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+                data: { camera_capture_target: "input" } %>
 
-          <button type="button"
-                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]">
-            Seleccionar archivo
-          </button>
+          <!-- Control Buttons -->
+          <div class="flex flex-wrap justify-center gap-2 md:gap-3">
+            <button type="button"
+                    data-action="click->camera-capture#startCamera"
+                    data-camera-capture-target="startBtn"
+                    class="px-4 py-2 md:px-6 md:py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 text-sm md:text-base">
+              Iniciar Cámara
+            </button>
 
-          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+            <button type="button"
+                    data-action="click->camera-capture#capture"
+                    data-camera-capture-target="captureBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm md:text-base">
+              Capturar
+            </button>
+
+            <button type="button"
+                    data-action="click->camera-capture#retake"
+                    data-camera-capture-target="retakeBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm md:text-base">
+              Tomar Otra
+            </button>
+          </div>
 
           <% if @credit_application.id_front_image.attached? %>
-            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+            <p class="mt-4 text-center text-sm text-green-600">✓ Imagen ya capturada anteriormente</p>
           <% end %>
         </div>
 
-        <!-- ID Back Image -->
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
-             data-controller="file-upload"
-             data-file-upload-target="area"
-             data-action="click->file-upload#openFilePicker">
-          <div class="mb-4">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- ID Back Image - Back camera -->
+        <div class="border-2 border-gray-300 rounded-lg p-4 md:p-6"
+             data-controller="camera-capture"
+             data-camera-capture-facing-mode-value="environment">
+          <div class="text-center mb-4">
+            <svg class="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
+            <h3 class="text-base md:text-lg font-medium text-gray-900 mt-2">Fotografía del Reverso de la Identificación *</h3>
+            <p class="text-sm text-gray-500">Captura una imagen clara del reverso de la identificación</p>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía del Reverso de la Identificación *</h3>
-          <p class="text-sm text-gray-500 mb-4">Sube una imagen clara del reverso de la identificación</p>
-          <p class="text-xs text-[#125282] mb-4 font-medium">✨ Haz clic en cualquier parte de este área para seleccionar archivo</p>
 
+          <!-- Camera/Preview Area -->
+          <div class="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-4">
+            <!-- Placeholder -->
+            <div data-camera-capture-target="placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div class="text-center text-gray-500">
+                <svg class="mx-auto h-16 w-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <p class="text-sm">Presiona "Iniciar Cámara" para comenzar</p>
+              </div>
+            </div>
+
+            <!-- Video element -->
+            <video data-camera-capture-target="video" class="hidden w-full h-full object-cover" playsinline autoplay muted></video>
+
+            <!-- Canvas for capture (hidden) -->
+            <canvas data-camera-capture-target="canvas" class="hidden"></canvas>
+
+            <!-- Preview image -->
+            <img data-camera-capture-target="preview" class="hidden w-full h-full object-cover" alt="Vista previa">
+          </div>
+
+          <!-- Status message -->
+          <p data-camera-capture-target="status" class="text-center text-sm mb-4 hidden"></p>
+
+          <!-- Hidden file input -->
           <%= f.file_field :id_back_image,
                 accept: "image/*",
                 class: "hidden",
-                required: true,
-                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+                data: { camera_capture_target: "input" } %>
 
-          <button type="button"
-                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]">
-            Seleccionar archivo
-          </button>
+          <!-- Control Buttons -->
+          <div class="flex flex-wrap justify-center gap-2 md:gap-3">
+            <button type="button"
+                    data-action="click->camera-capture#startCamera"
+                    data-camera-capture-target="startBtn"
+                    class="px-4 py-2 md:px-6 md:py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 text-sm md:text-base">
+              Iniciar Cámara
+            </button>
 
-          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+            <button type="button"
+                    data-action="click->camera-capture#capture"
+                    data-camera-capture-target="captureBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm md:text-base">
+              Capturar
+            </button>
+
+            <button type="button"
+                    data-action="click->camera-capture#retake"
+                    data-camera-capture-target="retakeBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm md:text-base">
+              Tomar Otra
+            </button>
+          </div>
 
           <% if @credit_application.id_back_image.attached? %>
-            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+            <p class="mt-4 text-center text-sm text-green-600">✓ Imagen ya capturada anteriormente</p>
           <% end %>
         </div>
 
-        <!-- Facial Verification Image -->
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors duration-200"
-             data-controller="file-upload"
-             data-file-upload-target="area"
-             data-action="click->file-upload#openFilePicker">
-          <div class="mb-4">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Facial Verification Image - Front camera (selfie) -->
+        <div class="border-2 border-gray-300 rounded-lg p-4 md:p-6"
+             data-controller="camera-capture"
+             data-camera-capture-facing-mode-value="user">
+          <div class="text-center mb-4">
+            <svg class="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
+            <h3 class="text-base md:text-lg font-medium text-gray-900 mt-2">Fotografía de Verificación Facial *</h3>
+            <p class="text-sm text-gray-500">Captura una selfie del cliente sosteniendo la identificación cerca del rostro</p>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Fotografía de Verificación Facial *</h3>
-          <p class="text-sm text-gray-500 mb-4">Sube una selfie del cliente sosteniendo la identificación cerca del rostro</p>
+
+          <!-- Camera/Preview Area -->
+          <div class="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-4">
+            <!-- Placeholder -->
+            <div data-camera-capture-target="placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div class="text-center text-gray-500">
+                <svg class="mx-auto h-16 w-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <p class="text-sm">Presiona "Iniciar Cámara" para tomar selfie</p>
+              </div>
+            </div>
+
+            <!-- Video element -->
+            <video data-camera-capture-target="video" class="hidden w-full h-full object-cover" playsinline autoplay muted></video>
+
+            <!-- Canvas for capture (hidden) -->
+            <canvas data-camera-capture-target="canvas" class="hidden"></canvas>
+
+            <!-- Preview image -->
+            <img data-camera-capture-target="preview" class="hidden w-full h-full object-cover" alt="Vista previa">
+          </div>
+
+          <!-- Status message -->
+          <p data-camera-capture-target="status" class="text-center text-sm mb-4 hidden"></p>
+
+          <!-- Hidden file input -->
           <%= f.file_field :facial_verification_image,
                 accept: "image/*",
                 class: "hidden",
-                required: true,
-                data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+                data: { camera_capture_target: "input" } %>
 
-          <button type="button"
-                  class="mt-4 px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]">
-            Seleccionar archivo
-          </button>
+          <!-- Control Buttons -->
+          <div class="flex flex-wrap justify-center gap-2 md:gap-3">
+            <button type="button"
+                    data-action="click->camera-capture#startCamera"
+                    data-camera-capture-target="startBtn"
+                    class="px-4 py-2 md:px-6 md:py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 text-sm md:text-base">
+              Iniciar Cámara
+            </button>
 
-          <div class="mt-2 hidden" data-file-upload-target="fileName"></div>
+            <button type="button"
+                    data-action="click->camera-capture#capture"
+                    data-camera-capture-target="captureBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm md:text-base">
+              Capturar
+            </button>
+
+            <button type="button"
+                    data-action="click->camera-capture#retake"
+                    data-camera-capture-target="retakeBtn"
+                    class="hidden px-4 py-2 md:px-6 md:py-3 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm md:text-base">
+              Tomar Otra
+            </button>
+
+            <button type="button"
+                    data-action="click->camera-capture#switchCamera"
+                    class="px-4 py-2 md:px-6 md:py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm md:text-base">
+              Cambiar Cámara
+            </button>
+          </div>
+
           <% if @credit_application.facial_verification_image.attached? %>
-            <p class="mt-2 text-sm text-green-600">✓ Imagen ya subida</p>
+            <p class="mt-4 text-center text-sm text-green-600">✓ Imagen ya capturada anteriormente</p>
           <% end %>
         </div>
       </div>
