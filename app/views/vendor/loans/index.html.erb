@@ -2,52 +2,52 @@
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Page header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Tracking de Préstamos</h1>
-    <p class="text-gray-600 mt-2">Visualiza y gestiona todos los préstamos activos y completados.</p>
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Tracking de Préstamos</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Visualiza y gestiona todos los préstamos activos y completados.</p>
   </div>
 
   <!-- Stats summary -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Total Préstamos</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @loans.count %></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Total</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800"><%= @loans.count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Todos los préstamos asignados</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Préstamos asignados</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Activos</h3>
-        <div class="text-2xl font-bold text-green-600"><%= @loans.where(status: 'active').count %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Activos</h3>
+        <div class="text-xl md:text-2xl font-bold text-green-600"><%= @loans.where(status: 'active').count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Préstamos en curso</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Préstamos en curso</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Completados</h3>
-        <div class="text-2xl font-bold text-blue-600"><%= @loans.where(status: 'completed').count %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Completados</h3>
+        <div class="text-xl md:text-2xl font-bold text-blue-600"><%= @loans.where(status: 'completed').count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Préstamos pagados en total</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Pagados en total</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">En Mora</h3>
-        <div class="text-2xl font-bold text-red-600"><%= @loans.joins(:installments).where(installments: { status: 'overdue' }).distinct.count %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">En Mora</h3>
+        <div class="text-xl md:text-2xl font-bold text-red-600"><%= @loans.joins(:installments).where(installments: { status: 'overdue' }).distinct.count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Préstamos con cuotas atrasadas</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Cuotas atrasadas</p>
     </div>
   </div>
 
   <!-- Loans table -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <div class="px-4 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-semibold text-gray-900">Lista de Préstamos</h2>
-        <div class="flex space-x-3">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-900">Lista de Préstamos</h2>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <div class="relative">
             <%= form_with url: vendor_loans_path, method: :get, local: true, class: "inline-block" do |form| %>
               <%= form.select :status,

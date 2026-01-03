@@ -2,49 +2,49 @@
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Page header with navigation -->
-  <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+  <div class="mb-6 md:mb-8 flex flex-col gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-[#125282]">Tracking de Préstamo</h1>
-      <p class="text-gray-600 mt-2">Detalles completos del préstamo y historial de pagos.</p>
+      <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Tracking de Préstamo</h1>
+      <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Detalles completos del préstamo y historial de pagos.</p>
     </div>
-    <div class="mt-4 sm:mt-0 flex space-x-3">
-      <%= link_to "← Volver a Tracking", vendor_loans_path, class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200" %>
-      <%= link_to "Descargar Contrato", download_contract_vendor_loan_path(@loan), class: "px-4 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors duration-200" %>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      <%= link_to "← Volver a Tracking", vendor_loans_path, class: "px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-center text-sm" %>
+      <%= link_to "Descargar Contrato", download_contract_vendor_loan_path(@loan), class: "px-4 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors duration-200 text-center text-sm" %>
     </div>
   </div>
 
   <!-- Loan summary cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">Contrato</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @loan.contract_number %></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Contrato</h3>
+        <div class="text-lg md:text-2xl font-bold text-gray-800"><%= @loan.contract_number %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Sucursal</span>
           <span class="font-medium"><%= @loan.branch_number %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Fecha inicio</span>
+          <span class="text-gray-600">Inicio</span>
           <span class="font-medium"><%= @loan.start_date.strftime("%d/%m/%Y") %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Fecha fin</span>
+          <span class="text-gray-600">Fin</span>
           <span class="font-medium"><%= @loan.end_date.strftime("%d/%m/%Y") %></span>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">Cliente</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @loan.customer.full_name.split.first %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Cliente</h3>
+        <div class="text-lg md:text-2xl font-bold text-gray-800"><%= @loan.customer.full_name.split.first %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Identidad</span>
-          <span class="font-medium"><%= @loan.customer.identification_number %></span>
+          <span class="font-medium truncate ml-2"><%= @loan.customer.identification_number %></span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Teléfono</span>
@@ -52,36 +52,36 @@
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Correo</span>
-          <span class="font-medium"><%= @loan.customer.email.presence || "No proporcionado" %></span>
+          <span class="font-medium truncate ml-2"><%= @loan.customer.email.presence || "N/A" %></span>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">Financiamiento</h3>
-        <div class="text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@loan.total_amount, delimiter: ',') %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Financiamiento</h3>
+        <div class="text-lg md:text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@loan.total_amount, delimiter: ',') %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Inicial</span>
-          <span class="font-medium"><%= @loan.down_payment_percentage %>% (L. <%= number_with_delimiter(@loan.down_payment_amount, delimiter: ',') %>)</span>
+          <span class="font-medium"><%= @loan.down_payment_percentage %>%</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Financiado</span>
           <span class="font-medium">L. <%= number_with_delimiter(@loan.financed_amount, delimiter: ',') %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Tasa interés</span>
-          <span class="font-medium"><%= @loan.interest_rate %>% quincenal</span>
+          <span class="text-gray-600">Tasa</span>
+          <span class="font-medium"><%= @loan.interest_rate %>%</span>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">Estado</h3>
-        <div class="text-2xl font-bold">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Estado</h3>
+        <div class="text-lg md:text-2xl font-bold">
           <% status_class = case @loan.status
             when 'active' then 'text-green-600'
             when 'paid' then 'text-blue-600'
@@ -92,22 +92,22 @@
           <span class="<%= status_class %>"><%= @loan.status.titleize %></span>
         </div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
-          <span class="text-gray-600">Cuotas pagadas</span>
+          <span class="text-gray-600">Cuotas</span>
           <span class="font-medium"><%= @loan.paid_installments.count %>/<%= @loan.number_of_installments %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Saldo restante</span>
+          <span class="text-gray-600">Saldo</span>
           <span class="font-medium">L. <%= number_with_delimiter(@loan.remaining_balance, delimiter: ',') %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Próximo vencimiento</span>
+          <span class="text-gray-600">Próximo</span>
           <span class="font-medium">
             <% if @loan.next_installment %>
-              <%= @loan.next_installment.due_date.strftime("%d/%m/%Y") %>
+              <%= @loan.next_installment.due_date.strftime("%d/%m") %>
             <% else %>
-              Completado
+              Listo
             <% end %>
           </span>
         </div>
@@ -137,11 +137,11 @@
   <% end %>
 
   <!-- Two-column layout for schedule and payments -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
     <!-- Installment schedule -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold text-gray-900">Calendario de Cuotas</h3>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4 md:mb-6">
+        <h3 class="text-lg md:text-xl font-semibold text-gray-900">Calendario de Cuotas</h3>
         <span class="text-sm text-gray-600"><%= @installments.count %> cuotas totales</span>
       </div>
       <div class="overflow-x-auto">
@@ -192,9 +192,9 @@
     </div>
 
     <!-- Payment history -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold text-gray-900">Historial de Pagos</h3>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4 md:mb-6">
+        <h3 class="text-lg md:text-xl font-semibold text-gray-900">Historial de Pagos</h3>
         <span class="text-sm text-gray-600"><%= @payments.count %> pagos registrados</span>
       </div>
       <% if @payments.any? %>

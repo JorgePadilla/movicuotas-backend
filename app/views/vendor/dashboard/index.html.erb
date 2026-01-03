@@ -2,27 +2,27 @@
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Page header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Dashboard de Vendedor</h1>
-    <p class="text-gray-600 mt-2">Resumen de tus actividades y estadísticas</p>
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Dashboard de Vendedor</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Resumen de tus actividades y estadísticas</p>
   </div>
 
   <!-- Quick actions -->
-  <div class="mb-8 flex flex-wrap gap-4">
-    <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
-    <%= link_to "Ver Todos los Préstamos", vendor_loans_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
-    <%= link_to "Ver Pagos Recientes", vendor_payments_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+  <div class="mb-6 md:mb-8 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+    <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 md:px-6 py-3 rounded-lg font-medium transition-colors text-center" %>
+    <%= link_to "Ver Préstamos", vendor_loans_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-4 md:px-6 py-3 rounded-lg font-medium transition-colors text-center" %>
+    <%= link_to "Ver Pagos", vendor_payments_path, class: "bg-white border border-[#125282] text-[#125282] hover:bg-[#125282] hover:text-white px-4 md:px-6 py-3 rounded-lg font-medium transition-colors text-center" %>
   </div>
 
   <!-- Metrics grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
     <!-- Customers card -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">👥 Clientes</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @total_customers %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">👥 Clientes</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800"><%= @total_customers %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Activos</span>
           <span class="font-medium text-green-600"><%= @active_customers %></span>
@@ -39,21 +39,21 @@
     </div>
 
     <!-- Devices card -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">📱 Dispositivos</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @assigned_devices %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">📱 Dispositivos</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800"><%= @assigned_devices %></div>
       </div>
-      <p class="text-gray-600 text-sm">Asignados a préstamos activos</p>
+      <p class="text-gray-600 text-xs md:text-sm">Asignados a préstamos activos</p>
     </div>
 
     <!-- Loans card -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">💰 Préstamos</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @active_loans %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">💰 Préstamos</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800"><%= @active_loans %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">Valor total</span>
           <span class="font-medium text-gray-800">L. <%= @total_loan_value %></span>
@@ -66,12 +66,12 @@
     </div>
 
     <!-- Payments card -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#125282]">💳 Pagos</h3>
-        <div class="text-2xl font-bold text-gray-800">L. <%= @payments_this_month %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">💳 Pagos</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800">L. <%= @payments_this_month %></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
         <div class="flex justify-between">
           <span class="text-gray-600">En mora</span>
           <span class="font-medium text-red-600"><%= @overdue_installments %></span>
@@ -85,11 +85,11 @@
   </div>
 
   <!-- Two-column layout for tables -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
     <!-- Recent payments table -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold text-[#125282]">Pagos Recientes</h3>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4 md:mb-6">
+        <h3 class="text-lg md:text-xl font-semibold text-[#125282]">Pagos Recientes</h3>
         <%= link_to "Ver todos", vendor_payments_path, class: "text-sm text-[#125282] hover:underline" %>
       </div>
       <% if @recent_payments.any? %>
@@ -123,9 +123,9 @@
     </div>
 
     <!-- Upcoming due dates -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold text-[#125282]">Próximos Vencimientos</h3>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4 md:mb-6">
+        <h3 class="text-lg md:text-xl font-semibold text-[#125282]">Próximos Vencimientos</h3>
         <%= link_to "Ver todos", vendor_loans_path, class: "text-sm text-[#125282] hover:underline" %>
       </div>
       <% if @upcoming_installments.any? %>

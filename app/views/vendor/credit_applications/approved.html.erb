@@ -17,17 +17,17 @@
     </div>
 
     <!-- Title -->
-    <h1 class="text-3xl font-bold text-green-600 mb-4">¡Solicitud Aprobada!</h1>
+    <h1 class="text-2xl md:text-3xl font-bold text-green-600 mb-4">¡Solicitud Aprobada!</h1>
 
     <!-- Application Number -->
-    <div class="inline-block bg-green-50 border border-green-200 rounded-lg px-6 py-4 mb-6">
+    <div class="inline-block bg-green-50 border border-green-200 rounded-lg px-4 md:px-6 py-3 md:py-4 mb-6">
       <p class="text-sm text-green-700 mb-1">Número de Solicitud</p>
-      <p class="text-2xl font-bold text-green-900"><%= @credit_application.application_number %></p>
+      <p class="text-xl md:text-2xl font-bold text-green-900"><%= @credit_application.application_number %></p>
     </div>
 
     <!-- Message -->
-    <div class="max-w-2xl mx-auto mb-8">
-      <p class="text-lg text-gray-700 mb-4">
+    <div class="max-w-2xl mx-auto mb-6 md:mb-8 px-4">
+      <p class="text-base md:text-lg text-gray-700 mb-4">
         La solicitud de crédito para <span class="font-semibold"><%= @credit_application.customer.full_name %></span> ha sido aprobada exitosamente.
       </p>
       <p class="text-gray-600">
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Important Note -->
-    <div class="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+    <div class="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-lg p-4 md:p-6 mb-6 md:mb-8 mx-4">
       <div class="flex">
         <svg class="h-6 w-6 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>

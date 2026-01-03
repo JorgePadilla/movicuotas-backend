@@ -17,17 +17,17 @@
     </div>
 
     <!-- Title -->
-    <h1 class="text-3xl font-bold text-red-600 mb-4">Solicitud No Aprobada</h1>
+    <h1 class="text-2xl md:text-3xl font-bold text-red-600 mb-4">Solicitud No Aprobada</h1>
 
     <!-- Application Number -->
-    <div class="inline-block bg-red-50 border border-red-200 rounded-lg px-6 py-4 mb-6">
+    <div class="inline-block bg-red-50 border border-red-200 rounded-lg px-4 md:px-6 py-3 md:py-4 mb-6">
       <p class="text-sm text-red-700 mb-1">Número de Solicitud</p>
-      <p class="text-2xl font-bold text-red-900"><%= @credit_application.application_number %></p>
+      <p class="text-xl md:text-2xl font-bold text-red-900"><%= @credit_application.application_number %></p>
     </div>
 
     <!-- Rejection Reason -->
-    <div class="max-w-2xl mx-auto mb-8">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+    <div class="max-w-2xl mx-auto mb-6 md:mb-8 px-4">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 md:p-6 mb-6">
         <h3 class="text-lg font-semibold text-red-900 mb-2">Motivo del Rechazo</h3>
         <p class="text-red-700"><%= @credit_application.rejection_reason.presence || "La solicitud no cumple con los criterios de aprobación establecidos." %></p>
       </div>
@@ -41,7 +41,7 @@
     </div>
 
     <!-- Suggestions -->
-    <div class="max-w-2xl mx-auto bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+    <div class="max-w-2xl mx-auto bg-yellow-50 border border-yellow-200 rounded-lg p-4 md:p-6 mb-6 md:mb-8 mx-4">
       <div class="flex">
         <svg class="h-6 w-6 text-yellow-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>

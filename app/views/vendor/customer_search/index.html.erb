@@ -1,11 +1,11 @@
 <% content_for :title, "Buscar Cliente - MOVICUOTAS" %>
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
-  <h1 class="text-3xl font-bold text-[#125282] mb-2">Buscar Cliente</h1>
-  <p class="text-gray-600 mb-8">Pantalla principal para vendedores. Busca clientes en TODAS las tiendas.</p>
+  <h1 class="text-2xl md:text-3xl font-bold text-[#125282] mb-2">Buscar Cliente</h1>
+  <p class="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">Pantalla principal para vendedores. Busca clientes en TODAS las tiendas.</p>
 
-  <div class="bg-white shadow rounded-lg p-6 mb-8">
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">Búsqueda de Cliente</h2>
+  <div class="bg-white shadow rounded-lg p-4 md:p-6 mb-6 md:mb-8">
+    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">Búsqueda de Cliente</h2>
 
     <%= form_with url: vendor_customer_search_path, method: :get, class: "space-y-4" do |f| %>
       <div>
@@ -98,9 +98,9 @@
                 </div>
               <% end %>
 
-              <div class="mt-6">
-                <%= link_to "Iniciar Solicitud →", new_vendor_credit_application_path(customer_id: @customer.id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
-                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "ml-4 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <%= link_to "Iniciar Solicitud →", new_vendor_credit_application_path(customer_id: @customer.id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
               </div>
             </div>
           </div>
@@ -120,9 +120,9 @@
               <p class="mt-2 text-gray-700"><%= @alert_message %></p>
               <p class="mt-2 text-sm text-gray-600">Búsqueda realizada: <span class="font-medium"><%= @search_query %></span></p>
 
-              <div class="mt-6 flex space-x-4">
-                <%= link_to "Intentar de nuevo", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
-                <%= link_to "Registrar Cliente y Iniciar Solicitud →", new_vendor_credit_application_path(identification_number: @clean_id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200" %>
+              <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <%= link_to "Intentar de nuevo", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+                <%= link_to "Registrar Cliente →", new_vendor_credit_application_path(identification_number: @clean_id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
               </div>
             </div>
           </div>
@@ -152,8 +152,8 @@
     </div>
   <% end %>
 
-  <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-8">
-    <h3 class="text-lg font-medium text-gray-900 mb-3">Información importante</h3>
+  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 md:p-6 mt-6 md:mt-8">
+    <h3 class="text-base md:text-lg font-medium text-gray-900 mb-3">Información importante</h3>
     <ul class="space-y-3 text-gray-700">
       <li class="flex items-start">
         <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">

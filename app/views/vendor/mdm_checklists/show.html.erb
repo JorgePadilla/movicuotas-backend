@@ -1,9 +1,20 @@
 <% content_for :title, "Checklist Final - Configuración del Cliente - MOVICUOTAS" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-4xl mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-12">
   <%# Progress Indicator %>
-  <div class="mb-12">
-    <div class="flex items-center justify-center">
+  <div class="mb-6 md:mb-12">
+    <%# Mobile Progress: Simple dots %>
+    <div class="flex md:hidden items-center justify-center space-x-2 mb-2">
+      <div class="w-3 h-3 rounded-full bg-[#125282]"></div>
+      <div class="w-6 h-0.5 bg-[#125282]"></div>
+      <div class="w-3 h-3 rounded-full bg-[#125282]"></div>
+      <div class="w-6 h-0.5 bg-[#125282]"></div>
+      <div class="w-3 h-3 rounded-full bg-[#125282] ring-2 ring-offset-2 ring-[#125282]"></div>
+    </div>
+    <p class="text-center text-xs text-[#125282] md:hidden">Paso 17 de 18</p>
+
+    <%# Desktop Progress %>
+    <div class="hidden md:flex items-center justify-center">
       <div class="flex items-center">
         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#125282] text-white font-bold">
           17
@@ -15,36 +26,36 @@
   </div>
 
   <%# Main Card %>
-  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-[#125282]">
-    <div class="bg-gradient-to-r from-[#125282] to-[#0f4670] p-8 text-center">
-      <div class="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-6">
-        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-2 md:border-4 border-[#125282]">
+    <div class="bg-gradient-to-r from-[#125282] to-[#0f4670] p-4 md:p-8 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 md:w-24 md:h-24 bg-white/20 rounded-full mb-4 md:mb-6">
+        <svg class="w-8 h-8 md:w-12 md:h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
       </div>
-      <h1 class="text-4xl font-bold text-white mb-4">Verificación de Configuración del Cliente</h1>
-      <p class="text-xl text-blue-100">Confirma que todos los elementos de configuración han sido completados antes de finalizar la venta.</p>
+      <h1 class="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">Checklist Final</h1>
+      <p class="text-sm md:text-xl text-blue-100">Confirma que todos los elementos estén completados antes de finalizar.</p>
     </div>
 
-    <div class="p-8">
+    <div class="p-4 md:p-8">
       <%# Customer Information %>
-      <div class="bg-gray-50 rounded-xl p-6 mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Información del Cliente</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-50 rounded-xl p-4 md:p-6 mb-6 md:mb-8">
+        <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Información del Cliente</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div>
-            <p class="text-sm font-medium text-gray-500">Cliente</p>
-            <p class="text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
-            <p class="text-gray-600"><%= @customer.identification_number %></p>
+            <p class="text-xs md:text-sm font-medium text-gray-500">Cliente</p>
+            <p class="text-base md:text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
+            <p class="text-gray-600 text-sm"><%= @customer.identification_number %></p>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-500">Dispositivo</p>
-            <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
-            <p class="text-gray-600">IMEI: <%= @device.imei %></p>
+            <p class="text-xs md:text-sm font-medium text-gray-500">Dispositivo</p>
+            <p class="text-base md:text-lg font-semibold text-[#125282]"><%= @device.brand %> <%= @device.model %></p>
+            <p class="text-gray-600 text-sm">IMEI: <%= @device.imei %></p>
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-500">Contrato</p>
-            <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
-            <p class="text-gray-600">Inicio: <%= l(@loan.start_date, format: :long) %></p>
+            <p class="text-xs md:text-sm font-medium text-gray-500">Contrato</p>
+            <p class="text-base md:text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
+            <p class="text-gray-600 text-sm">Inicio: <%= l(@loan.start_date, format: :long) %></p>
           </div>
         </div>
       </div>
@@ -64,51 +75,51 @@
         <% end %>
 
         <%# Checklist Items %>
-        <div class="bg-white border-2 border-gray-200 rounded-xl p-6 space-y-4">
-          <h3 class="text-xl font-bold text-gray-900 mb-6">Lista de Verificación</h3>
+        <div class="bg-white border-2 border-gray-200 rounded-xl p-4 md:p-6 space-y-3 md:space-y-4">
+          <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Lista de Verificación</h3>
 
           <%# Item 1: BluePrint Scanned %>
-          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+          <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
             <div class="flex items-center h-6 mt-1">
-              <%= f.check_box :blueprint_scanned, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+              <%= f.check_box :blueprint_scanned, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
             </div>
-            <div class="ml-4 flex-1">
+            <div class="ml-3 md:ml-4 flex-1">
               <label class="flex items-center cursor-pointer">
-                <span class="text-lg font-semibold text-gray-900">BluePrint escaneado y configuración realizada</span>
+                <span class="text-base md:text-lg font-semibold text-gray-900">BluePrint escaneado</span>
               </label>
-              <p class="text-sm text-gray-600 mt-1">El cliente ha escaneado el código QR y el sistema MDM ha iniciado la configuración del dispositivo.</p>
+              <p class="text-xs md:text-sm text-gray-600 mt-1">El cliente ha escaneado el código QR y el MDM ha iniciado la configuración.</p>
             </div>
           </div>
 
           <%# Item 2: MDM App Installed %>
-          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+          <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
             <div class="flex items-center h-6 mt-1">
-              <%= f.check_box :mdm_installed, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+              <%= f.check_box :mdm_installed, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
             </div>
-            <div class="ml-4 flex-1">
+            <div class="ml-3 md:ml-4 flex-1">
               <label class="flex items-center cursor-pointer">
-                <span class="text-lg font-semibold text-gray-900">Aplicación MDM instalada y confirmada</span>
+                <span class="text-base md:text-lg font-semibold text-gray-900">App MDM instalada</span>
               </label>
-              <p class="text-sm text-gray-600 mt-1">Verifica que la aplicación MDM aparezca en la lista de aplicaciones y muestre el estado "Dispositivo protegido".</p>
+              <p class="text-xs md:text-sm text-gray-600 mt-1">La app MDM muestra "Dispositivo protegido".</p>
             </div>
           </div>
 
           <%# Item 3: MoviCuotas App Installed & Logged In %>
-          <div class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
+          <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
             <div class="flex items-center h-6 mt-1">
-              <%= f.check_box :movicuotas_installed, { class: "w-6 h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
+              <%= f.check_box :movicuotas_installed, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
             </div>
-            <div class="ml-4 flex-1">
+            <div class="ml-3 md:ml-4 flex-1">
               <label class="flex items-center cursor-pointer">
-                <span class="text-lg font-semibold text-gray-900">Aplicación MoviCuotas instalada y Log-in realizado</span>
+                <span class="text-base md:text-lg font-semibold text-gray-900">App MoviCuotas con sesión</span>
               </label>
-              <p class="text-sm text-gray-600 mt-1">El cliente ha iniciado sesión en la aplicación MoviCuotas usando sus credenciales y puede ver el estado de sus cuotas.</p>
+              <p class="text-xs md:text-sm text-gray-600 mt-1">El cliente ha iniciado sesión y puede ver sus cuotas.</p>
             </div>
           </div>
         </div>
 
         <%# Important Notes %>
-        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6">
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 md:p-6">
           <div class="flex">
             <div class="flex-shrink-0">
               <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -116,13 +127,13 @@
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-yellow-800">Importante</h3>
-              <div class="mt-2 text-sm text-yellow-700">
-                <ul class="list-disc pl-5 space-y-1">
-                  <li>No entregues el dispositivo hasta completar todos los puntos del checklist.</li>
-                  <li>Si el cliente tiene problemas con la configuración MDM, intenta escanear el código QR nuevamente.</li>
-                  <li>Asegúrate de que el cliente tenga un número de teléfono confirmado para recibir notificaciones de pagos.</li>
-                  <li>Una vez completado este checklist, el dispositivo estará protegido por MDM.</li>
+              <h3 class="text-xs md:text-sm font-medium text-yellow-800">Importante</h3>
+              <div class="mt-2 text-xs md:text-sm text-yellow-700">
+                <ul class="list-disc pl-4 md:pl-5 space-y-1">
+                  <li>No entregues el dispositivo hasta completar el checklist.</li>
+                  <li>Si hay problemas con MDM, escanea el QR nuevamente.</li>
+                  <li>Confirma que el cliente tenga su número registrado.</li>
+                  <li>Al completar, el dispositivo quedará protegido.</li>
                 </ul>
               </div>
             </div>
@@ -130,13 +141,13 @@
         </div>
 
         <%# Action Buttons %>
-        <div class="flex flex-col md:flex-row gap-4 pt-8">
+        <div class="flex flex-col-reverse md:flex-row gap-3 md:gap-4 pt-6 md:pt-8">
           <div class="flex-1">
-            <%= link_to "← Volver al Código QR", vendor_mdm_blueprint_path(@mdm_blueprint), class: "w-full text-center bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" %>
+            <%= link_to "← Volver al QR", vendor_mdm_blueprint_path(@mdm_blueprint), class: "block w-full text-center bg-gray-200 text-gray-800 font-semibold py-2.5 md:py-3 px-6 md:px-8 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-sm md:text-base" %>
           </div>
           <div class="flex-1">
-            <%= f.submit "Finalizar Proceso de Venta", name: "commit",
-                        class: "w-full bg-green-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer" %>
+            <%= f.submit "Finalizar Venta", name: "commit",
+                        class: "w-full bg-green-600 text-white font-semibold py-2.5 md:py-3 px-6 md:px-8 rounded-lg hover:bg-green-700 transition-colors duration-200 cursor-pointer text-sm md:text-base" %>
           </div>
         </div>
       <% end %>

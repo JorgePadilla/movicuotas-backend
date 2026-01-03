@@ -2,52 +2,52 @@
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Page header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Historial de Pagos</h1>
-    <p class="text-gray-600 mt-2">Registro completo de todos los pagos realizados en tus préstamos.</p>
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Historial de Pagos</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Registro completo de todos los pagos realizados en tus préstamos.</p>
   </div>
 
   <!-- Stats summary -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Total Pagos</h3>
-        <div class="text-2xl font-bold text-gray-800"><%= @payments.count %></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Total</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800"><%= @payments.count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Todos los pagos registrados</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Pagos registrados</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Verificados</h3>
-        <div class="text-2xl font-bold text-green-600"><%= @payments.verified.count %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Verificados</h3>
+        <div class="text-xl md:text-2xl font-bold text-green-600"><%= @payments.verified.count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Pagos verificados por administración</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Por administración</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Pendientes</h3>
-        <div class="text-2xl font-bold text-yellow-600"><%= @payments.pending_verification.count %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Pendientes</h3>
+        <div class="text-xl md:text-2xl font-bold text-yellow-600"><%= @payments.pending_verification.count %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Esperando verificación</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Por verificar</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-[#125282]">Monto Total</h3>
-        <div class="text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@payments.sum(:amount), delimiter: ',') %></div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <h3 class="text-base md:text-lg font-semibold text-[#125282]">Monto</h3>
+        <div class="text-xl md:text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@payments.sum(:amount), delimiter: ',') %></div>
       </div>
-      <p class="text-gray-600 text-sm mt-2">Suma de todos los pagos</p>
+      <p class="text-gray-600 text-xs md:text-sm mt-1 md:mt-2">Suma total</p>
     </div>
   </div>
 
   <!-- Payments table -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <div class="px-6 py-5 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-semibold text-gray-900">Lista de Pagos</h2>
-        <div class="flex space-x-3">
+    <div class="px-4 md:px-6 py-4 md:py-5 border-b border-gray-200">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-900">Lista de Pagos</h2>
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <div class="relative">
             <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#125282] focus:border-[#125282] rounded-lg">
               <option selected>Todos los estados</option>
