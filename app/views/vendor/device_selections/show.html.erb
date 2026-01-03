@@ -66,8 +66,8 @@
       <% end %>
     </div>
 
-    <%# IMEI and Color fields (appear when a phone is selected) %>
-    <div id="device-details" class="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8 <%= 'hidden' unless @credit_application.selected_phone_model_id.present? %>">
+    <%# IMEI and Color fields (always visible - user must fill before submitting) %>
+    <div id="device-details" class="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Datos del dispositivo seleccionado</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -94,7 +94,7 @@
       <div class="order-2 md:order-1">
         <%= link_to "← Volver a búsqueda", vendor_customer_search_path, class: "text-sm text-[#125282] hover:underline" %>
       </div>
-      <div class="flex flex-col sm:flex-row gap-3 order-1 md:order-2">
+      <div class="flex flex-col sm:flex-row gap-4 order-1 md:order-2">
         <%= link_to "Cancelar", vendor_customer_search_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-center" %>
         <%= f.submit "Siguiente →", class: "px-6 py-2 bg-[#125282] text-white font-medium rounded-md hover:bg-[#125282]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282] cursor-pointer" %>
       </div>
@@ -102,22 +102,3 @@
   <% end %>
 </div>
 
-<script>
-  // Show device details when a phone model is selected
-  document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[type="radio"][name="credit_application[selected_phone_model_id]"]');
-    const deviceDetails = document.getElementById('device-details');
-
-    function toggleDeviceDetails() {
-      const anyChecked = Array.from(radioButtons).some(radio => radio.checked);
-      deviceDetails.classList.toggle('hidden', !anyChecked);
-    }
-
-    radioButtons.forEach(radio => {
-      radio.addEventListener('change', toggleDeviceDetails);
-    });
-
-    // Initial check
-    toggleDeviceDetails();
-  });
-</script>
