@@ -28,8 +28,20 @@ module Vendor
         redirect_to vendor_customer_search_path and return
       end
 
+      # Calculate customer age to determine default down payment
+      @customer_age = calculate_customer_age(@date_of_birth)
+      is_senior_customer = @customer_age && @customer_age >= 50 && @customer_age <= 60
+
       # Default calculator values
-      @down_payment_percentage = params[:down_payment_percentage]&.to_i || 30
+      # Senior customers (50-60 years) default to 40%, others to 30%
+      default_down_payment = is_senior_customer ? 40 : 30
+      @down_payment_percentage = params[:down_payment_percentage]&.to_i || default_down_payment
+
+      # Ensure senior customers don't have 30% selected
+      if is_senior_customer && @down_payment_percentage == 30
+        @down_payment_percentage = 40
+      end
+
       @number_of_installments = params[:number_of_installments]&.to_i || 6
 
       # Calculate initial installment amount
@@ -188,7 +200,14 @@ module Vendor
 
       # First, try to find an existing draft loan for this customer created today
       existing_loan = find_existing_draft_loan(customer, phone_price, approved_amount, credit_application_id)
-      return existing_loan if existing_loan.present?
+      if existing_loan.present?
+        # Ensure device exists for existing loan (may have been missed in previous flow)
+        if existing_loan.device.nil? && credit_application && credit_application.selected_phone_model_id && credit_application.selected_imei
+          Rails.logger.info "Existing loan #{existing_loan.id} has no device, creating from credit application #{credit_application.id}"
+          create_device_for_loan(existing_loan, credit_application)
+        end
+        return existing_loan
+      end
 
       # Create new loan
       loan = Loan.new(
@@ -354,6 +373,19 @@ module Vendor
 
       Rails.logger.warn "No date_of_birth found in any source"
       nil
+    end
+
+    # Calculate customer age from date of birth
+    def calculate_customer_age(date_of_birth)
+      return nil unless date_of_birth.present?
+
+      dob = date_of_birth.is_a?(Date) ? date_of_birth : Date.parse(date_of_birth.to_s) rescue nil
+      return nil unless dob
+
+      today = Date.today
+      age = today.year - dob.year
+      age -= 1 if today.yday < dob.yday
+      age
     end
   end
 end

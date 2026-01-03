@@ -1,4 +1,20 @@
 class CreditApplication < ApplicationRecord
+  # Available device colors
+  DEVICE_COLORS = [
+    "Negro",
+    "Blanco",
+    "Azul",
+    "Rojo",
+    "Verde",
+    "Gris",
+    "Plata",
+    "Oro",
+    "Rosa",
+    "Morado",
+    "Amarillo",
+    "Naranja"
+  ].freeze
+
   # Associations
   belongs_to :customer
   belongs_to :vendor, class_name: "User", optional: true
@@ -27,7 +43,10 @@ class CreditApplication < ApplicationRecord
   # Conditional presence validations for employment data step
   validates :employment_status, presence: true, if: :updating_employment
   validates :salary_range, presence: true, if: :updating_employment
+  validates :selected_imei, presence: { message: "debe ingresar el número IMEI" }, if: -> { selected_phone_model_id.present? }
   validates :selected_imei, format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }, allow_blank: true
+  validates :selected_color, presence: { message: "debe seleccionar un color" }, if: -> { selected_phone_model_id.present? }
+  validates :selected_color, inclusion: { in: DEVICE_COLORS, message: "debe ser un color válido" }, allow_blank: true
   validate :selected_phone_price_within_approved_amount, if: -> { selected_phone_model_id.present? && approved? }
 
   # Enums

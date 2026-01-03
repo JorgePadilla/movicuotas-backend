@@ -69,6 +69,7 @@ class ContractGeneratorService
       pdf.text "<b>Datos del Dispositivo</b>", inline_format: true
       pdf.move_down 5
       pdf.text "Marca / Modelo: #{@device.present? ? "#{@device.brand} / #{@device.model}" : '_________________________________________'}"
+      pdf.text "Color: #{@device.present? && @device.color.present? ? @device.color : '_________________________________________'}"
       pdf.text "IMEI: #{@device.present? ? @device.imei : '_________________________________________________'}"
       pdf.move_down 10
 

@@ -41,19 +41,36 @@
       <%= hidden_field_tag :date_of_birth, @date_of_birth %>
 
       <%# Down Payment Selection %>
+      <%# Calculate customer age to determine available options %>
+      <%
+        customer_age = nil
+        if @date_of_birth.present?
+          dob = @date_of_birth.is_a?(Date) ? @date_of_birth : Date.parse(@date_of_birth.to_s) rescue nil
+          if dob
+            today = Date.today
+            customer_age = today.year - dob.year
+            customer_age -= 1 if today.yday < dob.yday
+          end
+        end
+        # 50-60 years: only 40% and 50% options
+        # 21-49 years: all options (30%, 40%, 50%)
+        is_senior_customer = customer_age && customer_age >= 50 && customer_age <= 60
+        available_percentages = is_senior_customer ? [40, 50] : [30, 40, 50]
+        grid_cols = is_senior_customer ? "md:grid-cols-2" : "md:grid-cols-3"
+      %>
       <div>
         <h3 class="text-lg font-medium text-gray-900 mb-4">Pago Inicial</h3>
         <p class="text-sm text-gray-600 mb-4">Selecciona el porcentaje de pago inicial. Mayor pago inicial significa cuotas más bajas.</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <% [30, 40, 50].each do |percentage| %>
+        <div class="grid grid-cols-1 <%= grid_cols %> gap-4">
+          <% available_percentages.each do |percentage| %>
             <label class="relative">
               <input
                 type="radio"
                 name="down_payment_percentage"
                 value="<%= percentage %>"
                 class="sr-only peer"
-                <%= "checked" if @down_payment_percentage == percentage %>
+                <%= "checked" if @down_payment_percentage == percentage || (is_senior_customer && percentage == 40 && !available_percentages.include?(@down_payment_percentage)) %>
                 data-action="change->payment-calculator#calculate"
               >
               <div class="cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-[#125282] peer-checked:border-[#125282] peer-checked:bg-blue-50 transition-all duration-200">
@@ -75,8 +92,8 @@
         <h3 class="text-lg font-medium text-gray-900 mb-4">Plazo de Cuotas</h3>
         <p class="text-sm text-gray-600 mb-4">Selecciona el número de cuotas quincenales (cada 15 días).</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <% [6, 8, 10, 12].each do |term| %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <% [6, 8, 12].each do |term| %>
             <label class="relative">
               <input
                 type="radio"

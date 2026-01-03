@@ -71,21 +71,24 @@
       <h3 class="text-lg font-medium text-gray-900 mb-4">Datos del dispositivo seleccionado</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <%= f.label :selected_imei, "Número IMEI (15 dígitos)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.label :selected_imei, "Número IMEI (15 dígitos) *", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.text_field :selected_imei,
                 placeholder: "Ej: 123456789012345",
                 maxlength: 15,
-                pattern: "\d{15}",
+                pattern: "\\d{15}",
                 title: "Debe tener 15 dígitos numéricos",
+                required: true,
                 class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#125282] focus:border-[#125282]" %>
-          <p class="mt-1 text-sm text-gray-500">Ingrese el IMEI del dispositivo físico (15 dígitos).</p>
+          <p class="mt-1 text-sm text-gray-500">Ingrese el IMEI del dispositivo físico (15 dígitos). Campo obligatorio.</p>
         </div>
         <div>
-          <%= f.label :selected_color, "Color del dispositivo", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :selected_color,
-                placeholder: "Ej: Negro, Blanco, Azul",
-                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#125282] focus:border-[#125282]" %>
-          <p class="mt-1 text-sm text-gray-500">Color específico del dispositivo.</p>
+          <%= f.label :selected_color, "Color del dispositivo *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :selected_color,
+                options_for_select([["Seleccionar color...", ""]] + CreditApplication::DEVICE_COLORS.map { |c| [c, c] }, @credit_application.selected_color),
+                {},
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#125282] focus:border-[#125282]",
+                required: true %>
+          <p class="mt-1 text-sm text-gray-500">Seleccione el color del dispositivo.</p>
         </div>
       </div>
     </div>

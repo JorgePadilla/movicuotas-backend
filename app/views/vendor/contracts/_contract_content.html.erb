@@ -122,6 +122,10 @@
             <td style="padding: 0.25rem 0.5rem;"><%= device.brand %> / <%= device.model %></td>
           </tr>
           <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Color:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= device.color.present? ? device.color : 'No especificado' %></td>
+          </tr>
+          <tr>
             <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">IMEI:</td>
             <td style="padding: 0.25rem 0.5rem; font-family: monospace;"><%= device.imei %></td>
           </tr>
@@ -130,6 +134,10 @@
         <table style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
           <tr>
             <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Marca / Modelo:</td>
+            <td style="padding: 0.25rem 0.5rem;">_________________________________________</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Color:</td>
             <td style="padding: 0.25rem 0.5rem;">_________________________________________</td>
           </tr>
           <tr>

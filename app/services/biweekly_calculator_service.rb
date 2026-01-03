@@ -3,7 +3,7 @@
 #
 # Business Rules:
 # - Down payment options: 30%, 40%, 50% only
-# - Installment terms: 6, 8, 10, or 12 bi-weekly periods only
+# - Installment terms: 6, 8, or 12 bi-weekly periods only
 # - Interest rates from table (bi-weekly rates, not annual)
 # - Age restrictions: 21-60 years only
 #   - 50-60 years: Only 40% and 50% down payment, max financed L. 3,000
@@ -21,15 +21,15 @@ class BiweeklyCalculatorService
   # Valid down payment percentages (from Loan model validation)
   VALID_DOWN_PAYMENT_PERCENTAGES = [ 30, 40, 50 ].freeze
 
-  # Valid installment terms (updated to include 10)
-  VALID_INSTALLMENT_TERMS = [ 6, 8, 10, 12 ].freeze
+  # Valid installment terms
+  VALID_INSTALLMENT_TERMS = [ 6, 8, 12 ].freeze
 
   # Interest Rate Table (Bi-weekly Rates)
   # Source: CLAUDE.md - Payment Calculator Reference Data
   RATE_TABLE = {
-    30 => { 6 => 14.0, 8 => 13.5, 10 => 13.0, 12 => 12.5 },
-    40 => { 6 => 13.0, 8 => 12.5, 10 => 12.0, 12 => 11.5 },
-    50 => { 6 => 12.0, 8 => 11.5, 10 => 11.0, 12 => 10.5 }
+    30 => { 6 => 14.0, 8 => 13.5, 12 => 12.5 },
+    40 => { 6 => 13.0, 8 => 12.5, 12 => 11.5 },
+    50 => { 6 => 12.0, 8 => 11.5, 12 => 10.5 }
   }.freeze
 
   # Default interest rate for display (bi-weekly rate in percentage)
@@ -53,7 +53,7 @@ class BiweeklyCalculatorService
   # Initialize with calculator parameters
   # @param phone_price [Numeric] Total phone price (no accessories)
   # @param down_payment_percentage [Integer] 30, 40, or 50
-  # @param number_of_installments [Integer] 6, 8, 10, or 12
+  # @param number_of_installments [Integer] 6, 8, or 12
   # @param date_of_birth [Date] Customer's date of birth (required for age validation)
   # @param start_date [Date] Loan start date for installment schedule (default: today)
   def initialize(
@@ -203,7 +203,7 @@ class BiweeklyCalculatorService
 
   def validate_number_of_installments
     unless VALID_INSTALLMENT_TERMS.include?(@number_of_installments)
-      @errors << "Plazo de cuotas inválido. Debe ser 6, 8, 10 o 12 cuotas quincenales"
+      @errors << "Plazo de cuotas inválido. Debe ser 6, 8 o 12 cuotas quincenales"
     end
   end
 
