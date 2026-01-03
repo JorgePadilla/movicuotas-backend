@@ -61,6 +61,14 @@ Rails.application.routes.draw do
         post :cancel
       end
     end
+
+    # Down payment verification (admin verifies deposit receipts)
+    resources :down_payments, only: [:index, :show] do
+      member do
+        post :verify
+        post :reject
+      end
+    end
   end
 
   namespace :vendor do
@@ -76,6 +84,8 @@ Rails.application.routes.draw do
         get :download
         get :success  # Step 15: Success confirmation after signature
       end
+      # Down payment collection (Step 14.5: between signature and success)
+      resource :down_payment, only: [:show, :update], controller: "down_payments"
     end
 
     # Device selection (Step 10)

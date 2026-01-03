@@ -1,0 +1,139 @@
+<% content_for :title, "Primas Pendientes - Admin MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+  <!-- Page header -->
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Primas Pendientes de Verificación</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Verificar comprobantes de depósito de primas.</p>
+  </div>
+
+  <!-- Stats summary -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base md:text-lg font-semibold text-[#125282]">Pendientes</h3>
+          <p class="text-gray-600 text-xs md:text-sm mt-1">Depósitos por verificar</p>
+        </div>
+        <div class="text-2xl md:text-3xl font-bold text-yellow-600"><%= @pending_count %></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base md:text-lg font-semibold text-[#125282]">Monto Total</h3>
+          <p class="text-gray-600 text-xs md:text-sm mt-1">Primas pendientes</p>
+        </div>
+        <div class="text-xl md:text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@total_pending_amount, delimiter: ",") %></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and filters -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6 mb-6">
+    <%= form_with url: admin_down_payments_path, method: :get, class: "flex flex-col md:flex-row gap-4" do %>
+      <div class="flex-1">
+        <input type="text" name="search" value="<%= params[:search] %>"
+               placeholder="Buscar por cliente o contrato..."
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+      </div>
+      <div>
+        <select name="branch" class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+          <option value="">Todas las sucursales</option>
+          <% Loan.distinct.pluck(:branch_number).each do |branch| %>
+            <option value="<%= branch %>" <%= "selected" if params[:branch] == branch %>><%= branch %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="w-full md:w-auto px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#125282]/90">
+          Buscar
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Loans table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Prima</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendedor</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @loans.any? %>
+            <% @loans.each do |loan| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
+                  <div class="text-xs text-gray-500"><%= loan.customer.identification_number %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= loan.contract_number %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= loan.branch_number %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  L. <%= number_with_delimiter(loan.down_payment_amount, delimiter: ",") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= loan.down_payment_confirmed_at&.strftime("%d/%m/%Y %H:%M") || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= loan.user&.name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= link_to "Ver Comprobante", admin_down_payment_path(loan),
+                              class: "text-[#125282] hover:underline font-medium" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                <div class="mb-4">
+                  <svg class="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <p class="text-lg font-medium text-gray-900 mb-2">No hay primas pendientes</p>
+                <p class="text-gray-600">Todas las primas por depósito han sido verificadas.</p>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
+      <div class="px-6 py-4 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-gray-500">
+            Página <%= @loans.current_page %> de <%= @loans.total_pages %>
+          </p>
+          <div class="flex gap-2">
+            <% unless @loans.first_page? %>
+              <%= link_to "← Anterior", admin_down_payments_path(page: @loans.current_page - 1, search: params[:search], branch: params[:branch]),
+                          class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
+            <% end %>
+            <% unless @loans.last_page? %>
+              <%= link_to "Siguiente →", admin_down_payments_path(page: @loans.current_page + 1, search: params[:search], branch: params[:branch]),
+                          class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

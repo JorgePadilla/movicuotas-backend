@@ -16,7 +16,7 @@ loan_one:
 
 loan_two:
   customer: customer_two
-  user: vendor
+  user: vendedor
   contract_number: "CTR-2025-002"
   total_amount: 5000.00
   approved_amount: 5000.00

@@ -3,10 +3,27 @@
 
 es:
   activerecord:
+    models:
+      customer: "Cliente"
+      credit_application: "Solicitud de crédito"
+      loan: "Préstamo"
+      user: "Usuario"
+      device: "Dispositivo"
+      contract: "Contrato"
+      payment: "Pago"
+      installment: "Cuota"
     attributes:
       customer:
         gender: "Género"
         status: "Estado"
+        date_of_birth: "Fecha de nacimiento"
+        identification_number: "Número de identidad"
+        full_name: "Nombre completo"
+        phone: "Teléfono"
+        email: "Correo electrónico"
+        address: "Dirección"
+        city: "Ciudad"
+        department: "Departamento"
       credit_application:
         application_number: "Número de Solicitud"
         employment_status: "Situación Laboral"
@@ -58,6 +75,15 @@ es:
         blank: "no puede estar en blanco"
         invalid: "no es válido"
         inclusion: "no está incluido en la lista"
+        wrong_length:
+          one: "debe tener exactamente %{count} carácter"
+          other: "debe tener exactamente %{count} caracteres"
+        too_short:
+          one: "es demasiado corto (mínimo %{count} carácter)"
+          other: "es demasiado corto (mínimo %{count} caracteres)"
+        too_long:
+          one: "es demasiado largo (máximo %{count} carácter)"
+          other: "es demasiado largo (máximo %{count} caracteres)"
       models:
         credit_application:
           taken: "ya está en uso"

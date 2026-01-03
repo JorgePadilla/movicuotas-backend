@@ -68,13 +68,20 @@ class Customer < ApplicationRecord
     age
   end
 
-  def adult?
-    age.to_i >= 18
+  def eligible_age?
+    customer_age = age.to_i
+    customer_age >= 21 && customer_age <= 60
   end
 
   def adult_customer
     return unless date_of_birth.present?
-    errors.add(:date_of_birth, "el cliente debe ser mayor de edad (18+)") unless adult?
+
+    customer_age = age.to_i
+    if customer_age < 21
+      errors.add(:date_of_birth, "el cliente debe tener al menos 21 años de edad (edad actual: #{customer_age} años)")
+    elsif customer_age > 60
+      errors.add(:date_of_birth, "el cliente debe tener máximo 60 años de edad (edad actual: #{customer_age} años)")
+    end
   end
 
   def has_active_loan?

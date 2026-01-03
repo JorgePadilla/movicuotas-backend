@@ -109,17 +109,17 @@
       <h4 class="text-sm font-medium text-gray-500 text-center">Proceso de Venta Completado</h4>
       <div class="mt-4 flex items-center justify-center">
         <div class="flex items-center">
-          <% (1..15).each do |step| %>
+          <% (1..16).each do |step| %>
             <div class="flex items-center">
-              <div class="h-3 w-3 rounded-full <%= step <= 15 ? 'bg-green-500' : 'bg-gray-300' %>"></div>
-              <% unless step == 15 %>
-                <div class="w-8 h-1 <%= step <= 14 ? 'bg-green-500' : 'bg-gray-300' %>"></div>
+              <div class="h-3 w-3 rounded-full <%= step <= 16 ? 'bg-green-500' : 'bg-gray-300' %>"></div>
+              <% unless step == 16 %>
+                <div class="w-8 h-1 <%= step <= 15 ? 'bg-green-500' : 'bg-gray-300' %>"></div>
               <% end %>
             </div>
           <% end %>
         </div>
       </div>
-      <p class="mt-2 text-xs text-gray-500 text-center">Paso 15 de 18 completado</p>
+      <p class="mt-2 text-xs text-gray-500 text-center">Paso 16 de 19 completado</p>
     </div>
   </div>
 </div>

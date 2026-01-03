@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_205722) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_03_090036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -192,7 +192,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_205722) do
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
     t.decimal "down_payment_amount", precision: 10, scale: 2, null: false
+    t.datetime "down_payment_confirmed_at"
+    t.bigint "down_payment_confirmed_by_id"
+    t.string "down_payment_method"
     t.decimal "down_payment_percentage", precision: 5, scale: 2, null: false
+    t.text "down_payment_rejection_reason"
+    t.string "down_payment_verification_status"
     t.date "end_date"
     t.decimal "financed_amount", precision: 10, scale: 2, null: false
     t.decimal "interest_rate", precision: 5, scale: 2, null: false
@@ -207,6 +212,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_205722) do
     t.index ["branch_number"], name: "index_loans_on_branch_number"
     t.index ["contract_number"], name: "index_loans_on_contract_number", unique: true
     t.index ["customer_id"], name: "index_loans_on_customer_id"
+    t.index ["down_payment_verification_status"], name: "index_loans_on_down_payment_verification_status"
     t.index ["status"], name: "index_loans_on_status"
     t.index ["user_id"], name: "index_loans_on_user_id"
   end
@@ -476,6 +482,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_205722) do
   add_foreign_key "installments", "loans"
   add_foreign_key "loans", "customers"
   add_foreign_key "loans", "users"
+  add_foreign_key "loans", "users", column: "down_payment_confirmed_by_id"
   add_foreign_key "mdm_blueprints", "devices"
   add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "customers"

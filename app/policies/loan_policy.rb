@@ -38,6 +38,16 @@ class LoanPolicy < ApplicationPolicy
     show?  # If you can view the loan, you can download its contract
   end
 
+  # Down payment collection (vendor collects prima from customer)
+  def collect_down_payment?
+    (admin? || vendedor?) && record.contract&.signed? && !record.down_payment_collected?
+  end
+
+  # Down payment verification (admin verifies deposit receipts)
+  def verify_down_payment?
+    admin?
+  end
+
   # Scope: Filter loans based on role
   # - Admin: All loans
   # - Vendedor: Only loans in their branch

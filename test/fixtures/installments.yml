@@ -18,7 +18,7 @@ installment_three:
   amount: 583.34
   due_date: 2025-04-01
   status: paid
-  paid_at: 2025-04-01 10:00:00
+  paid_date: 2025-04-01
 
 installment_four:
   loan: loan_two

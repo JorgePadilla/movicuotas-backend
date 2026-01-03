@@ -2,8 +2,10 @@
 
 class CreditApprovalService
   # Business rules for credit approval
-  MINIMUM_AGE = 18
-  MINIMUM_SALARY_RANGE = "range_10000_20000"  # Minimum salary range required for approval
+  MINIMUM_AGE = 21
+  MAXIMUM_AGE = 60
+
+  # Approved amount ranges based on salary (used for calculating credit limit)
   APPROVED_AMOUNT_RANGES = {
     less_than_10000: 5000..8000,
     range_10000_20000: 8000..12000,
@@ -45,19 +47,14 @@ class CreditApprovalService
   # Validate basic requirements
   def validate_application
     Rails.logger.info "validate_application starting for credit application #{@credit_application.id}"
-    # Check customer age (legal adult)
-    unless @credit_application.customer.adult?
-      return { approved: false, reason: "El cliente debe ser mayor de edad (18+ años)." }
-    end
-
-    # Check credit age requirement (21-60 for loans)
+    # Check customer age (21-60 years for credit eligibility)
     customer_age = @credit_application.customer.age.to_i
-    unless customer_age >= 21
-      return { approved: false, reason: "El cliente debe tener al menos 21 años para obtener crédito." }
+    unless customer_age >= MINIMUM_AGE
+      return { approved: false, reason: "El cliente debe tener al menos #{MINIMUM_AGE} años para obtener crédito (edad actual: #{customer_age} años)." }
     end
 
-    unless customer_age <= 60
-      return { approved: false, reason: "El cliente no puede tener más de 60 años para obtener crédito." }
+    unless customer_age <= MAXIMUM_AGE
+      return { approved: false, reason: "El cliente no puede tener más de #{MAXIMUM_AGE} años para obtener crédito (edad actual: #{customer_age} años)." }
     end
 
     # Check required photos
@@ -65,49 +62,11 @@ class CreditApprovalService
       return { approved: false, reason: "Faltan fotografías de identificación requeridas." }
     end
 
-    # Check employment status (must be employed, self_employed, or retired with pension)
-    unless valid_employment_status?
-      return { approved: false, reason: "La situación laboral no cumple con los requisitos mínimos." }
-    end
-
-    # Check salary range
-    unless valid_salary_range?
-      return { approved: false, reason: "El rango salarial no cumple con los requisitos mínimos." }
-    end
+    # Employment status and salary range are NOT validated - all customers are approved
+    # regardless of their employment situation
 
     # All validations passed
     { approved: true }
-  end
-
-  def valid_employment_status?
-    # Employed, self-employed, or retired (assuming pension) are acceptable
-    acceptable_statuses = %w[employed self_employed retired]
-    employment_status = @credit_application.employment_status
-    Rails.logger.info "valid_employment_status? employment_status: #{employment_status.inspect}"
-    Rails.logger.info "valid_employment_status? acceptable_statuses: #{acceptable_statuses.inspect}"
-    result = acceptable_statuses.include?(employment_status)
-    Rails.logger.info "valid_employment_status? result: #{result.inspect}"
-    result
-  end
-
-  def valid_salary_range?
-    salary_range = @credit_application.salary_range
-    Rails.logger.info "valid_salary_range? salary_range: #{salary_range.inspect}"
-    return false unless salary_range.present?
-
-    # Get all salary range keys in order
-    salary_ranges = CreditApplication.salary_ranges.keys
-    Rails.logger.info "valid_salary_range? salary_ranges: #{salary_ranges.inspect}"
-
-    # Find indices
-    current_index = salary_ranges.index(salary_range.to_s)
-    minimum_index = salary_ranges.index(MINIMUM_SALARY_RANGE)
-    Rails.logger.info "valid_salary_range? current_index: #{current_index.inspect}, minimum_index: #{minimum_index.inspect}"
-
-    # Both indices must exist and current must be >= minimum
-    result = current_index && minimum_index && current_index >= minimum_index
-    Rails.logger.info "valid_salary_range? result: #{result.inspect}"
-    result
   end
 
   # Business logic decision - deterministic based on clear rules

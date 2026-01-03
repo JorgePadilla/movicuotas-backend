@@ -78,9 +78,9 @@ module Vendor
               # Continue anyway - signature was successfully saved
             end
 
-            # Redirect to success page (signature is saved, notification is secondary)
-            redirect_to success_vendor_contract_path(@contract),
-                        notice: 'Firma guardada exitosamente. ¡Crédito aplicado!'
+            # Redirect to down payment collection page (Step 14.5)
+            redirect_to vendor_contract_down_payment_path(@contract),
+                        notice: 'Firma guardada exitosamente. Ahora recolecte la prima.'
           else
             flash.now[:alert] = 'Error al guardar la firma. Intente nuevamente.'
             render :signature, status: :unprocessable_entity

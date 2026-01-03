@@ -52,14 +52,25 @@ class CustomerTest < ActiveSupport::TestCase
     assert_includes @customer.errors[:date_of_birth], "can't be blank"
   end
 
-  test "validates customer must be adult (18+ years)" do
-    @customer.date_of_birth = 17.years.ago.to_date
+  test "validates customer must be at least 21 years old" do
+    @customer.date_of_birth = 20.years.ago.to_date
     assert @customer.invalid?
     assert @customer.errors[:date_of_birth].any?
   end
 
-  test "validates customer born exactly 18 years ago is valid" do
-    @customer.date_of_birth = 18.years.ago.to_date
+  test "validates customer born exactly 21 years ago is valid" do
+    @customer.date_of_birth = 21.years.ago.to_date
+    assert @customer.valid?
+  end
+
+  test "validates customer must be at most 60 years old" do
+    @customer.date_of_birth = 61.years.ago.to_date
+    assert @customer.invalid?
+    assert @customer.errors[:date_of_birth].any?
+  end
+
+  test "validates customer born exactly 60 years ago is valid" do
+    @customer.date_of_birth = 60.years.ago.to_date
     assert @customer.valid?
   end
 

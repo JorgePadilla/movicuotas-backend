@@ -4,9 +4,7 @@ payment_one:
   payment_date: 2025-01-15
   payment_method: cash
   reference_number: "PAY-2025-001"
-  verified: true
-  verified_at: 2025-01-15 11:00:00
-  verified_by: admin
+  verification_status: verified
 
 payment_two:
   loan: loan_one
@@ -14,9 +12,7 @@ payment_two:
   payment_date: 2025-02-15
   payment_method: transfer
   reference_number: "PAY-2025-002"
-  verified: true
-  verified_at: 2025-02-15 11:00:00
-  verified_by: admin
+  verification_status: verified
 
 payment_three:
   loan: loan_two
@@ -24,4 +20,4 @@ payment_three:
   payment_date: 2025-01-20
   payment_method: card
   reference_number: "PAY-2025-003"
-  verified: false
+  verification_status: pending

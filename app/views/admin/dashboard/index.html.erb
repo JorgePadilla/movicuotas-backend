@@ -31,6 +31,17 @@
 
     <%= link_to "Monitoreo de Jobs", admin_jobs_path,
         class: "#{controller_name == 'jobs' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
+
+    <% pending_down_payments = Loan.down_payment_pending_verification.count %>
+    <%= link_to admin_down_payments_path,
+        class: "relative #{controller_name == 'down_payments' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" do %>
+      Primas Pendientes
+      <% if pending_down_payments > 0 %>
+        <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
+          <%= pending_down_payments %>
+        </span>
+      <% end %>
+    <% end %>
   </div>
 
   <!-- Metrics grid -->

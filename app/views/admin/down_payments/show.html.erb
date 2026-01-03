@@ -1,0 +1,121 @@
+<% content_for :title, "Verificar Prima - Admin MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+  <!-- Page header -->
+  <div class="mb-6 md:mb-8">
+    <div class="flex items-center gap-2 mb-2">
+      <%= link_to "← Volver a lista", admin_down_payments_path, class: "text-sm text-[#125282] hover:underline" %>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Verificar Prima</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Revisar comprobante y aprobar o rechazar la prima.</p>
+  </div>
+
+  <!-- Status badge -->
+  <div class="mb-6">
+    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+      Pendiente de verificación
+    </span>
+  </div>
+
+  <!-- Loan and customer info -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Información del Préstamo</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Cliente</label>
+        <p class="text-lg text-gray-900 mt-1"><%= @customer.full_name %></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Identidad</label>
+        <p class="text-lg text-gray-900 mt-1"><%= @customer.identification_number %></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Contrato</label>
+        <p class="text-lg text-gray-900 mt-1"><%= @loan.contract_number %></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Sucursal</label>
+        <p class="text-lg text-gray-900 mt-1"><%= @loan.branch_number %></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Precio del Teléfono</label>
+        <p class="text-lg text-gray-900 mt-1">L. <%= number_with_delimiter(@loan.total_amount, delimiter: ",") %></p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600">Porcentaje Prima</label>
+        <p class="text-lg text-gray-900 mt-1"><%= @loan.down_payment_percentage %>%</p>
+      </div>
+    </div>
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <label class="text-lg font-semibold text-gray-900">Monto de Prima:</label>
+        <span class="text-2xl font-bold text-[#125282]">L. <%= number_with_delimiter(@loan.down_payment_amount, delimiter: ",") %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receipt image -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Comprobante de Depósito</h2>
+
+    <% if @loan.down_payment_receipt.attached? %>
+      <div class="flex justify-center mb-4">
+        <%= image_tag @loan.down_payment_receipt, class: "max-w-full max-h-96 rounded-lg shadow border border-gray-200" %>
+      </div>
+      <div class="text-center">
+        <%= link_to "Descargar Comprobante",
+                    url_for(@loan.down_payment_receipt),
+                    download: "comprobante_#{@loan.contract_number}.jpg",
+                    class: "text-[#125282] hover:underline font-medium" %>
+      </div>
+    <% else %>
+      <div class="text-center py-8">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="mt-2 text-gray-500">No se encontró comprobante adjunto</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Submission info -->
+  <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 mb-6">
+    <h3 class="text-base font-semibold text-gray-900 mb-3">Información de Envío</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="text-gray-600">Vendedor:</span>
+        <span class="font-medium text-gray-900 ml-2"><%= @loan.down_payment_confirmed_by&.name || @loan.user&.name || "-" %></span>
+      </div>
+      <div>
+        <span class="text-gray-600">Fecha de Envío:</span>
+        <span class="font-medium text-gray-900 ml-2"><%= @loan.down_payment_confirmed_at&.strftime("%d/%m/%Y %H:%M") || "-" %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Acción</h2>
+
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Verify button -->
+      <%= button_to "Verificar Prima", verify_admin_down_payment_path(@loan),
+                    method: :post,
+                    class: "flex-1 px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-center",
+                    data: { turbo_confirm: "¿Está seguro de verificar esta prima de L. #{number_with_delimiter(@loan.down_payment_amount, delimiter: ",")}?" } %>
+
+      <!-- Reject button with reason -->
+      <div class="flex-1">
+        <%= form_with url: reject_admin_down_payment_path(@loan), method: :post, class: "flex flex-col gap-2" do %>
+          <input type="text" name="reason" placeholder="Razón del rechazo (opcional)"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+          <button type="submit"
+                  class="w-full px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  data-turbo-confirm="¿Está seguro de rechazar esta prima?">
+            Rechazar Prima
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
