@@ -140,20 +140,20 @@
     <%= form_with url: admin_jobs_path, method: :get, local: true, class: "space-y-4" do |f| %>
       <!-- Status filters -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-3">Estado</label>
-        <div class="flex flex-wrap gap-4 mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+        <div class="flex flex-wrap gap-2 mb-4">
           <%= link_to "Todos", admin_jobs_path(anchor: 'filters-section'),
-              class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Pendientes", admin_jobs_path(status: 'pending', anchor: 'filters-section'),
-              class: "#{params[:status] == 'pending' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'pending' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "En Ejecución", admin_jobs_path(status: 'running', anchor: 'filters-section'),
-              class: "#{params[:status] == 'running' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'running' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Completados", admin_jobs_path(status: 'completed', anchor: 'filters-section'),
-              class: "#{params[:status] == 'completed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'completed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Fallidos", admin_jobs_path(status: 'failed', anchor: 'filters-section'),
-              class: "#{params[:status] == 'failed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'failed' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
           <%= link_to "Programados", admin_jobs_path(status: 'scheduled', anchor: 'filters-section'),
-              class: "#{params[:status] == 'scheduled' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" %>
+              class: "#{params[:status] == 'scheduled' ? 'bg-[#125282] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap" %>
         </div>
       </div>
 
