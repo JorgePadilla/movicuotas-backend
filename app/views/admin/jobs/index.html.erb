@@ -296,7 +296,7 @@
         <div class="flex gap-2">
           <!-- Previous page -->
           <% if @jobs.current_page > 1 %>
-            <%= link_to "← Anterior", admin_jobs_path(params.merge(page: @jobs.current_page - 1, anchor: 'filters-section')),
+            <%= link_to "← Anterior", admin_jobs_path(request.query_parameters.merge(page: @jobs.current_page - 1, anchor: 'filters-section')),
                 class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
           <% end %>
 
@@ -305,10 +305,10 @@
             <% if page_num == @jobs.current_page %>
               <span class="px-4 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page_num %></span>
             <% elsif (page_num - @jobs.current_page).abs <= 2 %>
-              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num, anchor: 'filters-section')),
+              <%= link_to page_num, admin_jobs_path(request.query_parameters.merge(page: page_num, anchor: 'filters-section')),
                   class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
             <% elsif page_num == 1 || page_num == @jobs.total_pages %>
-              <%= link_to page_num, admin_jobs_path(params.merge(page: page_num, anchor: 'filters-section')),
+              <%= link_to page_num, admin_jobs_path(request.query_parameters.merge(page: page_num, anchor: 'filters-section')),
                   class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
             <% elsif (page_num == 2 && @jobs.current_page > 3) || (page_num == @jobs.total_pages - 1 && @jobs.current_page < @jobs.total_pages - 2) %>
               <span class="px-4 py-2 text-gray-500">...</span>
@@ -317,7 +317,7 @@
 
           <!-- Next page -->
           <% if @jobs.current_page < @jobs.total_pages %>
-            <%= link_to "Siguiente →", admin_jobs_path(params.merge(page: @jobs.current_page + 1, anchor: 'filters-section')),
+            <%= link_to "Siguiente →", admin_jobs_path(request.query_parameters.merge(page: @jobs.current_page + 1, anchor: 'filters-section')),
                 class: "px-4 py-2 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 font-medium" %>
           <% end %>
         </div>
