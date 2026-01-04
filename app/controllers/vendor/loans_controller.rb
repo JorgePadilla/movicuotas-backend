@@ -143,7 +143,7 @@ module Vendor
     def verify_prerequisites_ownership!
       # Verify credit application belongs to current vendor
       unless @credit_application.vendor == current_user
-        raise LoanFinalizationError, "La solicitud de crédito no pertenece al vendedor actual."
+        raise LoanFinalizationError, "La solicitud de crédito no pertenece al supervisor actual."
       end
 
       # Verify contract is not already linked to a loan

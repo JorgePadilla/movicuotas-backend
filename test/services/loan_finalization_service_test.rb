@@ -2,8 +2,8 @@ require "test_helper"
 
 class LoanFinalizationServiceTest < ActiveSupport::TestCase
   setup do
-    # Use existing vendedor user from fixtures
-    @vendedor = users(:vendedor) || User.find_by(email: "vendedor@movicuotas.com")
+    # Use existing supervisor user from fixtures
+    @supervisor = users(:supervisor) || User.find_by(email: "supervisor@movicuotas.com")
     # Create a customer for testing
     @customer = Customer.create!(
       identification_number: "1234567890123",
@@ -17,7 +17,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
     # Create an approved credit application
     @credit_application = CreditApplication.create!(
       customer: @customer,
-      vendor: @vendedor,
+      vendor: @supervisor,
       status: :approved,
       approved_amount: 5000.00,
       application_number: "APP-#{Time.current.strftime('%Y%m%d')}-999999"
@@ -53,7 +53,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert service
   end
@@ -65,7 +65,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert_raises LoanFinalizationError do
       service.finalize!
@@ -75,7 +75,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
   test "should raise error if device already assigned to loan" do
     loan = Loan.create!(
       customer: @customer,
-      user: @vendedor,
+      user: @supervisor,
       branch_number: "S01",
       total_amount: 1000.00,
       approved_amount: 1000.00,
@@ -91,7 +91,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert_raises LoanFinalizationError do
       service.finalize!
@@ -103,7 +103,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
   test "should raise error if contract already linked to loan" do
     loan = Loan.create!(
       customer: @customer,
-      user: @vendedor,
+      user: @supervisor,
       branch_number: "S01",
       total_amount: 1000.00,
       approved_amount: 1000.00,
@@ -119,7 +119,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert_raises LoanFinalizationError do
       service.finalize!
@@ -132,7 +132,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
     # Create an active loan for the same customer
     Loan.create!(
       customer: @customer,
-      user: @vendedor,
+      user: @supervisor,
       branch_number: "S01",
       total_amount: 1000.00,
       approved_amount: 1000.00,
@@ -147,7 +147,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert_raises LoanFinalizationError do
       service.finalize!
@@ -160,7 +160,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes.merge(total_amount: 6000.00),
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
     assert_raises LoanFinalizationError do
       service.finalize!
@@ -176,7 +176,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
 
     assert_difference [ "Loan.count", "Installment.count" ], 1 do
@@ -224,7 +224,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       device: @device,
       loan_attributes: @loan_attributes,
       contract: @contract,
-      current_user: @vendedor
+      current_user: @supervisor
     )
 
     assert_difference "AuditLog.count", 1 do
@@ -232,7 +232,7 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
     end
 
     audit_log = AuditLog.last
-    assert_equal @vendedor, audit_log.user
+    assert_equal @supervisor, audit_log.user
     assert_equal "loan_finalized", audit_log.action
     assert_equal @loan, audit_log.resource
     assert audit_log.changes.present?

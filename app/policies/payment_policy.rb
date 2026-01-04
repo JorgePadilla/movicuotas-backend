@@ -2,8 +2,8 @@
 
 class PaymentPolicy < ApplicationPolicy
   # Payment management policies based on MOVICUOTAS permission matrix:
-  # - View payments: All roles (Admin, Vendedor, Cobrador read-only)
-  # - Register payment: Admin and Vendedor
+  # - View payments: All roles (Admin, Supervisor, Cobrador read-only)
+  # - Register payment: Admin and Supervisor
   # - Verify payment: Admin only
   # - Delete payment: Admin only
 
@@ -17,11 +17,11 @@ class PaymentPolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can register payments
+    admin? || supervisor?  # Admin and Supervisor can register payments
   end
 
   def update?
-    admin? || (vendedor? && own_payment?)  # Admin and Vendedor (own only) can update
+    admin? || (supervisor? && own_payment?)  # Admin and Supervisor (own only) can update
   end
 
   def destroy?
@@ -35,14 +35,14 @@ class PaymentPolicy < ApplicationPolicy
 
   # Scope: Filter payments based on role
   # - Admin: All payments
-  # - Vendedor: Payments for loans in their branch
+  # - Supervisor: Payments for loans in their branch
   # - Cobrador: All payments (read-only access)
   class Scope < Scope
     def resolve
       if user&.admin? || user&.cobrador?
         scope.all
-      elsif user&.vendedor?
-        # Vendedores can see payments for loans in their branch
+      elsif user&.supervisor?
+        # Supervisors can see payments for loans in their branch
         scope.joins(loan: :customer)
              .where(loans: { branch_number: user.branch_number })
       else
@@ -54,7 +54,7 @@ class PaymentPolicy < ApplicationPolicy
   private
 
   def own_payment?
-    # Assuming payment belongs to loan, and loan belongs to user (vendedor)
+    # Assuming payment belongs to loan, and loan belongs to user (supervisor)
     record.loan.user == user
   end
 end

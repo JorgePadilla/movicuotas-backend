@@ -3,7 +3,7 @@
 module Vendor
   class DashboardPolicy < ::DashboardPolicy
     def index?
-      user.vendedor? || user.admin?
+      user.supervisor? || user.admin?
     end
 
     class Scope < Scope

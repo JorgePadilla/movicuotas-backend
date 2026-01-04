@@ -7,7 +7,7 @@ module Cobrador
     setup do
       @cobrador = users(:cobrador)
       @admin = users(:admin)
-      @vendedor = users(:vendedor)
+      @supervisor = users(:supervisor)
     end
 
     test "cobrador can view overdue devices list" do
@@ -61,8 +61,8 @@ module Cobrador
       assert device.pending?
     end
 
-    test "vendedor cannot block devices" do
-      sign_in_as(@vendedor)
+    test "supervisor cannot block devices" do
+      sign_in_as(@supervisor)
       device = devices(:unlocked_with_overdue_loan)
       get cobrador_overdue_device_block_path(device)
       assert_response :redirect

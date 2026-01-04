@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_03_090036) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_055502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,6 +80,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_03_090036) do
     t.bigint "customer_id", null: false
     t.string "employment_status"
     t.text "notes"
+    t.integer "otp_attempts", default: 0
+    t.string "otp_code"
+    t.string "otp_delivery_status", default: "pending"
+    t.datetime "otp_sent_at"
+    t.datetime "otp_verified_at"
     t.string "rejection_reason"
     t.string "salary_range"
     t.string "selected_color"
@@ -91,6 +96,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_03_090036) do
     t.string "verification_method"
     t.index ["application_number"], name: "index_credit_applications_on_application_number", unique: true
     t.index ["customer_id"], name: "index_credit_applications_on_customer_id"
+    t.index ["otp_delivery_status"], name: "index_credit_applications_on_otp_delivery_status"
     t.index ["selected_phone_model_id"], name: "index_credit_applications_on_selected_phone_model_id"
     t.index ["status"], name: "index_credit_applications_on_status"
     t.index ["vendor_id"], name: "index_credit_applications_on_vendor_id"

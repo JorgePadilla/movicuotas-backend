@@ -4,7 +4,7 @@ module Vendor
   class DeviceSelectionsControllerTest < ActionDispatch::IntegrationTest
     setup do
       # Use seeded data
-      @vendor = User.find_by(email: "vendedor@movicuotas.com")
+      @vendor = User.find_by(email: "supervisor@movicuotas.com")
       @credit_application = CreditApplication.approved.first
       # Find a phone model with price <= approved_amount
       @phone_model = PhoneModel.active.where("price <= ?", @credit_application.approved_amount).first

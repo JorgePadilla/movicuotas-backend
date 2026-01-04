@@ -103,6 +103,10 @@ Rails.application.routes.draw do
       member do
         get :photos, as: :photos
         patch :update_photos, as: :update_photos
+        get :verify_otp, as: :verify_otp                      # OTP verification page
+        post :send_otp, as: :send_otp                         # Send OTP (after method selection)
+        post :submit_otp_verification, as: :submit_otp        # Submit OTP code
+        post :resend_otp, as: :resend_otp                     # Resend OTP code
         get :employment, as: :employment
         patch :update_employment, as: :update_employment
         get :summary, as: :summary

@@ -255,7 +255,7 @@ class ContractGeneratorService
       pdf.text '___________________________', align: :right
       pdf.text 'LA EMPRESA', align: :right
       pdf.text 'MOVICUOTAS', align: :right
-      pdf.text "Representante: #{@loan.user&.full_name || 'Vendedor Autorizado'}", align: :right
+      pdf.text "Representante: #{@loan.user&.full_name || 'Supervisor Autorizado'}", align: :right
       pdf.text "Sucursal: #{@loan.branch_number}", align: :right
 
       # Footer

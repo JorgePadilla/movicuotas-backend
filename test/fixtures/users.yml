@@ -8,11 +8,11 @@ admin:
   branch_number: "S01"
   active: true
 
-vendedor:
-  email: vendedor@movicuotas.com
+supervisor:
+  email: supervisor@movicuotas.com
   password_digest: $2a$12$cU/T7wOlt3whGGwp.uosPezPQfx3/iOjeMYEjTh9i9QmW37qo8YK.
-  full_name: Vendedor Demo
-  role: vendedor
+  full_name: Supervisor Demo
+  role: supervisor
   branch_number: "S02"
   active: true
 

@@ -59,13 +59,13 @@ module Cobrador
       assert_not_includes response.body, "Eliminar"
     end
 
-    test "vendedor can view their own loan payment history" do
-      loan = @loan.update(user: users(:vendedor))
-      vendedor = users(:vendedor)
-      sign_in_as(vendedor)
+    test "supervisor can view their own loan payment history" do
+      loan = @loan.update(user: users(:supervisor))
+      supervisor = users(:supervisor)
+      sign_in_as(supervisor)
 
       get cobrador_loan_payment_history_path(@loan)
-      # Should be accessible but filtered by vendedor's branch
+      # Should be accessible but filtered by supervisor's branch
       # Behavior depends on branch logic
     end
   end

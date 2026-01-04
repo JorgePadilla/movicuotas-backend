@@ -6,7 +6,7 @@ class MdmBlockServiceTest < ActiveSupport::TestCase
   setup do
     @cobrador = users(:cobrador)
     @admin = users(:admin)
-    @vendedor = users(:vendedor)
+    @supervisor = users(:supervisor)
     @device = devices(:unlocked_with_overdue_loan)
   end
 
@@ -25,8 +25,8 @@ class MdmBlockServiceTest < ActiveSupport::TestCase
     assert result[:success]
   end
 
-  test "vendedor cannot block device" do
-    service = MdmBlockService.new(@device, @vendedor)
+  test "supervisor cannot block device" do
+    service = MdmBlockService.new(@device, @supervisor)
     result = service.block!
 
     assert_equal "Unauthorized", result[:error]

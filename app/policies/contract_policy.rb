@@ -2,8 +2,8 @@
 
 class ContractPolicy < ApplicationPolicy
   # Contract policies (digital contracts with customer signatures)
-  # - View contracts: Admin (all), Vendedor (own), Cobrador (all read-only)
-  # - Create contracts: Admin and Vendedor (automatic generation)
+  # - View contracts: Admin (all), Supervisor (own), Cobrador (all read-only)
+  # - Create contracts: Admin and Supervisor (automatic generation)
   # - Update/Delete: Admin only
 
   # Default CRUD actions (override as needed):
@@ -16,7 +16,7 @@ class ContractPolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create contracts (automatic)
+    admin? || supervisor?  # Admin and Supervisor can create contracts (automatic)
   end
 
   def update?
@@ -33,9 +33,9 @@ class ContractPolicy < ApplicationPolicy
   end
 
   def save_signature?
-    # Vendedor can sign contracts for loans they created
+    # Supervisor can sign contracts for loans they created
     # Admin can sign any contract
-    admin? || (vendedor? && record.loan.present? && record.loan.user == user)
+    admin? || (supervisor? && record.loan.present? && record.loan.user == user)
   end
 
   def success?
@@ -60,14 +60,14 @@ class ContractPolicy < ApplicationPolicy
 
   # Scope: Filter contracts based on role
   # - Admin: All contracts
-  # - Vendedor: Contracts for loans they created
+  # - Supervisor: Contracts for loans they created
   # - Cobrador: All contracts (read-only access)
   class Scope < Scope
     def resolve
       if user&.admin? || user&.cobrador?
         scope.all
-      elsif user&.vendedor?
-        # Assuming contract belongs to loan, and loan belongs to user (vendedor)
+      elsif user&.supervisor?
+        # Assuming contract belongs to loan, and loan belongs to user (supervisor)
         scope.joins(loan: :user).where(loans: { user: user })
       else
         scope.none

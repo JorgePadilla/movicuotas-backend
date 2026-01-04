@@ -1,0 +1,16 @@
+MOVICUOTAS - Tu Credito, Tu Movil
+
+Hola <%= @customer.full_name %>,
+
+Tu codigo de verificacion para completar tu solicitud de credito es:
+
+    <%= @code %>
+
+Este codigo expira en <%= @expiration_minutes %> minutos.
+
+IMPORTANTE: No compartas este codigo con nadie.
+Nuestro personal nunca te pedira este codigo por telefono.
+
+---
+Este correo fue enviado automaticamente. Por favor no respondas a este mensaje.
+(c) <%= Date.today.year %> MOVICUOTAS. Todos los derechos reservados.

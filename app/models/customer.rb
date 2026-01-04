@@ -14,7 +14,8 @@ class Customer < ApplicationRecord
   validates :phone, presence: true,
             format: { with: /\A\d{8}\z/, message: "debe tener 8 dígitos" },
             length: { is: 8 }
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :email, presence: { message: "es requerido para verificación" },
+            format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :status, inclusion: { in: %w[active suspended blocked] }
 
   # Enums
@@ -77,10 +78,8 @@ class Customer < ApplicationRecord
     return unless date_of_birth.present?
 
     customer_age = age.to_i
-    if customer_age < 21
-      errors.add(:date_of_birth, "el cliente debe tener al menos 21 años de edad (edad actual: #{customer_age} años)")
-    elsif customer_age > 60
-      errors.add(:date_of_birth, "el cliente debe tener máximo 60 años de edad (edad actual: #{customer_age} años)")
+    if customer_age < 21 || customer_age > 60
+      errors.add(:base, "Fecha no valida")
     end
   end
 

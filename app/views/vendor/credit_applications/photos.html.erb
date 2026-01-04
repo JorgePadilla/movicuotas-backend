@@ -1,44 +1,11 @@
-<% content_for :title, "Fotografías - MOVICUOTAS" %>
+<% content_for :title, "Fotografias - MOVICUOTAS" %>
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Progress Bar -->
   <div class="mb-6 md:mb-8">
-    <h1 class="text-xl md:text-3xl font-bold text-[#125282] mb-1 md:mb-2">Solicitud de Crédito - Paso 2 de 4</h1>
-    <p class="text-gray-600 mb-4 text-sm md:text-base">Fotografías de Identificación</p>
-
-    <%# Mobile Progress: Simple dots %>
-    <div class="flex md:hidden items-center justify-center space-x-2 mb-2">
-      <div class="w-3 h-3 rounded-full bg-[#125282]"></div>
-      <div class="w-6 h-0.5 bg-[#125282]"></div>
-      <div class="w-3 h-3 rounded-full bg-[#125282]"></div>
-      <div class="w-6 h-0.5 bg-gray-300"></div>
-      <div class="w-3 h-3 rounded-full bg-gray-300"></div>
-      <div class="w-6 h-0.5 bg-gray-300"></div>
-      <div class="w-3 h-3 rounded-full bg-gray-300"></div>
-    </div>
-
-    <%# Desktop Progress: Full labels %>
-    <div class="hidden md:flex items-center justify-between mb-2">
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">1</div>
-        <span class="ml-2 font-medium text-[#125282]">Datos Generales</span>
-      </div>
-      <div class="h-1 w-8 bg-[#125282]"></div>
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold">2</div>
-        <span class="ml-2 font-medium text-[#125282]">Fotografías</span>
-      </div>
-      <div class="h-1 w-8 bg-gray-300"></div>
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">3</div>
-        <span class="ml-2 font-medium text-gray-500">Datos Laborales</span>
-      </div>
-      <div class="h-1 w-8 bg-gray-300"></div>
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">4</div>
-        <span class="ml-2 font-medium text-gray-500">Resumen</span>
-      </div>
-    </div>
+    <h1 class="text-xl md:text-3xl font-bold text-[#125282] mb-1 md:mb-2">Solicitud de Credito - Paso 2 de 5</h1>
+    <p class="text-gray-600 mb-4 text-sm md:text-base">Fotografias de Identificacion</p>
+    <%= render partial: "progress_bar", locals: { current_step: 2 } %>
   </div>
 
   <div class="bg-white shadow rounded-lg p-4 md:p-6">
@@ -287,24 +254,6 @@
             <p class="mt-4 text-center text-sm text-green-600">✓ Imagen ya capturada anteriormente</p>
           <% end %>
         </div>
-      </div>
-
-      <!-- Verification Method -->
-      <div class="pt-6 border-t border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Método de Verificación</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <% CreditApplication.verification_methods.each_key do |method| %>
-            <label class="relative flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-[#125282] transition-colors duration-200">
-              <%= f.radio_button :verification_method, method,
-                    class: "h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]",
-                    required: true %>
-              <span class="ml-3 text-sm font-medium text-gray-900">
-                <%= method.humanize %>
-              </span>
-            </label>
-          <% end %>
-        </div>
-        <p class="mt-2 text-sm text-gray-500">Selecciona cómo el cliente recibirá el código de verificación</p>
       </div>
 
       <!-- Navigation Buttons -->

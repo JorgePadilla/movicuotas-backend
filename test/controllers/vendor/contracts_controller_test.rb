@@ -14,7 +14,7 @@ module Vendor
 
       @contract = Contract.first
       @loan = @contract.loan
-      @vendor = User.find_by(email: 'vendedor@movicuotas.com')
+      @vendor = User.find_by(email: 'supervisor@movicuotas.com')
     end
 
     test "should get show when authenticated as vendor" do

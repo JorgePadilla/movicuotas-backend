@@ -4,7 +4,7 @@ class UserPolicy < ApplicationPolicy
   # User management is restricted to admins only
   # Based on MOVICUOTAS permission matrix:
   # - Admin: Can view, create, edit, delete users
-  # - Vendedor: Cannot access user management
+  # - Supervisor: Cannot access user management
   # - Cobrador: Cannot access user management
 
   def index?

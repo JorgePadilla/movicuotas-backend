@@ -2,8 +2,8 @@
 
 class DevicePolicy < ApplicationPolicy
   # Device management policies based on MOVICUOTAS permission matrix:
-  # - View devices: Admin (all), Vendedor (all), Cobrador (overdue only)
-  # - Assign device: Admin and Vendedor
+  # - View devices: Admin (all), Supervisor (all), Cobrador (overdue only)
+  # - Assign device: Admin and Supervisor
   # - Block device (MDM): Admin and Cobrador
   # - Unblock device: Admin only
   # - Delete device: Admin only
@@ -18,11 +18,11 @@ class DevicePolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create devices
+    admin? || supervisor?  # Admin and Supervisor can create devices
   end
 
   def update?
-    admin? || vendedor?  # Admin and Vendedor can update devices
+    admin? || supervisor?  # Admin and Supervisor can update devices
   end
 
   def destroy?
@@ -31,7 +31,7 @@ class DevicePolicy < ApplicationPolicy
 
   # Custom actions
   def assign?
-    admin? || vendedor?  # Admin and Vendedor can assign devices
+    admin? || supervisor?  # Admin and Supervisor can assign devices
   end
 
   def lock?
@@ -44,11 +44,11 @@ class DevicePolicy < ApplicationPolicy
 
   # Scope: Filter devices based on role
   # - Admin: All devices
-  # - Vendedor: All devices
+  # - Supervisor: All devices
   # - Cobrador: Only devices with overdue installments
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.vendedor?
+      if user&.admin? || user&.supervisor?
         scope.all
       elsif user&.cobrador?
         # Cobradores can only see devices with overdue loans

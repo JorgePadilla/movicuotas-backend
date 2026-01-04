@@ -27,12 +27,29 @@ module Vendor
           # Check if customer has any active loans across ALL stores
           @active_loan = @customer.loans.active.first
 
+          # Check if customer has an approved credit application (incomplete process)
+          # If customer has no active loan but has an approved application, they can continue
+          @approved_application = @customer.credit_applications.approved.order(created_at: :desc).first
+
+          # Check if customer has a pending credit application (in progress)
+          @pending_application = @customer.credit_applications.pending.order(created_at: :desc).first
+
           # Determine which step to show
           if @active_loan
             # Step 3a: Cliente Bloqueado
             @step = :blocked
             @alert_color = "#ef4444"  # Red
             @alert_message = "Cliente tiene crédito activo. Finaliza el pago de tus Movicuotas para aplicar a más créditos!"
+          elsif @approved_application
+            # Step: Solicitud Aprobada - Continuar proceso
+            @step = :continue_approved
+            @alert_color = "#3b82f6"  # Blue
+            @alert_message = "Cliente tiene una solicitud aprobada. Continua con la seleccion de dispositivo."
+          elsif @pending_application
+            # Step: Solicitud Pendiente - Continuar proceso
+            @step = :continue_pending
+            @alert_color = "#f59e0b"  # Orange
+            @alert_message = "Cliente tiene una solicitud en proceso. Continua desde donde se quedo."
           else
             # Step 3b: Cliente Disponible
             @step = :available

@@ -1,6 +1,6 @@
 credit_app_one:
   customer: customer_one
-  vendor: vendedor
+  vendor: supervisor
   status: pending
   application_number: APP-20250101-000001
   employment_status: employed
@@ -9,7 +9,7 @@ credit_app_one:
 
 credit_app_approved:
   customer: customer_two
-  vendor: vendedor
+  vendor: supervisor
   status: approved
   application_number: APP-20250101-000002
   approved_amount: 5000.00
@@ -19,7 +19,7 @@ credit_app_approved:
 
 credit_app_rejected:
   customer: customer_one
-  vendor: vendedor
+  vendor: supervisor
   status: rejected
   application_number: APP-20250101-000003
   rejection_reason: Insufficient income

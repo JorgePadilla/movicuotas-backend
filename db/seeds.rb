@@ -45,10 +45,10 @@ admin_jorge = User.find_or_create_by!(email: 'jorgep4dill4@gmail.com') do |user|
   user.active = true
 end
 
-vendedor = User.find_or_create_by!(email: 'vendedor@movicuotas.com') do |user|
-  user.full_name = 'Vendedor Ejemplo'
+supervisor = User.find_or_create_by!(email: 'supervisor@movicuotas.com') do |user|
+  user.full_name = 'Supervisor Ejemplo'
   user.password = 'password123'
-  user.role = 'vendedor'
+  user.role = 'supervisor'
   user.branch_number = 'S01'
   user.active = true
 end
@@ -225,7 +225,7 @@ customer = Customer.first
 if customer
   credit_app = CreditApplication.find_or_create_by!(application_number: 'APP-20251216-000001') do |ca|
     ca.customer = customer
-    ca.vendor = vendedor
+    ca.vendor = supervisor
     ca.status = 'approved'
     ca.approved_amount = 22_000.00
     ca.employment_status = 'employed'
@@ -239,7 +239,7 @@ puts "Creating loan..."
 if customer
   loan = Loan.find_or_create_by!(contract_number: 'S01-2025-12-16-000001') do |l|
     l.customer = customer
-    l.user = vendedor
+    l.user = supervisor
     l.branch_number = 'S01'
     l.status = 'active'
     l.total_amount = 22_000.00

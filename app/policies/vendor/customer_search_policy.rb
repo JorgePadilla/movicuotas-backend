@@ -3,7 +3,7 @@
 module Vendor
   class CustomerSearchPolicy < ApplicationPolicy
     def index?
-      user.vendedor? || user.admin?
+      user.supervisor? || user.admin?
     end
 
     class Scope < Scope

@@ -11,7 +11,7 @@ module Admin
       # User statistics
       @total_users = User.count
       @admin_users = User.where(role: 'admin').count
-      @vendor_users = User.where(role: 'vendedor').count
+      @vendor_users = User.where(role: 'supervisor').count
       @collector_users = User.where(role: 'cobrador').count
       @active_users = User.where('updated_at >= ?', 30.days.ago).count
 

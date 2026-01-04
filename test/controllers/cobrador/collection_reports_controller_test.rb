@@ -7,7 +7,7 @@ module Cobrador
     setup do
       @cobrador = users(:cobrador)
       @admin = users(:admin)
-      @vendedor = users(:vendedor)
+      @supervisor = users(:supervisor)
     end
 
     test "cobrador can view collection reports" do
@@ -23,8 +23,8 @@ module Cobrador
       assert_response :success
     end
 
-    test "vendedor cannot view collection reports" do
-      sign_in_as(@vendedor)
+    test "supervisor cannot view collection reports" do
+      sign_in_as(@supervisor)
       get cobrador_collection_reports_path
       assert_response :redirect
     end

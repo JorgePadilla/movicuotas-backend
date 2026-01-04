@@ -4,13 +4,13 @@ class User < ApplicationRecord
   # Validations
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :full_name, presence: true
-  validates :role, presence: true, inclusion: { in: %w[admin vendedor cobrador] }
+  validates :role, presence: true, inclusion: { in: %w[admin supervisor cobrador] }
   validates :branch_number, format: { with: /\A[A-Z0-9]+\z/, message: "solo letras mayúsculas y números" }, allow_blank: true
 
   # Optional: Add password validations
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
-  enum :role, { admin: "admin", vendedor: "vendedor", cobrador: "cobrador" }, default: "vendedor"
+  enum :role, { admin: "admin", supervisor: "supervisor", cobrador: "cobrador" }, default: "supervisor"
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
@@ -18,7 +18,7 @@ class User < ApplicationRecord
 
   # Permission helpers
   def can_create_loans?
-    admin? || vendedor?
+    admin? || supervisor?
   end
 
   def can_block_devices?

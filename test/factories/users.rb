@@ -3,14 +3,14 @@ FactoryBot.define do
     email { Faker::Internet.email }
     full_name { Faker::Name.name }
     password { "TestPassword123!" }
-    role { "vendedor" }
+    role { "supervisor" }
 
     factory :admin_user do
       role { "admin" }
     end
 
-    factory :vendedor_user do
-      role { "vendedor" }
+    factory :supervisor_user do
+      role { "supervisor" }
       branch_number { "BR01" }
     end
 

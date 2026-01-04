@@ -4,11 +4,13 @@ module Vendor
   class CreditApplicationsController < ApplicationController
     before_action :set_credit_application, only: [
       :edit, :update, :photos, :update_photos, :employment, :update_employment,
-      :summary, :submit, :approved, :rejected, :show
+      :summary, :submit, :approved, :rejected, :show,
+      :verify_otp, :send_otp, :submit_otp_verification, :resend_otp
     ]
     before_action :authorize_credit_application, only: [
       :edit, :update, :photos, :update_photos, :employment, :update_employment,
-      :summary, :submit, :approved, :rejected, :show
+      :summary, :submit, :approved, :rejected, :show,
+      :verify_otp, :send_otp, :submit_otp_verification, :resend_otp
     ]
 
     # Step 4: Datos Generales
@@ -93,18 +95,32 @@ module Vendor
     # Step 5 submission: Upload photos
     def update_photos
       Rails.logger.info "Updating photos for credit application #{@credit_application.id}"
-      Rails.logger.info "Photos params: #{photos_params.inspect}"
-      Rails.logger.info "Permitted params keys: #{photos_params.keys.inspect}"
 
-      if @credit_application.update(photos_params)
-        Rails.logger.info "Photos updated successfully for credit application #{@credit_application.id}"
-        redirect_to employment_vendor_credit_application_path(@credit_application),
-                    notice: "Fotografías subidas. Completa los datos laborales."
+      # Check if photos params are present (new photos being uploaded)
+      if params[:credit_application].present?
+        Rails.logger.info "Photos params: #{photos_params.inspect}"
+
+        if @credit_application.update(photos_params)
+          Rails.logger.info "Photos updated successfully for credit application #{@credit_application.id}"
+          redirect_to verify_otp_vendor_credit_application_path(@credit_application),
+                      notice: "Fotografias guardadas. Selecciona el metodo de verificacion."
+        else
+          Rails.logger.error "Failed to update photos for credit application #{@credit_application.id}"
+          Rails.logger.error "Errors: #{@credit_application.errors.full_messages.inspect}"
+          flash.now[:alert] = "Error: #{@credit_application.errors.full_messages.join(', ')}"
+          render :photos, status: :unprocessable_entity
+        end
       else
-        Rails.logger.error "Failed to update photos for credit application #{@credit_application.id}"
-        Rails.logger.error "Errors: #{@credit_application.errors.full_messages.inspect}"
-        flash.now[:alert] = "Error: #{@credit_application.errors.full_messages.join(', ')}"
-        render :photos, status: :unprocessable_entity
+        # No new photos uploaded - check if photos are already attached
+        if photos_already_attached?
+          Rails.logger.info "No new photos, but existing photos found. Proceeding to verification."
+          redirect_to verify_otp_vendor_credit_application_path(@credit_application),
+                      notice: "Continuando con las fotografias existentes."
+        else
+          Rails.logger.error "No photos attached and no new photos uploaded"
+          flash.now[:alert] = "Debes capturar las 3 fotografias requeridas."
+          render :photos, status: :unprocessable_entity
+        end
       end
     end
 
@@ -169,6 +185,87 @@ module Vendor
     def show
     end
 
+    # Step 5.5: OTP Verification page
+    def verify_otp
+      # Check if already verified - allow proceeding
+      if @credit_application.otp_verified? && !@credit_application.otp_expired?
+        redirect_to employment_vendor_credit_application_path(@credit_application),
+                    notice: "Verificacion ya completada."
+        return
+      end
+      # Render verify_otp view - shows method selection if OTP not sent, code entry if sent
+    end
+
+    # Send OTP after method selection
+    def send_otp
+      verification_method = params[:verification_method]
+
+      unless %w[whatsapp email].include?(verification_method)
+        flash[:alert] = "Por favor selecciona un metodo de verificacion."
+        redirect_to verify_otp_vendor_credit_application_path(@credit_application)
+        return
+      end
+
+      # Save the selected verification method
+      @credit_application.update!(verification_method: verification_method)
+
+      # Send OTP
+      service = OtpVerificationService.new(@credit_application)
+      result = service.send_otp
+
+      if result[:success]
+        redirect_to verify_otp_vendor_credit_application_path(@credit_application),
+                    notice: result[:message]
+      else
+        flash[:alert] = result[:errors].join(", ")
+        redirect_to verify_otp_vendor_credit_application_path(@credit_application)
+      end
+    end
+
+    # Step 5.5 submission: Validate OTP code
+    def submit_otp_verification
+      submitted_code = params[:otp_code]&.strip
+
+      if submitted_code.blank?
+        flash.now[:alert] = "Por favor ingresa el codigo de verificacion."
+        render :verify_otp, status: :unprocessable_entity
+        return
+      end
+
+      service = OtpVerificationService.new(@credit_application)
+      result = service.verify(submitted_code)
+
+      if result[:success]
+        redirect_to employment_vendor_credit_application_path(@credit_application),
+                    notice: "Verificacion exitosa. Completa los datos laborales."
+      else
+        flash.now[:alert] = result[:errors].join(", ")
+        render :verify_otp, status: :unprocessable_entity
+      end
+    end
+
+    # Resend OTP code
+    def resend_otp
+      service = OtpVerificationService.new(@credit_application)
+      result = service.send_otp
+
+      respond_to do |format|
+        if result[:success]
+          format.html { redirect_to verify_otp_vendor_credit_application_path(@credit_application), notice: result[:message] }
+          format.turbo_stream {
+            flash.now[:notice] = result[:message]
+            render turbo_stream: turbo_stream.replace("otp-form", partial: "otp_form", locals: { credit_application: @credit_application })
+          }
+        else
+          format.html { redirect_to verify_otp_vendor_credit_application_path(@credit_application), alert: result[:errors].join(", ") }
+          format.turbo_stream {
+            flash.now[:alert] = result[:errors].join(", ")
+            render turbo_stream: turbo_stream.replace("otp-form", partial: "otp_form", locals: { credit_application: @credit_application })
+          }
+        end
+      end
+    end
+
     private
 
     def set_credit_application
@@ -220,8 +317,7 @@ module Vendor
 
     def photos_params
       params.require(:credit_application).permit(
-        :id_front_image, :id_back_image, :facial_verification_image,
-        :verification_method
+        :id_front_image, :id_back_image, :facial_verification_image
       )
     end
 
@@ -229,6 +325,12 @@ module Vendor
       params.require(:credit_application).permit(
         :employment_status, :salary_range
       )
+    end
+
+    def photos_already_attached?
+      @credit_application.id_front_image.attached? &&
+        @credit_application.id_back_image.attached? &&
+        @credit_application.facial_verification_image.attached?
     end
   end
 end

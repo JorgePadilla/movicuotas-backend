@@ -2,26 +2,26 @@
 
 class CreditApplicationPolicy < ApplicationPolicy
   # Credit Application policies based on MOVICUOTAS permission matrix:
-  # - Create credit application: Admin and Vendedor
-  # - Approve credit: Admin only (automatic for vendedor submissions)
-  # - View applications: Admin (all), Vendedor (own only)
+  # - Create credit application: Admin and Supervisor
+  # - Approve credit: Admin only (automatic for supervisor submissions)
+  # - View applications: Admin (all), Supervisor (own only)
   # - Cobrador: Cannot access credit applications
 
   # Default CRUD actions (override as needed):
   def index?
-    admin? || vendedor?  # Admin and Vendedor can view applications
+    admin? || supervisor?  # Admin and Supervisor can view applications
   end
 
   def show?
-    admin? || (vendedor? && own_application?)
+    admin? || (supervisor? && own_application?)
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create applications
+    admin? || supervisor?  # Admin and Supervisor can create applications
   end
 
   def update?
-    admin? || (vendedor? && own_application?)  # Admin and Vendedor (own only) can update
+    admin? || (supervisor? && own_application?)  # Admin and Supervisor (own only) can update
   end
 
   def destroy?
@@ -38,7 +38,7 @@ class CreditApplicationPolicy < ApplicationPolicy
 
   # Custom actions
   def approve?
-    admin?  # Only admin can manually approve applications (vendedor submissions auto-approved)
+    admin?  # Only admin can manually approve applications (supervisor submissions auto-approved)
   end
 
   # Step actions for vendor workflow
@@ -78,16 +78,33 @@ class CreditApplicationPolicy < ApplicationPolicy
     show?  # Read-only view of confirmation step
   end
 
+  # OTP verification actions
+  def verify_otp?
+    show?  # View OTP verification page
+  end
+
+  def send_otp?
+    update?  # Sending OTP modifies the application
+  end
+
+  def submit_otp_verification?
+    update?  # Verifying OTP modifies the application
+  end
+
+  def resend_otp?
+    update?  # Resending OTP modifies the application
+  end
+
   # Scope: Filter applications based on role
   # - Admin: All applications
-  # - Vendedor: Only applications they created
+  # - Supervisor: Only applications they created
   # - Cobrador: No access
   class Scope < Scope
     def resolve
       if user&.admin?
         scope.all
-      elsif user&.vendedor?
-        # Assuming credit_application has a `vendor` association with the vendedor who created it
+      elsif user&.supervisor?
+        # Assuming credit_application has a `vendor` association with the supervisor who created it
         scope.where(vendor: user)
       else
         scope.none
@@ -98,7 +115,7 @@ class CreditApplicationPolicy < ApplicationPolicy
   private
 
   def own_application?
-    # Assuming credit_application has a `vendor` association with the vendedor who created it
+    # Assuming credit_application has a `vendor` association with the supervisor who created it
     record.vendor == user
   end
 end

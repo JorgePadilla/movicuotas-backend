@@ -5,7 +5,7 @@
   <div class="mb-8 flex items-center justify-between">
     <div>
       <h1 class="text-3xl font-bold text-[#125282]">Gestión de Usuarios</h1>
-      <p class="text-gray-600 mt-2">Administra usuarios de todas las funciones (Administrador, Vendedor, Cobrador)</p>
+      <p class="text-gray-600 mt-2">Administra usuarios de todas las funciones (Administrador, Supervisor, Cobrador)</p>
     </div>
     <%= link_to "Crear Nuevo Usuario", new_admin_user_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
   </div>
@@ -14,7 +14,7 @@
   <div class="mb-6 flex gap-4">
     <%= link_to "Todos", admin_users_path, class: "#{params[:role].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors" %>
     <%= link_to "Administradores", admin_users_path(role: 'admin'), class: "#{params[:role] == 'admin' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
-    <%= link_to "Vendedores", admin_users_path(role: 'vendedor'), class: "#{params[:role] == 'vendedor' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+    <%= link_to "Supervisores", admin_users_path(role: 'supervisor'), class: "#{params[:role] == 'supervisor' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
     <%= link_to "Cobradores", admin_users_path(role: 'cobrador'), class: "#{params[:role] == 'cobrador' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
   </div>
 
@@ -47,7 +47,7 @@
                   <div class="text-sm text-gray-600"><%= user.branch_number || "—" %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 text-sm rounded-full <%= user.role == 'admin' ? 'bg-purple-100 text-purple-800' : user.role == 'vendedor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
+                  <span class="px-3 py-1 text-sm rounded-full <%= user.role == 'admin' ? 'bg-purple-100 text-purple-800' : user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
                     <%= user.role.titleize %>
                   </span>
                 </td>
@@ -128,8 +128,8 @@
       <p class="text-3xl font-bold text-gray-800 mt-2"><%= @users.where(role: 'admin').count %></p>
     </div>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-green-600">Vendedores</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @users.where(role: 'vendedor').count %></p>
+      <h3 class="text-lg font-semibold text-green-600">Supervisores</h3>
+      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @users.where(role: 'supervisor').count %></p>
     </div>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
       <h3 class="text-lg font-semibold text-blue-600">Cobradores</h3>

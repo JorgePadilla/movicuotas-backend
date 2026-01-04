@@ -8,7 +8,7 @@ module Api
           email: "vendor1@test.com",
           full_name: "Test Vendor",
           password: "password123",
-          role: "vendedor"
+          role: "supervisor"
         )
 
         @customer = Customer.create!(

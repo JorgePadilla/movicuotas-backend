@@ -43,7 +43,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-600">Función</label>
           <div class="mt-1">
-            <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : @user.role == 'vendedor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
+            <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : @user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
               <%= @user.role.titleize %>
             </span>
           </div>
@@ -69,7 +69,7 @@
         <p class="text-gray-700">✓ Gestión de usuarios y roles</p>
         <p class="text-gray-700">✓ Acceso al panel de control del sistema</p>
         <p class="text-gray-700">✓ Generación de reportes</p>
-      <% elsif @user.vendedor? %>
+      <% elsif @user.supervisor? %>
         <p class="text-gray-700">✓ Proceso de venta (18 pantallas)</p>
         <p class="text-gray-700">✓ Búsqueda de clientes</p>
         <p class="text-gray-700">✓ Creación de aplicaciones de crédito</p>

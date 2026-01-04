@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     authorize :home, :index?
 
     case current_user.role
-    when "admin", "vendedor"
+    when "admin", "supervisor"
       redirect_to vendor_customer_search_path
     when "cobrador"
       redirect_to cobrador_dashboard_path

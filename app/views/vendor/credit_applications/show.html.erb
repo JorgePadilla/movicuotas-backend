@@ -153,7 +153,7 @@
             <p class="font-medium"><%= @credit_application.created_at.strftime("%d/%m/%Y %H:%M") %></p>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Vendedor</p>
+            <p class="text-sm text-gray-500">Supervisor</p>
             <p class="font-medium"><%= @credit_application.vendor&.full_name || "No asignado" %></p>
           </div>
           <% if @credit_application.approved? %>

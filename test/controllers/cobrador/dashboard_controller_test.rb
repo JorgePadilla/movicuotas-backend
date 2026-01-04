@@ -22,9 +22,9 @@ module Cobrador
       assert_response :success
     end
 
-    test "vendedor cannot access cobrador dashboard" do
-      vendedor = users(:vendedor)
-      sign_in_as(vendedor)
+    test "supervisor cannot access cobrador dashboard" do
+      supervisor = users(:supervisor)
+      sign_in_as(supervisor)
       get cobrador_dashboard_path
       assert_response :redirect
     end

@@ -31,7 +31,13 @@ class CreditApplication < ApplicationRecord
   # Enums
   enum :employment_status, { employed: "employed", self_employed: "self_employed", unemployed: "unemployed", student: "student", retired: "retired" }, prefix: true
   enum :salary_range, { less_than_10000: "less_than_10000", range_10000_20000: "10000_20000", range_20000_30000: "20000_30000", range_30000_40000: "30000_40000", more_than_40000: "more_than_40000" }, prefix: true
-  enum :verification_method, { sms: "sms", whatsapp: "whatsapp", email: "email" }, prefix: true
+  enum :verification_method, { whatsapp: "whatsapp", email: "email" }, prefix: true
+  enum :otp_delivery_status, { pending: "pending", sent: "sent", delivered: "delivered", failed: "failed" }, prefix: :otp
+
+  # OTP Constants
+  OTP_EXPIRATION_TIME = 10.minutes
+  OTP_MAX_ATTEMPTS = 5
+  OTP_RESEND_COOLDOWN = 60.seconds
   # Validations
   validates :application_number, presence: true, uniqueness: true
   validates :status, presence: true, inclusion: { in: %w[pending approved rejected] }
@@ -128,6 +134,73 @@ class CreditApplication < ApplicationRecord
     else
       salary_range.to_s.humanize
     end
+  end
+
+  # OTP Methods
+
+  # Generates a new 4-digit OTP code and stores it hashed
+  # Returns the raw code for sending to the customer
+  def generate_otp!
+    raw_code = SecureRandom.random_number(10000).to_s.rjust(4, "0")
+    update!(
+      otp_code: BCrypt::Password.create(raw_code),
+      otp_sent_at: Time.current,
+      otp_attempts: 0,
+      otp_delivery_status: :pending
+    )
+    raw_code
+  end
+
+  # Verifies the submitted OTP code
+  # Returns { success: true/false, error: symbol, attempts_remaining: integer }
+  def verify_otp(submitted_code)
+    # Development bypass: accept "****" as valid code
+    if Rails.env.development? && submitted_code == "1111"
+      update!(otp_verified_at: Time.current)
+      return { success: true }
+    end
+
+    return { success: false, error: :expired } if otp_expired?
+    return { success: false, error: :max_attempts } if otp_max_attempts_reached?
+    return { success: false, error: :no_code } if otp_code.blank?
+
+    if BCrypt::Password.new(otp_code) == submitted_code
+      update!(otp_verified_at: Time.current)
+      { success: true }
+    else
+      increment!(:otp_attempts)
+      { success: false, error: :invalid, attempts_remaining: OTP_MAX_ATTEMPTS - otp_attempts }
+    end
+  end
+
+  def otp_expired?
+    return true unless otp_sent_at.present?
+    Time.current > (otp_sent_at + OTP_EXPIRATION_TIME)
+  end
+
+  def otp_verified?
+    otp_verified_at.present?
+  end
+
+  def otp_max_attempts_reached?
+    otp_attempts >= OTP_MAX_ATTEMPTS
+  end
+
+  def can_resend_otp?
+    return true unless otp_sent_at.present?
+    Time.current > (otp_sent_at + OTP_RESEND_COOLDOWN)
+  end
+
+  def time_until_resend
+    return 0 unless otp_sent_at.present?
+    remaining = (otp_sent_at + OTP_RESEND_COOLDOWN) - Time.current
+    [ remaining.to_i, 0 ].max
+  end
+
+  def otp_time_remaining
+    return 0 if otp_expired?
+    return 0 unless otp_sent_at.present?
+    ((otp_sent_at + OTP_EXPIRATION_TIME) - Time.current).to_i
   end
 
   private

@@ -2,21 +2,21 @@
 
 class MdmBlueprintPolicy < ApplicationPolicy
   # MDM Blueprint policies (QR codes for device MDM configuration)
-  # - View blueprints: Admin and Vendedor
-  # - Create blueprints: Admin and Vendedor (automatic generation)
+  # - View blueprints: Admin and Supervisor
+  # - Create blueprints: Admin and Supervisor (automatic generation)
   # - Update/Delete: Admin only
 
   # Default CRUD actions (override as needed):
   def index?
-    admin? || vendedor?  # Admin and Vendedor can view blueprints
+    admin? || supervisor?  # Admin and Supervisor can view blueprints
   end
 
   def show?
-    admin? || vendedor?  # Admin and Vendedor can view blueprint details
+    admin? || supervisor?  # Admin and Supervisor can view blueprint details
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create blueprints
+    admin? || supervisor?  # Admin and Supervisor can create blueprints
   end
 
   def update?
@@ -29,13 +29,13 @@ class MdmBlueprintPolicy < ApplicationPolicy
 
   # Scope: Filter blueprints based on role
   # - Admin: All blueprints
-  # - Vendedor: Blueprints for devices they assigned
+  # - Supervisor: Blueprints for devices they assigned
   class Scope < Scope
     def resolve
       if user&.admin?
         scope.all
-      elsif user&.vendedor?
-        # Assuming mdm_blueprint belongs to device, and device belongs to loan, and loan belongs to user (vendedor)
+      elsif user&.supervisor?
+        # Assuming mdm_blueprint belongs to device, and device belongs to loan, and loan belongs to user (supervisor)
         scope.joins(device: { loan: :user }).where(loans: { user: user })
       else
         scope.none

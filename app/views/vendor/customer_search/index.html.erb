@@ -2,7 +2,7 @@
 
 <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <h1 class="text-2xl md:text-3xl font-bold text-[#125282] mb-2">Buscar Cliente</h1>
-  <p class="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">Pantalla principal para vendedores. Busca clientes en TODAS las tiendas.</p>
+  <p class="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">Pantalla principal para supervisores. Busca clientes en TODAS las tiendas.</p>
 
   <div class="bg-white shadow rounded-lg p-4 md:p-6 mb-6 md:mb-8">
     <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">Búsqueda de Cliente</h2>
@@ -70,6 +70,78 @@
           </div>
         </div>
 
+      <% elsif @step == :continue_approved %>
+        <%# Solicitud Aprobada - Continuar proceso %>
+        <div class="bg-white border-l-4 border-[#3b82f6] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#3b82f6]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#3b82f6]">Solicitud Aprobada</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+
+              <% if @customer %>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Informacion del Cliente</h4>
+                    <p class="text-sm text-gray-600">Nombre: <span class="font-medium"><%= @customer.full_name %></span></p>
+                    <p class="text-sm text-gray-600">Identidad: <span class="font-medium"><%= @customer.identification_number %></span></p>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Solicitud</h4>
+                    <p class="text-sm text-gray-600">No. Solicitud: <span class="font-medium"><%= @approved_application.application_number %></span></p>
+                    <p class="text-sm text-gray-600">Monto Aprobado: <span class="font-medium text-green-600">L. <%= number_with_delimiter(@approved_application.approved_amount, delimiter: ",") %></span></p>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                <%= link_to "Continuar con Seleccion de Dispositivo →", vendor_device_selection_path(@approved_application), class: "bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+                <%= link_to "Nueva Busqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% elsif @step == :continue_pending %>
+        <%# Solicitud Pendiente - Continuar proceso %>
+        <div class="bg-white border-l-4 border-[#f59e0b] rounded-lg shadow-md p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-8 w-8 text-[#f59e0b]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-[#f59e0b]">Solicitud en Proceso</h3>
+              <p class="mt-2 text-gray-700"><%= @alert_message %></p>
+
+              <% if @customer %>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Informacion del Cliente</h4>
+                    <p class="text-sm text-gray-600">Nombre: <span class="font-medium"><%= @customer.full_name %></span></p>
+                    <p class="text-sm text-gray-600">Identidad: <span class="font-medium"><%= @customer.identification_number %></span></p>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900">Solicitud</h4>
+                    <p class="text-sm text-gray-600">No. Solicitud: <span class="font-medium"><%= @pending_application.application_number %></span></p>
+                    <p class="text-sm text-gray-600">Estado: <span class="font-medium text-yellow-600">Pendiente</span></p>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                <%= link_to "Continuar Solicitud →", resume_path_for(@pending_application), class: "font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center", style: "background-color: #f59e0b; color: white;" %>
+                <%= link_to "Nueva Busqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
       <% elsif @step == :available %>
         <%# Step 3b: Cliente Disponible %>
         <div class="bg-white border-l-4 border-[#10b981] rounded-lg shadow-md p-6">
@@ -86,21 +158,21 @@
                 <svg class="h-5 w-5 text-[#10b981] mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
-                <span class="font-medium">✓ Sin créditos activos en todo el sistema</span>
+                <span class="font-medium">Sin creditos activos en todo el sistema</span>
               </div>
 
               <% if @customer %>
                 <div class="mt-4">
-                  <h4 class="font-semibold text-gray-900">Información del Cliente</h4>
+                  <h4 class="font-semibold text-gray-900">Informacion del Cliente</h4>
                   <p class="text-sm text-gray-600">Nombre: <span class="font-medium"><%= @customer.full_name %></span></p>
                   <p class="text-sm text-gray-600">Identidad: <span class="font-medium"><%= @customer.identification_number %></span></p>
-                  <p class="text-sm text-gray-600">Teléfono: <span class="font-medium"><%= @customer.phone %></span></p>
+                  <p class="text-sm text-gray-600">Telefono: <span class="font-medium"><%= @customer.phone %></span></p>
                 </div>
               <% end %>
 
               <div class="mt-6 flex flex-col sm:flex-row gap-4">
                 <%= link_to "Iniciar Solicitud →", new_vendor_credit_application_path(customer_id: @customer.id), class: "bg-[#125282] hover:bg-[#0f4670] text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
-                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
+                <%= link_to "Nueva Busqueda", vendor_customer_search_path, class: "bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 text-center" %>
               </div>
             </div>
           </div>
@@ -153,32 +225,41 @@
   <% end %>
 
   <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 md:p-6 mt-6 md:mt-8">
-    <h3 class="text-base md:text-lg font-medium text-gray-900 mb-3">Información importante</h3>
-    <ul class="space-y-3 text-gray-700">
-      <li class="flex items-start">
-        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <span>El sistema verifica si el cliente tiene <strong>créditos activos en TODAS las tiendas</strong> del sistema.</span>
-      </li>
-      <li class="flex items-start">
-        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <span>Si el cliente tiene un crédito activo, se mostrará una alerta <span class="text-red-600 font-medium">roja</span> (Cliente Bloqueado).</span>
-      </li>
-      <li class="flex items-start">
-        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <span>Si el cliente está disponible, se mostrará una confirmación <span class="text-green-600 font-medium">verde</span> (Cliente Disponible).</span>
-      </li>
-      <li class="flex items-start">
-        <svg class="h-5 w-5 text-[#125282] mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        <span>Desde el menú de navegación puedes acceder al <strong>Dashboard</strong> y otras funciones.</span>
-      </li>
-    </ul>
+    <h3 class="text-base md:text-lg font-medium text-gray-900 mb-4">Estados del Cliente</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-300">
+            <th class="text-left py-2 pr-4 font-semibold text-gray-700">Estado</th>
+            <th class="text-left py-2 pr-4 font-semibold text-gray-700">Color</th>
+            <th class="text-left py-2 font-semibold text-gray-700">Accion</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-600">
+          <tr class="border-b border-gray-200">
+            <td class="py-2 pr-4">Credito activo</td>
+            <td class="py-2 pr-4"><span class="inline-block w-4 h-4 rounded-full mr-2 align-middle" style="background-color: #ef4444;"></span>Rojo</td>
+            <td class="py-2">Bloqueado</td>
+          </tr>
+          <tr class="border-b border-gray-200">
+            <td class="py-2 pr-4">Solicitud aprobada</td>
+            <td class="py-2 pr-4"><span class="inline-block w-4 h-4 rounded-full mr-2 align-middle" style="background-color: #3b82f6;"></span>Azul</td>
+            <td class="py-2">Continuar a dispositivo</td>
+          </tr>
+          <tr class="border-b border-gray-200">
+            <td class="py-2 pr-4">Solicitud pendiente</td>
+            <td class="py-2 pr-4"><span class="inline-block w-4 h-4 rounded-full mr-2 align-middle" style="background-color: #f59e0b;"></span>Naranja</td>
+            <td class="py-2">Continuar desde donde quedo</td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-4">Sin solicitudes</td>
+            <td class="py-2 pr-4"><span class="inline-block w-4 h-4 rounded-full mr-2 align-middle" style="background-color: #10b981;"></span>Verde</td>
+            <td class="py-2">Iniciar nueva solicitud</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-4 text-sm text-gray-500">El sistema verifica automaticamente el estado del cliente en TODAS las tiendas.</p>
   </div>
 </div>

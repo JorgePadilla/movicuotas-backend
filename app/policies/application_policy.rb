@@ -14,8 +14,8 @@ class ApplicationPolicy
     user&.admin?
   end
 
-  def vendedor?
-    user&.vendedor?
+  def supervisor?
+    user&.supervisor?
   end
 
   def cobrador?
@@ -25,7 +25,7 @@ class ApplicationPolicy
   # Default permissions based on MOVICUOTAS permission matrix
   # These defaults follow the most common pattern:
   # - Viewing (index, show): All authenticated users
-  # - Creating/Updating: Admin and Vendedor (where applicable)
+  # - Creating/Updating: Admin and Supervisor (where applicable)
   # - Destroying: Admin only
 
   def index?
@@ -37,7 +37,7 @@ class ApplicationPolicy
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create
+    admin? || supervisor?  # Admin and Supervisor can create
   end
 
   def new?
@@ -45,7 +45,7 @@ class ApplicationPolicy
   end
 
   def update?
-    admin? || vendedor?  # Admin and Vendedor can update
+    admin? || supervisor?  # Admin and Supervisor can update
   end
 
   def edit?

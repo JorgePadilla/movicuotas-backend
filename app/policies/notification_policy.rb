@@ -4,7 +4,7 @@ class NotificationPolicy < ApplicationPolicy
   # Notification management policies
   # Notifications are sent to customers for payment reminders, device locks, etc.
   # - View notifications: Admin only (or users see their own notifications)
-  # - Create notifications: Admin and Vendedor (for customer communication)
+  # - Create notifications: Admin and Supervisor (for customer communication)
   # - Update/Delete: Admin only
 
   # Default CRUD actions (override as needed):
@@ -17,7 +17,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || vendedor?  # Admin and Vendedor can create notifications
+    admin? || supervisor?  # Admin and Supervisor can create notifications
   end
 
   def update?
