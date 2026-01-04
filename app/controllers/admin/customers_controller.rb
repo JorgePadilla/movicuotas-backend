@@ -2,7 +2,7 @@
 
 module Admin
   class CustomersController < ApplicationController
-    before_action :set_customer, only: [:show, :edit, :update]
+    before_action :set_customer, only: [ :show, :edit, :update ]
 
     def index
       @customers = policy_scope(Customer).order(created_at: :desc)
