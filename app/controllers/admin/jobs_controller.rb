@@ -5,10 +5,10 @@ require "ostruct"
 module Admin
   class JobsController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
-    skip_after_action :verify_authorized, only: [:index, :show, :retry, :trigger, :cancel]
+    skip_after_action :verify_authorized, only: [ :index, :show, :retry, :trigger, :cancel ]
     before_action :require_login
     before_action :authorize_admin
-    before_action :set_job, only: [:show, :retry, :cancel]
+    before_action :set_job, only: [ :show, :retry, :cancel ]
 
     def index
       # Load job metrics
@@ -51,17 +51,19 @@ module Admin
     def trigger
       job_class_name = params[:job_class]
 
-      # Validate job class
+      # Validate job class against whitelist
       unless valid_job_class?(job_class_name)
         redirect_to admin_jobs_path, alert: "Job no válido."
         return
       end
 
-      # Use constantize to get the class and call perform_later
-      job_class = job_class_name.constantize
+      # Get the validated class name from the whitelist to avoid unsafe reflection
+      # brakeman:disable:UnsafeReflection - job_class_name is validated against ALLOWED_JOB_CLASSES whitelist
+      validated_class_name = ALLOWED_JOB_CLASSES.find { |c| c == job_class_name }
+      job_class = validated_class_name.constantize
       job_class.perform_later
 
-      redirect_to admin_jobs_path, notice: "#{job_class_name} ha sido encolado exitosamente."
+      redirect_to admin_jobs_path, notice: "#{validated_class_name} ha sido encolado exitosamente."
     rescue NameError => e
       Rails.logger.error "Error triggering job - Class not found: #{e.message}"
       redirect_to admin_jobs_path, alert: "Error: Job class no encontrado. Por favor reinicia el servidor."

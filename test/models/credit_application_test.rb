@@ -4,7 +4,7 @@ class CreditApplicationTest < ActiveSupport::TestCase
   setup do
     @credit_app = credit_applications(:credit_app_one)
     @customer = customers(:customer_one)
-    @vendor = users(:vendor)
+    @vendor = users(:supervisor)
     @phone_model = phone_models(:iphone_14)
   end
 

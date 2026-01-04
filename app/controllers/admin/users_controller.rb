@@ -2,8 +2,8 @@
 
 module Admin
   class UsersController < ApplicationController
-    before_action :set_user, only: [:show, :edit, :update, :destroy]
-    before_action :authorize_user_management, except: [:index]
+    before_action :set_user, only: [ :show, :edit, :update, :destroy ]
+    before_action :authorize_user_management, except: [ :index ]
 
     def index
       @users = policy_scope(User).order(created_at: :desc)

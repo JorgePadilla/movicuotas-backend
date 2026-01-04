@@ -219,7 +219,9 @@ class CreditApplication < ApplicationRecord
 
       begin
         # Try to acquire PostgreSQL advisory lock
-        result = ActiveRecord::Base.connection.select_one("SELECT pg_try_advisory_lock(#{lock_key}) as locked")
+        # Using sanitize_sql to prevent SQL injection (lock_key is an integer from Zlib.crc32)
+        sql = ActiveRecord::Base.sanitize_sql_array([ "SELECT pg_try_advisory_lock(?) as locked", lock_key ])
+        result = ActiveRecord::Base.connection.select_one(sql)
         lock_acquired = result["locked"] if result
       rescue => e
         Rails.logger.warn "Could not use advisory lock: #{e.message}"
@@ -254,7 +256,9 @@ class CreditApplication < ApplicationRecord
 
           self.application_number = "#{base_number}#{sequence.to_s.rjust(6, '0')}"
         ensure
-          ActiveRecord::Base.connection.execute("SELECT pg_advisory_unlock(#{lock_key})")
+          # Using sanitize_sql to prevent SQL injection
+          unlock_sql = ActiveRecord::Base.sanitize_sql_array([ "SELECT pg_advisory_unlock(?)", lock_key ])
+          ActiveRecord::Base.connection.execute(unlock_sql)
         end
       else
         # Fallback without lock: use timestamp with microseconds
