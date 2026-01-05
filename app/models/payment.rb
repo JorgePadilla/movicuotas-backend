@@ -76,7 +76,7 @@ class Payment < ApplicationRecord
   private
 
   def update_installment_statuses
-    return unless verified?
+    # Update installments when payment is verified or rejected
     installments.each(&:update_paid_amount)
   end
 end

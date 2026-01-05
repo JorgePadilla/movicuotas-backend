@@ -20,8 +20,10 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%# Flatpickr CSS for date picker %>
+    <%# Flatpickr CSS and JS for date picker %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" data-turbo-track="reload">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" data-turbo-track="reload"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js" data-turbo-track="reload"></script>
     <%# Pikaday CSS for date picker %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" data-turbo-track="reload">
     <style>
@@ -182,7 +184,7 @@
               <div class="text-sm">
                 <span class="font-medium"><%= current_user.full_name %></span>
                 <span class="ml-2 px-2 py-1 bg-white/20 rounded-full text-xs">
-                  <%= current_user.role.titleize %>
+                  <%= role_es(current_user.role) %>
                 </span>
               </div>
               <div class="h-6 w-px bg-white/30"></div>
@@ -215,7 +217,7 @@
               <p class="font-medium"><%= current_user.full_name %></p>
               <p class="text-white/80"><%= current_user.email %></p>
               <span class="inline-block mt-1 px-2 py-1 bg-white/20 rounded-full text-xs">
-                <%= current_user.role.titleize %>
+                <%= role_es(current_user.role) %>
               </span>
             </div>
 
@@ -256,6 +258,21 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                       </svg>
                       Pagos
+                    </span>
+                  <% end %>
+
+                  <% mobile_pending_count = policy_scope(Payment).pending_verification.count rescue 0 %>
+                  <%= link_to admin_payments_path(status: 'pending'), class: "block text-sm hover:bg-white/10 px-3 py-2 rounded transition-colors #{request.path.include?('/admin/payments') ? 'bg-white/20 text-white' : 'text-white/90'}" do %>
+                    <span class="flex items-center justify-between">
+                      <span class="flex items-center">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Verificar Pagos
+                      </span>
+                      <% if mobile_pending_count > 0 %>
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"><%= mobile_pending_count %></span>
+                      <% end %>
                     </span>
                   <% end %>
                 </div>
@@ -318,6 +335,18 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                   </svg>
                   Pagos
+                <% end %>
+
+                <%# Payment verification link - only for supervisors/admins who can verify %>
+                <% pending_count = policy_scope(Payment).pending_verification.count rescue 0 %>
+                <%= link_to admin_payments_path(status: 'pending'), class: "group flex items-center px-3 py-3 text-sm font-medium rounded-lg #{request.path.include?('/admin/payments') ? 'bg-[#125282] text-white' : 'text-gray-700 hover:bg-gray-100'}" do %>
+                  <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Verificar Pagos
+                  <% if pending_count > 0 %>
+                    <span class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"><%= pending_count %></span>
+                  <% end %>
                 <% end %>
               </nav>
             </div>
@@ -435,10 +464,31 @@
         }
       }
 
+      // Initialize Flatpickr with Spanish locale globally
+      function initFlatpickrSpanish() {
+        if (typeof flatpickr !== 'undefined' && flatpickr.l10ns && flatpickr.l10ns.es) {
+          flatpickr.localize(flatpickr.l10ns.es);
+
+          // Initialize all date inputs that don't have a Stimulus controller
+          document.querySelectorAll('input[type="date"]:not([data-controller])').forEach(function(input) {
+            if (!input._flatpickr) {
+              flatpickr(input, {
+                locale: 'es',
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: true
+              });
+            }
+          });
+        }
+      }
+
       // Initialize on various events to support Turbo
       function initAll() {
         initMobileMenu();
         initFlashMessages();
+        initFlatpickrSpanish();
       }
 
       // Regular page load

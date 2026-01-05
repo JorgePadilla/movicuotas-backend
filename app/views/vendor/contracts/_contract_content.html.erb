@@ -516,7 +516,7 @@
               <td style="padding: 0.75rem; border: 1px solid #d1d5db; text-align: right;"><%= installment[:amount] %></td>
               <td style="padding: 0.75rem; border: 1px solid #d1d5db; text-align: center;">
                 <span style="<%= service.installment_status_style(installment[:status]) %>">
-                  <%= I18n.t("installment.status.#{installment[:status]}", default: installment[:status].titleize) %>
+                  <%= installment_status_es(installment[:status]) %>
                 </span>
               </td>
             </tr>

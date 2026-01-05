@@ -1,92 +1,79 @@
 <% content_for :title, "Cartera de Clientes - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Análisis de Cartera de Clientes</h1>
-    <p class="text-gray-600 mt-2">Portafolio de crédito, análisis de riesgo y composición de clientes</p>
+  <div class="mb-6">
+    <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Análisis de Cartera de Clientes</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">Portafolio de crédito, análisis de riesgo y composición</p>
   </div>
 
   <!-- Customer Statistics Overview -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Total de Clientes</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @total_customers %></p>
-      <div class="mt-4 pt-4 border-t text-sm text-gray-600">
-        Clientes registrados en el sistema
-      </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Total</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @total_customers %></p>
+      <p class="text-xs text-gray-600 mt-2 hidden lg:block">Clientes registrados</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-green-600">Clientes Activos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @active_customers %></p>
-      <div class="mt-4 pt-4 border-t text-sm">
-        <% active_percent = @total_customers > 0 ? ((@active_customers / @total_customers) * 100).round(2) : 0 %>
-        <span class="text-green-600 font-medium"><%= active_percent %>% del total</span>
-      </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-green-600">Activos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @active_customers %></p>
+      <% active_percent = @total_customers > 0 ? ((@active_customers / @total_customers) * 100).round(1) : 0 %>
+      <p class="text-xs text-green-600 font-medium mt-2"><%= active_percent %>%</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-yellow-600">Clientes Suspendidos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @suspended_customers %></p>
-      <div class="mt-4 pt-4 border-t text-sm">
-        <% suspended_percent = @total_customers > 0 ? ((@suspended_customers / @total_customers) * 100).round(2) : 0 %>
-        <span class="text-yellow-600 font-medium"><%= suspended_percent %>% del total</span>
-      </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-yellow-600">Suspendidos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @suspended_customers %></p>
+      <% suspended_percent = @total_customers > 0 ? ((@suspended_customers / @total_customers) * 100).round(1) : 0 %>
+      <p class="text-xs text-yellow-600 font-medium mt-2"><%= suspended_percent %>%</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-red-600">Clientes Bloqueados</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @blocked_customers %></p>
-      <div class="mt-4 pt-4 border-t text-sm">
-        <% blocked_percent = @total_customers > 0 ? ((@blocked_customers / @total_customers) * 100).round(2) : 0 %>
-        <span class="text-red-600 font-medium"><%= blocked_percent %>% del total</span>
-      </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-red-600">Bloqueados</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @blocked_customers %></p>
+      <% blocked_percent = @total_customers > 0 ? ((@blocked_customers / @total_customers) * 100).round(1) : 0 %>
+      <p class="text-xs text-red-600 font-medium mt-2"><%= blocked_percent %>%</p>
     </div>
   </div>
 
   <!-- Loan Engagement Statistics -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">👥 Con Préstamos Activos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @customers_with_loans %></p>
-      <div class="mt-4 pt-4 border-t text-sm">
-        <% engagement = @total_customers > 0 ? ((@customers_with_loans / @total_customers) * 100).round(2) : 0 %>
-        <span class="text-[#125282] font-medium"><%= engagement %>% de cobertura</span>
-      </div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Con Préstamos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @customers_with_loans %></p>
+      <% engagement = @total_customers > 0 ? ((@customers_with_loans / @total_customers) * 100).round(1) : 0 %>
+      <p class="text-xs text-[#125282] font-medium mt-2"><%= engagement %>% cobertura</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-gray-600">🔕 Sin Préstamos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= @customers_without_loans %></p>
-      <div class="mt-4 pt-4 border-t text-sm text-gray-600">
-        Clientes sin productos de crédito
-      </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-gray-600">Sin Préstamos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2"><%= @customers_without_loans %></p>
+      <p class="text-xs text-gray-600 mt-2 hidden lg:block">Sin productos de crédito</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">⚠️ En Mora</h3>
-      <p class="text-3xl font-bold text-red-600 mt-2"><%= @customers_with_overdue %></p>
-      <div class="mt-4 pt-4 border-t text-sm">
-        <% risk_percent = @customers_with_loans > 0 ? ((@customers_with_overdue / @customers_with_loans) * 100).round(2) : 0 %>
-        <span class="text-red-600 font-medium"><%= risk_percent %>% de riesgo</span>
-      </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-red-600">En Mora</h3>
+      <p class="text-xl lg:text-3xl font-bold text-red-600 mt-1 lg:mt-2"><%= @customers_with_overdue %></p>
+      <% risk_percent = @customers_with_loans > 0 ? ((@customers_with_overdue / @customers_with_loans) * 100).round(1) : 0 %>
+      <p class="text-xs text-red-600 font-medium mt-2"><%= risk_percent %>% riesgo</p>
     </div>
   </div>
 
   <!-- Status Distribution -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <h2 class="text-xl font-semibold text-[#125282] mb-6">📊 Distribución por Estado</h2>
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
+    <h2 class="text-lg font-semibold text-[#125282] mb-4">Distribución por Estado</h2>
     <% if @customers_by_status.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <% @customers_by_status.each do |status, count| %>
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="font-semibold text-gray-900 mb-2">
-              <%= status.titleize %>
-              <% percent = @total_customers > 0 ? ((count / @total_customers) * 100).round(2) : 0 %>
+              <%= customer_status_es(status) %>
+              <% percent = @total_customers > 0 ? ((count / @total_customers) * 100).round(1) : 0 %>
               <span class="text-sm text-gray-600">(<%= percent %>%)</span>
             </h3>
-            <p class="text-2xl font-bold text-[#125282]"><%= count %> clientes</p>
+            <p class="text-xl lg:text-2xl font-bold text-[#125282]"><%= count %></p>
             <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
               <div class="bg-[#125282] h-2 rounded-full" style="width: <%= percent %>%"></div>
             </div>
@@ -94,65 +81,51 @@
         <% end %>
       </div>
     <% else %>
-      <p class="text-gray-500 text-center py-8">No hay datos de distribución de estados</p>
-    <% end %>
-  </div>
-
-  <!-- Loans Per Customer Distribution -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <h2 class="text-xl font-semibold text-[#125282] mb-6">📈 Cantidad de Préstamos por Cliente</h2>
-    <% if @loans_per_customer.any? %>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Préstamos por Cliente</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad de Clientes</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Porcentaje</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @loans_per_customer.each do |loan_count, customer_count| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="font-medium text-gray-900"><%= loan_count %> <%= loan_count == 1 ? 'préstamo' : 'préstamos' %></span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm text-gray-600"><%= customer_count %> clientes</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <% total_customers_with_loans = @customers_by_status.sum { |status, count| status == 'active' ? count : 0 } %>
-                  <% percent = total_customers_with_loans > 0 ? ((customer_count / total_customers_with_loans) * 100).round(2) : 0 %>
-                  <div class="flex items-center gap-2">
-                    <div class="w-24 bg-gray-200 rounded-full h-2">
-                      <div class="bg-[#125282] h-2 rounded-full" style="width: <%= percent %>%"></div>
-                    </div>
-                    <span class="text-sm text-gray-600"><%= percent %>%</span>
-                  </div>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% else %>
-      <p class="text-gray-500 text-center py-8">No hay datos de distribución de préstamos</p>
+      <p class="text-gray-500 text-center py-8">No hay datos de distribución</p>
     <% end %>
   </div>
 
   <!-- Top Customers -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <h2 class="text-xl font-semibold text-[#125282] mb-6">🏆 Principales Clientes</h2>
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-6">
+    <div class="px-4 lg:px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-[#125282]">Principales Clientes</h2>
+    </div>
+
     <% if @top_customers.any? %>
-      <div class="overflow-x-auto">
+      <!-- Mobile Card View -->
+      <div class="block lg:hidden p-4 space-y-3">
+        <% @top_customers.each_with_index do |customer, index| %>
+          <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-8 h-8 rounded-full bg-[#125282] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                <%= index + 1 %>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-gray-900 truncate"><%= customer.full_name %></p>
+                <p class="text-xs text-gray-500"><%= customer.identification_number %></p>
+              </div>
+              <span class="px-2 py-1 text-xs rounded-full <%= customer.status == 'active' ? 'bg-green-100 text-green-800' : customer.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                <%= customer_status_es(customer.status) %>
+              </span>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-2">
+              <span class="text-xs text-gray-500">Valor Total Préstamos</span>
+              <p class="text-lg font-bold text-[#125282]">L. <%= number_with_delimiter(customer.total_loan_value, delimiter: ',') %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Posición</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Identidad</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Total de Préstamos</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Total</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -171,7 +144,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-3 py-1 text-xs rounded-full <%= customer.status == 'active' ? 'bg-green-100 text-green-800' : customer.status == 'suspended' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
-                    <%= customer.status.titleize %>
+                    <%= customer_status_es(customer.status) %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -189,11 +162,7 @@
 
   <!-- Footer navigation -->
   <div class="flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
+    <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline font-medium text-sm" %>
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm" %>
   </div>
 </div>

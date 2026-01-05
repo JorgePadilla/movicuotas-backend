@@ -1,50 +1,94 @@
 <% content_for :title, "Gestión de Préstamos - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
   <!-- Page header -->
-  <div class="mb-8">
-    <div>
-      <h1 class="text-3xl font-bold text-[#125282]">Gestión de Préstamos</h1>
-      <p class="text-gray-600 mt-2">Visualiza y administra todos los préstamos del sistema</p>
-    </div>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Gestión de Préstamos</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Visualiza y administra todos los préstamos del sistema</p>
   </div>
 
   <!-- Search and filter section -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <!-- Search -->
-      <%= form_with url: admin_loans_path, method: :get, local: true, class: "md:col-span-2 flex gap-2" do |f| %>
-        <div class="flex-1">
-          <%= f.search_field :search, placeholder: "Buscar por número de contrato o nombre del cliente...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
-        </div>
-        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
-      <% end %>
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+    <!-- Search -->
+    <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4" do |f| %>
+      <div class="flex-1">
+        <%= f.search_field :search, placeholder: "Buscar por contrato o cliente...", value: params[:search], class: "w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm sm:text-base" %>
+      </div>
+      <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2.5 rounded-lg font-medium transition-colors cursor-pointer" %>
+    <% end %>
+
+    <!-- Status filter -->
+    <div class="flex flex-wrap gap-2 sm:gap-3 mb-4">
+      <%= link_to "Todos", admin_loans_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-colors" %>
+      <%= link_to "Activos", admin_loans_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-colors" %>
+      <%= link_to "Completados", admin_loans_path(status: 'paid'), class: "#{params[:status] == 'paid' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-colors" %>
+      <%= link_to "En Mora", admin_loans_path(status: 'overdue'), class: "#{params[:status] == 'overdue' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-colors" %>
     </div>
 
-    <!-- Status and Branch filters -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Status filter -->
-      <div class="flex gap-2 flex-wrap">
-        <span class="text-sm font-medium text-gray-700 leading-10">Estado:</span>
-        <%= link_to "Todos", admin_loans_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Activos", admin_loans_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Completados", admin_loans_path(status: 'paid'), class: "#{params[:status] == 'paid' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "En Mora", admin_loans_path(status: 'overdue'), class: "#{params[:status] == 'overdue' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-      </div>
-
-      <!-- Branch filter -->
-      <div>
-        <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex gap-2" do |f| %>
-          <%= f.select :branch, [['Todas', '']] + @branches.map { |b| [b, b] }, { selected: params[:branch] }, class: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
-          <%= f.hidden_field :search, value: params[:search] %>
-          <%= f.submit "Filtrar", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors" %>
-        <% end %>
-      </div>
-    </div>
+    <!-- Branch filter -->
+    <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2" do |f| %>
+      <%= f.select :branch, [['Todas las sucursales', '']] + @branches.map { |b| [b, b] }, { selected: params[:branch] }, class: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+      <%= f.hidden_field :search, value: params[:search] %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <%= f.submit "Filtrar", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors cursor-pointer" %>
+    <% end %>
   </div>
 
-  <!-- Loans table -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+  <!-- Mobile: Card view -->
+  <div class="block lg:hidden space-y-4">
+    <% if @loans.any? %>
+      <% @loans.each do |loan| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <!-- Header: Contract + Status -->
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1 min-w-0 mr-3">
+              <h3 class="font-semibold text-[#125282] truncate"><%= loan.contract_number %></h3>
+              <p class="text-sm text-gray-600"><%= loan.customer.full_name %></p>
+            </div>
+            <span class="flex-shrink-0 px-2.5 py-1 text-xs rounded-full <%= loan.active? ? 'bg-green-100 text-green-800' : loan.paid? ? 'bg-blue-100 text-blue-800' : loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= loan_status_es(loan.status) %>
+            </span>
+          </div>
+
+          <!-- Details grid -->
+          <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+            <div>
+              <span class="text-gray-500">Total</span>
+              <p class="text-gray-900 font-medium">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></p>
+            </div>
+            <div>
+              <span class="text-gray-500">Balance</span>
+              <p class="font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
+                L. <%= number_with_delimiter(loan.remaining_balance, delimiter: ',') %>
+              </p>
+            </div>
+            <div>
+              <span class="text-gray-500">Cuotas</span>
+              <p class="text-gray-900"><%= loan.paid_installments.count %>/<%= loan.installments.count %></p>
+            </div>
+            <div>
+              <span class="text-gray-500">Sucursal</span>
+              <p class="text-gray-900"><%= loan.branch_number %></p>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="pt-3 border-t border-gray-100">
+            <%= link_to admin_loan_path(loan), class: "block w-full text-center bg-[#125282] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#0f4670] transition-colors" do %>
+              Ver Detalles
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+        No hay préstamos que coincidan con tu búsqueda
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop: Table view -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -57,7 +101,6 @@
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
@@ -72,41 +115,28 @@
                   <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
                   <div class="text-xs text-gray-600"><%= loan.customer.identification_number %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-600"><%= loan.branch_number %></div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-green-600">L. <%= number_with_delimiter(loan.total_paid, delimiter: ',') %></div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
-                    L. <%= number_with_delimiter(loan.remaining_balance, delimiter: ',') %>
-                  </div>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= loan.branch_number %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">L. <%= number_with_delimiter(loan.total_paid, delimiter: ',') %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
+                  L. <%= number_with_delimiter(loan.remaining_balance, delimiter: ',') %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-3 py-1 text-sm rounded-full <%= loan.active? ? 'bg-green-100 text-green-800' : loan.paid? ? 'bg-blue-100 text-blue-800' : loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
-                    <%= loan.status.titleize %>
+                    <%= loan_status_es(loan.status) %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <% paid = loan.paid_installments.count %>
-                  <% total = loan.installments.count %>
-                  <span class="font-medium"><%= paid %></span>/<span class="text-gray-600"><%= total %></span>
+                  <span class="font-medium"><%= loan.paid_installments.count %></span>/<span class="text-gray-600"><%= loan.installments.count %></span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= loan.created_at.strftime("%d/%m/%Y") %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <%= link_to "Ver", admin_loan_path(loan), class: "text-[#125282] hover:underline font-medium" %>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="10" class="px-6 py-8 text-center text-gray-500">
+              <td colspan="9" class="px-6 py-8 text-center text-gray-500">
                 No hay préstamos que coincidan con tu búsqueda
               </td>
             </tr>
@@ -114,78 +144,85 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Pagination -->
-    <% if @loans.total_pages > 1 %>
-      <div class="mt-6 mb-8 flex justify-center items-center gap-2">
-        <div class="flex items-center gap-2">
-          <% if @loans.first_page? %>
-            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
-          <% else %>
-            <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-          <% end %>
-
-          <div class="flex items-center gap-1">
-            <% (1..@loans.total_pages).each do |page| %>
-              <% if page == @loans.current_page %>
-                <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium">
-                  <%= page %>
-                </span>
-              <% elsif (page - @loans.current_page).abs <= 1 || page == 1 || page == @loans.total_pages %>
-                <%= link_to page, admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
-              <% elsif page == 2 && @loans.current_page > 3 %>
-                <span class="px-2 py-2 text-gray-500">...</span>
-              <% elsif page == @loans.total_pages - 1 && @loans.current_page < @loans.total_pages - 2 %>
-                <span class="px-2 py-2 text-gray-500">...</span>
-              <% end %>
-            <% end %>
-          </div>
-
-          <% if @loans.last_page? %>
-            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
-          <% else %>
-            <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="text-center text-sm text-gray-500 mb-8">
-        Página <%= @loans.current_page %> de <%= @loans.total_pages %> • Mostrando <%= @loans.size %> de <%= @loans.total_count %> préstamos
-      </div>
-    <% end %>
   </div>
 
+  <!-- Pagination -->
+  <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
+    <div class="mt-6 mb-4 sm:mb-6">
+      <!-- Mobile pagination -->
+      <div class="flex sm:hidden justify-between items-center gap-2">
+        <% if @loans.first_page? %>
+          <span class="px-3 py-2 text-gray-400 text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+        <% end %>
+        <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
+        <% if @loans.last_page? %>
+          <span class="px-3 py-2 text-gray-400 text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop pagination -->
+      <div class="hidden sm:flex justify-center items-center gap-2">
+        <% if @loans.first_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+        <div class="flex items-center gap-1">
+          <% (1..@loans.total_pages).each do |page| %>
+            <% if page == @loans.current_page %>
+              <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
+            <% elsif (page - @loans.current_page).abs <= 1 || page == 1 || page == @loans.total_pages %>
+              <%= link_to page, admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+            <% elsif page == 2 && @loans.current_page > 3 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% elsif page == @loans.total_pages - 1 && @loans.current_page < @loans.total_pages - 2 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% end %>
+          <% end %>
+        </div>
+        <% if @loans.last_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+      </div>
+    </div>
+    <div class="text-center text-xs sm:text-sm text-gray-500 mb-6">
+      Página <%= @loans.current_page %> de <%= @loans.total_pages %> • <%= @loans.size %> de <%= @loans.total_count %> préstamos
+    </div>
+  <% end %>
+
   <!-- Summary stats -->
-  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Total Préstamos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.count %></p>
+  <div class="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-base font-semibold text-[#125282]">Total</h3>
+      <p class="text-xl sm:text-2xl font-bold text-gray-800 mt-1"><%= Loan.count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-green-600">Activos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'active').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-base font-semibold text-green-600">Activos</h3>
+      <p class="text-xl sm:text-2xl font-bold text-gray-800 mt-1"><%= Loan.where(status: 'active').count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-blue-600">Completados</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'paid').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-base font-semibold text-blue-600">Completados</h3>
+      <p class="text-xl sm:text-2xl font-bold text-gray-800 mt-1"><%= Loan.where(status: 'paid').count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-red-600">En Mora</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Loan.where(status: 'overdue').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-base font-semibold text-red-600">En Mora</h3>
+      <p class="text-xl sm:text-2xl font-bold text-gray-800 mt-1"><%= Loan.where(status: 'overdue').count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Valor Total</h3>
-      <p class="text-xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(Loan.sum(:total_amount), delimiter: ',') %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 col-span-2 sm:col-span-1">
+      <h3 class="text-sm sm:text-base font-semibold text-[#125282]">Valor Total</h3>
+      <p class="text-lg sm:text-xl font-bold text-gray-800 mt-1">L. <%= number_with_delimiter(Loan.sum(:total_amount), delimiter: ',') %></p>
     </div>
   </div>
 
   <!-- Footer navigation -->
-  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
-    <div class="text-sm text-gray-500">
-      Total de préstamos mostrados: <%= @loans.count %>
-    </div>
+  <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
+    <span class="text-xs sm:text-sm text-gray-500">Total: <%= @loans.respond_to?(:total_count) ? @loans.total_count : @loans.count %> préstamos</span>
   </div>
 </div>

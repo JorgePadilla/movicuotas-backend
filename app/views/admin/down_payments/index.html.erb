@@ -1,61 +1,115 @@
 <% content_for :title, "Primas Pendientes - Admin MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header -->
-  <div class="mb-6 md:mb-8">
-    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Primas Pendientes de Verificación</h1>
-    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Verificar comprobantes de depósito de primas.</p>
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Primas Pendientes</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">Verificar comprobantes de depósito de primas.</p>
   </div>
 
   <!-- Stats summary -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+  <div class="grid grid-cols-2 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-base md:text-lg font-semibold text-[#125282]">Pendientes</h3>
-          <p class="text-gray-600 text-xs md:text-sm mt-1">Depósitos por verificar</p>
+          <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Pendientes</h3>
+          <p class="text-gray-600 text-xs mt-1 hidden lg:block">Depósitos por verificar</p>
         </div>
-        <div class="text-2xl md:text-3xl font-bold text-yellow-600"><%= @pending_count %></div>
+        <div class="text-xl lg:text-3xl font-bold text-yellow-600"><%= @pending_count %></div>
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-base md:text-lg font-semibold text-[#125282]">Monto Total</h3>
-          <p class="text-gray-600 text-xs md:text-sm mt-1">Primas pendientes</p>
+          <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Monto Total</h3>
+          <p class="text-gray-600 text-xs mt-1 hidden lg:block">Primas pendientes</p>
         </div>
-        <div class="text-xl md:text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@total_pending_amount, delimiter: ",") %></div>
+        <div class="text-lg lg:text-2xl font-bold text-gray-800">L. <%= number_with_delimiter(@total_pending_amount, delimiter: ",") %></div>
       </div>
     </div>
   </div>
 
   <!-- Search and filters -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6 mb-6">
-    <%= form_with url: admin_down_payments_path, method: :get, class: "flex flex-col md:flex-row gap-4" do %>
-      <div class="flex-1">
-        <input type="text" name="search" value="<%= params[:search] %>"
-               placeholder="Buscar por cliente o contrato..."
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
+    <%= form_with url: admin_down_payments_path, method: :get, class: "space-y-3" do %>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="flex-1">
+          <input type="text" name="search" value="<%= params[:search] %>"
+                 placeholder="Buscar por cliente o contrato..."
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+        </div>
+        <div class="w-full sm:w-auto">
+          <select name="branch" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+            <option value="">Todas las sucursales</option>
+            <% Loan.distinct.pluck(:branch_number).compact.sort.each do |branch| %>
+              <option value="<%= branch %>" <%= "selected" if params[:branch] == branch %>><%= branch %></option>
+            <% end %>
+          </select>
+        </div>
       </div>
-      <div>
-        <select name="branch" class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent">
-          <option value="">Todas las sucursales</option>
-          <% Loan.distinct.pluck(:branch_number).each do |branch| %>
-            <option value="<%= branch %>" <%= "selected" if params[:branch] == branch %>><%= branch %></option>
-          <% end %>
-        </select>
-      </div>
-      <div>
-        <button type="submit" class="w-full md:w-auto px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#125282]/90">
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 sm:flex-none px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#0f4670] text-sm transition-colors">
           Buscar
         </button>
+        <% if params[:search].present? || params[:branch].present? %>
+          <%= link_to "Limpiar", admin_down_payments_path, class: "flex-1 sm:flex-none px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 text-sm text-center transition-colors" %>
+        <% end %>
       </div>
     <% end %>
   </div>
 
-  <!-- Loans table -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+  <!-- Mobile Card View -->
+  <div class="block lg:hidden space-y-4">
+    <% if @loans.any? %>
+      <% @loans.each do |loan| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <p class="font-bold text-gray-900"><%= loan.customer.full_name %></p>
+              <p class="text-xs text-gray-500"><%= loan.customer.identification_number %></p>
+            </div>
+            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <div>
+              <span class="text-gray-500 text-xs">Contrato</span>
+              <p class="font-medium text-[#125282]"><%= loan.contract_number %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Prima</span>
+              <p class="font-bold text-gray-900">L. <%= number_with_delimiter(loan.down_payment_amount, delimiter: ",") %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Sucursal</span>
+              <p class="text-gray-700"><%= loan.branch_number %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Supervisor</span>
+              <p class="text-gray-700"><%= loan.user&.name || "-" %></p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100">
+            <%= link_to "Ver Comprobante →", admin_down_payment_path(loan), class: "text-[#125282] hover:underline text-sm font-medium" %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-lg font-medium text-gray-900 mb-2">No hay primas pendientes</p>
+        <p class="text-gray-600 text-sm">Todas las primas han sido verificadas.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -101,11 +155,9 @@
           <% else %>
             <tr>
               <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                <div class="mb-4">
-                  <svg class="mx-auto h-12 w-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
+                <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
                 <p class="text-lg font-medium text-gray-900 mb-2">No hay primas pendientes</p>
                 <p class="text-gray-600">Todas las primas por depósito han sido verificadas.</p>
               </td>
@@ -114,26 +166,44 @@
         </tbody>
       </table>
     </div>
-
-    <!-- Pagination -->
-    <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
-      <div class="px-6 py-4 border-t border-gray-200">
-        <div class="flex items-center justify-between">
-          <p class="text-sm text-gray-500">
-            Página <%= @loans.current_page %> de <%= @loans.total_pages %>
-          </p>
-          <div class="flex gap-2">
-            <% unless @loans.first_page? %>
-              <%= link_to "← Anterior", admin_down_payments_path(page: @loans.current_page - 1, search: params[:search], branch: params[:branch]),
-                          class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
-            <% end %>
-            <% unless @loans.last_page? %>
-              <%= link_to "Siguiente →", admin_down_payments_path(page: @loans.current_page + 1, search: params[:search], branch: params[:branch]),
-                          class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    <% end %>
   </div>
+
+  <!-- Pagination -->
+  <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
+    <div class="mt-6 flex flex-col items-center gap-4">
+      <!-- Mobile Pagination -->
+      <div class="flex lg:hidden items-center gap-3">
+        <% if @loans.first_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_down_payments_path(page: @loans.current_page - 1, search: params[:search], branch: params[:branch]),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+
+        <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
+
+        <% if @loans.last_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_down_payments_path(page: @loans.current_page + 1, search: params[:search], branch: params[:branch]),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop Pagination -->
+      <div class="hidden lg:flex items-center gap-2">
+        <% unless @loans.first_page? %>
+          <%= link_to "← Anterior", admin_down_payments_path(page: @loans.current_page - 1, search: params[:search], branch: params[:branch]),
+              class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
+        <% end %>
+
+        <span class="px-3 py-2 text-sm text-gray-600">Página <%= @loans.current_page %> de <%= @loans.total_pages %></span>
+
+        <% unless @loans.last_page? %>
+          <%= link_to "Siguiente →", admin_down_payments_path(page: @loans.current_page + 1, search: params[:search], branch: params[:branch]),
+              class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

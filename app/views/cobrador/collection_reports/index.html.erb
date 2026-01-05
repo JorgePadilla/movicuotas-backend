@@ -1,113 +1,116 @@
 <% content_for :title, "Reportes de Mora - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-[#125282]">Reportes de Mora</h1>
-    <%= link_to "Volver al Dashboard", cobrador_dashboard_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", cobrador_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Reportes de Mora</h1>
   </div>
 
   <!-- Date Range Filter -->
-  <div class="bg-white shadow rounded-lg p-6 mb-6">
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
 
-    <%= form_with url: cobrador_collection_reports_path, method: :get, local: true, class: "grid grid-cols-1 gap-4 sm:grid-cols-3" do |f| %>
-      <div>
-        <%= f.label :start_date, "Fecha Inicio", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.date_field :start_date,
-                        value: @date_range.begin,
-                        class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-      </div>
+    <%= form_with url: cobrador_collection_reports_path, method: :get, local: true do |f| %>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <%= f.label :start_date, "Fecha Inicio", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :start_date,
+                          value: @date_range.begin,
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+        </div>
 
-      <div>
-        <%= f.label :end_date, "Fecha Fin", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.date_field :end_date,
-                        value: @date_range.end,
-                        class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-      </div>
+        <div>
+          <%= f.label :end_date, "Fecha Fin", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :end_date,
+                          value: @date_range.end,
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+        </div>
 
-      <div class="flex items-end gap-2">
-        <%= f.submit "Aplicar Filtro", class: "w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
+        <div class="flex items-end">
+          <%= f.submit "Aplicar", class: "w-full px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm hover:bg-[#0f4670] transition-colors" %>
+        </div>
       </div>
     <% end %>
   </div>
 
   <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white shadow rounded-lg p-6">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center">
-        <div class="flex-shrink-0 bg-red-100 p-3 rounded-full">
-          <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex-shrink-0 bg-red-100 p-2 lg:p-3 rounded-full">
+          <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <div class="ml-4">
-          <h3 class="text-sm font-medium text-gray-500">Cuotas en Mora</h3>
-          <p class="text-2xl font-bold text-gray-900"><%= @report_data[:summary][:total_overdue_count] %></p>
-          <p class="text-xs text-gray-500">
-            RD$ <%= number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2) %>
+        <div class="ml-3 lg:ml-4">
+          <h3 class="text-xs lg:text-sm font-medium text-gray-500">Cuotas en Mora</h3>
+          <p class="text-lg lg:text-2xl font-bold text-gray-900"><%= @report_data[:summary][:total_overdue_count] %></p>
+          <p class="text-xs text-gray-500 hidden lg:block">
+            L. <%= number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2) %>
           </p>
         </div>
       </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center">
-        <div class="flex-shrink-0 bg-orange-100 p-3 rounded-full">
-          <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex-shrink-0 bg-orange-100 p-2 lg:p-3 rounded-full">
+          <svg class="h-5 w-5 lg:h-6 lg:w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <div class="ml-4">
-          <h3 class="text-sm font-medium text-gray-500">Dispositivos Bloqueados</h3>
-          <p class="text-2xl font-bold text-gray-900"><%= @report_data[:summary][:devices_blocked] %></p>
-          <p class="text-xs text-gray-500">Vía MDM</p>
+        <div class="ml-3 lg:ml-4">
+          <h3 class="text-xs lg:text-sm font-medium text-gray-500">Bloqueados</h3>
+          <p class="text-lg lg:text-2xl font-bold text-gray-900"><%= @report_data[:summary][:devices_blocked] %></p>
+          <p class="text-xs text-gray-500 hidden lg:block">Vía MDM</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center">
-        <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-full">
-          <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex-shrink-0 bg-yellow-100 p-2 lg:p-3 rounded-full">
+          <svg class="h-5 w-5 lg:h-6 lg:w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <div class="ml-4">
-          <h3 class="text-sm font-medium text-gray-500">En Riesgo (Desbloqueados)</h3>
-          <p class="text-2xl font-bold text-gray-900"><%= @report_data[:summary][:devices_at_risk] %></p>
-          <p class="text-xs text-gray-500">Cuotas vencidas</p>
+        <div class="ml-3 lg:ml-4">
+          <h3 class="text-xs lg:text-sm font-medium text-gray-500">En Riesgo</h3>
+          <p class="text-lg lg:text-2xl font-bold text-gray-900"><%= @report_data[:summary][:devices_at_risk] %></p>
+          <p class="text-xs text-gray-500 hidden lg:block">Desbloqueados</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <div class="flex items-center">
-        <div class="flex-shrink-0 bg-green-100 p-3 rounded-full">
-          <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex-shrink-0 bg-green-100 p-2 lg:p-3 rounded-full">
+          <svg class="h-5 w-5 lg:h-6 lg:w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <div class="ml-4">
-          <h3 class="text-sm font-medium text-gray-500">Tasa de Recuperación</h3>
-          <p class="text-2xl font-bold text-gray-900"><%= @report_data[:recovery_rate] %>%</p>
-          <p class="text-xs text-gray-500">Durante período</p>
+        <div class="ml-3 lg:ml-4">
+          <h3 class="text-xs lg:text-sm font-medium text-gray-500">Recuperación</h3>
+          <p class="text-lg lg:text-2xl font-bold text-gray-900"><%= @report_data[:recovery_rate] %>%</p>
+          <p class="text-xs text-gray-500 hidden lg:block">Durante período</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Overdue by Days -->
+  <!-- Overdue by Days & Branch -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Mora por Rango de Días</h2>
       <div class="space-y-3">
         <% @report_data[:by_days].each do |range, data| %>
           <div class="flex items-center justify-between">
             <span class="text-sm font-medium text-gray-700"><%= range %></span>
             <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-600"><%= data[:count] %> cuotas</span>
+              <span class="text-xs text-gray-600"><%= data[:count] %> cuotas</span>
               <span class="text-sm font-semibold text-gray-900">
-                RD$ <%= number_with_precision(data[:total], precision: 2) %>
+                L. <%= number_with_precision(data[:total], precision: 2) %>
               </span>
             </div>
           </div>
@@ -119,8 +122,7 @@
       </div>
     </div>
 
-    <!-- Overdue by Branch -->
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Mora por Sucursal</h2>
       <div class="space-y-3">
         <% if @report_data[:by_branch].any? %>
@@ -128,9 +130,9 @@
             <div class="flex items-center justify-between">
               <span class="text-sm font-medium text-gray-700"><%= branch_data[:branch] %></span>
               <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-600"><%= branch_data[:loan_count] %> préstamos</span>
+                <span class="text-xs text-gray-600"><%= branch_data[:loan_count] %> préstamos</span>
                 <span class="text-sm font-semibold text-gray-900">
-                  RD$ <%= number_with_precision(branch_data[:total_amount], precision: 2) %>
+                  L. <%= number_with_precision(branch_data[:total_amount], precision: 2) %>
                 </span>
               </div>
             </div>
@@ -143,12 +145,43 @@
   </div>
 
   <!-- Recent Blocks -->
-  <div class="bg-white shadow rounded-lg overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200">
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="px-4 lg:px-6 py-4 border-b border-gray-200">
       <h2 class="text-lg font-semibold text-gray-900">Bloqueos Recientes</h2>
     </div>
+
     <% if @recent_blocks.any? %>
-      <div class="overflow-x-auto">
+      <!-- Mobile Card View -->
+      <div class="block lg:hidden p-4 space-y-4">
+        <% @recent_blocks.each do |device| %>
+          <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="font-bold text-gray-900"><%= device.loan&.customer&.full_name %></p>
+                <p class="text-xs text-gray-500 font-mono"><%= device.loan&.contract_number %></p>
+              </div>
+              <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Bloqueado</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <span class="text-gray-500 text-xs">Dispositivo</span>
+                <p class="text-gray-700"><%= "#{device.brand} #{device.model}".truncate(18) %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">IMEI</span>
+                <p class="font-mono text-gray-700 text-xs">...<%= device.imei[-6..] %></p>
+              </div>
+              <div class="col-span-2">
+                <span class="text-gray-500 text-xs">Fecha Bloqueo</span>
+                <p class="text-gray-700"><%= l device.locked_at, format: :short %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -176,41 +209,47 @@
       </div>
 
       <!-- Pagination -->
-      <% if @recent_blocks.total_pages > 1 %>
-        <div class="mt-6 mb-6 flex justify-center items-center gap-2 px-6 py-4 border-t border-gray-200">
-          <div class="flex items-center gap-2">
-            <% if @recent_blocks.first_page? %>
-              <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
-            <% else %>
-              <%= link_to "← Anterior", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-            <% end %>
+      <% if @recent_blocks.respond_to?(:total_pages) && @recent_blocks.total_pages > 1 %>
+        <div class="px-4 lg:px-6 py-4 border-t border-gray-200">
+          <div class="flex flex-col items-center gap-3">
+            <!-- Mobile Pagination -->
+            <div class="flex lg:hidden items-center gap-3">
+              <% if @recent_blocks.first_page? %>
+                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+              <% else %>
+                <%= link_to "← Anterior", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page - 1),
+                    class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+              <% end %>
 
-            <div class="flex items-center gap-1">
-              <% (1..@recent_blocks.total_pages).each do |page| %>
-                <% if page == @recent_blocks.current_page %>
-                  <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium">
-                    <%= page %>
-                  </span>
-                <% elsif (page - @recent_blocks.current_page).abs <= 1 || page == 1 || page == @recent_blocks.total_pages %>
-                  <%= link_to page, cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
-                <% elsif page == 2 && @recent_blocks.current_page > 3 %>
-                  <span class="px-2 py-2 text-gray-500">...</span>
-                <% elsif page == @recent_blocks.total_pages - 1 && @recent_blocks.current_page < @recent_blocks.total_pages - 2 %>
-                  <span class="px-2 py-2 text-gray-500">...</span>
-                <% end %>
+              <span class="text-sm text-gray-600"><%= @recent_blocks.current_page %> / <%= @recent_blocks.total_pages %></span>
+
+              <% if @recent_blocks.last_page? %>
+                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+              <% else %>
+                <%= link_to "Siguiente →", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page + 1),
+                    class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
               <% end %>
             </div>
 
-            <% if @recent_blocks.last_page? %>
-              <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
-            <% else %>
-              <%= link_to "Siguiente →", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-            <% end %>
-          </div>
-        </div>
+            <!-- Desktop Pagination -->
+            <div class="hidden lg:flex items-center gap-2">
+              <% unless @recent_blocks.first_page? %>
+                <%= link_to "← Anterior", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page - 1),
+                    class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
+              <% end %>
 
-        <div class="text-center text-sm text-gray-500 px-6 pb-4">
-          Página <%= @recent_blocks.current_page %> de <%= @recent_blocks.total_pages %> • Mostrando <%= @recent_blocks.size %> de <%= @recent_blocks.total_count %> bloqueos
+              <span class="px-3 py-2 text-sm text-gray-600">Página <%= @recent_blocks.current_page %> de <%= @recent_blocks.total_pages %></span>
+
+              <% unless @recent_blocks.last_page? %>
+                <%= link_to "Siguiente →", cobrador_collection_reports_path(start_date: params[:start_date], end_date: params[:end_date], page: @recent_blocks.current_page + 1),
+                    class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
+              <% end %>
+            </div>
+
+            <p class="text-sm text-gray-500">
+              Mostrando <%= @recent_blocks.offset_value + 1 %> a <%= [@recent_blocks.offset_value + @recent_blocks.size, @recent_blocks.total_count].min %> de <%= @recent_blocks.total_count %> bloqueos
+            </p>
+          </div>
         </div>
       <% end %>
     <% else %>

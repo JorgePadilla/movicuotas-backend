@@ -44,7 +44,7 @@
           <label class="block text-sm font-medium text-gray-600">Función</label>
           <div class="mt-1">
             <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : @user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
-              <%= @user.role.titleize %>
+              <%= role_es(@user.role) %>
             </span>
           </div>
         </div>

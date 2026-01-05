@@ -67,7 +67,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <% @payments_by_method.each do |method, amount| %>
           <div class="border border-gray-200 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900 mb-2"><%= method.titleize %></h3>
+            <h3 class="font-semibold text-gray-900 mb-2"><%= payment_method_es(method) %></h3>
             <p class="text-2xl font-bold text-[#125282] mb-2">L. <%= number_with_delimiter(amount, delimiter: ',') %></p>
             <% method_percent = @total_payments > 0 ? ((amount / @total_payments) * 100).round(2) : 0 %>
             <div class="w-full bg-gray-200 rounded-full h-2">

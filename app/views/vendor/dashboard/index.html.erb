@@ -110,7 +110,7 @@
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800"><%= payment.loan.customer.full_name %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">L. <%= number_with_delimiter(payment.amount, delimiter: ',', separator: '.') %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm">
-                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"><%= payment.payment_method.titleize %></span>
+                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"><%= payment_method_es(payment.payment_method) %></span>
                   </td>
                 </tr>
               <% end %>

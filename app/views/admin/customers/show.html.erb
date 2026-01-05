@@ -28,7 +28,7 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-600">Género</label>
-          <p class="text-lg text-gray-900 mt-1"><%= @customer.gender.titleize %></p>
+          <p class="text-lg text-gray-900 mt-1"><%= gender_es(@customer.gender) %></p>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-600">Fecha de Nacimiento</label>
@@ -56,7 +56,7 @@
           <label class="block text-sm font-medium text-gray-600">Estado</label>
           <div class="mt-1">
             <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @customer.active? ? 'bg-green-100 text-green-800' : @customer.suspended? ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800' %>">
-              <%= @customer.status.titleize %>
+              <%= customer_status_es(@customer.status) %>
             </span>
           </div>
         </div>
@@ -91,7 +91,7 @@
                 </td>
                 <td class="px-4 py-3">
                   <span class="px-2 py-1 text-xs rounded-full <%= loan.active? ? 'bg-green-100 text-green-800' : loan.paid? ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800' %>">
-                    <%= loan.status.titleize %>
+                    <%= loan_status_es(loan.status) %>
                   </span>
                 </td>
                 <td class="px-4 py-3">

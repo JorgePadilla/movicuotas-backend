@@ -2,10 +2,10 @@
 
 module Admin
   class PaymentsController < ApplicationController
-    before_action :set_payment, only: [:show]
+    before_action :set_payment, only: [:show, :verify, :reject]
 
     def index
-      @payments = policy_scope(Payment).order(payment_date: :desc)
+      @payments = policy_scope(Payment)
 
       # Filter by verification status if provided
       @payments = @payments.where(verification_status: params[:status]) if params[:status].present?
@@ -37,12 +37,31 @@ module Admin
       # Group by payment method for visualization
       @payments_by_method = payments_for_stats.group(:payment_method).sum(:amount)
 
+      # Order by earliest installment due date (for verification queue), then by payment date
+      @payments = @payments.left_joins(:installments)
+                           .select("payments.*, MIN(installments.due_date) AS earliest_due_date")
+                           .group("payments.id")
+                           .order(Arel.sql("MIN(installments.due_date) ASC NULLS LAST, payments.payment_date DESC"))
+
       # Paginate results (20 per page)
       @payments = @payments.page(params[:page]).per(20)
     end
 
     def show
       authorize @payment
+    end
+
+    def verify
+      authorize @payment
+      @payment.verify!(current_user)
+      redirect_to admin_payment_path(@payment), notice: "Pago verificado correctamente."
+    end
+
+    def reject
+      authorize @payment
+      reason = params[:rejection_reason].presence || "Sin razón especificada"
+      @payment.reject!(current_user, reason)
+      redirect_to admin_payment_path(@payment), alert: "Pago rechazado: #{reason}"
     end
 
     private

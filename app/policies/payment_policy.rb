@@ -13,7 +13,8 @@ class PaymentPolicy < ApplicationPolicy
   end
 
   def show?
-    true  # All authenticated users can view payment details
+    # Admin can see all, Supervisor only their branch, Cobrador all (read-only)
+    admin? || cobrador? || (supervisor? && own_branch_payment?)
   end
 
   def create?
@@ -30,7 +31,11 @@ class PaymentPolicy < ApplicationPolicy
 
   # Custom actions
   def verify?
-    admin?  # Only admin can verify payments
+    admin? || (supervisor? && own_branch_payment?)
+  end
+
+  def reject?
+    admin? || (supervisor? && own_branch_payment?)
   end
 
   # Scope: Filter payments based on role
@@ -56,5 +61,9 @@ class PaymentPolicy < ApplicationPolicy
   def own_payment?
     # Assuming payment belongs to loan, and loan belongs to user (supervisor)
     record.loan.user == user
+  end
+
+  def own_branch_payment?
+    record.loan.branch_number == user.branch_number
   end
 end

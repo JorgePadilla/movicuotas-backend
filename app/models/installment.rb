@@ -52,14 +52,19 @@ class Installment < ApplicationRecord
   end
 
   def update_paid_amount
-    total_paid = payment_installments.sum(:amount)
-    update(paid_amount: total_paid)
+    # Only count payments that have been verified
+    verified_paid = payment_installments.joins(:payment)
+                                        .where(payments: { verification_status: 'verified' })
+                                        .sum(:amount)
+    update(paid_amount: verified_paid)
 
-    # Update status based on paid amount
-    if total_paid >= amount
+    # Update status based on verified paid amount
+    if verified_paid >= amount
       update(status: "paid", paid_date: Date.today) unless paid?
-    elsif total_paid > 0 && pending?
-      update(status: "pending") # Ensure it's pending if partially paid
+    elsif paid? && verified_paid < amount
+      # Revert to pending/overdue if payment was rejected
+      new_status = due_date.past? ? "overdue" : "pending"
+      update(status: new_status, paid_date: nil)
     end
   end
 

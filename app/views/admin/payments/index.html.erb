@@ -1,88 +1,93 @@
 <% content_for :title, "Gestión de Pagos - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header -->
-  <div class="mb-8">
-    <div>
-      <h1 class="text-3xl font-bold text-[#125282]">Gestión de Pagos</h1>
-      <p class="text-gray-600 mt-2">Visualiza y verifica todos los pagos del sistema</p>
-    </div>
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Gestión de Pagos</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">Visualiza y verifica todos los pagos del sistema</p>
   </div>
 
   <!-- Search and filter section -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <!-- Search -->
-      <%= form_with url: admin_payments_path, method: :get, local: true, class: "md:col-span-2 flex gap-2" do |f| %>
-        <div class="flex-1">
-          <%= f.search_field :search, placeholder: "Buscar por nombre del cliente o número de contrato...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
-        </div>
-        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
-      <% end %>
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
+    <!-- Search -->
+    <%= form_with url: admin_payments_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2 mb-4" do |f| %>
+      <div class="flex-1">
+        <%= f.search_field :search, placeholder: "Buscar por cliente o contrato...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+      </div>
+      <div class="flex gap-2">
+        <%= f.submit "Buscar", class: "flex-1 sm:flex-none bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
+        <% if params[:search].present? || params[:status].present? || params[:method].present? || params[:date_from].present? %>
+          <%= link_to "Limpiar", admin_payments_path, class: "flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm text-center" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Status filter -->
+    <div class="mb-4">
+      <span class="text-xs font-medium text-gray-700 block mb-2">Estado:</span>
+      <div class="flex gap-2 flex-wrap">
+        <%= link_to "Todos", admin_payments_path(method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Verificados", admin_payments_path(status: 'verified', method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:status] == 'verified' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Pendientes", admin_payments_path(status: 'pending', method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-white border border-yellow-200 text-yellow-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Rechazados", admin_payments_path(status: 'rejected', method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:status] == 'rejected' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+      </div>
     </div>
 
-    <!-- Status and Method filters -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <!-- Verification Status filter -->
+    <!-- Payment Method filter -->
+    <div class="mb-4">
+      <span class="text-xs font-medium text-gray-700 block mb-2">Método:</span>
       <div class="flex gap-2 flex-wrap">
-        <span class="text-sm font-medium text-gray-700 leading-10">Estado:</span>
-        <%= link_to "Todos", admin_payments_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Verificados", admin_payments_path(status: 'verified'), class: "#{params[:status] == 'verified' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Pendientes", admin_payments_path(status: 'pending'), class: "#{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-white border border-yellow-200 text-yellow-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Rechazados", admin_payments_path(status: 'rejected'), class: "#{params[:status] == 'rejected' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-      </div>
-
-      <!-- Payment Method filter -->
-      <div class="flex gap-2 flex-wrap">
-        <span class="text-sm font-medium text-gray-700 leading-10">Método:</span>
-        <%= link_to "Todos", admin_payments_path, class: "#{params[:method].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Efectivo", admin_payments_path(method: 'cash'), class: "#{params[:method] == 'cash' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Transferencia", admin_payments_path(method: 'transfer'), class: "#{params[:method] == 'transfer' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
-        <%= link_to "Tarjeta", admin_payments_path(method: 'card'), class: "#{params[:method] == 'card' ? 'bg-indigo-600 text-white' : 'bg-white border border-indigo-200 text-indigo-600'} px-3 py-1 rounded-lg font-medium text-sm transition-colors" %>
+        <%= link_to "Todos", admin_payments_path(status: params[:status], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:method].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Efectivo", admin_payments_path(method: 'cash', status: params[:status], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:method] == 'cash' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Transferencia", admin_payments_path(method: 'transfer', status: params[:status], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:method] == 'transfer' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+        <%= link_to "Tarjeta", admin_payments_path(method: 'card', status: params[:status], date_from: params[:date_from], date_to: params[:date_to], search: params[:search]), class: "#{params[:method] == 'card' ? 'bg-indigo-600 text-white' : 'bg-white border border-indigo-200 text-indigo-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
       </div>
     </div>
 
     <!-- Date range filter -->
-    <%= form_with url: admin_payments_path, method: :get, local: true, class: "flex gap-2 items-end" do |f| %>
-      <div>
-        <%= f.label :date_from, "Desde:", class: "block text-sm font-medium text-gray-600" %>
-        <%= f.date_field :date_from, value: params[:date_from], class: "mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <%= form_with url: admin_payments_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2 items-end" do |f| %>
+      <div class="w-full sm:w-auto">
+        <%= f.label :date_from, "Desde:", class: "block text-xs font-medium text-gray-600" %>
+        <%= f.date_field :date_from, value: params[:date_from], class: "mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
       </div>
-      <div>
-        <%= f.label :date_to, "Hasta:", class: "block text-sm font-medium text-gray-600" %>
-        <%= f.date_field :date_to, value: params[:date_to], class: "mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+      <div class="w-full sm:w-auto">
+        <%= f.label :date_to, "Hasta:", class: "block text-xs font-medium text-gray-600" %>
+        <%= f.date_field :date_to, value: params[:date_to], class: "mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
       </div>
       <%= f.hidden_field :search, value: params[:search] %>
-      <%= f.submit "Filtrar por Fecha", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <%= f.hidden_field :method, value: params[:method] %>
+      <%= f.submit "Filtrar", class: "w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
     <% end %>
   </div>
 
   <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Total Pagos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@total_payments, delimiter: ',') %></p>
-      <p class="text-sm text-gray-600 mt-2"><%= Payment.count %> transacciones</p>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Total Pagos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2">L. <%= number_with_delimiter(@total_payments, delimiter: ',') %></p>
+      <p class="text-xs lg:text-sm text-gray-600 mt-1"><%= Payment.count %> transacciones</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-green-600">Verificados</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@verified_payments, delimiter: ',') %></p>
-      <p class="text-sm text-gray-600 mt-2"><%= Payment.verified.count %> transacciones</p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-green-600">Verificados</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2">L. <%= number_with_delimiter(@verified_payments, delimiter: ',') %></p>
+      <p class="text-xs lg:text-sm text-gray-600 mt-1"><%= Payment.verified.count %> transacciones</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-yellow-600">Pendientes</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">L. <%= number_with_delimiter(@pending_verification, delimiter: ',') %></p>
-      <p class="text-sm text-gray-600 mt-2"><%= Payment.pending_verification.count %> transacciones</p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-yellow-600">Pendientes</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1 lg:mt-2">L. <%= number_with_delimiter(@pending_verification, delimiter: ',') %></p>
+      <p class="text-xs lg:text-sm text-gray-600 mt-1"><%= Payment.pending_verification.count %> transacciones</p>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Métodos Pagos</h3>
-      <div class="mt-2 space-y-1 text-sm">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Por Método</h3>
+      <div class="mt-1 lg:mt-2 space-y-1 text-xs lg:text-sm">
         <% @payments_by_method.each do |method, amount| %>
           <div class="flex justify-between">
-            <span class="text-gray-600"><%= method.titleize %></span>
+            <span class="text-gray-600"><%= payment_method_es(method) %></span>
             <span class="font-medium">L. <%= number_with_delimiter(amount, delimiter: ',') %></span>
           </div>
         <% end %>
@@ -90,19 +95,93 @@
     </div>
   </div>
 
-  <!-- Payments table -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+  <!-- Mobile Card View -->
+  <div class="block lg:hidden space-y-4">
+    <% if @payments.any? %>
+      <% @payments.each do |payment| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <p class="font-bold text-gray-900"><%= payment.loan.customer.full_name %></p>
+              <p class="text-xs text-gray-500"><%= payment.loan.customer.identification_number %></p>
+            </div>
+            <span class="px-2 py-1 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+              <%= verification_status_es(payment.verification_status) %>
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <% mobile_installments = payment.installments.order(:due_date) %>
+            <% mobile_earliest_due = mobile_installments.first&.due_date %>
+            <div>
+              <span class="text-gray-500 text-xs">Contrato</span>
+              <p class="font-medium text-[#125282]"><%= payment.loan.contract_number %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Cuota(s)</span>
+              <p class="font-medium text-gray-900">
+                <% mobile_installment_nums = mobile_installments.pluck(:installment_number) %>
+                <%= mobile_installment_nums.any? ? mobile_installment_nums.map { |n| "##{n}" }.join(", ") : "—" %>
+              </p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Monto</span>
+              <p class="font-bold text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Vencimiento</span>
+              <% if mobile_earliest_due %>
+                <% mobile_is_overdue = mobile_earliest_due < Date.today %>
+                <p class="<%= mobile_is_overdue ? 'text-red-600 font-semibold' : 'text-gray-700' %>">
+                  <%= mobile_earliest_due.strftime("%d/%m/%Y") %>
+                  <% if mobile_is_overdue %><span class="text-xs">(vencido)</span><% end %>
+                </p>
+              <% else %>
+                <p class="text-gray-400">—</p>
+              <% end %>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Fecha Pago</span>
+              <p class="text-gray-700"><%= payment.payment_date.strftime("%d/%m/%Y") %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Método</span>
+              <span class="inline-block px-2 py-0.5 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
+                <%= payment_method_es(payment.payment_method) %>
+              </span>
+            </div>
+          </div>
+
+          <% if payment.reference_number.present? %>
+            <p class="text-xs text-gray-500 mb-3">Ref: <%= payment.reference_number %></p>
+          <% end %>
+
+          <div class="pt-3 border-t border-gray-100">
+            <%= link_to "Ver Detalles →", admin_payment_path(payment), class: "text-[#125282] hover:underline text-sm font-medium" %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+        No hay pagos que coincidan con tu búsqueda
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Pago</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuota</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
@@ -115,35 +194,51 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900"><%= payment.loan.customer.full_name %></div>
-                  <div class="text-xs text-gray-600"><%= payment.loan.customer.identification_number %></div>
+                  <div class="text-xs text-gray-500"><%= payment.loan.customer.identification_number %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="font-medium text-[#125282]"><%= payment.loan.contract_number %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% installments_data = payment.installments.order(:due_date) %>
+                  <% installment_nums = installments_data.pluck(:installment_number) %>
+                  <span class="text-sm font-medium text-gray-900"><%= installment_nums.any? ? installment_nums.map { |n| "##{n}" }.join(", ") : "—" %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% earliest_due = installments_data.first&.due_date %>
+                  <% if earliest_due %>
+                    <% is_overdue = earliest_due < Date.today %>
+                    <span class="text-sm <%= is_overdue ? 'text-red-600 font-semibold' : 'text-gray-900' %>">
+                      <%= earliest_due.strftime("%d/%m/%Y") %>
+                      <% if is_overdue %>
+                        <span class="text-xs">(vencido)</span>
+                      <% end %>
+                    </span>
+                  <% else %>
+                    <span class="text-sm text-gray-400">—</span>
+                  <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-3 py-1 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
-                    <%= payment.payment_method.titleize %>
+                    <%= payment_method_es(payment.payment_method) %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-3 py-1 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
-                    <%= payment.verification_status.titleize %>
+                    <%= verification_status_es(payment.verification_status) %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-600"><%= payment.reference_number || "—" %></div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <%= link_to "Ver", admin_payment_path(payment), class: "text-[#125282] hover:underline font-medium" %>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+              <td colspan="9" class="px-6 py-8 text-center text-gray-500">
                 No hay pagos que coincidan con tu búsqueda
               </td>
             </tr>
@@ -151,54 +246,60 @@
         </tbody>
       </table>
     </div>
+  </div>
 
-    <!-- Pagination -->
-    <% if @payments.total_pages > 1 %>
-      <div class="mt-6 mb-8 flex justify-center items-center gap-2">
-        <div class="flex items-center gap-2">
-          <% if @payments.first_page? %>
-            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
-          <% else %>
-            <%= link_to "← Anterior", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-          <% end %>
+  <!-- Pagination -->
+  <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
+    <div class="mt-6 flex flex-col items-center gap-4">
+      <!-- Mobile Pagination -->
+      <div class="flex lg:hidden items-center gap-3">
+        <% if @payments.first_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page - 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
 
-          <div class="flex items-center gap-1">
-            <% (1..@payments.total_pages).each do |page| %>
-              <% if page == @payments.current_page %>
-                <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium">
-                  <%= page %>
-                </span>
-              <% elsif (page - @payments.current_page).abs <= 1 || page == 1 || page == @payments.total_pages %>
-                <%= link_to page, admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
-              <% elsif page == 2 && @payments.current_page > 3 %>
-                <span class="px-2 py-2 text-gray-500">...</span>
-              <% elsif page == @payments.total_pages - 1 && @payments.current_page < @payments.total_pages - 2 %>
-                <span class="px-2 py-2 text-gray-500">...</span>
-              <% end %>
+        <span class="text-sm text-gray-600"><%= @payments.current_page %> / <%= @payments.total_pages %></span>
+
+        <% if @payments.last_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page + 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop Pagination -->
+      <div class="hidden lg:flex items-center gap-2">
+        <% if @payments.first_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+
+        <div class="flex items-center gap-1">
+          <% (1..@payments.total_pages).each do |page| %>
+            <% if page == @payments.current_page %>
+              <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
+            <% elsif (page - @payments.current_page).abs <= 1 || page == 1 || page == @payments.total_pages %>
+              <%= link_to page, admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+            <% elsif page == 2 && @payments.current_page > 3 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% elsif page == @payments.total_pages - 1 && @payments.current_page < @payments.total_pages - 2 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
             <% end %>
-          </div>
-
-          <% if @payments.last_page? %>
-            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
-          <% else %>
-            <%= link_to "Siguiente →", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
           <% end %>
         </div>
+
+        <% if @payments.last_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
       </div>
 
-      <div class="text-center text-sm text-gray-500 mb-8">
-        Página <%= @payments.current_page %> de <%= @payments.total_pages %> • Mostrando <%= @payments.size %> de <%= @payments.total_count %> pagos
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Footer navigation -->
-  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+      <p class="text-sm text-gray-500">
+        Mostrando <%= @payments.size %> de <%= @payments.total_count %> pagos
+      </p>
     </div>
-    <div class="text-sm text-gray-500">
-      Total de pagos mostrados: <%= @payments.count %>
-    </div>
-  </div>
+  <% end %>
 </div>

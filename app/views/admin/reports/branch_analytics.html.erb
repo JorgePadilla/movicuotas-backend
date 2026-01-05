@@ -70,7 +70,7 @@
         <div class="mt-4 space-y-2 text-sm">
           <% @branch_payment_methods.each do |method, amount| %>
             <div class="flex justify-between">
-              <span class="text-gray-600"><%= method.titleize %></span>
+              <span class="text-gray-600"><%= payment_method_es(method) %></span>
               <span class="font-medium">L. <%= number_with_delimiter(amount, delimiter: ',') %></span>
             </div>
           <% end %>

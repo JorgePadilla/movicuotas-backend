@@ -240,7 +240,7 @@
               <div class="text-right">
                 <div class="text-sm font-medium text-gray-800">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></div>
                 <div class="text-xs">
-                  <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-xs"><%= payment.payment_method.titleize %></span>
+                  <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-xs"><%= payment_method_es(payment.payment_method) %></span>
                 </div>
               </div>
             </div>
@@ -268,7 +268,7 @@
               <div class="text-right">
                 <div class="text-sm">
                   <span class="px-2 py-1 text-xs rounded-full <%= user.role == 'admin' ? 'bg-purple-100 text-purple-800' : user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
-                    <%= user.role.titleize %>
+                    <%= role_es(user.role) %>
                   </span>
                 </div>
                 <div class="text-xs text-gray-500"><%= user.created_at.strftime("%d/%m/%Y") %></div>

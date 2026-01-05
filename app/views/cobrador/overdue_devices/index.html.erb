@@ -1,55 +1,35 @@
 <% content_for :title, "Dispositivos en Mora - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-[#125282]">Dispositivos en Mora</h1>
-      <p class="text-gray-600 mt-1">Total: <strong><%= @total_overdue_count %></strong> dispositivos | Monto: <strong>RD$ <%= number_with_precision(@total_overdue_amount, precision: 2) %></strong></p>
-    </div>
-    <%= link_to "Volver al Dashboard", cobrador_dashboard_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", cobrador_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Dispositivos en Mora</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">
+      Total: <strong><%= @total_overdue_count %></strong> dispositivos |
+      Monto: <strong>L. <%= number_with_precision(@total_overdue_amount, precision: 2) %></strong>
+    </p>
   </div>
 
-  <!-- Advanced Filters Section -->
-  <div class="bg-white shadow rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros Avanzados</h2>
+  <!-- Filters Section -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
 
     <%= form_with url: cobrador_overdue_devices_path, method: :get, local: true do |f| %>
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-        <!-- Min Days Filter -->
-        <div>
-          <%= f.label :min_days, "Días de Atraso Mínimos", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.number_field :min_days,
-                             value: @min_days,
-                             placeholder: "e.g., 7",
-                             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-        </div>
-
-        <!-- Max Amount Filter -->
-        <div>
-          <%= f.label :min_amount, "Monto Mínimo (RD$)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.number_field :min_amount,
-                             value: @min_amount,
-                             step: 0.01,
-                             placeholder: "e.g., 1000",
-                             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-        </div>
-
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <!-- Days Range Filter -->
         <div>
           <%= f.label :days_range, "Rango de Días", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.select :days_range,
-                      options_for_select(
-                        [
-                          ["Todos", ""],
-                          ["1-7 días", "1-7"],
-                          ["8-15 días", "8-15"],
-                          ["16-30 días", "16-30"],
-                          ["30+ días", "30+"]
-                        ],
-                        params[:days_range]
-                      ),
+                      options_for_select([
+                        ["Todos", ""],
+                        ["1-7 días", "1-7"],
+                        ["8-15 días", "8-15"],
+                        ["16-30 días", "16-30"],
+                        ["30+ días", "30+"]
+                      ], params[:days_range]),
                       { include_blank: false },
-                      class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+                      class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
         </div>
 
         <!-- Branch Filter -->
@@ -57,172 +37,196 @@
           <%= f.label :branch, "Sucursal", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.text_field :branch,
                           value: @branch_filter,
-                          placeholder: "e.g., BRG001",
-                          class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-        <!-- IMEI Search -->
-        <div>
-          <%= f.label :imei, "Buscar IMEI", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :imei,
-                          value: @imei_search,
-                          placeholder: "últimos 5 dígitos",
-                          class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+                          placeholder: "Ej: BRG001",
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
         </div>
 
         <!-- Customer Search -->
         <div>
-          <%= f.label :customer, "Buscar Cliente", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.label :customer, "Cliente", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.text_field :customer,
                           value: @customer_search,
-                          placeholder: "nombre del cliente",
-                          class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+                          placeholder: "Nombre",
+                          class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
         </div>
 
-        <!-- Sort Column -->
+        <!-- Sort -->
         <div>
-          <%= f.label :sort, "Ordenar por", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.label :sort, "Ordenar", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.select :sort,
-                      options_for_select(
-                        [
-                          ["Días de Atraso", "days_overdue"],
-                          ["Monto Adeudado", "total_overdue"],
-                          ["Cliente", "customer_name"],
-                          ["Fecha de Vencimiento", "first_overdue_date"]
-                        ],
-                        @sort_column
-                      ),
+                      options_for_select([
+                        ["Días de Atraso", "days_overdue"],
+                        ["Monto Adeudado", "total_overdue"],
+                        ["Cliente", "customer_name"]
+                      ], @sort_column),
                       { include_blank: false },
-                      class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-        </div>
-
-        <!-- Sort Order -->
-        <div>
-          <%= f.label :order, "Orden", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.select :order,
-                      options_for_select(
-                        [
-                          ["Descendente (Mayor a Menor)", "DESC"],
-                          ["Ascendente (Menor a Mayor)", "ASC"]
-                        ],
-                        @sort_order
-                      ),
-                      { include_blank: false },
-                      class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+                      class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
         </div>
       </div>
 
-      <div class="flex gap-2 mb-4 flex-wrap">
-        <%= f.submit "🔍 Aplicar Filtros", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
-        <%= link_to "❌ Limpiar Filtros", cobrador_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
-        <%= link_to "📥 Exportar CSV", cobrador_overdue_devices_path(format: :csv, min_days: params[:min_days], min_amount: params[:min_amount], days_range: params[:days_range], branch: params[:branch], imei: params[:imei], customer: params[:customer], sort: @sort_column, order: @sort_order), class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
-      </div>
-
-      <!-- Per Page Selection -->
-      <div class="flex items-center gap-4 pt-4 border-t border-gray-200">
-        <label class="text-sm font-medium text-gray-700">Mostrar por página:</label>
-        <%= f.select :per_page,
-                    options_for_select(@per_page_options, @current_per_page),
-                    { include_blank: false },
-                    { onchange: "this.form.submit();", class: "px-3 py-1 border border-gray-300 rounded-md text-sm" } %>
+      <div class="flex flex-wrap gap-2">
+        <%= f.submit "Buscar", class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm hover:bg-[#0f4670] transition-colors" %>
+        <%= link_to "Limpiar", cobrador_overdue_devices_path, class: "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-300 transition-colors" %>
+        <%= link_to "Exportar CSV", cobrador_overdue_devices_path(format: :csv, days_range: params[:days_range], branch: params[:branch], customer: params[:customer], sort: @sort_column, order: @sort_order), class: "px-4 py-2 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors" %>
       </div>
     <% end %>
   </div>
 
-  <!-- Bulk Actions Section -->
+  <!-- Bulk Actions (shown when items selected) -->
   <div id="bulk-actions" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-medium text-blue-900">
-          <span id="selected-count">0</span> dispositivos seleccionados
-        </p>
-      </div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <p class="text-sm font-medium text-blue-900">
+        <span id="selected-count">0</span> dispositivos seleccionados
+      </p>
       <div class="flex gap-2">
-        <%= link_to "🔴 Bloquear Seleccionados",
-                    "#",
-                    id: "bulk-block-btn",
-                    class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700",
-                    onclick: "return handleBulkBlock(event);" %>
-        <button type="button" onclick="clearAllSelections()" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-          Limpiar Selección
+        <%= link_to "Bloquear Seleccionados", "#", id: "bulk-block-btn",
+            class: "px-4 py-2 bg-red-600 text-white rounded-lg font-medium text-sm hover:bg-red-700",
+            onclick: "return handleBulkBlock(event);" %>
+        <button type="button" onclick="clearAllSelections()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-300">
+          Limpiar
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Devices Table -->
-  <div class="bg-white shadow rounded-lg overflow-hidden">
+  <!-- Mobile Card View -->
+  <div class="block lg:hidden space-y-4">
+    <% if @devices.any? %>
+      <% @devices.each do |device| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 device-row" data-device-id="<%= device.id %>">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()">
+              <div>
+                <p class="font-bold text-gray-900"><%= device.customer_name %></p>
+                <p class="text-xs text-gray-500"><%= device.contract_number %></p>
+              </div>
+            </div>
+            <% if device.lock_status == "locked" %>
+              <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Bloqueado</span>
+            <% elsif device.lock_status == "pending" %>
+              <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
+            <% else %>
+              <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Activo</span>
+            <% end %>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <div>
+              <span class="text-gray-500 text-xs">Dispositivo</span>
+              <p class="text-gray-700 truncate"><%= "#{device.brand} #{device.model}".truncate(18) %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">IMEI</span>
+              <p class="font-mono text-gray-700">...<%= device.imei[-5..] %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Cuotas Mora</span>
+              <p class="font-bold text-red-600"><%= device.overdue_count %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Días Atraso</span>
+              <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
+                <%= device.days_overdue %> días
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-red-50 rounded-lg p-2 mb-3">
+            <span class="text-xs text-gray-500">Monto Adeudado</span>
+            <p class="text-lg font-bold text-red-600">L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %></p>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
+            <%= link_to "Ver Detalles", cobrador_overdue_device_path(device), class: "text-[#125282] hover:underline text-sm font-medium" %>
+            <% if device.lock_status == "unlocked" %>
+              <%= link_to "Bloquear", cobrador_overdue_device_block_path(device), class: "text-red-600 hover:underline text-sm font-medium" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
+        <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <% if @devices.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200" id="devices-table">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input type="checkbox" id="select-all" onchange="toggleAllSelections()" class="rounded border-gray-300">
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (RD$)</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Días</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Días</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <% @devices.each do |device| %>
-              <tr class="hover:bg-gray-50 transition device-row" data-device-id="<%= device.id %>">
-                <td class="px-6 py-4 whitespace-nowrap">
+              <tr class="hover:bg-gray-50 device-row" data-device-id="<%= device.id %>">
+                <td class="px-4 py-4 whitespace-nowrap">
                   <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   <%= device.customer_name %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
                   <%= device.imei[-5..] %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
                   <%= "#{device.brand} #{device.model}".truncate(20) %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
                   <%= device.contract_number %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right">
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                     <%= device.overdue_count %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
-                  RD$ <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
+                  L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-right">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
                     <%= device.days_overdue %> días
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="px-4 py-4 whitespace-nowrap text-sm">
                   <% if device.lock_status == "locked" %>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      🔴 Bloqueado
+                      Bloqueado
                     </span>
                   <% elsif device.lock_status == "pending" %>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      🟡 Pendiente
+                      Pendiente
                     </span>
                   <% else %>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      🟢 Desbloqueado
+                      Activo
                     </span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
-                  <%= link_to "Ver", cobrador_overdue_device_path(device), class: "text-[#125282] hover:text-blue-700 font-medium" %>
+                <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                  <%= link_to "Ver", cobrador_overdue_device_path(device), class: "text-[#125282] hover:underline font-medium" %>
                   <% if device.lock_status == "unlocked" %>
-                    <%= link_to "Bloquear", cobrador_overdue_device_block_path(device), class: "text-red-600 hover:text-red-700 font-medium" %>
+                    <%= link_to "Bloquear", cobrador_overdue_device_block_path(device), class: "text-red-600 hover:underline font-medium" %>
                   <% end %>
                 </td>
               </tr>
@@ -230,26 +234,59 @@
           </tbody>
         </table>
       </div>
-
-      <!-- Pagination Controls -->
-      <div class="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-600">
-          Mostrando <strong><%= @devices.offset_value + 1 %></strong> a <strong><%= [@devices.offset_value + @devices.size, @devices.total_count].min %></strong> de <strong><%= @devices.total_count %></strong>
-        </div>
-        <div class="flex gap-2">
-          <%= paginate @devices, theme: 'bootstrap-5' %>
-        </div>
-      </div>
     <% else %>
       <div class="px-6 py-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+        <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay dispositivos en mora</h3>
-        <p class="mt-1 text-sm text-gray-500">No se encontraron dispositivos que coincidan con los filtros seleccionados.</p>
+        <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
+        <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
       </div>
     <% end %>
   </div>
+
+  <!-- Pagination -->
+  <% if @devices.respond_to?(:total_pages) && @devices.total_pages > 1 %>
+    <div class="mt-6 flex flex-col items-center gap-4">
+      <!-- Mobile Pagination -->
+      <div class="flex lg:hidden items-center gap-3">
+        <% if @devices.first_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", cobrador_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+
+        <span class="text-sm text-gray-600"><%= @devices.current_page %> / <%= @devices.total_pages %></span>
+
+        <% if @devices.last_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", cobrador_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop Pagination -->
+      <div class="hidden lg:flex items-center gap-2">
+        <% unless @devices.first_page? %>
+          <%= link_to "← Anterior", cobrador_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+              class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
+        <% end %>
+
+        <span class="px-3 py-2 text-sm text-gray-600">Página <%= @devices.current_page %> de <%= @devices.total_pages %></span>
+
+        <% unless @devices.last_page? %>
+          <%= link_to "Siguiente →", cobrador_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+              class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
+        <% end %>
+      </div>
+
+      <p class="text-sm text-gray-500">
+        Mostrando <%= @devices.offset_value + 1 %> a <%= [@devices.offset_value + @devices.size, @devices.total_count].min %> de <%= @devices.total_count %> dispositivos
+      </p>
+    </div>
+  <% end %>
 </div>
 
 <script>
@@ -266,9 +303,9 @@ function updateBulkActionsUI() {
   const checkboxes = document.querySelectorAll('.device-checkbox:checked');
   const bulkActionsDiv = document.getElementById('bulk-actions');
   const selectedCount = document.getElementById('selected-count');
-  
+
   selectedCount.textContent = checkboxes.length;
-  
+
   if (checkboxes.length > 0) {
     bulkActionsDiv.classList.remove('hidden');
   } else {
@@ -280,7 +317,8 @@ function clearAllSelections() {
   document.querySelectorAll('.device-checkbox').forEach(checkbox => {
     checkbox.checked = false;
   });
-  document.getElementById('select-all').checked = false;
+  const selectAll = document.getElementById('select-all');
+  if (selectAll) selectAll.checked = false;
   updateBulkActionsUI();
 }
 
@@ -288,12 +326,12 @@ function handleBulkBlock(event) {
   event.preventDefault();
   const checkboxes = document.querySelectorAll('.device-checkbox:checked');
   const deviceIds = Array.from(checkboxes).map(cb => cb.value).join(',');
-  
+
   if (!deviceIds) {
     alert('Por favor selecciona al menos un dispositivo');
     return false;
   }
-  
+
   window.location.href = `/cobrador/bulk-operations?device_ids=${deviceIds}`;
   return false;
 }

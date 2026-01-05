@@ -1,27 +1,94 @@
 <% content_for :title, "Gestionar Contratos - Admin" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <%# Header %>
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1 class="text-4xl font-bold text-gray-900">Gestionar Contratos</h1>
-      <p class="mt-2 text-gray-600">Visualiza el estado de firma de los contratos</p>
-    </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Gestionar Contratos</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">Visualiza el estado de firma de los contratos</p>
   </div>
 
-  <%# Search and Filters %>
-  <div class="mb-8">
-    <%= form_with url: admin_contracts_path, method: :get, local: true, class: "flex gap-4" do |f| %>
-      <%= f.text_field :search, placeholder: "Buscar por número de contrato...", value: params[:search], class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
-      <%= f.submit "Buscar", class: "px-6 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors" %>
-      <% if params[:search].present? %>
-        <%= link_to "Limpiar", admin_contracts_path, class: "px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors" %>
-      <% end %>
+  <!-- Search -->
+  <div class="mb-6">
+    <%= form_with url: admin_contracts_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2" do |f| %>
+      <div class="flex-1">
+        <%= f.text_field :search, placeholder: "Buscar por número de contrato...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" %>
+      </div>
+      <div class="flex gap-2">
+        <%= f.submit "Buscar", class: "flex-1 sm:flex-none px-4 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors text-sm" %>
+        <% if params[:search].present? %>
+          <%= link_to "Limpiar", admin_contracts_path, class: "flex-1 sm:flex-none px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm text-center" %>
+        <% end %>
+      </div>
     <% end %>
   </div>
 
-  <%# Contracts Table %>
-  <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+  <!-- Mobile Card View -->
+  <div class="block lg:hidden space-y-4">
+    <% if @contracts.any? %>
+      <% @contracts.each do |contract| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <% if contract.loan&.customer %>
+                <p class="font-bold text-gray-900"><%= contract.loan.customer.full_name %></p>
+                <p class="text-xs text-gray-500"><%= contract.loan.customer.identification_number %></p>
+              <% else %>
+                <p class="text-gray-500">Sin cliente</p>
+              <% end %>
+            </div>
+            <% if contract.signed? %>
+              <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Firmado</span>
+            <% else %>
+              <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
+            <% end %>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <div>
+              <span class="text-gray-500 text-xs">Contrato ID</span>
+              <p class="font-medium text-[#125282]"><%= contract.id %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Préstamo</span>
+              <% if contract.loan %>
+                <p class="font-medium text-gray-900"><%= contract.loan.contract_number %></p>
+              <% else %>
+                <p class="text-gray-500">—</p>
+              <% end %>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Estado Préstamo</span>
+              <% if contract.loan %>
+                <p class="text-gray-700"><%= contract.loan.status %></p>
+              <% else %>
+                <p class="text-gray-500">—</p>
+              <% end %>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Fecha Firma</span>
+              <% if contract.signed_at %>
+                <p class="text-gray-700"><%= contract.signed_at.strftime("%d/%m/%Y") %></p>
+              <% else %>
+                <p class="text-gray-400">—</p>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100">
+            <%= link_to "Ver Detalles →", admin_contract_path(contract), class: "text-[#125282] hover:underline text-sm font-medium" %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+        No hay contratos que coincidan con tu búsqueda
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="hidden lg:block bg-white shadow-lg rounded-lg overflow-hidden">
     <table class="w-full">
       <thead class="bg-gray-100 border-b-2 border-gray-300">
         <tr>
@@ -34,47 +101,55 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        <% @contracts.each do |contract| %>
-          <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4">
-              <span class="font-medium text-[#125282]"><%= contract.id %></span>
-            </td>
-            <td class="px-6 py-4">
-              <% if contract.loan&.customer %>
-                <p class="font-medium text-gray-900"><%= contract.loan.customer.full_name %></p>
-                <p class="text-sm text-gray-600"><%= contract.loan.customer.identification_number %></p>
-              <% else %>
-                <span class="text-gray-500">Sin cliente</span>
-              <% end %>
-            </td>
-            <td class="px-6 py-4">
-              <% if contract.loan %>
-                <p class="font-medium text-gray-900"><%= contract.loan.contract_number %></p>
-                <p class="text-sm text-gray-600"><%= contract.loan.status %></p>
-              <% else %>
-                <span class="text-gray-500">Sin préstamo</span>
-              <% end %>
-            </td>
-            <td class="px-6 py-4 text-center">
-              <% if contract.signed? %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                  ✓ Firmado
-                </span>
-              <% else %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                  Pendiente
-                </span>
-              <% end %>
-            </td>
-            <td class="px-6 py-4">
-              <% if contract.signed_at %>
-                <p class="text-sm text-gray-600"><%= contract.signed_at.strftime("%d/%m/%Y") %></p>
-              <% else %>
-                <span class="text-gray-400">—</span>
-              <% end %>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <%= link_to "Ver", admin_contract_path(contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+        <% if @contracts.any? %>
+          <% @contracts.each do |contract| %>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4">
+                <span class="font-medium text-[#125282]"><%= contract.id %></span>
+              </td>
+              <td class="px-6 py-4">
+                <% if contract.loan&.customer %>
+                  <p class="font-medium text-gray-900"><%= contract.loan.customer.full_name %></p>
+                  <p class="text-sm text-gray-600"><%= contract.loan.customer.identification_number %></p>
+                <% else %>
+                  <span class="text-gray-500">Sin cliente</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4">
+                <% if contract.loan %>
+                  <p class="font-medium text-gray-900"><%= contract.loan.contract_number %></p>
+                  <p class="text-sm text-gray-600"><%= contract.loan.status %></p>
+                <% else %>
+                  <span class="text-gray-500">Sin préstamo</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-center">
+                <% if contract.signed? %>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    Firmado
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                    Pendiente
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4">
+                <% if contract.signed_at %>
+                  <p class="text-sm text-gray-600"><%= contract.signed_at.strftime("%d/%m/%Y") %></p>
+                <% else %>
+                  <span class="text-gray-400">—</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <%= link_to "Ver", admin_contract_path(contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              No hay contratos que coincidan con tu búsqueda
             </td>
           </tr>
         <% end %>
@@ -82,10 +157,32 @@
     </table>
   </div>
 
-  <%# Pagination %>
-  <% if @contracts.respond_to?(:total_pages) %>
-    <div class="mt-8 flex justify-center">
-      <%= paginate @contracts %>
+  <!-- Pagination -->
+  <% if @contracts.respond_to?(:total_pages) && @contracts.total_pages > 1 %>
+    <div class="mt-6 flex flex-col items-center gap-4">
+      <!-- Mobile Pagination -->
+      <div class="flex lg:hidden items-center gap-3">
+        <% if @contracts.first_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_contracts_path(search: params[:search], page: @contracts.current_page - 1),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+
+        <span class="text-sm text-gray-600"><%= @contracts.current_page %> / <%= @contracts.total_pages %></span>
+
+        <% if @contracts.last_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_contracts_path(search: params[:search], page: @contracts.current_page + 1),
+              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop Pagination -->
+      <div class="hidden lg:flex justify-center">
+        <%= paginate @contracts %>
+      </div>
     </div>
   <% end %>
 </div>

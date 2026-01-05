@@ -89,7 +89,7 @@
             when 'draft' then 'text-gray-600'
             else 'text-gray-600'
           end %>
-          <span class="<%= status_class %>"><%= @loan.status.titleize %></span>
+          <span class="<%= status_class %>"><%= loan_status_es(@loan.status) %></span>
         </div>
       </div>
       <div class="space-y-1 md:space-y-2 text-xs md:text-sm">
@@ -169,7 +169,7 @@
                     else 'bg-gray-100 text-gray-800'
                   end %>
                   <span class="px-3 py-1 text-xs rounded-full font-medium <%= status_class %>">
-                    <%= installment.status.titleize %>
+                    <%= installment_status_es(installment.status) %>
                   </span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
@@ -214,7 +214,7 @@
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= payment.payment_date.strftime("%d/%m/%Y") %></td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= payment.payment_method.titleize %></td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= payment_method_es(payment.payment_method) %></td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     <% verification_class = case payment.verification_status
                       when 'verified' then 'bg-green-100 text-green-800'
@@ -222,7 +222,7 @@
                       else 'bg-yellow-100 text-yellow-800'
                     end %>
                     <span class="px-3 py-1 text-xs rounded-full font-medium <%= verification_class %>">
-                      <%= payment.verification_status.titleize %>
+                      <%= verification_status_es(payment.verification_status) %>
                     </span>
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
