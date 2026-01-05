@@ -81,32 +81,20 @@
         </div>
       </div>
 
-      <%# QR Code Section %>
-      <%
-        # Show contract-specific QR if available, otherwise show default QR
-        default_qr = DefaultQrCode.default
-        has_contract_qr = @contract.qr_code_present?
-        has_default_qr = default_qr&.qr_code_present?
-        qr_to_display = has_contract_qr ? @contract.qr_code : (has_default_qr ? default_qr.qr_code : nil)
-        qr_source = has_contract_qr ? :contract : :default
-      %>
+      <%# QR Code Section - Uses default QR code %>
+      <% default_qr = DefaultQrCode.default %>
 
-      <% if qr_to_display %>
+      <% if default_qr&.qr_code_present? %>
         <div class="bg-white border-2 border-green-500 rounded-xl p-8 mb-8">
           <div class="flex flex-col md:flex-row items-center gap-8">
             <div class="flex-shrink-0">
               <h3 class="text-xl font-bold text-gray-900 mb-4">Código QR para Configuración</h3>
-              <img src="<%= rails_blob_path(qr_to_display, disposition: 'inline') %>"
+              <img src="<%= rails_blob_path(default_qr.qr_code, disposition: 'inline') %>"
                    alt="QR Code for Device Configuration"
                    class="w-48 h-48 border-4 border-[#125282] rounded-lg">
               <p class="text-sm text-gray-600 mt-4 text-center">
                 El cliente debe escanear este código<br>para configurar el dispositivo
               </p>
-              <% if qr_source == :default %>
-                <p class="text-xs text-gray-500 mt-2 text-center">
-                  (Código QR por defecto)
-                </p>
-              <% end %>
             </div>
             <div class="flex-grow">
               <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
@@ -130,7 +118,7 @@
             </svg>
             <div>
               <h3 class="text-lg font-bold text-yellow-900">Código QR No Disponible</h3>
-              <p class="text-sm text-yellow-800">El código QR para configuración del dispositivo no está disponible. Por favor, contacta al administrador para que cargue el código QR.</p>
+              <p class="text-sm text-yellow-800">El código QR para configuración del dispositivo no está disponible. Por favor, contacta al administrador para que cargue el código QR por defecto.</p>
             </div>
           </div>
         </div>

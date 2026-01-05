@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "csv"
+
 module Admin
   class ReportsController < ApplicationController
     before_action :authorize_admin

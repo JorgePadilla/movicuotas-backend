@@ -4,8 +4,8 @@
   <%# Header with Back Button %>
   <div class="mb-8">
     <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:text-[#0f4670] font-medium mb-4 inline-block" %>
-    <h1 class="text-4xl font-bold text-gray-900">Administrar Código QR por Defecto</h1>
-    <p class="mt-2 text-gray-600">Este código QR se mostrará a todos los clientes que no tengan un código QR específico</p>
+    <h1 class="text-4xl font-bold text-gray-900">Administrar Código QR</h1>
+    <p class="mt-2 text-gray-600">Este código QR se mostrará a todos los clientes para configurar sus dispositivos</p>
   </div>
 
   <%# QR Code Section %>
@@ -45,8 +45,8 @@
               <h3 class="text-sm font-bold text-blue-900 mb-2">📌 Este código QR se muestra:</h3>
               <ul class="text-sm text-blue-800 space-y-1">
                 <li>✓ A todos los clientes en la página de éxito del contrato</li>
-                <li>✓ Cuando no hay un código QR específico del contrato</li>
-                <li>✓ Como fallback para asegurar que todos tengan acceso</li>
+                <li>✓ Los clientes escanean este código para configurar sus dispositivos</li>
+                <li>✓ Puedes actualizarlo en cualquier momento</li>
               </ul>
             </div>
           </div>
@@ -69,11 +69,10 @@
   <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-6">
     <h3 class="text-sm font-bold text-yellow-900 mb-3">💡 ¿Cómo funciona?</h3>
     <ol class="text-sm text-yellow-800 space-y-2 list-decimal list-inside">
-      <li>Sube un código QR que se mostrará por defecto a todos los clientes</li>
+      <li>Sube el código QR de configuración MDM</li>
       <li>Este QR aparecerá en la página de éxito de cada contrato</li>
-      <li>Si un contrato tiene su propio QR específico, ese se mostrará en su lugar</li>
-      <li>El QR por defecto sirve como fallback para garantizar disponibilidad</li>
-      <li>Puedes actualizar el QR en cualquier momento</li>
+      <li>Los clientes escanean el código para configurar sus dispositivos</li>
+      <li>Puedes actualizar el QR en cualquier momento si es necesario</li>
     </ol>
   </div>
 </div>

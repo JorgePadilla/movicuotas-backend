@@ -1,37 +1,94 @@
 <% content_for :title, "Gestión de Clientes - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
   <!-- Page header -->
-  <div class="mb-8">
-    <div>
-      <h1 class="text-3xl font-bold text-[#125282]">Gestión de Clientes</h1>
-      <p class="text-gray-600 mt-2">Visualiza y administra todos los clientes del sistema</p>
-    </div>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Gestión de Clientes</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Visualiza y administra todos los clientes del sistema</p>
   </div>
 
   <!-- Search and filter section -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Search -->
-      <%= form_with url: admin_customers_path, method: :get, local: true, class: "flex gap-4" do |f| %>
-        <div class="flex-1">
-          <%= f.search_field :search, placeholder: "Buscar por número de identidad o nombre...", value: params[:search], class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
-        </div>
-        <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
-      <% end %>
-    </div>
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+    <!-- Search -->
+    <%= form_with url: admin_customers_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-3 sm:gap-4" do |f| %>
+      <div class="flex-1">
+        <%= f.search_field :search, placeholder: "Buscar por identidad o nombre...", value: params[:search], class: "w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm sm:text-base" %>
+      </div>
+      <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2.5 rounded-lg font-medium transition-colors cursor-pointer" %>
+    <% end %>
 
     <!-- Status filter -->
-    <div class="flex gap-4 mt-4">
-      <%= link_to "Todos", admin_customers_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-4 py-2 rounded-lg font-medium transition-colors" %>
-      <%= link_to "Activos", admin_customers_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
-      <%= link_to "Suspendidos", admin_customers_path(status: 'suspended'), class: "#{params[:status] == 'suspended' ? 'bg-orange-600 text-white' : 'bg-white border border-orange-200 text-orange-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
-      <%= link_to "Bloqueados", admin_customers_path(status: 'blocked'), class: "#{params[:status] == 'blocked' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-4 py-2 rounded-lg font-medium transition-colors" %>
+    <div class="flex flex-wrap gap-2 sm:gap-3 mt-4">
+      <%= link_to "Todos", admin_customers_path, class: "#{params[:status].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors" %>
+      <%= link_to "Activos", admin_customers_path(status: 'active'), class: "#{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors" %>
+      <%= link_to "Suspendidos", admin_customers_path(status: 'suspended'), class: "#{params[:status] == 'suspended' ? 'bg-orange-600 text-white' : 'bg-white border border-orange-200 text-orange-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors" %>
+      <%= link_to "Bloqueados", admin_customers_path(status: 'blocked'), class: "#{params[:status] == 'blocked' ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600'} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors" %>
     </div>
   </div>
 
-  <!-- Customers table -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+  <!-- Mobile: Card view -->
+  <div class="block lg:hidden space-y-4">
+    <% if @customers.any? %>
+      <% @customers.each do |customer| %>
+        <% active_loans_count = customer.loans.where(status: 'active').count %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <!-- Header: Name + Status -->
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1 min-w-0 mr-3">
+              <h3 class="font-semibold text-gray-900 truncate"><%= customer.full_name %></h3>
+              <p class="text-sm text-gray-500"><%= customer.identification_number %></p>
+            </div>
+            <span class="flex-shrink-0 px-2.5 py-1 text-xs rounded-full <%= customer.active? ? 'bg-green-100 text-green-800' : customer.suspended? ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800' %>">
+              <%= customer.status.titleize %>
+            </span>
+          </div>
+
+          <!-- Details grid -->
+          <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+            <div>
+              <span class="text-gray-500">Teléfono</span>
+              <p class="text-gray-900 font-medium"><%= customer.phone %></p>
+            </div>
+            <div>
+              <span class="text-gray-500">Préstamos</span>
+              <p class="text-gray-900 font-medium">
+                <% if active_loans_count > 0 %>
+                  <span class="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800"><%= active_loans_count %> activo<%= active_loans_count > 1 ? 's' : '' %></span>
+                <% else %>
+                  Ninguno
+                <% end %>
+              </p>
+            </div>
+            <div>
+              <span class="text-gray-500">Email</span>
+              <p class="text-gray-900 truncate"><%= customer.email || "—" %></p>
+            </div>
+            <div>
+              <span class="text-gray-500">Creado</span>
+              <p class="text-gray-900"><%= customer.created_at.strftime("%d/%m/%Y") %></p>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-3 pt-3 border-t border-gray-100">
+            <%= link_to admin_customer_path(customer), class: "flex-1 text-center bg-[#125282] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#0f4670] transition-colors" do %>
+              Ver Detalles
+            <% end %>
+            <%= link_to edit_admin_customer_path(customer), class: "flex-1 text-center border border-green-600 text-green-600 py-2 rounded-lg text-sm font-medium hover:bg-green-50 transition-colors" do %>
+              Editar
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+        No hay clientes que coincidan con tu búsqueda
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop: Table view -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -41,7 +98,7 @@
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Préstamos Activos</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Préstamos</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
@@ -100,8 +157,28 @@
 
   <!-- Pagination -->
   <% if @customers.total_pages > 1 %>
-    <div class="mt-6 mb-8 flex justify-center items-center gap-2">
-      <div class="flex items-center gap-2">
+    <div class="mt-6 mb-4 sm:mb-6">
+      <!-- Mobile pagination: simplified -->
+      <div class="flex sm:hidden justify-between items-center gap-2">
+        <% if @customers.first_page? %>
+          <span class="px-3 py-2 text-gray-400 text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+        <% end %>
+
+        <span class="text-sm text-gray-600">
+          <%= @customers.current_page %> / <%= @customers.total_pages %>
+        </span>
+
+        <% if @customers.last_page? %>
+          <span class="px-3 py-2 text-gray-400 text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_customers_path(status: params[:status], search: params[:search], page: @customers.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop pagination: full -->
+      <div class="hidden sm:flex justify-center items-center gap-2">
         <% if @customers.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
@@ -132,37 +209,37 @@
       </div>
     </div>
 
-    <div class="text-center text-sm text-gray-500 mb-8">
-      Página <%= @customers.current_page %> de <%= @customers.total_pages %> • Mostrando <%= @customers.size %> de <%= @customers.total_count %> clientes
+    <div class="text-center text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8">
+      Página <%= @customers.current_page %> de <%= @customers.total_pages %> • <%= @customers.size %> de <%= @customers.total_count %> clientes
     </div>
   <% end %>
 
   <!-- Summary stats -->
-  <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-[#125282]">Total Clientes</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.count %></p>
+  <div class="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-lg font-semibold text-[#125282]">Total</h3>
+      <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2"><%= Customer.count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-green-600">Activos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'active').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-lg font-semibold text-green-600">Activos</h3>
+      <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2"><%= Customer.where(status: 'active').count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-orange-600">Suspendidos</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'suspended').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-lg font-semibold text-orange-600">Suspendidos</h3>
+      <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2"><%= Customer.where(status: 'suspended').count %></p>
     </div>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-      <h3 class="text-lg font-semibold text-red-600">Bloqueados</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2"><%= Customer.where(status: 'blocked').count %></p>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+      <h3 class="text-sm sm:text-lg font-semibold text-red-600">Bloqueados</h3>
+      <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2"><%= Customer.where(status: 'blocked').count %></p>
     </div>
   </div>
 
   <!-- Footer navigation -->
-  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
+  <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
     </div>
-    <div class="text-sm text-gray-500">
+    <div class="text-xs sm:text-sm text-gray-500">
       Total de clientes: <%= @customers.total_count %>
     </div>
   </div>

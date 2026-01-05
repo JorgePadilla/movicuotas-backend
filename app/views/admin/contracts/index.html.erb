@@ -5,7 +5,7 @@
   <div class="flex justify-between items-center mb-8">
     <div>
       <h1 class="text-4xl font-bold text-gray-900">Gestionar Contratos</h1>
-      <p class="mt-2 text-gray-600">Gestiona códigos QR y documentos de contratos</p>
+      <p class="mt-2 text-gray-600">Visualiza el estado de firma de los contratos</p>
     </div>
   </div>
 
@@ -28,8 +28,8 @@
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Contrato</th>
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Cliente</th>
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Préstamo</th>
-          <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Código QR</th>
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Firmado</th>
+          <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Fecha</th>
           <th class="px-6 py-4 text-right text-sm font-bold text-gray-700">Acciones</th>
         </tr>
       </thead>
@@ -56,28 +56,25 @@
               <% end %>
             </td>
             <td class="px-6 py-4 text-center">
-              <% if contract.qr_code_present? %>
+              <% if contract.signed? %>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                  ✓ Cargado
+                  ✓ Firmado
                 </span>
               <% else %>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                  ⚠ Pendiente
+                  Pendiente
                 </span>
               <% end %>
             </td>
-            <td class="px-6 py-4 text-center">
-              <% if contract.signed? %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  Sí
-                </span>
+            <td class="px-6 py-4">
+              <% if contract.signed_at %>
+                <p class="text-sm text-gray-600"><%= contract.signed_at.strftime("%d/%m/%Y") %></p>
               <% else %>
-                <span class="text-gray-500">No</span>
+                <span class="text-gray-400">—</span>
               <% end %>
             </td>
             <td class="px-6 py-4 text-right">
-              <%= link_to "Ver", admin_contract_path(contract), class: "text-[#125282] hover:text-[#0f4670] font-medium mr-4" %>
-              <%= link_to "Editar", edit_admin_contract_path(contract), class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
+              <%= link_to "Ver", admin_contract_path(contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
             </td>
           </tr>
         <% end %>
