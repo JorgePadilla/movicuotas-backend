@@ -154,8 +154,9 @@ class CreditApplication < ApplicationRecord
   # Verifies the submitted OTP code
   # Returns { success: true/false, error: symbol, attempts_remaining: integer }
   def verify_otp(submitted_code)
-    # Development bypass: accept "****" as valid code
-    if Rails.env.development? && submitted_code == "1111"
+    # TEMPORARY BYPASS: Accept "1001" as valid code while WhatsApp API is being configured
+    # TODO: Remove this bypass once WhatsApp Business API is properly set up
+    if submitted_code == "1001"
       update!(otp_verified_at: Time.current)
       return { success: true }
     end
