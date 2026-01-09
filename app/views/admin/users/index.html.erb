@@ -28,8 +28,8 @@
       <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= User.where(role: 'supervisor').count %></p>
     </div>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
-      <h3 class="text-sm lg:text-lg font-semibold text-blue-600">Cobradores</h3>
-      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= User.where(role: 'cobrador').count %></p>
+      <h3 class="text-sm lg:text-lg font-semibold text-blue-600">Vendedores</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= User.where(role: 'vendedor').count %></p>
     </div>
   </div>
 
@@ -38,7 +38,7 @@
     <%= link_to "Todos", admin_users_path, class: "#{params[:role].blank? ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282]'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
     <%= link_to "Admins", admin_users_path(role: 'admin'), class: "#{params[:role] == 'admin' ? 'bg-purple-600 text-white' : 'bg-white border border-purple-200 text-purple-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
     <%= link_to "Supervisores", admin_users_path(role: 'supervisor'), class: "#{params[:role] == 'supervisor' ? 'bg-green-600 text-white' : 'bg-white border border-green-200 text-green-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
-    <%= link_to "Cobradores", admin_users_path(role: 'cobrador'), class: "#{params[:role] == 'cobrador' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
+    <%= link_to "Vendedores", admin_users_path(role: 'vendedor'), class: "#{params[:role] == 'vendedor' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
   </div>
 
   <!-- Mobile Card View -->

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class PaymentHistoryController < ApplicationController
     def show
       @loan = Loan.find(params[:loan_id])

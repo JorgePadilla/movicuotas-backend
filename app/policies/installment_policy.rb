@@ -31,15 +31,15 @@ class InstallmentPolicy < ApplicationPolicy
 
   # Scope: Filter installments based on loan access
   # - Admin: All installments
-  # - Supervisor: Installments for loans they created
-  # - Cobrador: All installments (read-only access)
+  # - Supervisor: All installments (NOT branch-limited)
+  # - Vendedor: Installments for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.cobrador?
+      if user&.admin? || user&.supervisor?
         scope.all
-      elsif user&.supervisor?
-        # Assuming installment belongs to loan, and loan belongs to user (supervisor)
-        scope.joins(loan: :user).where(loans: { user: user })
+      elsif user&.vendedor?
+        # Vendedor sees installments for loans in their branch
+        scope.joins(:loan).where(loans: { branch_number: user.branch_number })
       else
         scope.none
       end

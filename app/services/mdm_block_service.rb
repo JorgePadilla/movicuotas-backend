@@ -29,7 +29,7 @@ class MdmBlockService
   private
 
   def can_block?
-    @user.admin? || @user.cobrador?
+    @user.admin? || @user.supervisor?
   end
 
   def notify_customer

@@ -80,18 +80,19 @@ module Vendor
       assert_match /attachment; filename="contrato-.*\.pdf"/, response.headers['Content-Disposition']
     end
 
-    test "should not allow cobrador to create contract" do
-      cobrador = User.find_by(email: 'cobrador@movicuotas.com')
-      post login_url, params: { email: cobrador.email, password: 'password123' }
+    test "should not allow supervisor to create contract" do
+      # Supervisor can view but not create (only vendedores create contracts)
+      supervisor = User.find_by(email: 'supervisor@movicuotas.com')
+      post login_url, params: { email: supervisor.email, password: 'password123' }
       follow_redirect!
 
-      # Cobrador can view but not create
+      # Supervisor can view contracts
       get vendor_contract_path(@contract)
       assert_response :success
 
-      # Attempt to create new contract (should redirect)
+      # Attempt to create new contract (should redirect - supervisors don't create)
       post vendor_contracts_path, params: { loan_id: @loan.id }
-      assert_redirected_to vendor_customer_search_path
+      assert_redirected_to supervisor_dashboard_path
       assert flash[:alert].present?
     end
   end

@@ -216,12 +216,12 @@
         <% end %>
       </div>
 
-      <!-- 4. Notify Cobradores -->
+      <!-- 4. Notify Supervisors -->
       <div class="border border-gray-200 rounded-lg p-3 lg:p-4 hover:shadow-md transition-shadow">
-        <h4 class="font-medium text-gray-900 text-sm mb-1">Reporte Cobradores</h4>
-        <p class="text-xs text-gray-600 mb-2 hidden sm:block">Envía reporte de mora a cobradores.</p>
+        <h4 class="font-medium text-gray-900 text-sm mb-1">Reporte Supervisores</h4>
+        <p class="text-xs text-gray-600 mb-2 hidden sm:block">Envia reporte de mora a supervisores.</p>
         <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-          <%= f.hidden_field :job_class, value: "NotifyCobradoresJob" %>
+          <%= f.hidden_field :job_class, value: "NotifySupervisorsJob" %>
           <%= f.submit "Ejecutar",
               class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded font-medium transition-colors w-full text-xs",
               data: { confirm: "¿Ejecutar ahora?" } %>

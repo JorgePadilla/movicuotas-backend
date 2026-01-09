@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class OverdueDevicesController < ApplicationController
     before_action :set_filters, only: :index
     before_action :set_device, only: [:show, :block, :confirm_block]
@@ -39,7 +39,7 @@ module Cobrador
         @device_details = fetch_device_details(@device)
         render :block_confirmation
       else
-        redirect_to cobrador_overdue_device_path(@device),
+        redirect_to supervisor_overdue_device_path(@device),
                     alert: "Este dispositivo ya está bloqueado o en proceso de bloqueo."
       end
     end
@@ -51,10 +51,10 @@ module Cobrador
       result = service.block!
 
       if result[:success]
-        redirect_to cobrador_overdue_device_path(@device),
+        redirect_to supervisor_overdue_device_path(@device),
                     notice: result[:message]
       else
-        redirect_to cobrador_overdue_device_path(@device),
+        redirect_to supervisor_overdue_device_path(@device),
                     alert: result[:error]
       end
     end
@@ -224,7 +224,7 @@ module Cobrador
     end
 
     def send_csv_export
-      # Get unp aginated devices for full export
+      # Get unpaginated devices for full export
       all_devices = Device.joins(loan: :installments)
                           .where(installments: { status: "overdue" })
                           .select(

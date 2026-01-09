@@ -14,8 +14,8 @@ FactoryBot.define do
       branch_number { "BR01" }
     end
 
-    factory :cobrador_user do
-      role { "cobrador" }
+    factory :vendedor_user do
+      role { "vendedor" }
       branch_number { "BR01" }
     end
   end

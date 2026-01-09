@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class BulkOperationsController < ApplicationController
     def show
       @device_ids = params[:device_ids]&.split(",") || []
@@ -35,7 +35,7 @@ module Cobrador
       end
 
       if results[:failed].empty?
-        redirect_to cobrador_overdue_devices_path,
+        redirect_to supervisor_overdue_devices_path,
                     notice: "#{results[:success].count} dispositivos bloqueados correctamente"
       else
         flash.now[:alert] = "#{results[:failed].count} dispositivos no pudieron bloquearse"

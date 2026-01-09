@@ -2,36 +2,36 @@
 
 require "test_helper"
 
-module Cobrador
+module Supervisor
   class DashboardControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @cobrador = users(:cobrador)
+      @supervisor = users(:supervisor)
       @admin = users(:admin)
     end
 
-    test "cobrador can access dashboard" do
-      sign_in_as(@cobrador)
-      get cobrador_dashboard_path
+    test "supervisor can access dashboard" do
+      sign_in_as(@supervisor)
+      get supervisor_dashboard_path
       assert_response :success
-      assert_select "h1", "Dashboard de Cobrador"
+      assert_select "h1", "Dashboard de Supervisor"
     end
 
-    test "admin can access cobrador dashboard" do
+    test "admin can access supervisor dashboard" do
       sign_in_as(@admin)
-      get cobrador_dashboard_path
+      get supervisor_dashboard_path
       assert_response :success
     end
 
-    test "supervisor cannot access cobrador dashboard" do
+    test "supervisor cannot access supervisor dashboard" do
       supervisor = users(:supervisor)
       sign_in_as(supervisor)
-      get cobrador_dashboard_path
+      get supervisor_dashboard_path
       assert_response :redirect
     end
 
     test "dashboard displays overdue metrics" do
-      sign_in_as(@cobrador)
-      get cobrador_dashboard_path
+      sign_in_as(@supervisor)
+      get supervisor_dashboard_path
       assert_response :success
       # Check that dashboard data is present in assigns
       assert_not_nil assigns(:dashboard_data)
@@ -40,8 +40,8 @@ module Cobrador
     end
 
     test "dashboard calculates days overdue correctly" do
-      sign_in_as(@cobrador)
-      get cobrador_dashboard_path
+      sign_in_as(@supervisor)
+      get supervisor_dashboard_path
       dashboard_data = assigns(:dashboard_data)
 
       # Verify structure of by_days breakdown

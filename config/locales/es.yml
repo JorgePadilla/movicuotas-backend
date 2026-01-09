@@ -67,8 +67,8 @@ es:
       user:
         role:
           admin: "Administrador"
+          supervisor: "Supervisor"
           vendedor: "Vendedor"
-          cobrador: "Cobrador"
     errors:
       messages:
         taken: "ya está en uso"

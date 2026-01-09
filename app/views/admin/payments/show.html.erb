@@ -68,10 +68,10 @@
           <div class="pt-4 border-t border-gray-200">
             <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-3">Acciones de Verificación</label>
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <%= button_to "Verificar Pago", verify_admin_payment_path(@payment),
-                  method: :post,
-                  class: "w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base",
-                  data: { confirm: "¿Confirmar que este pago es válido?" } %>
+              <button type="button" onclick="openVerifyModal()"
+                      class="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                Verificar Pago
+              </button>
               <button type="button" onclick="openRejectModal()"
                       class="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
                 Rechazar
@@ -80,12 +80,47 @@
           </div>
         <% end %>
 
-        <% if @payment.rejected? && @payment.notes.present? %>
-          <div class="pt-4 border-t border-gray-200">
-            <label class="block text-xs sm:text-sm font-medium text-red-700 mb-2">Razón del Rechazo</label>
-            <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
-              <p class="text-red-800 text-sm sm:text-base"><%= @payment.notes %></p>
-            </div>
+        <% if @payment.verified? %>
+          <div class="pt-4 border-t border-gray-200 space-y-3">
+            <% if @payment.reference_number.present? %>
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-600">Número de Referencia</label>
+                <p class="text-base sm:text-lg text-gray-900 mt-1 font-mono"><%= @payment.reference_number %></p>
+              </div>
+            <% end %>
+            <% if @payment.bank_source.present? %>
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-600">Banco / Fuente</label>
+                <p class="text-base sm:text-lg text-gray-900 mt-1"><%= @payment.bank_source %></p>
+              </div>
+            <% end %>
+            <% if @payment.verified_by.present? %>
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-600">Verificado Por</label>
+                <p class="text-base sm:text-lg text-gray-900 mt-1"><%= @payment.verified_by.full_name %></p>
+                <p class="text-xs sm:text-sm text-gray-500"><%= @payment.verified_at&.strftime("%d/%m/%Y %H:%M") %></p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% if @payment.rejected? %>
+          <div class="pt-4 border-t border-gray-200 space-y-3">
+            <% if @payment.notes.present? %>
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-red-700 mb-2">Razón del Rechazo</label>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+                  <p class="text-red-800 text-sm sm:text-base"><%= @payment.notes %></p>
+                </div>
+              </div>
+            <% end %>
+            <% if @payment.verified_by.present? %>
+              <div>
+                <label class="block text-xs sm:text-sm font-medium text-gray-600">Rechazado Por</label>
+                <p class="text-base sm:text-lg text-gray-900 mt-1"><%= @payment.verified_by.full_name %></p>
+                <p class="text-xs sm:text-sm text-gray-500"><%= @payment.verified_at&.strftime("%d/%m/%Y %H:%M") %></p>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>
@@ -193,15 +228,30 @@
     <% end %>
   </div>
 
-  <!-- Receipt Image (if attached) -->
+  <!-- Receipt Image (uploaded by customer) -->
   <% if @payment.receipt_image.attached? %>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
-      <h2 class="text-lg sm:text-xl font-semibold text-[#125282] mb-4 sm:mb-6">Comprobante de Pago</h2>
+      <h2 class="text-lg sm:text-xl font-semibold text-[#125282] mb-4 sm:mb-6">Comprobante del Cliente</h2>
+      <p class="text-sm text-gray-500 mb-4">Imagen enviada por el cliente desde la aplicación móvil</p>
       <div class="flex justify-center">
         <%= image_tag @payment.receipt_image, class: "max-w-full sm:max-w-md rounded-lg shadow" %>
       </div>
       <div class="mt-4 text-center">
-        <%= link_to "Descargar Comprobante", url_for(@payment.receipt_image), download: "receipt_#{@payment.id}.jpg", class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
+        <%= link_to "Descargar Comprobante", url_for(@payment.receipt_image), download: "comprobante_cliente_#{@payment.id}.jpg", class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Verification Image (uploaded by supervisor during verification) -->
+  <% if @payment.verification_image.attached? %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+      <h2 class="text-lg sm:text-xl font-semibold text-green-700 mb-4 sm:mb-6">Comprobante de Verificación</h2>
+      <p class="text-sm text-gray-500 mb-4">Imagen adjuntada durante la verificación del pago</p>
+      <div class="flex justify-center">
+        <%= image_tag @payment.verification_image, class: "max-w-full sm:max-w-md rounded-lg shadow" %>
+      </div>
+      <div class="mt-4 text-center">
+        <%= link_to "Descargar Comprobante", url_for(@payment.verification_image), download: "comprobante_verificacion_#{@payment.id}.jpg", class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
       </div>
     </div>
   <% end %>
@@ -216,6 +266,83 @@
     </div>
   </div>
 </div>
+
+<!-- Verification Modal -->
+<% if @payment.pending? && policy(@payment).verify? %>
+  <div id="verify-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full mx-4 my-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-gray-900">Verificar Pago</h3>
+        <button type="button" onclick="closeVerifyModal()" class="text-gray-400 hover:text-gray-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+        <p class="text-green-800 text-sm">
+          <strong>Monto a verificar:</strong> L. <%= number_with_delimiter(@payment.amount, delimiter: ',') %>
+        </p>
+      </div>
+
+      <%= form_with url: verify_admin_payment_path(@payment), method: :post, local: true, multipart: true do |f| %>
+        <div class="space-y-4">
+          <!-- Reference Number -->
+          <div>
+            <label for="reference_number" class="block text-sm font-medium text-gray-700 mb-2">
+              Número de Referencia <span class="text-gray-400">(opcional)</span>
+            </label>
+            <input type="text" name="reference_number" id="reference_number"
+                   class="w-full border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                   placeholder="Ej: 123456789, TRX-001234">
+          </div>
+
+          <!-- Bank Source -->
+          <div>
+            <label for="bank_source" class="block text-sm font-medium text-gray-700 mb-2">
+              Banco / Fuente <span class="text-gray-400">(opcional)</span>
+            </label>
+            <select name="bank_source" id="bank_source"
+                    class="w-full border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <option value="">-- Seleccionar --</option>
+              <option value="BAC">BAC Honduras</option>
+              <option value="Banpais">Banpais</option>
+              <option value="Banco Atlantida">Banco Atlántida</option>
+              <option value="Banco Ficohsa">Banco Ficohsa</option>
+              <option value="Banco Occidente">Banco de Occidente</option>
+              <option value="Banco Promerica">Banco Promerica</option>
+              <option value="Tigo Money">Tigo Money</option>
+              <option value="Efectivo">Efectivo en Tienda</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <!-- Verification Image -->
+          <div>
+            <label for="verification_image" class="block text-sm font-medium text-gray-700 mb-2">
+              Comprobante de Verificación <span class="text-gray-400">(opcional)</span>
+            </label>
+            <input type="file" name="verification_image" id="verification_image" accept="image/*"
+                   class="w-full border border-gray-300 rounded-lg p-2 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+            <p class="text-xs text-gray-500 mt-1">Adjunta imagen del comprobante bancario si lo tienes</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeVerifyModal()"
+                  class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+            Cancelar
+          </button>
+          <button type="submit"
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            Confirmar Verificación
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
 <!-- Rejection Modal -->
 <% if @payment.pending? && policy(@payment).reject? %>
@@ -253,8 +380,22 @@
       <% end %>
     </div>
   </div>
+<% end %>
 
+<% if @payment.pending? && (policy(@payment).verify? || policy(@payment).reject?) %>
   <script>
+    function openVerifyModal() {
+      document.getElementById('verify-modal').classList.remove('hidden');
+      document.getElementById('reference_number').focus();
+    }
+
+    function closeVerifyModal() {
+      document.getElementById('verify-modal').classList.add('hidden');
+      document.getElementById('reference_number').value = '';
+      document.getElementById('bank_source').value = '';
+      document.getElementById('verification_image').value = '';
+    }
+
     function openRejectModal() {
       document.getElementById('rejection-modal').classList.remove('hidden');
       document.getElementById('rejection_reason').focus();
@@ -268,15 +409,18 @@
     // Close modal on escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
+        closeVerifyModal();
         closeRejectModal();
       }
     });
 
-    // Close modal when clicking outside
-    document.getElementById('rejection-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeRejectModal();
-      }
+    // Close modals when clicking outside
+    document.getElementById('verify-modal')?.addEventListener('click', function(e) {
+      if (e.target === this) closeVerifyModal();
+    });
+
+    document.getElementById('rejection-modal')?.addEventListener('click', function(e) {
+      if (e.target === this) closeRejectModal();
     });
   </script>
 <% end %>

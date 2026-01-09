@@ -53,8 +53,17 @@ module Admin
 
     def verify
       authorize @payment
-      @payment.verify!(current_user)
+
+      verification_options = {
+        reference_number: params[:reference_number],
+        bank_source: params[:bank_source],
+        verification_image: params[:verification_image]
+      }
+
+      @payment.verify!(current_user, verification_options)
       redirect_to admin_payment_path(@payment), notice: "Pago verificado correctamente."
+    rescue StandardError => e
+      redirect_to admin_payment_path(@payment), alert: "Error al verificar pago: #{e.message}"
     end
 
     def reject
@@ -62,6 +71,8 @@ module Admin
       reason = params[:rejection_reason].presence || "Sin razón especificada"
       @payment.reject!(current_user, reason)
       redirect_to admin_payment_path(@payment), alert: "Pago rechazado: #{reason}"
+    rescue StandardError => e
+      redirect_to admin_payment_path(@payment), alert: "Error al rechazar pago: #{e.message}"
     end
 
     private

@@ -2,7 +2,7 @@
 
 class PhoneModelPolicy < ApplicationPolicy
   # Phone Model policies (catalog of available phones)
-  # - View phone models: Admin, Supervisor (for selection), Cobrador (if needed)
+  # - View phone models: All authenticated users
   # - Create/Update/Delete: Admin only
 
   # Default CRUD actions (override as needed):

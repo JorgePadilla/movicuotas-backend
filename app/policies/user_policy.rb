@@ -5,7 +5,7 @@ class UserPolicy < ApplicationPolicy
   # Based on MOVICUOTAS permission matrix:
   # - Admin: Can view, create, edit, delete users
   # - Supervisor: Cannot access user management
-  # - Cobrador: Cannot access user management
+  # - Vendedor: Cannot access user management
 
   def index?
     admin?
@@ -27,7 +27,7 @@ class UserPolicy < ApplicationPolicy
     admin?
   end
 
-  # Cobrador cannot manage users at all
+  # Only admin can block users
   def block?
     admin?
   end

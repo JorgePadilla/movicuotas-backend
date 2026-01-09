@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_055502) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_08_231519) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -296,6 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_055502) do
 
   create_table "payments", force: :cascade do |t|
     t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "bank_source"
     t.datetime "created_at", null: false
     t.bigint "loan_id", null: false
     t.text "notes"
@@ -304,9 +305,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_055502) do
     t.string "reference_number"
     t.datetime "updated_at", null: false
     t.string "verification_status", default: "pending"
+    t.datetime "verified_at"
+    t.bigint "verified_by_id"
     t.index ["loan_id"], name: "index_payments_on_loan_id"
     t.index ["payment_date"], name: "index_payments_on_payment_date"
     t.index ["verification_status"], name: "index_payments_on_verification_status"
+    t.index ["verified_by_id"], name: "index_payments_on_verified_by_id"
   end
 
   create_table "phone_models", force: :cascade do |t|
@@ -495,6 +499,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_055502) do
   add_foreign_key "payment_installments", "installments"
   add_foreign_key "payment_installments", "payments"
   add_foreign_key "payments", "loans"
+  add_foreign_key "payments", "users", column: "verified_by_id"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

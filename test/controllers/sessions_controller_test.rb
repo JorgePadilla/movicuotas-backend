@@ -12,7 +12,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should log in with valid credentials" do
-    post login_url, params: { email: "supervisor@movicuotas.com", password: "password123" }
+    post login_url, params: { email: "vendedor@movicuotas.com", password: "password123" }
     assert_redirected_to vendor_customer_search_path
     follow_redirect!
     assert_response :success
@@ -22,7 +22,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not log in with invalid credentials" do
-    post login_url, params: { email: "supervisor@movicuotas.com", password: "wrongpassword" }
+    post login_url, params: { email: "vendedor@movicuotas.com", password: "wrongpassword" }
     assert_response :unprocessable_entity
     assert_equal "Email o contraseña incorrectos", flash[:alert]
     assert cookies[:session_token].blank?
@@ -30,7 +30,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "should log out" do
     # First log in
-    post login_url, params: { email: "supervisor@movicuotas.com", password: "password123" }
+    post login_url, params: { email: "vendedor@movicuotas.com", password: "password123" }
     session_token = cookies[:session_token]
     assert_not_nil session_token
 
@@ -43,19 +43,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should redirect to role-specific dashboard after login" do
-    # Admin
+    # Admin → admin_dashboard_path
     post login_url, params: { email: "admin@movicuotas.com", password: "password123" }
     assert_redirected_to admin_dashboard_path
 
-    # Supervisor
-    delete logout_url # Log out admin first
-    post login_url, params: { email: "supervisor@movicuotas.com", password: "password123" }
-    assert_redirected_to vendor_customer_search_path
-
-    # Cobrador
+    # Supervisor → supervisor_dashboard_path (device blocking, payment verification)
     delete logout_url
-    post login_url, params: { email: "cobrador@movicuotas.com", password: "password123" }
-    assert_redirected_to cobrador_dashboard_path
+    post login_url, params: { email: "supervisor@movicuotas.com", password: "password123" }
+    assert_redirected_to supervisor_dashboard_path
+
+    # Vendedor → vendor_customer_search_path (sales, branch-limited)
+    delete logout_url
+    post login_url, params: { email: "vendedor@movicuotas.com", password: "password123" }
+    assert_redirected_to vendor_customer_search_path
   end
 
   test "should redirect to login if not authenticated" do

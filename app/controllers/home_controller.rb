@@ -8,10 +8,12 @@ class HomeController < ApplicationController
     authorize :home, :index?
 
     case current_user.role
-    when "admin", "supervisor"
+    when "admin"
+      redirect_to admin_dashboard_path
+    when "supervisor"
+      redirect_to supervisor_dashboard_path
+    when "vendedor"
       redirect_to vendor_customer_search_path
-    when "cobrador"
-      redirect_to cobrador_dashboard_path
     else
       # Should not happen (authenticate ensures user is logged in)
       redirect_to login_path

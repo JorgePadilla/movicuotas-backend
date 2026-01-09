@@ -37,7 +37,7 @@ module ApplicationHelper
   ROLE_ES = {
     "admin" => "Administrador",
     "supervisor" => "Supervisor",
-    "cobrador" => "Cobrador"
+    "vendedor" => "Vendedor"
   }.freeze
 
   GENDER_ES = {

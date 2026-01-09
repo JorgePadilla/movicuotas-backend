@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class CollectionReportsController < ApplicationController
     def index
       @date_range = parse_date_range

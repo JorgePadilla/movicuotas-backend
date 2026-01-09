@@ -2,13 +2,12 @@
 
 class LoanPolicy < ApplicationPolicy
   # Loan management policies based on MOVICUOTAS permission matrix:
-  # - View loans: Admin (all), Supervisor (own only), Cobrador (all)
-  # - Create credit application: Admin and Supervisor
-  # - Approve credit: Admin only (automatic for supervisor)
-  # - Edit loans: Admin and Supervisor (own only)
-  # - Delete loans: Admin only
+  #
+  # Roles:
+  # - Admin: Full access to all loans
+  # - Supervisor: View all loans (NOT branch-limited), cannot create/edit
+  # - Vendedor: View/create/edit own branch only
 
-  # Default CRUD actions (override as needed):
   def index?
     true  # All authenticated users can view loans (scope will filter)
   end
@@ -18,46 +17,46 @@ class LoanPolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can create loans
+    admin? || vendedor?  # Admin and Vendedor can create loans
   end
 
   def update?
-    admin? || (supervisor? && own_loan?)  # Admin and Supervisor (own only) can update
+    admin? || (vendedor? && own_loan?)  # Admin and Vendedor (own only) can update
   end
 
   def destroy?
     admin?  # Only admin can delete loans
   end
 
-  # Custom actions
+  # Manual approval - Admin only (Vendedor submissions are auto-approved)
   def approve?
-    admin?  # Only admin can manually approve loans (supervisor submissions are auto-approved)
+    admin?
   end
 
   def download_contract?
     show?  # If you can view the loan, you can download its contract
   end
 
-  # Down payment collection (vendor collects prima from customer)
+  # Down payment collection (Vendedor collects prima from customer)
   def collect_down_payment?
-    (admin? || supervisor?) && record.contract&.signed? && !record.down_payment_collected?
+    (admin? || vendedor?) && record.contract&.signed? && !record.down_payment_collected?
   end
 
-  # Down payment verification (admin verifies deposit receipts)
+  # Down payment verification - Admin and Supervisor
   def verify_down_payment?
-    admin?
+    admin? || supervisor?
   end
 
   # Scope: Filter loans based on role
   # - Admin: All loans
-  # - Supervisor: Only loans in their branch
-  # - Cobrador: All loans (read-only access)
+  # - Supervisor: All loans (NOT branch-limited)
+  # - Vendedor: Only loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.cobrador?
+      if user&.admin? || user&.supervisor?
         scope.all
-      elsif user&.supervisor?
-        # Supervisors can see loans in their branch
+      elsif user&.vendedor?
+        # Vendedores can only see loans in their branch
         scope.where(branch_number: user.branch_number)
       else
         scope.none
@@ -68,7 +67,7 @@ class LoanPolicy < ApplicationPolicy
   private
 
   def own_loan?
-    # Assuming loan has a `user` association with the supervisor who created it
+    # Loan belongs to the vendedor who created it
     record.user == user
   end
 end

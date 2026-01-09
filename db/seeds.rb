@@ -48,15 +48,15 @@ end
 supervisor = User.find_or_create_by!(email: 'supervisor@movicuotas.com') do |user|
   user.full_name = 'Supervisor Ejemplo'
   user.password = 'password123'
-  user.role = 'supervisor'
+  user.role = 'supervisor'  # Supervisor: verifies payments, blocks devices (NOT branch-limited)
   user.branch_number = 'S01'
   user.active = true
 end
 
-cobrador = User.find_or_create_by!(email: 'cobrador@movicuotas.com') do |user|
-  user.full_name = 'Cobrador Ejemplo'
+vendedor = User.find_or_create_by!(email: 'vendedor@movicuotas.com') do |user|
+  user.full_name = 'Vendedor Ejemplo'
   user.password = 'password123'
-  user.role = 'cobrador'
+  user.role = 'vendedor'  # Vendedor: sales, registration (branch-limited)
   user.branch_number = 'S01'
   user.active = true
 end
@@ -225,7 +225,7 @@ customer = Customer.first
 if customer
   credit_app = CreditApplication.find_or_create_by!(application_number: 'APP-20251216-000001') do |ca|
     ca.customer = customer
-    ca.vendor = supervisor
+    ca.vendor = vendedor  # Vendedor creates credit applications
     ca.status = 'approved'
     ca.approved_amount = 22_000.00
     ca.employment_status = 'employed'
@@ -239,7 +239,7 @@ puts "Creating loan..."
 if customer
   loan = Loan.find_or_create_by!(contract_number: 'S01-2025-12-16-000001') do |l|
     l.customer = customer
-    l.user = supervisor
+    l.user = vendedor  # Vendedor creates loans
     l.branch_number = 'S01'
     l.status = 'active'
     l.total_amount = 22_000.00

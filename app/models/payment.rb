@@ -1,9 +1,13 @@
 class Payment < ApplicationRecord
   # Associations
   belongs_to :loan
+  belongs_to :verified_by, class_name: "User", optional: true
   has_many :payment_installments, dependent: :destroy
   has_many :installments, through: :payment_installments
-  has_one_attached :receipt_image
+
+  # Attachments
+  has_one_attached :receipt_image        # Image uploaded by customer via app
+  has_one_attached :verification_image   # Image uploaded by supervisor during verification
 
   # Validations
   validates :amount, presence: true, numericality: { greater_than: 0 }
@@ -51,26 +55,64 @@ class Payment < ApplicationRecord
     amount - total_allocated
   end
 
-  def verify!(verified_by)
-    update!(verification_status: "verified")
-    # Create audit log
-    AuditLog.create!(
-      user: verified_by,
-      action: "payment_verified",
-      resource: self,
-      changes: { verification_status: [ "pending", "verified" ] }
-    )
+  # Verify payment with optional verification details
+  # @param user [User] The user verifying the payment (Admin or Supervisor)
+  # @param options [Hash] Optional verification details
+  #   - :reference_number [String] Bank/Tigo Money reference number
+  #   - :bank_source [String] Bank name or "Tigo Money"
+  #   - :verification_image [ActionDispatch::Http::UploadedFile] Optional image
+  def verify!(user, options = {})
+    transaction do
+      update!(
+        verification_status: "verified",
+        verified_by: user,
+        verified_at: Time.current,
+        reference_number: options[:reference_number],
+        bank_source: options[:bank_source]
+      )
+
+      # Attach verification image if provided
+      if options[:verification_image].present?
+        verification_image.attach(options[:verification_image])
+      end
+
+      # Create audit log
+      AuditLog.create!(
+        user: user,
+        action: "payment_verified",
+        details: {
+          payment_id: id,
+          amount: amount,
+          reference_number: reference_number,
+          bank_source: bank_source
+        }
+      )
+    end
   end
 
-  def reject!(rejected_by, reason)
-    update!(verification_status: "rejected", notes: reason)
-    # Create audit log
-    AuditLog.create!(
-      user: rejected_by,
-      action: "payment_rejected",
-      resource: self,
-      changes: { verification_status: [ "pending", "rejected" ] }
-    )
+  # Reject payment with reason
+  # @param user [User] The user rejecting the payment
+  # @param reason [String] Reason for rejection
+  def reject!(user, reason)
+    transaction do
+      update!(
+        verification_status: "rejected",
+        verified_by: user,
+        verified_at: Time.current,
+        notes: reason
+      )
+
+      # Create audit log
+      AuditLog.create!(
+        user: user,
+        action: "payment_rejected",
+        details: {
+          payment_id: id,
+          amount: amount,
+          reason: reason
+        }
+      )
+    end
   end
 
   private

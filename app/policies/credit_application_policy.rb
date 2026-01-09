@@ -2,26 +2,26 @@
 
 class CreditApplicationPolicy < ApplicationPolicy
   # Credit Application policies based on MOVICUOTAS permission matrix:
-  # - Create credit application: Admin and Supervisor
-  # - Approve credit: Admin only (automatic for supervisor submissions)
-  # - View applications: Admin (all), Supervisor (own only)
-  # - Cobrador: Cannot access credit applications
+  # - Create credit application: Admin and Vendedor
+  # - Approve credit: Admin only (automatic for vendedor submissions)
+  # - View applications: Admin (all), Vendedor (own only)
+  # - Supervisor: Cannot access credit applications (handles device blocking/payments only)
 
   # Default CRUD actions (override as needed):
   def index?
-    admin? || supervisor?  # Admin and Supervisor can view applications
+    admin? || vendedor?  # Admin and Vendedor can view applications
   end
 
   def show?
-    admin? || (supervisor? && own_application?)
+    admin? || (vendedor? && own_application?)
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can create applications
+    admin? || vendedor?  # Admin and Vendedor can create applications
   end
 
   def update?
-    admin? || (supervisor? && own_application?)  # Admin and Supervisor (own only) can update
+    admin? || (vendedor? && own_application?)  # Admin and Vendedor (own only) can update
   end
 
   def destroy?
@@ -97,14 +97,14 @@ class CreditApplicationPolicy < ApplicationPolicy
 
   # Scope: Filter applications based on role
   # - Admin: All applications
-  # - Supervisor: Only applications they created
-  # - Cobrador: No access
+  # - Vendedor: Only applications they created
+  # - Supervisor: No access (handles device blocking/payments only)
   class Scope < Scope
     def resolve
       if user&.admin?
         scope.all
-      elsif user&.supervisor?
-        # Assuming credit_application has a `vendor` association with the supervisor who created it
+      elsif user&.vendedor?
+        # Vendedor can only see applications they created
         scope.where(vendor: user)
       else
         scope.none
@@ -115,7 +115,7 @@ class CreditApplicationPolicy < ApplicationPolicy
   private
 
   def own_application?
-    # Assuming credit_application has a `vendor` association with the supervisor who created it
+    # Check if the vendedor created this application
     record.vendor == user
   end
 end

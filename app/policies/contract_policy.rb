@@ -2,8 +2,8 @@
 
 class ContractPolicy < ApplicationPolicy
   # Contract policies (digital contracts with customer signatures)
-  # - View contracts: Admin (all), Supervisor (own), Cobrador (all read-only)
-  # - Create contracts: Admin and Supervisor (automatic generation)
+  # - View contracts: Admin (all), Supervisor (all), Vendedor (own branch)
+  # - Create contracts: Admin and Vendedor (automatic generation)
   # - Update/Delete: Admin only
 
   # Default CRUD actions (override as needed):
@@ -16,7 +16,7 @@ class ContractPolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can create contracts (automatic)
+    admin? || vendedor?  # Admin and Vendedor can create contracts (automatic)
   end
 
   def update?
@@ -33,9 +33,9 @@ class ContractPolicy < ApplicationPolicy
   end
 
   def save_signature?
-    # Supervisor can sign contracts for loans they created
+    # Vendedor can sign contracts for loans they created
     # Admin can sign any contract
-    admin? || (supervisor? && record.loan.present? && record.loan.user == user)
+    admin? || (vendedor? && record.loan.present? && record.loan.user == user)
   end
 
   def success?
@@ -60,15 +60,15 @@ class ContractPolicy < ApplicationPolicy
 
   # Scope: Filter contracts based on role
   # - Admin: All contracts
-  # - Supervisor: Contracts for loans they created
-  # - Cobrador: All contracts (read-only access)
+  # - Supervisor: All contracts (NOT branch-limited)
+  # - Vendedor: Contracts for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.cobrador?
+      if user&.admin? || user&.supervisor?
         scope.all
-      elsif user&.supervisor?
-        # Assuming contract belongs to loan, and loan belongs to user (supervisor)
-        scope.joins(loan: :user).where(loans: { user: user })
+      elsif user&.vendedor?
+        # Vendedor sees contracts for loans in their branch
+        scope.joins(:loan).where(loans: { branch_number: user.branch_number })
       else
         scope.none
       end

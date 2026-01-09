@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class DashboardPolicy < ::DashboardPolicy
     def index?
-      user.cobrador? || user.admin?
+      user.supervisor? || user.admin?
     end
 
     class Scope < Scope

@@ -1,7 +1,7 @@
-<% content_for :title, "Cobrador Dashboard - MOVICUOTAS" %>
+<% content_for :title, "Supervisor Dashboard - MOVICUOTAS" %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h1 class="text-3xl font-bold text-[#125282] mb-6">Dashboard de Cobrador</h1>
+  <h1 class="text-3xl font-bold text-[#125282] mb-6">Dashboard de Supervisor</h1>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white shadow rounded-lg p-6">
@@ -14,7 +14,7 @@
         <div class="ml-4">
           <h3 class="text-sm font-medium text-gray-500">Cuotas en Mora</h3>
           <p class="text-2xl font-bold text-gray-900"><%= @dashboard_data[:overdue_devices][:total_count] %></p>
-          <p class="text-xs text-gray-500">RD$ <%= number_with_precision(@dashboard_data[:overdue_devices][:total_amount], precision: 2) %></p>
+          <p class="text-xs text-gray-500">L. <%= number_with_precision(@dashboard_data[:overdue_devices][:total_amount], precision: 2) %></p>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
         <div class="ml-4">
           <h3 class="text-sm font-medium text-gray-500">Bloqueados</h3>
           <p class="text-2xl font-bold text-gray-900"><%= @dashboard_data[:blocked_devices][:locked_count] %></p>
-          <p class="text-xs text-gray-500">Últimos 7 días: <%= @dashboard_data[:blocked_devices][:recent_locked] %></p>
+          <p class="text-xs text-gray-500">Ultimos 7 dias: <%= @dashboard_data[:blocked_devices][:recent_locked] %></p>
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
           </svg>
         </div>
         <div class="ml-4">
-          <h3 class="text-sm font-medium text-gray-500">Desglose (Días)</h3>
+          <h3 class="text-sm font-medium text-gray-500">Desglose (Dias)</h3>
           <div class="mt-1 text-xs text-gray-600">
             <span class="block">1-7: <%= @dashboard_data[:overdue_devices][:by_days][:"1-7"] %></span>
             <span class="block">8-15: <%= @dashboard_data[:overdue_devices][:by_days][:"8-15"] %></span>
@@ -70,24 +70,24 @@
   <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">Acciones Disponibles</h2>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <a href="#" class="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      <%= link_to supervisor_overdue_devices_path, class: "flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition" do %>
         <svg class="h-6 w-6 text-[#125282] mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         <div>
           <h3 class="font-medium text-gray-900">Dispositivos en Mora</h3>
-          <p class="text-sm text-gray-500">Lista de dispositivos con pagos atrasados, filtros por días y monto.</p>
+          <p class="text-sm text-gray-500">Lista de dispositivos con pagos atrasados, filtros por dias y monto.</p>
         </div>
-      </a>
-      <a href="#" class="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      <% end %>
+      <%= link_to supervisor_overdue_devices_path, class: "flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition" do %>
         <svg class="h-6 w-6 text-[#125282] mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div>
           <h3 class="font-medium text-gray-900">Bloquear Dispositivos</h3>
-          <p class="text-sm text-gray-500">Bloquear dispositivos via MDM cuando los pagos estén muy atrasados.</p>
+          <p class="text-sm text-gray-500">Bloquear dispositivos via MDM cuando los pagos esten muy atrasados.</p>
         </div>
-      </a>
+      <% end %>
       <a href="#" class="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
         <svg class="h-6 w-6 text-[#125282] mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -97,15 +97,15 @@
           <p class="text-sm text-gray-500">Ver historial de pagos de clientes (solo lectura).</p>
         </div>
       </a>
-      <a href="#" class="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      <%= link_to supervisor_collection_reports_path, class: "flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition" do %>
         <svg class="h-6 w-6 text-[#125282] mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
         </svg>
         <div>
           <h3 class="font-medium text-gray-900">Reportes de Mora</h3>
-          <p class="text-sm text-gray-500">Generar reportes de mora por sucursal, días de atraso, etc.</p>
+          <p class="text-sm text-gray-500">Generar reportes de mora por sucursal, dias de atraso, etc.</p>
         </div>
-      </a>
+      <% end %>
     </div>
   </div>
 </div>

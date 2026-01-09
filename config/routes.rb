@@ -135,7 +135,8 @@ Rails.application.routes.draw do
     # ... other vendor routes will be added in phase2-vendor-* branches
   end
 
-  namespace :cobrador do
+  # Supervisor namespace - for payment verification, device blocking, collection reports
+  namespace :supervisor do
     get "dashboard", to: "dashboard#index"
     resources :overdue_devices, only: [:index, :show] do
       member do
@@ -147,7 +148,6 @@ Rails.application.routes.draw do
     post "bulk-operations/confirm", to: "bulk_operations#confirm_bulk_block", as: "confirm_bulk_operations"
     get "loans/:loan_id/payment-history", to: "payment_history#show", as: "loan_payment_history"
     get "collection-reports", to: "collection_reports#index", as: "collection_reports"
-    # ... other cobrador routes will be added in phase4-cobrador-* branches
   end
 
   # Mobile API (Phase 6)

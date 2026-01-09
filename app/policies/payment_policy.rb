@@ -2,52 +2,56 @@
 
 class PaymentPolicy < ApplicationPolicy
   # Payment management policies based on MOVICUOTAS permission matrix:
-  # - View payments: All roles (Admin, Supervisor, Cobrador read-only)
-  # - Register payment: Admin and Supervisor
-  # - Verify payment: Admin only
-  # - Delete payment: Admin only
+  #
+  # Roles:
+  # - Admin: Full access to all payments
+  # - Supervisor: View all, verify/reject all (NOT branch-limited)
+  # - Vendedor: View/register own branch only, cannot verify/reject
 
-  # Default CRUD actions (override as needed):
   def index?
     true  # All authenticated users can view payments (scope will filter)
   end
 
   def show?
-    # Admin can see all, Supervisor only their branch, Cobrador all (read-only)
-    admin? || cobrador? || (supervisor? && own_branch_payment?)
+    # Admin and Supervisor can see all, Vendedor only own branch
+    admin? || supervisor? || (vendedor? && own_branch_payment?)
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can register payments
+    # Admin and Vendedor can register payments
+    admin? || vendedor?
   end
 
   def update?
-    admin? || (supervisor? && own_payment?)  # Admin and Supervisor (own only) can update
+    # Only Admin and Supervisor can update payments
+    # Vendedores cannot modify payment records after creation
+    admin? || supervisor?
   end
 
   def destroy?
     admin?  # Only admin can delete payments
   end
 
-  # Custom actions
+  # Verify payment - Admin and Supervisor only (Supervisor NOT branch-limited)
   def verify?
-    admin? || (supervisor? && own_branch_payment?)
+    admin? || supervisor?
   end
 
+  # Reject payment - Admin and Supervisor only (Supervisor NOT branch-limited)
   def reject?
-    admin? || (supervisor? && own_branch_payment?)
+    admin? || supervisor?
   end
 
   # Scope: Filter payments based on role
   # - Admin: All payments
-  # - Supervisor: Payments for loans in their branch
-  # - Cobrador: All payments (read-only access)
+  # - Supervisor: All payments (NOT branch-limited)
+  # - Vendedor: Only payments for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.cobrador?
+      if user&.admin? || user&.supervisor?
         scope.all
-      elsif user&.supervisor?
-        # Supervisors can see payments for loans in their branch
+      elsif user&.vendedor?
+        # Vendedores can only see payments for loans in their branch
         scope.joins(loan: :customer)
              .where(loans: { branch_number: user.branch_number })
       else
@@ -57,11 +61,6 @@ class PaymentPolicy < ApplicationPolicy
   end
 
   private
-
-  def own_payment?
-    # Assuming payment belongs to loan, and loan belongs to user (supervisor)
-    record.loan.user == user
-  end
 
   def own_branch_payment?
     record.loan.branch_number == user.branch_number

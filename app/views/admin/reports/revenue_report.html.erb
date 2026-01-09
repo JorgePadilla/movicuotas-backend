@@ -4,7 +4,7 @@
   <!-- Page header -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#125282]">Reporte de Ingresos y Cobranza</h1>
-    <p class="text-gray-600 mt-2">Análisis de tendencias de pagos, métodos de cobro y desempeño de cobradores</p>
+    <p class="text-gray-600 mt-2">Análisis de tendencias de pagos, métodos de cobro y desempeño de vendedores</p>
   </div>
 
   <!-- Date Range Filter -->
@@ -123,13 +123,13 @@
 
   <!-- Top Vendors/Collectors -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-    <h2 class="text-xl font-semibold text-[#125282] mb-6">🏆 Principales Cobradores</h2>
+    <h2 class="text-xl font-semibold text-[#125282] mb-6">🏆 Principales Vendedores</h2>
     <% if @top_vendors.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cobrador</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendedor</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagos Procesados</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monto Cobrado</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Promedio por Pago</th>
@@ -162,7 +162,7 @@
         </table>
       </div>
     <% else %>
-      <p class="text-gray-500 text-center py-8">No hay datos de cobradores para este período</p>
+      <p class="text-gray-500 text-center py-8">No hay datos de vendedores para este período</p>
     <% end %>
   </div>
 

@@ -61,10 +61,10 @@ Payment verification and device blocking operations. **Not limited by branch.**
 - Overdue metrics
 
 ### Key Responsibilities
-- Verify customer payments
-- Reject invalid payments (with reason)
-- Block overdue devices via MDM
-- Monitor collection reports
+- **Verify payments**: Review receipt, add reference number, bank source, optional verification image
+- **Reject payments**: Add rejection reason (required)
+- **Block devices**: Block overdue devices via MDM (30+ days overdue)
+- **Monitor collections**: View collection reports and overdue metrics
 
 ### Restrictions
 - Cannot create, edit, or delete customers
@@ -99,16 +99,17 @@ Sales operations limited to their assigned branch.
 - Pending credit applications
 
 ### Key Responsibilities
-- Register new customers
-- Create credit applications
-- Process loan contracts
-- Collect down payments
-- Register customer payments
-- Assign devices to customers
+- **Customer registration**: Register new customers with ID verification
+- **Credit applications**: Create and process credit applications (18-screen flow)
+- **Loan contracts**: Generate and process loan contracts
+- **Down payments**: Collect down payments at point of sale
+- **Payment registration**: Register customer payments (creates pending record for verification)
+- **Device assignment**: Assign devices to customers after loan approval
 
 ### Restrictions
 - Cannot view/manage other branches' loans or payments
-- Cannot verify or reject payments
+- Cannot verify or reject payments (only registers them)
+- Cannot update payments after creation
 - Cannot block/unblock devices via MDM
 - Cannot verify down payment deposits (admin/supervisor only)
 - Cannot manage users
@@ -144,9 +145,12 @@ Sales operations limited to their assigned branch.
 |--------|:-----:|:----------:|:--------:|
 | View payments | All | All | Own branch |
 | Register payment | Yes | No | Yes |
+| Update payment | Yes | Yes | No |
 | Verify payment | Yes | Yes | No |
 | Reject payment | Yes | Yes | No |
 | Delete payment | Yes | No | No |
+
+> **Note**: Vendedores can register payments but cannot modify them after creation. Only Admin and Supervisor can update or verify/reject payments.
 
 ### Device Management
 
@@ -239,6 +243,100 @@ authorize @payment, :verify?
   <%= button_to "Verify", ... %>
 <% end %>
 ```
+
+---
+
+## Payment Verification Workflow
+
+### Flow Overview
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Cliente   │ --> │ Pago Pendiente  │ --> │ Admin/Supervisor│
+│  (App Móvil)│     │  (Backend)      │     │   (Verificar)   │
+└─────────────┘     └─────────────────┘     └─────────────────┘
+                                                    │
+                                    ┌───────────────┴───────────────┐
+                                    ▼                               ▼
+                            ┌───────────────┐               ┌───────────────┐
+                            │   Verificado  │               │   Rechazado   │
+                            │ (Cuota=Pagado)│               │  (Con Razón)  │
+                            └───────────────┘               └───────────────┘
+```
+
+### Step 1: Customer Submits Payment (App)
+- Customer uses mobile app to report payment
+- Uploads receipt image (comprobante)
+- **Does NOT update installment status** - only creates pending payment record
+
+### Step 2: Payment Queue
+- Admin/Supervisor sees pending payments in `/admin/payments?status=pending`
+- Can view receipt image uploaded by customer
+- Can see loan and customer details
+
+### Step 3: Verification Decision
+
+#### Option A: Verify Payment
+Admin or Supervisor confirms the payment with optional details:
+
+| Field | Description | Required |
+|-------|-------------|:--------:|
+| **Número de Referencia** | Bank/Tigo Money transaction reference | No |
+| **Banco / Fuente** | BAC, Banpais, Atlántida, Ficohsa, Tigo Money, etc. | No |
+| **Imagen de Verificación** | Bank confirmation image (separate from customer's receipt) | No |
+
+When verified:
+- Payment status → `verified`
+- Associated installments → `paid`
+- Audit log created with verifier info
+
+#### Option B: Reject Payment
+Admin or Supervisor rejects with required reason:
+
+| Field | Description | Required |
+|-------|-------------|:--------:|
+| **Razón del Rechazo** | Why payment is being rejected | Yes |
+
+Common rejection reasons:
+- Comprobante ilegible
+- Monto incorrecto
+- Fecha no coincide
+- Referencia inválida
+- Pago duplicado
+
+When rejected:
+- Payment status → `rejected`
+- Installments remain unpaid
+- Audit log created with rejection reason
+
+### Database Fields
+
+```ruby
+# Payment model
+belongs_to :verified_by, class_name: "User", optional: true
+
+# Fields
+reference_number    # Bank/Tigo Money reference
+bank_source         # Bank name or "Tigo Money"
+verified_by_id      # Who verified/rejected
+verified_at         # When verified/rejected
+notes               # Rejection reason (if rejected)
+
+# Attachments
+has_one_attached :receipt_image        # From customer (app)
+has_one_attached :verification_image   # From supervisor (verification)
+```
+
+### Bank Sources Available
+- BAC Honduras
+- Banpais
+- Banco Atlántida
+- Banco Ficohsa
+- Banco de Occidente
+- Banco Promerica
+- Tigo Money
+- Efectivo en Tienda
+- Otro
 
 ---
 

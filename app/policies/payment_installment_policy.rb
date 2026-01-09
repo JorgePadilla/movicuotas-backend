@@ -29,15 +29,15 @@ class PaymentInstallmentPolicy < ApplicationPolicy
 
   # Scope: Filter payment_installments based on payment/installment access
   # - Admin: All payment_installments
-  # - Supervisor: Payment_installments for payments they created
-  # - Cobrador: All payment_installments (read-only access)
+  # - Supervisor: All payment_installments (NOT branch-limited)
+  # - Vendedor: Payment_installments for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.cobrador?
+      if user&.admin? || user&.supervisor?
         scope.all
-      elsif user&.supervisor?
-        # Assuming payment_installment belongs to payment, payment belongs to loan, loan belongs to user (supervisor)
-        scope.joins(payment: { loan: :user }).where(loans: { user: user })
+      elsif user&.vendedor?
+        # Vendedor sees payment_installments for loans in their branch
+        scope.joins(payment: :loan).where(loans: { branch_number: user.branch_number })
       else
         scope.none
       end

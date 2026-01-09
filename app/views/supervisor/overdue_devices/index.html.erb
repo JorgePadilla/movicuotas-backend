@@ -3,7 +3,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header -->
   <div class="mb-6">
-    <%= link_to "← Volver al Dashboard", cobrador_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <%= link_to "← Volver al Dashboard", supervisor_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
     <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Dispositivos en Mora</h1>
     <p class="text-gray-600 mt-1 text-sm lg:text-base">
       Total: <strong><%= @total_overdue_count %></strong> dispositivos |
@@ -15,7 +15,7 @@
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
 
-    <%= form_with url: cobrador_overdue_devices_path, method: :get, local: true do |f| %>
+    <%= form_with url: supervisor_overdue_devices_path, method: :get, local: true do |f| %>
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <!-- Days Range Filter -->
         <div>
@@ -66,8 +66,8 @@
 
       <div class="flex flex-wrap gap-2">
         <%= f.submit "Buscar", class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm hover:bg-[#0f4670] transition-colors" %>
-        <%= link_to "Limpiar", cobrador_overdue_devices_path, class: "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-300 transition-colors" %>
-        <%= link_to "Exportar CSV", cobrador_overdue_devices_path(format: :csv, days_range: params[:days_range], branch: params[:branch], customer: params[:customer], sort: @sort_column, order: @sort_order), class: "px-4 py-2 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors" %>
+        <%= link_to "Limpiar", supervisor_overdue_devices_path, class: "px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-300 transition-colors" %>
+        <%= link_to "Exportar CSV", supervisor_overdue_devices_path(format: :csv, days_range: params[:days_range], branch: params[:branch], customer: params[:customer], sort: @sort_column, order: @sort_order), class: "px-4 py-2 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors" %>
       </div>
     <% end %>
   </div>
@@ -138,9 +138,9 @@
           </div>
 
           <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
-            <%= link_to "Ver Detalles", cobrador_overdue_device_path(device), class: "text-[#125282] hover:underline text-sm font-medium" %>
+            <%= link_to "Ver Detalles", supervisor_overdue_device_path(device), class: "text-[#125282] hover:underline text-sm font-medium" %>
             <% if device.lock_status == "unlocked" %>
-              <%= link_to "Bloquear", cobrador_overdue_device_block_path(device), class: "text-red-600 hover:underline text-sm font-medium" %>
+              <%= link_to "Bloquear", supervisor_overdue_device_block_path(device), class: "text-red-600 hover:underline text-sm font-medium" %>
             <% end %>
           </div>
         </div>
@@ -224,9 +224,9 @@
                   <% end %>
                 </td>
                 <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
-                  <%= link_to "Ver", cobrador_overdue_device_path(device), class: "text-[#125282] hover:underline font-medium" %>
+                  <%= link_to "Ver", supervisor_overdue_device_path(device), class: "text-[#125282] hover:underline font-medium" %>
                   <% if device.lock_status == "unlocked" %>
-                    <%= link_to "Bloquear", cobrador_overdue_device_block_path(device), class: "text-red-600 hover:underline font-medium" %>
+                    <%= link_to "Bloquear", supervisor_overdue_device_block_path(device), class: "text-red-600 hover:underline font-medium" %>
                   <% end %>
                 </td>
               </tr>
@@ -253,7 +253,7 @@
         <% if @devices.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", cobrador_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+          <%= link_to "← Anterior", supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
@@ -262,7 +262,7 @@
         <% if @devices.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", cobrador_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+          <%= link_to "Siguiente →", supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
@@ -270,14 +270,14 @@
       <!-- Desktop Pagination -->
       <div class="hidden lg:flex items-center gap-2">
         <% unless @devices.first_page? %>
-          <%= link_to "← Anterior", cobrador_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+          <%= link_to "← Anterior", supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
               class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
         <% end %>
 
         <span class="px-3 py-2 text-sm text-gray-600">Página <%= @devices.current_page %> de <%= @devices.total_pages %></span>
 
         <% unless @devices.last_page? %>
-          <%= link_to "Siguiente →", cobrador_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+          <%= link_to "Siguiente →", supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
               class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
         <% end %>
       </div>
@@ -332,7 +332,7 @@ function handleBulkBlock(event) {
     return false;
   }
 
-  window.location.href = `/cobrador/bulk-operations?device_ids=${deviceIds}`;
+  window.location.href = `/supervisor/bulk-operations?device_ids=${deviceIds}`;
   return false;
 }
 </script>

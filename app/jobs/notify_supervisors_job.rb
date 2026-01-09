@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-class NotifyCobradoresJob < ApplicationJob
+class NotifySupervisorsJob < ApplicationJob
   queue_as :notifications
   set_priority :high
 
   def perform
-    log_execution("Starting: Notifying cobradores with daily collection report")
+    log_execution("Starting: Notifying supervisors with daily collection report")
 
-    cobradores = User.where(role: "cobrador")
+    supervisors = User.where(role: "supervisor")
     notification_count = 0
 
-    cobradores.find_each do |cobrador|
-      next unless cobrador.present?
+    supervisors.find_each do |supervisor|
+      next unless supervisor.present?
 
       # Get overdue stats
       overdue_count = Installment.where("due_date < ?", Date.today).count
@@ -19,9 +19,9 @@ class NotifyCobradoresJob < ApplicationJob
 
       # Create notification
       notification = Notification.create(
-        recipient: cobrador,
-        title: "📊 Reporte Diario de Mora",
-        message: "Reporte de cobranza del día #{Date.today.strftime('%d/%m/%Y')}",
+        recipient: supervisor,
+        title: "Reporte Diario de Mora",
+        message: "Reporte de cobranza del dia #{Date.today.strftime('%d/%m/%Y')}",
         notification_type: "daily_reminder",
         delivery_method: "fcm",
         status: "pending"
@@ -30,7 +30,7 @@ class NotifyCobradoresJob < ApplicationJob
       notification_count += 1 if notification.persisted?
     end
 
-    log_execution("Completed: Notified #{notification_count} cobradores")
+    log_execution("Completed: Notified #{notification_count} supervisors")
   rescue StandardError => e
     log_execution("Error: #{e.class} - #{e.message}", :error)
     notify_error(e, { job: self.class.name })

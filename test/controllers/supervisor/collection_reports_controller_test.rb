@@ -2,36 +2,36 @@
 
 require "test_helper"
 
-module Cobrador
+module Supervisor
   class CollectionReportsControllerTest < ActionDispatch::IntegrationTest
     setup do
-      @cobrador = users(:cobrador)
+      @supervisor = users(:supervisor)
       @admin = users(:admin)
       @supervisor = users(:supervisor)
     end
 
-    test "cobrador can view collection reports" do
-      sign_in_as(@cobrador)
-      get cobrador_collection_reports_path
+    test "supervisor can view collection reports" do
+      sign_in_as(@supervisor)
+      get supervisor_collection_reports_path
       assert_response :success
       assert_select "h1", "Reportes de Mora"
     end
 
     test "admin can view collection reports" do
       sign_in_as(@admin)
-      get cobrador_collection_reports_path
+      get supervisor_collection_reports_path
       assert_response :success
     end
 
     test "supervisor cannot view collection reports" do
       sign_in_as(@supervisor)
-      get cobrador_collection_reports_path
+      get supervisor_collection_reports_path
       assert_response :redirect
     end
 
     test "collection reports displays summary metrics" do
-      sign_in_as(@cobrador)
-      get cobrador_collection_reports_path
+      sign_in_as(@supervisor)
+      get supervisor_collection_reports_path
 
       report_data = assigns(:report_data)
       assert report_data.key?(:summary)
@@ -42,8 +42,8 @@ module Cobrador
     end
 
     test "collection reports displays breakdown by days" do
-      sign_in_as(@cobrador)
-      get cobrador_collection_reports_path
+      sign_in_as(@supervisor)
+      get supervisor_collection_reports_path
 
       by_days = assigns(:report_data)[:by_days]
       assert by_days.key?(:"1-7 días")
@@ -53,11 +53,11 @@ module Cobrador
     end
 
     test "collection reports filters by date range" do
-      sign_in_as(@cobrador)
+      sign_in_as(@supervisor)
       start_date = 30.days.ago.to_date
       end_date = Date.today
 
-      get cobrador_collection_reports_path, params: {
+      get supervisor_collection_reports_path, params: {
         start_date: start_date,
         end_date: end_date
       }
@@ -68,8 +68,8 @@ module Cobrador
     end
 
     test "collection reports uses default 30-day range when not specified" do
-      sign_in_as(@cobrador)
-      get cobrador_collection_reports_path
+      sign_in_as(@supervisor)
+      get supervisor_collection_reports_path
 
       date_range = assigns(:date_range)
       assert_equal (30.days.ago.to_date), date_range.begin
@@ -77,8 +77,8 @@ module Cobrador
     end
 
     test "collection reports includes recovery rate calculation" do
-      sign_in_as(@cobrador)
-      get cobrador_collection_reports_path
+      sign_in_as(@supervisor)
+      get supervisor_collection_reports_path
 
       recovery_rate = assigns(:report_data)[:recovery_rate]
       assert_kind_of Numeric, recovery_rate

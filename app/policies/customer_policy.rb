@@ -2,26 +2,43 @@
 
 class CustomerPolicy < ApplicationPolicy
   # Customer management policies based on MOVICUOTAS permission matrix:
-  # - View customers: All roles (Admin, Supervisor, Cobrador read-only)
-  # - Create customers: Admin and Supervisor
-  # - Edit customers: Admin and Supervisor
-  # - Delete customers: Admin only
-  # - Block customers: Admin only
+  #
+  # Roles:
+  # - Admin: Full access (create, edit, delete, block)
+  # - Supervisor: View all customers only (read-only)
+  # - Vendedor: View all, create, edit (no delete, no block)
 
-  # Default CRUD actions (inherited from ApplicationPolicy):
-  # - index?: true (all authenticated users)
-  # - show?: true (all authenticated users)
-  # - create?: admin? || supervisor?
-  # - update?: admin? || supervisor?
-  # - destroy?: admin?
+  # All authenticated users can view customers
+  def index?
+    true
+  end
 
-  # Custom actions
+  def show?
+    true
+  end
+
+  # Admin and Vendedor can create customers
+  def create?
+    admin? || vendedor?
+  end
+
+  # Admin and Vendedor can edit customers
+  def update?
+    admin? || vendedor?
+  end
+
+  # Only admin can delete customers
+  def destroy?
+    admin?
+  end
+
+  # Only admin can block customers
   def block?
-    admin?  # Only admin can block customers
+    admin?
   end
 
   # Scope: All authenticated users can see all customers
-  # (Supervisors need to search across all stores)
+  # (Vendedores need to search across all stores for customer lookup)
   class Scope < Scope
     def resolve
       scope.all

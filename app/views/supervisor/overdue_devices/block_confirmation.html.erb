@@ -87,13 +87,13 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-4">
-      <%= form_with url: cobrador_overdue_device_confirm_block_path(@device), method: :post, local: true, class: "flex-1" do |f| %>
+      <%= form_with url: supervisor_overdue_device_confirm_block_path(@device), method: :post, local: true, class: "flex-1" do |f| %>
         <%= f.submit "🔴 Confirmar Bloqueo",
                      class: "w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
       <% end %>
 
       <%= link_to "Cancelar",
-                  cobrador_overdue_device_path(@device),
+                  supervisor_overdue_device_path(@device),
                   class: "flex-1 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
     </div>
   </div>

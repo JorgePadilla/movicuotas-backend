@@ -2,15 +2,14 @@
 
 class DevicePolicy < ApplicationPolicy
   # Device management policies based on MOVICUOTAS permission matrix:
-  # - View devices: Admin (all), Supervisor (all), Cobrador (overdue only)
-  # - Assign device: Admin and Supervisor
-  # - Block device (MDM): Admin and Cobrador
-  # - Unblock device: Admin only
-  # - Delete device: Admin only
+  #
+  # Roles:
+  # - Admin: Full access (create, edit, delete, block, unblock)
+  # - Supervisor: View all, block devices via MDM (cannot unblock)
+  # - Vendedor: View all, assign devices only (cannot block/unblock)
 
-  # Default CRUD actions (override as needed):
   def index?
-    true  # All authenticated users can view devices (scope will filter for cobrador)
+    true  # All authenticated users can view devices
   end
 
   def show?
@@ -18,46 +17,39 @@ class DevicePolicy < ApplicationPolicy
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can create devices
+    admin? || vendedor?  # Admin and Vendedor can create devices
   end
 
   def update?
-    admin? || supervisor?  # Admin and Supervisor can update devices
+    admin? || vendedor?  # Admin and Vendedor can update devices
   end
 
   def destroy?
     admin?  # Only admin can delete devices
   end
 
-  # Custom actions
+  # Assign device to customer - Admin and Vendedor
   def assign?
-    admin? || supervisor?  # Admin and Supervisor can assign devices
+    admin? || vendedor?
   end
 
+  # Block device via MDM - Admin and Supervisor
   def lock?
-    admin? || cobrador?  # Admin and Cobrador can block devices via MDM
+    admin? || supervisor?
   end
 
+  # Unblock device - Admin only
   def unlock?
-    admin?  # Only admin can unblock devices
+    admin?
   end
 
-  # Scope: Filter devices based on role
+  # Scope: All roles can see all devices
   # - Admin: All devices
-  # - Supervisor: All devices
-  # - Cobrador: Only devices with overdue installments
+  # - Supervisor: All devices (for blocking purposes)
+  # - Vendedor: All devices (for assignment purposes)
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.supervisor?
-        scope.all
-      elsif user&.cobrador?
-        # Cobradores can only see devices with overdue loans
-        scope.joins(loan: :installments)
-             .where(installments: { status: "overdue" })
-             .distinct
-      else
-        scope.none
-      end
+      scope.all
     end
   end
 end

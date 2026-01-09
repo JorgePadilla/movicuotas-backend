@@ -4,7 +4,7 @@
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-[#125282]">Detalle del Dispositivo en Mora</h1>
     <div class="flex gap-2">
-      <%= link_to "← Volver a Lista", cobrador_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      <%= link_to "← Volver a Lista", supervisor_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
     </div>
   </div>
 
@@ -174,12 +174,12 @@
   <!-- Block Device Action Card -->
   <% if @device.unlocked? %>
     <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-      <h2 class="text-lg font-semibold text-red-900 mb-4">Acciones de Cobrador</h2>
+      <h2 class="text-lg font-semibold text-red-900 mb-4">Acciones de Supervisor</h2>
       <p class="text-red-700 mb-4">
         Este dispositivo está desbloqueado y puede ser bloqueado a través del sistema MDM.
       </p>
       <%= link_to "🔴 Bloquear Dispositivo",
-                  cobrador_overdue_device_block_path(@device),
+                  supervisor_overdue_device_block_path(@device),
                   class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
     </div>
   <% elsif @device.pending? %>

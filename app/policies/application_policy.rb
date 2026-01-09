@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 # Base policy class for all Pundit policies
+#
+# MOVICUOTAS Role Definitions:
+# - Admin: Full system access, all branches
+# - Supervisor: Payment verification, device blocking, all branches (NOT branch-limited)
+# - Vendedor: Customer registration, loan creation, own branch only (branch-limited)
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -18,14 +23,14 @@ class ApplicationPolicy
     user&.supervisor?
   end
 
-  def cobrador?
-    user&.cobrador?
+  def vendedor?
+    user&.vendedor?
   end
 
   # Default permissions based on MOVICUOTAS permission matrix
   # These defaults follow the most common pattern:
   # - Viewing (index, show): All authenticated users
-  # - Creating/Updating: Admin and Supervisor (where applicable)
+  # - Creating/Updating: Admin and Vendedor (sales operations)
   # - Destroying: Admin only
 
   def index?
@@ -37,7 +42,7 @@ class ApplicationPolicy
   end
 
   def create?
-    admin? || supervisor?  # Admin and Supervisor can create
+    admin? || vendedor?  # Admin and Vendedor can create
   end
 
   def new?
@@ -45,7 +50,7 @@ class ApplicationPolicy
   end
 
   def update?
-    admin? || supervisor?  # Admin and Supervisor can update
+    admin? || vendedor?  # Admin and Vendedor can update
   end
 
   def edit?

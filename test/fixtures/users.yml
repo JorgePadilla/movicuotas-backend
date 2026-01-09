@@ -8,18 +8,29 @@ admin:
   branch_number: "S01"
   active: true
 
+# Supervisor: verifies payments, blocks devices (NOT branch-limited)
 supervisor:
   email: supervisor@movicuotas.com
   password_digest: $2a$12$cU/T7wOlt3whGGwp.uosPezPQfx3/iOjeMYEjTh9i9QmW37qo8YK.
   full_name: Supervisor Demo
   role: supervisor
-  branch_number: "S02"
+  branch_number: "S01"
   active: true
 
-cobrador:
-  email: cobrador@movicuotas.com
+# Vendedor: customer registration, loan creation (branch-limited)
+vendedor:
+  email: vendedor@movicuotas.com
   password_digest: $2a$12$YgQdPk0ktPc2OLEFsBxLjegxN6kErGIpl4ouRLx97IbgA3NvtYIYS
-  full_name: Cobrador Demo
-  role: cobrador
-  branch_number: "COL01"
+  full_name: Vendedor Demo
+  role: vendedor
+  branch_number: "S01"
+  active: true
+
+# Second vendedor for branch testing
+vendedor_s02:
+  email: vendedor.s02@movicuotas.com
+  password_digest: $2a$12$YgQdPk0ktPc2OLEFsBxLjegxN6kErGIpl4ouRLx97IbgA3NvtYIYS
+  full_name: Vendedor S02
+  role: vendedor
+  branch_number: "S02"
   active: true

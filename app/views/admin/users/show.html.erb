@@ -69,17 +69,21 @@
         <p class="text-gray-700">✓ Gestión de usuarios y roles</p>
         <p class="text-gray-700">✓ Acceso al panel de control del sistema</p>
         <p class="text-gray-700">✓ Generación de reportes</p>
+        <p class="text-gray-700">✓ Acceso a todas las sucursales</p>
       <% elsif @user.supervisor? %>
+        <p class="text-gray-700">✓ Visualización de cuentas en mora</p>
+        <p class="text-gray-700">✓ Bloqueo de dispositivos MDM</p>
+        <p class="text-gray-700">✓ Verificación y rechazo de pagos</p>
+        <p class="text-gray-700">✓ Historial de pagos (solo lectura)</p>
+        <p class="text-gray-700">✓ Acceso a todas las sucursales</p>
+        <p class="text-gray-700">✗ No puede crear o eliminar datos</p>
+      <% elsif @user.vendedor? %>
         <p class="text-gray-700">✓ Proceso de venta (18 pantallas)</p>
-        <p class="text-gray-700">✓ Búsqueda de clientes</p>
+        <p class="text-gray-700">✓ Búsqueda y registro de clientes</p>
         <p class="text-gray-700">✓ Creación de aplicaciones de crédito</p>
         <p class="text-gray-700">✓ Seguimiento de préstamos propios</p>
-        <p class="text-gray-700">✗ No puede acceder a otras funciones administrativas</p>
-      <% elsif @user.cobrador? %>
-        <p class="text-gray-700">✓ Visualización de cuentas en mora</p>
-        <p class="text-gray-700">✓ Bloqueo de dispositivos</p>
-        <p class="text-gray-700">✓ Historial de pagos (solo lectura)</p>
-        <p class="text-gray-700">✗ No puede crear, editar o eliminar datos</p>
+        <p class="text-gray-700">✗ Limitado a su sucursal asignada</p>
+        <p class="text-gray-700">✗ No puede verificar pagos ni bloquear dispositivos</p>
       <% end %>
     </div>
   </div>

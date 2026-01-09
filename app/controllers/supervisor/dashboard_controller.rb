@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-module Cobrador
+module Supervisor
   class DashboardController < ApplicationController
     skip_after_action :verify_policy_scoped, only: :index
 
     def index
-      authorize nil, policy_class: Cobrador::DashboardPolicy
+      authorize nil, policy_class: Supervisor::DashboardPolicy
       @dashboard_data = fetch_dashboard_metrics
     end
 
@@ -44,7 +44,7 @@ module Cobrador
     end
 
     def pundit_policy_class
-      Cobrador::DashboardPolicy
+      Supervisor::DashboardPolicy
     end
   end
 end

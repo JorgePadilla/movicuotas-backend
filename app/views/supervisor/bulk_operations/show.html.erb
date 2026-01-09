@@ -3,7 +3,7 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-[#125282]">Operaciones en Lote</h1>
-    <%= link_to "← Volver a Lista", cobrador_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    <%= link_to "← Volver a Lista", supervisor_overdue_devices_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
   </div>
 
   <!-- Summary Card -->
@@ -104,14 +104,14 @@
 
   <!-- Action Buttons -->
   <div class="flex gap-4">
-    <%= form_with url: cobrador_confirm_bulk_operations_path, method: :post, local: true, class: "flex-1" do |f| %>
+    <%= form_with url: supervisor_confirm_bulk_operations_path, method: :post, local: true, class: "flex-1" do |f| %>
       <%= hidden_field_tag :device_ids, @device_ids.join(',') %>
       <%= f.submit "🔴 Confirmar Bloqueo de #{@devices.select { |d| d.lock_status == 'unlocked' }.length} Dispositivos",
                    class: "w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700" %>
     <% end %>
 
     <%= link_to "Cancelar",
-                cobrador_overdue_devices_path,
+                supervisor_overdue_devices_path,
                 class: "flex-1 inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
   </div>
 </div>
