@@ -38,7 +38,7 @@ Full access to all system features.
 
 ## Supervisor
 
-Payment verification and device blocking operations. **Not limited by branch.**
+Payment management, verification, and reporting. **Not limited by branch. Does NOT do sales.**
 
 ### Permissions
 
@@ -46,7 +46,7 @@ Payment verification and device blocking operations. **Not limited by branch.**
 |------|:----:|:------:|:----:|:------:|---------|
 | Customers | All | No | No | No | - |
 | Loans | All | No | No | No | - |
-| Payments | All | No | No | No | Verify, Reject |
+| Payments | All | Yes | Yes | No | Verify, Reject |
 | Devices | All | No | No | No | Block (MDM) |
 | Users | No | No | No | No | - |
 | Down Payments | All | - | - | - | Verify deposits |
@@ -61,12 +61,15 @@ Payment verification and device blocking operations. **Not limited by branch.**
 - Overdue metrics
 
 ### Key Responsibilities
+- **Create payments**: Register payments directly (without customer receipt)
+- **Update payments**: Modify payment details, add reference numbers
 - **Verify payments**: Review receipt, add reference number, bank source, optional verification image
 - **Reject payments**: Add rejection reason (required)
 - **Block devices**: Block overdue devices via MDM (30+ days overdue)
 - **Monitor collections**: View collection reports and overdue metrics
 
 ### Restrictions
+- **Does NOT do sales** - no credit applications, no customer registration
 - Cannot create, edit, or delete customers
 - Cannot create, edit, or delete loans
 - Cannot unblock devices (admin only)
@@ -144,13 +147,15 @@ Sales operations limited to their assigned branch.
 | Action | Admin | Supervisor | Vendedor |
 |--------|:-----:|:----------:|:--------:|
 | View payments | All | All | Own branch |
-| Register payment | Yes | No | Yes |
+| Register payment | Yes | Yes | Yes |
 | Update payment | Yes | Yes | No |
 | Verify payment | Yes | Yes | No |
 | Reject payment | Yes | Yes | No |
 | Delete payment | Yes | No | No |
 
-> **Note**: Vendedores can register payments but cannot modify them after creation. Only Admin and Supervisor can update or verify/reject payments.
+> **Note**:
+> - **Supervisor** can create/update payments directly without customer receipt
+> - **Vendedor** can register payments but cannot modify them after creation
 
 ### Device Management
 
@@ -250,6 +255,9 @@ authorize @payment, :verify?
 
 ### Flow Overview
 
+There are two ways payments can be created:
+
+#### Flow A: Customer-Initiated (via App)
 ```
 ┌─────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   Cliente   │ --> │ Pago Pendiente  │ --> │ Admin/Supervisor│
@@ -264,10 +272,26 @@ authorize @payment, :verify?
                             └───────────────┘               └───────────────┘
 ```
 
-### Step 1: Customer Submits Payment (App)
+#### Flow B: Supervisor-Initiated (Direct)
+```
+┌─────────────────┐     ┌─────────────────┐
+│ Admin/Supervisor│ --> │   Verificado    │
+│ (Crear Pago)    │     │ (Cuota=Pagado)  │
+└─────────────────┘     └─────────────────┘
+```
+> **Supervisor puede crear pagos directamente** sin necesidad de que el cliente envíe comprobante.
+
+### Step 1: Payment Creation
+
+#### Option A: Customer Submits (App)
 - Customer uses mobile app to report payment
 - Uploads receipt image (comprobante)
 - **Does NOT update installment status** - only creates pending payment record
+
+#### Option B: Supervisor Creates Directly
+- Supervisor creates payment in admin panel
+- No customer receipt required
+- Can add reference number, bank source, and verification image immediately
 
 ### Step 2: Payment Queue
 - Admin/Supervisor sees pending payments in `/admin/payments?status=pending`
@@ -345,11 +369,12 @@ has_one_attached :verification_image   # From supervisor (verification)
 | Capability | Admin | Supervisor | Vendedor |
 |------------|:-----:|:----------:|:--------:|
 | Full system access | Yes | No | No |
+| Create/update payments | Yes | Yes | Create only |
 | Verify/reject payments | Yes | Yes | No |
 | Block devices (MDM) | Yes | Yes | No |
 | Unblock devices | Yes | No | No |
 | Create customers/loans | Yes | No | Yes |
-| Register payments | Yes | No | Yes |
+| Sales operations | Yes | No | Yes |
 | Branch-limited | No | No | Yes |
 | User management | Yes | No | No |
 | System configuration | Yes | No | No |
