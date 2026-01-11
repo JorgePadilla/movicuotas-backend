@@ -35,14 +35,11 @@ class Device < ApplicationRecord
     )
 
     # Create audit log
-    AuditLog.create!(
-      user: locked_by_user,
-      action: "device_lock_requested",
-      resource: self,
-      changes: {
-        reason: reason,
-        lock_status: [ "unlocked", "pending" ]
-      }
+    AuditLog.log(
+      locked_by_user,
+      "device_lock_requested",
+      self,
+      { reason: reason, lock_status: [ "unlocked", "pending" ] }
     )
 
     true
@@ -63,14 +60,11 @@ class Device < ApplicationRecord
     )
 
     # Create audit log
-    AuditLog.create!(
-      user: unlocked_by_user,
-      action: "device_unlocked",
-      resource: self,
-      changes: {
-        reason: reason,
-        lock_status: [ "locked", "unlocked" ]
-      }
+    AuditLog.log(
+      unlocked_by_user,
+      "device_unlocked",
+      self,
+      { reason: reason, lock_status: [ "locked", "unlocked" ] }
     )
 
     true

@@ -75,13 +75,15 @@ class CreditApplication < ApplicationRecord
       approved_amount: approved_amount
     )
 
-    # Create audit log
-    AuditLog.create!(
-      user: approved_by,
-      action: "credit_application_approved",
-      resource: self,
-      changes: { status: [ "pending", "approved" ], approved_amount: [ nil, approved_amount ] }
-    ) if approved_by
+    # Create audit log (only if approved by a user, not auto-approval)
+    if approved_by
+      AuditLog.log(
+        approved_by,
+        "credit_application_approved",
+        self,
+        { status: [ "pending", "approved" ], approved_amount: [ nil, approved_amount ] }
+      )
+    end
   end
 
   def reject!(reason, rejected_by = nil)
@@ -90,13 +92,15 @@ class CreditApplication < ApplicationRecord
       rejection_reason: reason
     )
 
-    # Create audit log
-    AuditLog.create!(
-      user: rejected_by,
-      action: "credit_application_rejected",
-      resource: self,
-      changes: { status: [ "pending", "rejected" ], rejection_reason: [ nil, reason ] }
-    ) if rejected_by
+    # Create audit log (only if rejected by a user, not auto-rejection)
+    if rejected_by
+      AuditLog.log(
+        rejected_by,
+        "credit_application_rejected",
+        self,
+        { status: [ "pending", "rejected" ], rejection_reason: [ nil, reason ] }
+      )
+    end
   end
 
   def can_be_processed?
