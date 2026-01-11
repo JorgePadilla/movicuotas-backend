@@ -32,12 +32,18 @@ Rails.application.routes.draw do
     resources :users  # User management
     resources :customers  # Customer management
     resources :loans, only: [:index, :show]  # Loan management (view only)
-    resources :payments, only: [:index, :show] do  # Payment tracking
+    resources :payments do  # Payment management (Admin/Supervisor: full CRUD, Vendedor: view only)
       member do
         post :verify
         post :reject
       end
     end
+    resources :installments, only: [] do  # Installment management (Admin/Supervisor only)
+      member do
+        post :mark_paid
+      end
+    end
+    resources :audit_logs, only: [:index, :show]  # Audit log viewing (Admin only)
     resources :contracts, only: [:index, :show]  # Contract management (QR handled by default_qr_codes)
     resources :default_qr_codes, only: [:index, :edit, :update] do  # Default QR code for all contracts
       member do

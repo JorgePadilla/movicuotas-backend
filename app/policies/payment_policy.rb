@@ -5,8 +5,8 @@ class PaymentPolicy < ApplicationPolicy
   #
   # Roles:
   # - Admin: Full access to all payments
-  # - Supervisor: View all, verify/reject all (NOT branch-limited)
-  # - Vendedor: View/register own branch only, cannot verify/reject
+  # - Supervisor: View all, create, update, verify/reject (NOT branch-limited, NO sales)
+  # - Vendedor: View/register own branch only, cannot verify/reject or update
 
   def index?
     true  # All authenticated users can view payments (scope will filter)
@@ -18,8 +18,9 @@ class PaymentPolicy < ApplicationPolicy
   end
 
   def create?
-    # Admin and Vendedor can register payments
-    admin? || vendedor?
+    # Admin, Supervisor, and Vendedor can register payments
+    # Supervisor can create payments directly without customer receipt
+    admin? || supervisor? || vendedor?
   end
 
   def update?

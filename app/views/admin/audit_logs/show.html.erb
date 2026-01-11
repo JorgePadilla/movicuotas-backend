@@ -1,0 +1,188 @@
+<%
+  # Translations for audit actions
+  def translate_action(action)
+    translations = {
+      "down_payment_cash_confirmed" => "Prima en efectivo confirmada",
+      "down_payment_transfer_verified" => "Prima por transferencia verificada",
+      "down_payment_rejected" => "Prima rechazada",
+      "payment_verified" => "Pago verificado",
+      "payment_rejected" => "Pago rechazado",
+      "payment_created" => "Pago creado",
+      "installment_marked_paid" => "Cuota marcada como pagada",
+      "loan_created" => "Préstamo creado",
+      "loan_updated" => "Préstamo actualizado",
+      "customer_created" => "Cliente creado",
+      "customer_updated" => "Cliente actualizado",
+      "user_created" => "Usuario creado",
+      "user_updated" => "Usuario actualizado",
+      "device_blocked" => "Dispositivo bloqueado",
+      "device_unblocked" => "Dispositivo desbloqueado",
+      "contract_signed" => "Contrato firmado",
+      "credit_application_approved" => "Solicitud aprobada",
+      "credit_application_rejected" => "Solicitud rechazada",
+      "otp_verified" => "OTP verificado"
+    }
+    translations[action] || action.humanize
+  end
+
+  def translate_role(role)
+    { "admin" => "Administrador", "supervisor" => "Supervisor", "vendedor" => "Vendedor" }[role] || role&.humanize
+  end
+
+  def translate_resource_type(type)
+    { "Loan" => "Préstamo", "Payment" => "Pago", "Customer" => "Cliente", "User" => "Usuario",
+      "Device" => "Dispositivo", "Contract" => "Contrato", "Installment" => "Cuota",
+      "CreditApplication" => "Solicitud de Crédito" }[type] || type
+  end
+
+  # Spanish month names
+  meses = %w[Enero Febrero Marzo Abril Mayo Junio Julio Agosto Septiembre Octubre Noviembre Diciembre]
+  fecha_es = "#{@audit_log.created_at.day} de #{meses[@audit_log.created_at.month - 1]} de #{@audit_log.created_at.year}, #{@audit_log.created_at.strftime('%H:%M:%S')}"
+%>
+
+<% content_for :title, "Detalle de Auditoría - Admin - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver a Registros", admin_audit_logs_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Detalle de Auditoría</h1>
+    <p class="text-gray-600 mt-1 text-sm">Registro #<%= @audit_log.id %></p>
+  </div>
+
+  <!-- Main info card -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Left column -->
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Fecha y Hora</label>
+          <p class="text-lg font-medium text-gray-900"><%= fecha_es %></p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Usuario</label>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#125282] rounded-full flex items-center justify-center">
+              <span class="text-white font-bold"><%= @audit_log.user&.full_name&.first&.upcase || "S" %></span>
+            </div>
+            <div>
+              <p class="text-lg font-medium text-gray-900"><%= @audit_log.user&.full_name || "Sistema" %></p>
+              <p class="text-sm text-gray-500"><%= @audit_log.user&.email %></p>
+              <% if @audit_log.user&.role %>
+                <span class="inline-block mt-1 px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700"><%= translate_role(@audit_log.user.role) %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Acción</label>
+          <% action_color = case @audit_log.action
+            when /create|add|new/ then 'bg-green-100 text-green-800 border-green-300'
+            when /update|edit|change/ then 'bg-blue-100 text-blue-800 border-blue-300'
+            when /delete|remove|destroy/ then 'bg-red-100 text-red-800 border-red-300'
+            when /verify|approve|paid|confirmed/ then 'bg-emerald-100 text-emerald-800 border-emerald-300'
+            when /reject|deny|block/ then 'bg-orange-100 text-orange-800 border-orange-300'
+            else 'bg-gray-100 text-gray-800 border-gray-300'
+          end %>
+          <span class="inline-block px-3 py-1 text-sm rounded-lg font-medium border <%= action_color %>">
+            <%= translate_action(@audit_log.action) %>
+          </span>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Recurso</label>
+          <p class="text-lg font-medium text-gray-900"><%= translate_resource_type(@audit_log.resource_type) %></p>
+          <p class="text-sm text-gray-500">ID: #<%= @audit_log.resource_id %></p>
+          <% if (resource = @audit_log.resource) %>
+            <p class="text-xs text-green-600 mt-1">El recurso existe en la base de datos</p>
+          <% else %>
+            <p class="text-xs text-orange-600 mt-1">El recurso ya no existe o fue eliminado</p>
+          <% end %>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Dirección IP</label>
+          <p class="text-lg font-medium text-gray-900 font-mono"><%= @audit_log.ip_address || "No registrada" %></p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">User Agent</label>
+          <p class="text-sm text-gray-700 break-all"><%= @audit_log.user_agent || "No registrado" %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change details -->
+  <% if @audit_log.change_details.present? %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Detalles del Cambio</h2>
+      <div class="bg-gray-50 rounded-lg p-4 overflow-x-auto">
+        <pre class="text-sm text-gray-700 whitespace-pre-wrap"><%= JSON.pretty_generate(@audit_log.change_details) rescue @audit_log.change_details.to_s %></pre>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Related resource preview -->
+  <% if (resource = @audit_log.resource) %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Recurso Relacionado</h2>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <% case @audit_log.resource_type %>
+        <% when "Payment" %>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500">Monto:</span> <span class="font-medium">L. <%= number_with_delimiter(resource.amount, delimiter: ',') %></span></div>
+            <div><span class="text-gray-500">Estado:</span> <span class="font-medium"><%= resource.verification_status %></span></div>
+            <div><span class="text-gray-500">Fecha:</span> <span class="font-medium"><%= resource.payment_date %></span></div>
+            <div><span class="text-gray-500">Método:</span> <span class="font-medium"><%= resource.payment_method %></span></div>
+          </div>
+          <%= link_to "Ver Pago →", admin_payment_path(resource), class: "inline-block mt-3 text-[#125282] hover:underline font-medium text-sm" %>
+        <% when "Installment" %>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500">Cuota #:</span> <span class="font-medium"><%= resource.installment_number %></span></div>
+            <div><span class="text-gray-500">Monto:</span> <span class="font-medium">L. <%= number_with_delimiter(resource.amount, delimiter: ',') %></span></div>
+            <div><span class="text-gray-500">Estado:</span> <span class="font-medium"><%= resource.status %></span></div>
+            <div><span class="text-gray-500">Vencimiento:</span> <span class="font-medium"><%= resource.due_date %></span></div>
+          </div>
+          <%= link_to "Ver Préstamo →", vendor_loan_path(resource.loan), class: "inline-block mt-3 text-[#125282] hover:underline font-medium text-sm" %>
+        <% when "Loan" %>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500">Contrato:</span> <span class="font-medium"><%= resource.contract_number %></span></div>
+            <div><span class="text-gray-500">Monto:</span> <span class="font-medium">L. <%= number_with_delimiter(resource.total_amount, delimiter: ',') %></span></div>
+            <div><span class="text-gray-500">Estado:</span> <span class="font-medium"><%= resource.status %></span></div>
+            <div><span class="text-gray-500">Cliente:</span> <span class="font-medium"><%= resource.customer&.full_name %></span></div>
+          </div>
+          <%= link_to "Ver Préstamo →", vendor_loan_path(resource), class: "inline-block mt-3 text-[#125282] hover:underline font-medium text-sm" %>
+        <% when "Customer" %>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500">Nombre:</span> <span class="font-medium"><%= resource.full_name %></span></div>
+            <div><span class="text-gray-500">Identidad:</span> <span class="font-medium"><%= resource.identification_number %></span></div>
+            <div><span class="text-gray-500">Teléfono:</span> <span class="font-medium"><%= resource.phone %></span></div>
+            <div><span class="text-gray-500">Estado:</span> <span class="font-medium"><%= resource.status %></span></div>
+          </div>
+          <%= link_to "Ver Cliente →", admin_customer_path(resource), class: "inline-block mt-3 text-[#125282] hover:underline font-medium text-sm" %>
+        <% when "User" %>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500">Nombre:</span> <span class="font-medium"><%= resource.full_name %></span></div>
+            <div><span class="text-gray-500">Email:</span> <span class="font-medium"><%= resource.email %></span></div>
+            <div><span class="text-gray-500">Rol:</span> <span class="font-medium"><%= resource.role&.humanize %></span></div>
+          </div>
+          <%= link_to "Ver Usuario →", admin_user_path(resource), class: "inline-block mt-3 text-[#125282] hover:underline font-medium text-sm" %>
+        <% else %>
+          <p class="text-sm text-gray-600">ID: <%= resource.id %></p>
+          <p class="text-sm text-gray-600">Creado: <%= resource.created_at %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Navigation -->
+  <div class="flex justify-between items-center">
+    <%= link_to "← Volver a Registros", admin_audit_logs_path, class: "text-[#125282] hover:underline font-medium" %>
+  </div>
+</div>

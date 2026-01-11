@@ -32,6 +32,9 @@
     <%= link_to "Monitoreo de Jobs", admin_jobs_path,
         class: "#{controller_name == 'jobs' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
+    <%= link_to "Auditoría", admin_audit_logs_path,
+        class: "#{controller_name == 'audit_logs' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
+
     <% pending_down_payments = Loan.down_payment_pending_verification.count %>
     <%= link_to admin_down_payments_path,
         class: "relative #{controller_name == 'down_payments' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" do %>

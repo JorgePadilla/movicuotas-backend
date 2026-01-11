@@ -5,7 +5,7 @@ class InstallmentPolicy < ApplicationPolicy
   # Installments are generated automatically when a loan is created
   # - View installments: All authenticated users (via loan access)
   # - Create installments: Admin only (automatic generation)
-  # - Update installments: Admin only (status updates via payments)
+  # - Update installments: Admin and Supervisor (status updates, mark as paid)
   # - Delete installments: Admin only
 
   # Default CRUD actions (override as needed):
@@ -22,11 +22,16 @@ class InstallmentPolicy < ApplicationPolicy
   end
 
   def update?
-    admin?  # Only admin can manually update installments
+    admin? || supervisor?  # Admin and Supervisor can update installments
   end
 
   def destroy?
     admin?  # Only admin can delete installments
+  end
+
+  # Mark installment as paid - Admin and Supervisor only
+  def mark_paid?
+    admin? || supervisor?
   end
 
   # Scope: Filter installments based on loan access

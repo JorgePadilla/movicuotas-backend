@@ -258,11 +258,19 @@
 
   <!-- Footer navigation -->
   <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-    <div>
+    <div class="flex gap-4 items-center">
       <%= link_to "← Volver a Pagos", admin_payments_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
     </div>
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
+    <div class="flex gap-4 items-center">
+      <% if policy(@payment).update? %>
+        <%= link_to edit_admin_payment_path(@payment), class: "inline-flex items-center gap-2 bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Editar Pago
+        <% end %>
+      <% end %>
+      <%= link_to "← Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
     </div>
   </div>
 </div>

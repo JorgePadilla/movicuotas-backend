@@ -1,0 +1,92 @@
+<%= form_with model: [:admin, @payment], local: true, class: "space-y-4 sm:space-y-6", multipart: true do |f| %>
+  <% if @payment.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+      <h3 class="text-xs sm:text-sm font-medium text-red-800 mb-2">Se encontraron los siguientes errores:</h3>
+      <ul class="list-disc pl-5 text-xs sm:text-sm text-red-700">
+        <% @payment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Loan Selection -->
+  <div>
+    <%= f.label :loan_id, "Préstamo", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.select :loan_id, @loans, { prompt: "Selecciona un préstamo", include_blank: false }, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]", required: true %>
+    <p class="text-xs sm:text-sm text-gray-600 mt-2">Selecciona el préstamo al cual se aplicará este pago.</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Amount -->
+    <div>
+      <%= f.label :amount, "Monto (L.)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.number_field :amount, step: 0.01, min: 0, placeholder: "Ej: 1500.00", class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]", required: true %>
+    </div>
+
+    <!-- Payment Date -->
+    <div>
+      <%= f.label :payment_date, "Fecha del Pago", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.date_field :payment_date, value: @payment.payment_date || Date.current, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]", required: true %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Payment Method -->
+    <div>
+      <%= f.label :payment_method, "Método de Pago", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :payment_method, [["Efectivo", "cash"], ["Transferencia", "transfer"], ["Tarjeta", "card"], ["Otro", "other"]], { prompt: "Selecciona método" }, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]", required: true %>
+    </div>
+
+    <!-- Bank Source -->
+    <div>
+      <%= f.label :bank_source, "Banco / Fuente", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :bank_source, @bank_sources, { include_blank: "Seleccionar (Opcional)" }, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    </div>
+  </div>
+
+  <!-- Reference Number -->
+  <div>
+    <%= f.label :reference_number, "Número de Referencia", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_field :reference_number, placeholder: "Ej: TRX-123456 (Opcional)", class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <p class="text-xs sm:text-sm text-gray-600 mt-2">Referencia de la transacción bancaria o Tigo Money.</p>
+  </div>
+
+  <!-- Notes -->
+  <div>
+    <%= f.label :notes, "Notas", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :notes, rows: 3, placeholder: "Notas adicionales sobre el pago (Opcional)", class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+  </div>
+
+  <!-- Verification Image -->
+  <div>
+    <%= f.label :verification_image, "Imagen de Verificación", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <% if @payment.verification_image.attached? %>
+      <div class="mb-3 p-3 bg-gray-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-2">Imagen actual:</p>
+        <%= image_tag @payment.verification_image, class: "max-w-xs rounded-lg border" %>
+      </div>
+    <% end %>
+    <%= f.file_field :verification_image, accept: "image/*", class: "mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#125282] file:text-white hover:file:bg-[#0f4670]" %>
+    <p class="text-xs sm:text-sm text-gray-600 mt-2">Sube una imagen del comprobante o confirmación bancaria (Opcional).</p>
+  </div>
+
+  <% if @payment.new_record? %>
+    <!-- Auto-verify checkbox for new payments created by Admin/Supervisor -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <label class="flex items-start gap-3 cursor-pointer">
+        <input type="checkbox" name="auto_verify" value="1" checked class="mt-1 h-4 w-4 text-[#125282] border-gray-300 rounded focus:ring-[#125282]">
+        <div>
+          <span class="block text-sm font-medium text-blue-900">Verificar automáticamente</span>
+          <span class="text-xs text-blue-700">Al marcar esta opción, el pago se guardará como verificado inmediatamente.</span>
+        </div>
+      </label>
+    </div>
+  <% end %>
+
+  <!-- Submit button -->
+  <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 sm:pt-6 border-t">
+    <%= f.submit @payment.new_record? ? "Registrar Pago" : "Actualizar Pago", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base text-center cursor-pointer" %>
+    <%= link_to "Cancelar", admin_payments_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base text-center" %>
+  </div>
+<% end %>

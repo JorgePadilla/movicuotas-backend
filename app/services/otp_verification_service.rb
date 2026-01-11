@@ -95,6 +95,7 @@ class OtpVerificationService
   end
 
   def send_via_whatsapp(code)
+    Rails.logger.info("[OtpVerificationService] Sending WhatsApp OTP to: #{formatted_phone}")
     WhatsappService.new.send_otp(
       phone_number: formatted_phone,
       code: code,

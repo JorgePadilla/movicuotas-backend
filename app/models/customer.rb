@@ -14,8 +14,7 @@ class Customer < ApplicationRecord
   validates :phone, presence: true,
             format: { with: /\A\d{8}\z/, message: "debe tener 8 dígitos" },
             length: { is: 8 }
-  validates :email, presence: { message: "es requerido para verificación" },
-            format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :status, inclusion: { in: %w[active suspended blocked] }
 
   # Enums

@@ -1,0 +1,210 @@
+<%
+  # Translation helpers
+  def translate_action(action)
+    {
+      "down_payment_cash_confirmed" => "Prima en efectivo confirmada",
+      "down_payment_transfer_verified" => "Prima por transferencia verificada",
+      "down_payment_rejected" => "Prima rechazada",
+      "payment_verified" => "Pago verificado",
+      "payment_rejected" => "Pago rechazado",
+      "payment_created" => "Pago creado",
+      "installment_marked_paid" => "Cuota marcada como pagada",
+      "loan_created" => "Préstamo creado",
+      "loan_updated" => "Préstamo actualizado",
+      "customer_created" => "Cliente creado",
+      "customer_updated" => "Cliente actualizado",
+      "user_created" => "Usuario creado",
+      "user_updated" => "Usuario actualizado",
+      "device_blocked" => "Dispositivo bloqueado",
+      "device_unblocked" => "Dispositivo desbloqueado",
+      "contract_signed" => "Contrato firmado",
+      "credit_application_approved" => "Solicitud aprobada",
+      "credit_application_rejected" => "Solicitud rechazada",
+      "otp_verified" => "OTP verificado"
+    }[action] || action.humanize
+  end
+
+  def translate_role(role)
+    { "admin" => "Administrador", "supervisor" => "Supervisor", "vendedor" => "Vendedor" }[role] || role&.humanize
+  end
+
+  def translate_resource_type(type)
+    { "Loan" => "Préstamo", "Payment" => "Pago", "Customer" => "Cliente", "User" => "Usuario",
+      "Device" => "Dispositivo", "Contract" => "Contrato", "Installment" => "Cuota",
+      "CreditApplication" => "Solicitud de Crédito" }[type] || type
+  end
+%>
+
+<% content_for :title, "Registros de Auditoría - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Registros de Auditoría</h1>
+    <p class="text-gray-600 mt-1 text-sm lg:text-base">Historial de todas las acciones realizadas en el sistema</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
+    <%= form_with url: admin_audit_logs_path, method: :get, local: true, class: "space-y-4" do |f| %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- User filter -->
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Usuario</label>
+          <select name="user_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm">
+            <option value="">Todos los usuarios</option>
+            <% @users.each do |user| %>
+              <option value="<%= user.id %>" <%= 'selected' if params[:user_id] == user.id.to_s %>><%= user.full_name %></option>
+            <% end %>
+          </select>
+        </div>
+
+        <!-- Action filter -->
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Acción</label>
+          <select name="action_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm">
+            <option value="">Todas las acciones</option>
+            <% @action_types.each do |action| %>
+              <option value="<%= action %>" <%= 'selected' if params[:action_type] == action %>><%= translate_action(action) %></option>
+            <% end %>
+          </select>
+        </div>
+
+        <!-- Resource type filter -->
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Recurso</label>
+          <select name="resource_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm">
+            <option value="">Todos los recursos</option>
+            <% @resource_types.each do |type| %>
+              <option value="<%= type %>" <%= 'selected' if params[:resource_type] == type %>><%= translate_resource_type(type) %></option>
+            <% end %>
+          </select>
+        </div>
+
+        <!-- Date range -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Desde</label>
+            <input type="date" name="date_from" value="<%= params[:date_from] %>" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
+            <input type="date" name="date_to" value="<%= params[:date_to] %>" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <%= f.submit "Filtrar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm cursor-pointer" %>
+        <% if params[:user_id].present? || params[:action_type].present? || params[:resource_type].present? || params[:date_from].present? || params[:date_to].present? %>
+          <%= link_to "Limpiar", admin_audit_logs_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <p class="text-xs text-gray-500">Total Registros</p>
+      <p class="text-2xl font-bold text-[#125282]"><%= @audit_logs.total_count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <p class="text-xs text-gray-500">Hoy</p>
+      <p class="text-2xl font-bold text-green-600"><%= AuditLog.where("created_at >= ?", Date.current.beginning_of_day).count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <p class="text-xs text-gray-500">Esta Semana</p>
+      <p class="text-2xl font-bold text-blue-600"><%= AuditLog.where("created_at >= ?", 1.week.ago).count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <p class="text-xs text-gray-500">Usuarios Activos</p>
+      <p class="text-2xl font-bold text-purple-600"><%= @users.count %></p>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha/Hora</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recurso</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @audit_logs.any? %>
+            <% @audit_logs.each do |log| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <div><%= log.created_at.strftime("%d/%m/%Y") %></div>
+                  <div class="text-xs text-gray-500"><%= log.created_at.strftime("%H:%M:%S") %></div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= log.user&.full_name || "Sistema" %></div>
+                  <div class="text-xs text-gray-500"><%= translate_role(log.user&.role) %></div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <% action_color = case log.action
+                    when /create|add|new/ then 'bg-green-100 text-green-800'
+                    when /update|edit|change/ then 'bg-blue-100 text-blue-800'
+                    when /delete|remove|destroy/ then 'bg-red-100 text-red-800'
+                    when /verify|approve|paid|confirmed/ then 'bg-emerald-100 text-emerald-800'
+                    when /reject|deny|block/ then 'bg-orange-100 text-orange-800'
+                    else 'bg-gray-100 text-gray-800'
+                  end %>
+                  <span class="px-2 py-1 text-xs rounded-full font-medium <%= action_color %>">
+                    <%= translate_action(log.action) %>
+                  </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                  <div class="text-gray-900"><%= translate_resource_type(log.resource_type) %></div>
+                  <div class="text-xs text-gray-500">#<%= log.resource_id %></div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                  <%= log.ip_address || "—" %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                  <%= link_to "Ver", admin_audit_log_path(log), class: "text-[#125282] hover:underline font-medium" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                No se encontraron registros de auditoría
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <% if @audit_logs.respond_to?(:total_pages) && @audit_logs.total_pages > 1 %>
+    <div class="mt-6 flex justify-center items-center gap-2">
+      <% if @audit_logs.first_page? %>
+        <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+      <% else %>
+        <%= link_to "← Anterior", admin_audit_logs_path(page: @audit_logs.current_page - 1, user_id: params[:user_id], action_type: params[:action_type], resource_type: params[:resource_type], date_from: params[:date_from], date_to: params[:date_to]), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+      <% end %>
+
+      <span class="px-4 py-2 text-gray-600">
+        Página <%= @audit_logs.current_page %> de <%= @audit_logs.total_pages %>
+      </span>
+
+      <% if @audit_logs.last_page? %>
+        <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+      <% else %>
+        <%= link_to "Siguiente →", admin_audit_logs_path(page: @audit_logs.current_page + 1, user_id: params[:user_id], action_type: params[:action_type], resource_type: params[:resource_type], date_from: params[:date_from], date_to: params[:date_to]), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
