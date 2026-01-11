@@ -6,7 +6,23 @@ class ContractGeneratorService
     @loan = contract.loan
     @customer = @loan.customer
     @device = @loan.device
-    @phone_model = @device&.phone_model
+
+    # Fall back to credit application data if device is missing
+    if @device.nil?
+      @credit_application = find_credit_application_for_customer
+      @phone_model = @credit_application&.selected_phone_model
+    else
+      @phone_model = @device.phone_model
+    end
+  end
+
+  # Find the most recent approved credit application for this customer
+  def find_credit_application_for_customer
+    @customer.credit_applications
+             .where(status: "approved")
+             .where.not(selected_phone_model_id: nil)
+             .order(created_at: :desc)
+             .first
   end
 
   # Generate HTML contract content
@@ -20,6 +36,7 @@ class ContractGeneratorService
         customer: @customer,
         device: @device,
         phone_model: @phone_model,
+        credit_application: @credit_application,
         service: self,
         installment_details: installment_details
       }
@@ -68,9 +85,31 @@ class ContractGeneratorService
 
       pdf.text "<b>Datos del Dispositivo</b>", inline_format: true
       pdf.move_down 5
-      pdf.text "Marca / Modelo: #{@device.present? ? "#{@device.brand} / #{@device.model}" : '_________________________________________'}"
-      pdf.text "Color: #{@device.present? && @device.color.present? ? @device.color : '_________________________________________'}"
-      pdf.text "IMEI: #{@device.present? ? @device.imei : '_________________________________________________'}"
+      # Use device data if available, otherwise fall back to credit_application data
+      device_brand_model = if @device.present?
+                             "#{@device.brand} / #{@device.model}"
+                           elsif @credit_application&.selected_phone_model.present?
+                             "#{@credit_application.selected_phone_model.brand} / #{@credit_application.selected_phone_model.model}"
+                           else
+                             '_________________________________________'
+                           end
+      device_color = if @device.present? && @device.color.present?
+                       @device.color
+                     elsif @credit_application&.selected_color.present?
+                       @credit_application.selected_color
+                     else
+                       '_________________________________________'
+                     end
+      device_imei = if @device.present?
+                      @device.imei
+                    elsif @credit_application&.selected_imei.present?
+                      @credit_application.selected_imei
+                    else
+                      '_________________________________________________'
+                    end
+      pdf.text "Marca / Modelo: #{device_brand_model}"
+      pdf.text "Color: #{device_color}"
+      pdf.text "IMEI: #{device_imei}"
       pdf.move_down 10
 
       pdf.text "<b>Datos del Crédito (Quincenal)</b>", inline_format: true

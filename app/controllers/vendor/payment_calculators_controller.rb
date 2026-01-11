@@ -15,6 +15,11 @@ module Vendor
       @approved_amount = params[:approved_amount]&.to_f || session[:approved_amount] || 0
       @credit_application_id = params[:credit_application_id] || session[:credit_application_id]
 
+      # Store in session for persistence across page reloads and form submissions
+      session[:phone_price] = @phone_price if @phone_price > 0
+      session[:approved_amount] = @approved_amount if @approved_amount > 0
+      session[:credit_application_id] = @credit_application_id if @credit_application_id.present?
+
       # Validate phone price against approved amount
       if @phone_price > 0 && @approved_amount > 0 && @phone_price > @approved_amount
         flash[:alert] = "El precio del teléfono (L. #{@phone_price}) excede el monto aprobado (L. #{@approved_amount})"

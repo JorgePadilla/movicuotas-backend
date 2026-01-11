@@ -238,6 +238,7 @@
       <h3 style="font-size: 16pt; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">
         Datos del Dispositivo
       </h3>
+      <%# Use device data if available, otherwise fall back to credit_application data %>
       <% if device.present? %>
         <table class="data-table" style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
           <tr>
@@ -251,6 +252,22 @@
           <tr>
             <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">IMEI:</td>
             <td style="padding: 0.25rem 0.5rem; font-family: monospace;"><%= device.imei %></td>
+          </tr>
+        </table>
+      <% elsif defined?(credit_application) && credit_application.present? && credit_application.selected_phone_model.present? %>
+        <%# Fallback to credit application data when device record doesn't exist %>
+        <table class="data-table" style="width: 100%; font-size: 11pt; margin-bottom: 1.5rem;">
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem; width: 30%;">Marca / Modelo:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= credit_application.selected_phone_model.brand %> / <%= credit_application.selected_phone_model.model %></td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">Color:</td>
+            <td style="padding: 0.25rem 0.5rem;"><%= credit_application.selected_color.present? ? credit_application.selected_color : 'No especificado' %></td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; color: #6b7280; padding: 0.25rem 0.5rem;">IMEI:</td>
+            <td style="padding: 0.25rem 0.5rem; font-family: monospace;"><%= credit_application.selected_imei.present? ? credit_application.selected_imei : '_________________________________________________' %></td>
           </tr>
         </table>
       <% else %>
