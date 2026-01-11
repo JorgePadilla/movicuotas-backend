@@ -5,7 +5,11 @@ default: &default
 
 development:
   <<: *default
-  # Optional: Add dev-specific recurring jobs
+  # Mark overdue installments (runs every hour in dev for testing)
+  mark_installments_overdue:
+    class: MarkInstallmentsOverdueJob
+    queue: reminders
+    schedule: every hour
 
 test:
   <<: *default
@@ -13,6 +17,14 @@ test:
 production:
   <<: *default
   # Phase 5: Background Jobs & Notifications
+
+  # CRITICAL: Mark overdue installments and update loan status
+  mark_installments_overdue:
+    class: MarkInstallmentsOverdueJob
+    queue: reminders
+    schedule: at 12:01am every day
+    description: "Mark past-due installments as overdue and update loan status"
+
   daily_collection_reminders:
     class: DailyCollectionReminderJob
     queue: reminders
@@ -36,9 +48,3 @@ production:
     queue: default
     schedule: at 2am every day
     description: "Archive and clean up old notification records"
-
-  sync_overdue_status:
-    class: SyncOverdueStatusJob
-    queue: default
-    schedule: every 6 hours
-    description: "Synchronize overdue status for all installments"

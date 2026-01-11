@@ -96,32 +96,66 @@ module Admin
       "AutoBlockDeviceJob"
     ].freeze
 
+    # Jobs internos de Rails que no queremos mostrar en el dashboard
+    INTERNAL_JOB_PREFIXES = [
+      "ActiveStorage::",
+      "ActionMailbox::",
+      "ActionMailer::",
+      "ActiveJob::"
+    ].freeze
+
     def valid_job_class?(job_class)
       ALLOWED_JOB_CLASSES.include?(job_class)
+    end
+
+    def internal_job?(class_name)
+      INTERNAL_JOB_PREFIXES.any? { |prefix| class_name.to_s.start_with?(prefix) }
     end
 
     def load_job_metrics
       today = Time.current.beginning_of_day
 
-      @total_jobs_today = SolidQueue::Job.where("created_at >= ?", today).count
-      @completed_jobs = SolidQueue::Job.where.not(finished_at: nil)
+      # Base query excluding internal jobs
+      base_jobs = exclude_internal_jobs(SolidQueue::Job)
+
+      @total_jobs_today = base_jobs.where("created_at >= ?", today).count
+      @completed_jobs = base_jobs.where.not(finished_at: nil)
         .where("finished_at >= ?", today).count
-      @failed_jobs = SolidQueue::FailedExecution.count
-      @running_jobs = SolidQueue::ClaimedExecution.count
-      @pending_jobs = SolidQueue::ReadyExecution.count
-      @scheduled_jobs = SolidQueue::ScheduledExecution.count
+
+      # For executions, we need to filter by job_id
+      internal_job_ids = SolidQueue::Job.where(internal_job_condition).pluck(:id)
+      @failed_jobs = SolidQueue::FailedExecution.where.not(job_id: internal_job_ids).count
+      @running_jobs = SolidQueue::ClaimedExecution.where.not(job_id: internal_job_ids).count
+      @pending_jobs = SolidQueue::ReadyExecution.where.not(job_id: internal_job_ids).count
+      @scheduled_jobs = SolidQueue::ScheduledExecution.where.not(job_id: internal_job_ids).count
     end
 
     def fetch_available_queues
-      SolidQueue::Job.distinct.pluck(:queue_name).sort
+      exclude_internal_jobs(SolidQueue::Job).distinct.pluck(:queue_name).compact.sort
     end
 
     def fetch_available_job_classes
-      SolidQueue::Job.distinct.pluck(:class_name).sort
+      exclude_internal_jobs(SolidQueue::Job).distinct.pluck(:class_name).compact.sort
+    end
+
+    def exclude_internal_jobs(scope)
+      INTERNAL_JOB_PREFIXES.each do |prefix|
+        scope = scope.where.not("class_name LIKE ?", "#{prefix}%")
+      end
+      scope
+    end
+
+    def internal_job_condition
+      INTERNAL_JOB_PREFIXES.map { |prefix| "class_name LIKE '#{prefix}%'" }.join(" OR ")
     end
 
     def fetch_jobs_list
       jobs = SolidQueue::Job.order(created_at: :desc)
+
+      # Exclude internal Rails jobs (ActiveStorage, ActionMailer, etc.)
+      INTERNAL_JOB_PREFIXES.each do |prefix|
+        jobs = jobs.where.not("class_name LIKE ?", "#{prefix}%")
+      end
 
       # Apply status filter
       jobs = apply_status_filter(jobs) if params[:status].present? && params[:status] != "all"
