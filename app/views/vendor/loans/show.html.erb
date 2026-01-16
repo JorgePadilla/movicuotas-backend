@@ -171,66 +171,66 @@
   <% end %>
 
   <!-- Two-column layout for schedule and payments -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-    <!-- Installment schedule -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
-      <div class="flex items-center justify-between mb-4 md:mb-6">
-        <h3 class="text-lg md:text-xl font-semibold text-gray-900">Calendario de Cuotas</h3>
-        <span class="text-sm text-gray-600"><%= @installments.count %> cuotas totales</span>
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+    <!-- Installment schedule - takes 3/5 of space on lg screens -->
+    <div class="lg:col-span-3 bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-gray-900">Calendario de Cuotas</h3>
+        <span class="text-xs text-gray-500"><%= @installments.count %> cuotas</span>
       </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Vencimiento</th>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Vencimiento</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Monto</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Pagado</th>
               <% if policy(Installment).mark_paid? %>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Acción</th>
               <% end %>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <% @installments.each do |installment| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><%= installment.installment_number %></td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= installment.due_date.strftime("%d/%m/%Y") %></td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">L. <%= number_with_delimiter(installment.amount, delimiter: ',') %></td>
-                <td class="px-4 py-3 whitespace-nowrap">
+                <td class="px-3 py-2 whitespace-nowrap font-medium text-gray-900"><%= installment.installment_number %></td>
+                <td class="px-3 py-2 whitespace-nowrap text-gray-900"><%= installment.due_date.strftime("%d/%m/%Y") %></td>
+                <td class="px-3 py-2 whitespace-nowrap text-gray-900">L. <%= number_with_delimiter(installment.amount, delimiter: ',') %></td>
+                <td class="px-3 py-2 whitespace-nowrap">
                   <% status_class = case installment.status
                     when 'paid' then 'bg-green-100 text-green-800'
                     when 'overdue' then 'bg-red-100 text-red-800'
                     when 'pending' then 'bg-yellow-100 text-yellow-800'
                     else 'bg-gray-100 text-gray-800'
                   end %>
-                  <span class="px-3 py-1 text-xs rounded-full font-medium <%= status_class %>">
+                  <span class="px-2 py-0.5 text-xs rounded-full font-medium <%= status_class %>">
                     <%= installment_status_es(installment.status) %>
                   </span>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-3 py-2 whitespace-nowrap text-gray-900">
                   <% if installment.paid_amount && installment.paid_amount > 0 %>
                     L. <%= number_with_delimiter(installment.paid_amount, delimiter: ',') %>
                     <% if installment.fully_paid? %>
                       <span class="text-green-600">✓</span>
                     <% else %>
-                      <span class="text-orange-600">(parcial)</span>
+                      <span class="text-orange-600 text-xs">(parcial)</span>
                     <% end %>
                   <% else %>
                     -
                   <% end %>
                 </td>
                 <% if policy(installment).mark_paid? && !installment.fully_paid? %>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                  <td class="px-3 py-2 whitespace-nowrap">
                     <button type="button"
                             onclick="openMarkPaidModal(<%= installment.id %>, <%= installment.installment_number %>, <%= installment.remaining_amount %>)"
                             class="text-[#125282] hover:text-[#0f4670] font-medium text-xs">
-                      Marcar Pagado
+                      Pagar
                     </button>
                   </td>
                 <% elsif policy(Installment).mark_paid? %>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400">—</td>
+                  <td class="px-3 py-2 whitespace-nowrap text-gray-400">—</td>
                 <% end %>
               </tr>
             <% end %>
@@ -239,60 +239,42 @@
       </div>
     </div>
 
-    <!-- Payment history -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
-      <div class="flex items-center justify-between mb-4 md:mb-6">
-        <h3 class="text-lg md:text-xl font-semibold text-gray-900">Historial de Pagos</h3>
-        <span class="text-sm text-gray-600"><%= @payments.count %> pagos registrados</span>
+    <!-- Payment history - takes 2/5 of space on lg screens -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-md border border-gray-200 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base md:text-lg font-semibold text-gray-900">Historial de Pagos</h3>
+        <span class="text-xs text-gray-500"><%= @payments.count %> pagos</span>
       </div>
       <% if @payments.any? %>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verificación</th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comprobante</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <% @payments.each do |payment| %>
-                <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= payment.payment_date.strftime("%d/%m/%Y") %></td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900"><%= payment_method_es(payment.payment_method) %></td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <% verification_class = case payment.verification_status
-                      when 'verified' then 'bg-green-100 text-green-800'
-                      when 'rejected' then 'bg-red-100 text-red-800'
-                      else 'bg-yellow-100 text-yellow-800'
-                    end %>
-                    <span class="px-3 py-1 text-xs rounded-full font-medium <%= verification_class %>">
-                      <%= verification_status_es(payment.verification_status) %>
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    <% if payment.verification_image.attached? %>
-                      <%= link_to "Ver", rails_blob_path(payment.verification_image, disposition: "inline"), class: "text-[#125282] hover:underline", target: "_blank" %>
-                    <% elsif payment.receipt_image.attached? %>
-                      <%= link_to "Ver", rails_blob_path(payment.receipt_image, disposition: "inline"), class: "text-[#125282] hover:underline", target: "_blank" %>
-                    <% else %>
-                      <span class="text-gray-400">—</span>
-                    <% end %>
-                  </td>
-                </tr>
+        <div class="space-y-3">
+          <% @payments.each do |payment| %>
+            <div class="border border-gray-100 rounded-lg p-3 hover:bg-gray-50">
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(format("%.2f", payment.amount.to_f), delimiter: ',') %></span>
+                <span class="px-2 py-0.5 text-xs rounded-full font-medium bg-green-100 text-green-800">Verificado</span>
+              </div>
+              <div class="flex justify-between text-xs text-gray-500">
+                <span><%= payment.payment_date.strftime("%d/%m/%Y") %></span>
+                <span><%= payment_method_es(payment.payment_method) %></span>
+              </div>
+              <% if payment.verification_image.attached? || payment.receipt_image.attached? %>
+                <div class="mt-2 pt-2 border-t border-gray-100">
+                  <% if payment.verification_image.attached? %>
+                    <%= link_to "Ver comprobante", rails_blob_path(payment.verification_image, disposition: "inline"), class: "text-xs text-[#125282] hover:underline", target: "_blank" %>
+                  <% elsif payment.receipt_image.attached? %>
+                    <%= link_to "Ver comprobante", rails_blob_path(payment.receipt_image, disposition: "inline"), class: "text-xs text-[#125282] hover:underline", target: "_blank" %>
+                  <% end %>
+                </div>
               <% end %>
-            </tbody>
-          </table>
+            </div>
+          <% end %>
         </div>
       <% else %>
-        <div class="text-center py-8">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center py-6">
+          <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
           </svg>
-          <p class="mt-4 text-gray-500">No hay pagos registrados para este préstamo.</p>
+          <p class="mt-2 text-sm text-gray-500">Sin pagos registrados</p>
         </div>
       <% end %>
     </div>
