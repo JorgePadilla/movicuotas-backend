@@ -274,10 +274,12 @@
                     </span>
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    <% if payment.receipt_image.attached? %>
-                      <%= link_to "Ver", rails_blob_path(payment.receipt_image, disposition: "attachment"), class: "text-[#125282] hover:underline" %>
+                    <% if payment.verification_image.attached? %>
+                      <%= link_to "Ver", rails_blob_path(payment.verification_image, disposition: "inline"), class: "text-[#125282] hover:underline", target: "_blank" %>
+                    <% elsif payment.receipt_image.attached? %>
+                      <%= link_to "Ver", rails_blob_path(payment.receipt_image, disposition: "inline"), class: "text-[#125282] hover:underline", target: "_blank" %>
                     <% else %>
-                      <span class="text-gray-400">No subido</span>
+                      <span class="text-gray-400">—</span>
                     <% end %>
                   </td>
                 </tr>

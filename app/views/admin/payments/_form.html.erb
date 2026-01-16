@@ -122,18 +122,47 @@
         <%= image_tag @payment.verification_image, class: "max-w-xs rounded-lg border" %>
       </div>
     <% end %>
-    <label for="payment_verification_image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-      <div class="flex flex-col items-center justify-center pt-5 pb-6">
+    <label for="payment_verification_image" id="verification-image-label" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+      <div id="verification-image-placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
         <svg class="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
         <p class="mb-1 text-sm text-gray-500"><span class="font-semibold text-[#125282]">Clic para subir</span> o arrastra aquí</p>
         <p class="text-xs text-gray-400">Formatos: PNG, JPG, JPEG</p>
       </div>
+      <div id="verification-image-preview" class="hidden flex flex-col items-center justify-center pt-5 pb-6">
+        <svg class="w-8 h-8 mb-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="mb-1 text-sm text-green-600 font-medium" id="verification-image-name">Archivo seleccionado</p>
+        <p class="text-xs text-gray-400">Clic para cambiar</p>
+      </div>
     </label>
-    <%= f.file_field :verification_image, accept: "image/*", id: "payment_verification_image", class: "sr-only" %>
+    <%= f.file_field :verification_image, accept: "image/*", id: "payment_verification_image", class: "sr-only", onchange: "showSelectedFile(this)" %>
     <p class="text-xs text-gray-500 mt-2">Comprobante de pago, captura de transferencia o recibo.</p>
   </div>
+
+  <script>
+    function showSelectedFile(input) {
+      const placeholder = document.getElementById('verification-image-placeholder');
+      const preview = document.getElementById('verification-image-preview');
+      const fileName = document.getElementById('verification-image-name');
+      const label = document.getElementById('verification-image-label');
+
+      if (input.files && input.files[0]) {
+        placeholder.classList.add('hidden');
+        preview.classList.remove('hidden');
+        fileName.textContent = input.files[0].name;
+        label.classList.remove('border-gray-300');
+        label.classList.add('border-green-500', 'bg-green-50');
+      } else {
+        placeholder.classList.remove('hidden');
+        preview.classList.add('hidden');
+        label.classList.add('border-gray-300');
+        label.classList.remove('border-green-500', 'bg-green-50');
+      }
+    }
+  </script>
 
   <% if @payment.new_record? %>
     <!-- Auto-verify checkbox for new payments created by Admin/Supervisor -->

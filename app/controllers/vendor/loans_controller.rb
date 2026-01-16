@@ -83,16 +83,22 @@ module Vendor
       # Apply filters
       @loans = base_loans.order(created_at: :desc)
 
-      # Filter by status if provided
+      # Filter by loan status if provided
       if params[:status].present?
         @loans = filter_loans_by_status(@loans, params[:status])
       end
 
-      # Search by customer name or contract number
+      # Filter by cuotas (installments) situation
+      if params[:cuotas].present?
+        @loans = filter_loans_by_cuotas(@loans, params[:cuotas])
+      end
+
+      # Search by customer name, contract number or IMEI
       if params[:search].present?
         search_term = "%#{params[:search]}%"
-        @loans = @loans.joins(:customer)
-                       .where("customers.full_name ILIKE ? OR loans.contract_number ILIKE ?", search_term, search_term)
+        @loans = @loans.left_joins(:customer, :device)
+                       .where("customers.full_name ILIKE ? OR loans.contract_number ILIKE ? OR devices.imei ILIKE ?",
+                              search_term, search_term, search_term)
                        .distinct
       end
 
@@ -194,7 +200,30 @@ module Vendor
       when "completed"
         loans.where(status: %w[paid completed])
       when "overdue"
+        loans.where(status: "overdue")
+      when "draft"
+        loans.where(status: "draft")
+      else
+        loans
+      end
+    end
+
+    def filter_loans_by_cuotas(loans, cuotas_filter)
+      case cuotas_filter
+      when "con_vencidas"
+        # Loans with at least one overdue installment
         loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+      when "sin_vencidas"
+        # Loans without any overdue installments
+        loans.where.not(id: Loan.joins(:installments).where(installments: { status: "overdue" }).select(:id))
+      when "proximas"
+        # Loans with installments due in the next 7 days
+        loans.joins(:installments)
+             .where(installments: { status: "pending", due_date: Date.current..7.days.from_now })
+             .distinct
+      when "pendientes"
+        # Loans with pending installments
+        loans.joins(:installments).where(installments: { status: "pending" }).distinct
       else
         loans
       end

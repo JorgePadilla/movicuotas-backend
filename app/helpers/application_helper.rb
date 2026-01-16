@@ -14,9 +14,11 @@ module ApplicationHelper
   }.freeze
 
   LOAN_STATUS_ES = {
+    "draft" => "Borrador",
     "active" => "Activo",
     "paid" => "Pagado",
     "completed" => "Completado",
+    "overdue" => "En Mora",
     "defaulted" => "En mora",
     "cancelled" => "Cancelado"
   }.freeze

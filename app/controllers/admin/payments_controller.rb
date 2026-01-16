@@ -199,7 +199,7 @@ module Admin
     end
 
     def allocate_to_installments
-      allocations = params[:installment_allocations].to_h.transform_values(&:to_d)
+      allocations = params[:installment_allocations].permit!.to_h.transform_values(&:to_d)
       @payment.allocate_to_installments(allocations) if allocations.values.sum.positive?
     end
   end

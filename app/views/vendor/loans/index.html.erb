@@ -57,15 +57,25 @@
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="flex-1">
           <input type="text" name="search" value="<%= params[:search] %>"
-                 placeholder="Buscar por cliente o contrato..."
+                 placeholder="Buscar por cliente, contrato o IMEI..."
                  class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
         </div>
         <div class="w-full sm:w-auto">
           <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" onchange="this.form.submit()">
-            <option value="">Todos los estados</option>
+            <option value="">Estado: Todos</option>
             <option value="active" <%= "selected" if params[:status] == "active" %>>Activos</option>
             <option value="completed" <%= "selected" if params[:status] == "completed" %>>Completados</option>
-            <option value="overdue" <%= "selected" if params[:status] == "overdue" %>>En mora</option>
+            <option value="overdue" <%= "selected" if params[:status] == "overdue" %>>En Mora</option>
+            <option value="draft" <%= "selected" if params[:status] == "draft" %>>Borrador</option>
+          </select>
+        </div>
+        <div class="w-full sm:w-auto">
+          <select name="cuotas" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" onchange="this.form.submit()">
+            <option value="">Cuotas: Todas</option>
+            <option value="con_vencidas" <%= "selected" if params[:cuotas] == "con_vencidas" %>>Con cuotas vencidas</option>
+            <option value="sin_vencidas" <%= "selected" if params[:cuotas] == "sin_vencidas" %>>Sin cuotas vencidas</option>
+            <option value="proximas" <%= "selected" if params[:cuotas] == "proximas" %>>Próximas a vencer (7 días)</option>
+            <option value="pendientes" <%= "selected" if params[:cuotas] == "pendientes" %>>Con cuotas pendientes</option>
           </select>
         </div>
       </div>
@@ -73,7 +83,7 @@
         <button type="submit" class="flex-1 sm:flex-none px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#0f4670] text-sm transition-colors">
           Buscar
         </button>
-        <% if params[:search].present? || params[:status].present? %>
+        <% if params[:search].present? || params[:status].present? || params[:cuotas].present? %>
           <%= link_to "Limpiar", vendor_loans_path, class: "flex-1 sm:flex-none px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 text-sm text-center transition-colors" %>
         <% end %>
       </div>
@@ -258,7 +268,7 @@
         <% if @loans.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", vendor_loans_path(page: @loans.current_page - 1, search: params[:search], status: params[:status]),
+          <%= link_to "← Anterior", vendor_loans_path(page: @loans.current_page - 1, search: params[:search], status: params[:status], cuotas: params[:cuotas]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
@@ -267,7 +277,7 @@
         <% if @loans.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", vendor_loans_path(page: @loans.current_page + 1, search: params[:search], status: params[:status]),
+          <%= link_to "Siguiente →", vendor_loans_path(page: @loans.current_page + 1, search: params[:search], status: params[:status], cuotas: params[:cuotas]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
@@ -275,14 +285,14 @@
       <!-- Desktop Pagination -->
       <div class="hidden lg:flex items-center gap-2">
         <% unless @loans.first_page? %>
-          <%= link_to "← Anterior", vendor_loans_path(page: @loans.current_page - 1, search: params[:search], status: params[:status]),
+          <%= link_to "← Anterior", vendor_loans_path(page: @loans.current_page - 1, search: params[:search], status: params[:status], cuotas: params[:cuotas]),
               class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
         <% end %>
 
         <span class="px-3 py-2 text-sm text-gray-600">Página <%= @loans.current_page %> de <%= @loans.total_pages %></span>
 
         <% unless @loans.last_page? %>
-          <%= link_to "Siguiente →", vendor_loans_path(page: @loans.current_page + 1, search: params[:search], status: params[:status]),
+          <%= link_to "Siguiente →", vendor_loans_path(page: @loans.current_page + 1, search: params[:search], status: params[:status], cuotas: params[:cuotas]),
               class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
         <% end %>
       </div>
