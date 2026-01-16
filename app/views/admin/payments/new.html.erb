@@ -3,7 +3,11 @@
 <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page header -->
   <div class="mb-6">
-    <%= link_to "← Volver a Pagos", admin_payments_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <% if params[:loan_id].present? %>
+      <%= link_to "← Volver al Préstamo", vendor_loan_path(params[:loan_id]), class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <% else %>
+      <%= link_to "← Volver a Pagos", admin_payments_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <% end %>
     <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Registrar Nuevo Pago</h1>
     <p class="text-gray-600 mt-2">Registra un pago directamente sin comprobante del cliente.</p>
   </div>

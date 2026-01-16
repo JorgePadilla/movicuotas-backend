@@ -65,10 +65,15 @@ module Admin
     end
 
     def new
-      @payment = Payment.new
+      @payment = Payment.new(loan_id: params[:loan_id])
       authorize @payment
       @loans = loans_for_select
       @bank_sources = BANK_SOURCES
+      # Load pending installments if loan is pre-selected
+      if params[:loan_id].present?
+        @loan = Loan.find_by(id: params[:loan_id])
+        @installments = @loan&.installments&.where.not(status: "paid")&.order(:due_date) || []
+      end
     end
 
     def create
@@ -86,7 +91,8 @@ module Admin
         # Allocate to installments if specified
         allocate_to_installments if params[:installment_allocations].present?
 
-        redirect_to admin_payment_path(@payment), notice: "Pago registrado correctamente."
+        # Redirect back to loan page
+        redirect_to vendor_loan_path(@payment.loan), notice: "Pago registrado correctamente."
       else
         @loans = loans_for_select
         @bank_sources = BANK_SOURCES

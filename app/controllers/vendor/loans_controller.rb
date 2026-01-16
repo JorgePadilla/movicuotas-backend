@@ -106,7 +106,8 @@ module Vendor
       authorize @loan
       # Step 18: Loan Tracking Dashboard - Detailed view
       @installments = @loan.installments.order(:due_date)
-      @payments = @loan.payments.order(payment_date: :desc)
+      # Only show verified payments (pending payments are not visible to vendors)
+      @payments = @loan.payments.where(verification_status: "verified").order(payment_date: :desc)
     end
 
     # GET /vendor/loans/:id/download_contract

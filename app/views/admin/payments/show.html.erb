@@ -259,7 +259,7 @@
   <!-- Footer navigation -->
   <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
     <div class="flex gap-4 items-center">
-      <%= link_to "← Volver a Pagos", admin_payments_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
+      <%= link_to "← Volver al Préstamo", vendor_loan_path(@payment.loan), class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
     </div>
     <div class="flex gap-4 items-center">
       <% if policy(@payment).update? %>
