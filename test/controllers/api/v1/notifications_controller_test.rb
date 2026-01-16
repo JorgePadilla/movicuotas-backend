@@ -20,7 +20,7 @@ module Api
           customer: @customer,
           title: "Test Notification",
           message: "This is a test notification",
-          notification_type: "info"
+          notification_type: "general"
         )
       end
 
@@ -56,11 +56,11 @@ module Api
       test "index respects page parameter" do
         # Create multiple notifications
         5.times do |i|
-          Notification.create(
+          Notification.create!(
             customer: @customer,
             title: "Test #{i}",
             message: "Message #{i}",
-            notification_type: "info"
+            notification_type: "general"
           )
         end
 
@@ -81,7 +81,7 @@ module Api
           exp: 30.days.from_now.to_i,
           iat: Time.now.to_i
         }
-        JWT.encode(payload, Rails.application.secrets.secret_key_base, "HS256")
+        JWT.encode(payload, Rails.application.secret_key_base, "HS256")
       end
     end
   end

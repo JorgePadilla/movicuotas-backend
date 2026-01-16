@@ -9,7 +9,7 @@ class NotificationSerializer
       title: @notification.title,
       message: @notification.message,
       notification_type: @notification.notification_type,
-      is_read: @notification.is_read,
+      is_read: @notification.read?,
       created_at: @notification.created_at,
       data: @notification.data
     }

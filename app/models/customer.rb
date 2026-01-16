@@ -3,6 +3,7 @@ class Customer < ApplicationRecord
   has_many :loans, dependent: :restrict_with_error
   has_many :credit_applications, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :device_tokens, dependent: :destroy
 
   # Validations
   validates :identification_number, presence: true, uniqueness: true,

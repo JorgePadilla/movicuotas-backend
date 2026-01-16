@@ -2,7 +2,8 @@
 
 class DeviceToken < ApplicationRecord
   # Associations
-  belongs_to :user
+  belongs_to :user, optional: true
+  belongs_to :customer, optional: true
 
   # Validations
   validates :token, presence: true, uniqueness: true, length: { minimum: 50 }
@@ -10,7 +11,7 @@ class DeviceToken < ApplicationRecord
     in: %w[ios android web],
     message: "%{value} is not a valid platform"
   }
-  validates :user_id, presence: true
+  validate :must_belong_to_user_or_customer
 
   # Enums
   enum :platform, {
@@ -24,6 +25,7 @@ class DeviceToken < ApplicationRecord
   scope :inactive, -> { where(active: false).or(where.not(invalidated_at: nil)) }
   scope :by_platform, ->(platform) { where(platform: platform) }
   scope :for_user, ->(user) { where(user: user) }
+  scope :for_customer, ->(customer) { where(customer: customer) }
   scope :recently_used, -> { order(last_used_at: :desc) }
   scope :stale, -> { where("last_used_at < ?", 90.days.ago) }
 
@@ -62,6 +64,11 @@ class DeviceToken < ApplicationRecord
     }
   end
 
+  # Owner helper
+  def owner
+    customer || user
+  end
+
   private
 
   def set_active_status
@@ -72,6 +79,12 @@ class DeviceToken < ApplicationRecord
     # FCM tokens are typically long alphanumeric strings with colons, underscores, and hyphens
     unless token.match?(/\A[a-zA-Z0-9_:\-]+\z/)
       errors.add(:token, "has an invalid format for FCM token")
+    end
+  end
+
+  def must_belong_to_user_or_customer
+    if user_id.blank? && customer_id.blank?
+      errors.add(:base, "Device token must belong to either a user or a customer")
     end
   end
 end

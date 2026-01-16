@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_13_040858) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_14_173821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -132,6 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_040858) do
     t.boolean "active", default: true
     t.string "app_version"
     t.datetime "created_at", null: false
+    t.bigint "customer_id"
     t.string "device_name"
     t.datetime "invalidated_at"
     t.datetime "last_used_at"
@@ -139,8 +140,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_040858) do
     t.string "platform", null: false
     t.string "token", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index ["active"], name: "index_device_tokens_on_active"
+    t.index ["customer_id", "active"], name: "idx_device_tokens_by_customer_and_status"
+    t.index ["customer_id"], name: "index_device_tokens_on_customer_id"
     t.index ["platform", "active"], name: "idx_device_tokens_by_platform_and_status"
     t.index ["token"], name: "index_device_tokens_on_token", unique: true
     t.index ["user_id", "active"], name: "idx_device_tokens_by_user_and_status"
@@ -486,6 +489,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_040858) do
   add_foreign_key "credit_applications", "phone_models", column: "selected_phone_model_id"
   add_foreign_key "credit_applications", "users", column: "vendor_id"
   add_foreign_key "default_qr_codes", "users", column: "qr_code_uploaded_by_id"
+  add_foreign_key "device_tokens", "customers"
   add_foreign_key "device_tokens", "users"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"

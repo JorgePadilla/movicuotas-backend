@@ -36,3 +36,8 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+google-services.json
+config/firebase-service-account.json
+
+config/movicuotas-ff7b2-firebase-adminsdk-fbsvc-64abf7aab4.json

@@ -163,6 +163,13 @@ Rails.application.routes.draw do
       post "auth/login", to: "auth#login"
       get "auth/forgot_contract", to: "auth#forgot_contract"
 
+      # Device tokens for push notifications (FCM)
+      resources :device_tokens, only: [:create, :destroy] do
+        collection do
+          put :refresh
+        end
+      end
+
       # Customer endpoints
       get "dashboard", to: "dashboard#show"
       get "installments", to: "installments#index"
