@@ -1,0 +1,232 @@
+<% content_for :title, "Catálogo de Teléfonos - Admin - MOVICUOTAS" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Page header -->
+  <div class="mb-6">
+    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2 gap-4">
+      <div>
+        <h1 class="text-2xl lg:text-3xl font-bold text-[#125282]">Catálogo de Teléfonos</h1>
+        <p class="text-gray-600 mt-1 text-sm lg:text-base">Administra los modelos de teléfonos disponibles</p>
+      </div>
+      <%= link_to "Nuevo Teléfono", new_admin_phone_model_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm text-center" %>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-[#125282]">Total</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= PhoneModel.count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-green-600">Activos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= PhoneModel.where(active: true).count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-red-600">Inactivos</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= PhoneModel.where(active: false).count %></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+      <h3 class="text-sm lg:text-lg font-semibold text-purple-600">Marcas</h3>
+      <p class="text-xl lg:text-3xl font-bold text-gray-800 mt-1"><%= PhoneModel.distinct.count(:brand) %></p>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="mb-6 bg-white rounded-xl shadow-md border border-gray-200 p-4">
+    <%= form_with url: admin_phone_models_path, method: :get, local: true, class: "flex flex-col lg:flex-row gap-4" do |f| %>
+      <!-- Search -->
+      <div class="flex-1">
+        <%= text_field_tag :search, params[:search], placeholder: "Buscar por marca o modelo...", class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+      </div>
+
+      <!-- Brand filter -->
+      <div class="lg:w-48">
+        <%= select_tag :brand, options_for_select([["Todas las marcas", ""]] + @brands.map { |b| [b, b] }, params[:brand]), class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+      </div>
+
+      <!-- Status filter -->
+      <div class="lg:w-40">
+        <%= select_tag :status, options_for_select([["Todos", ""], ["Activos", "active"], ["Inactivos", "inactive"]], params[:status]), class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex gap-2">
+        <%= submit_tag "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm cursor-pointer" %>
+        <% if params[:search].present? || params[:brand].present? || params[:status].present? %>
+          <%= link_to "Limpiar", admin_phone_models_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="block lg:hidden space-y-4">
+    <% if @phone_models.any? %>
+      <% @phone_models.each do |phone| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex items-start gap-3">
+              <% if phone.image_url.present? %>
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <img src="<%= phone.image_url %>" alt="<%= phone.brand %>" class="max-w-full max-h-full object-contain">
+                </div>
+              <% end %>
+              <div>
+                <p class="font-bold text-gray-900"><%= phone.brand %> <%= phone.model %></p>
+                <p class="text-xs text-gray-500"><%= phone.storage.present? ? phone.storage : "—" %></p>
+              </div>
+            </div>
+            <span class="px-2 py-1 text-xs rounded-full <%= phone.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= phone.active? ? "Activo" : "Inactivo" %>
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <div>
+              <span class="text-gray-500 text-xs">Precio</span>
+              <p class="text-gray-900 font-semibold">L. <%= number_with_precision(phone.price, precision: 2, delimiter: ",") %></p>
+            </div>
+            <div>
+              <span class="text-gray-500 text-xs">Dispositivos</span>
+              <p class="text-gray-700"><%= phone.devices.count %></p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-gray-100 flex gap-3">
+            <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline text-sm font-medium" %>
+            <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline text-sm font-medium" %>
+            <% if phone.devices.empty? %>
+              <%= link_to "Eliminar", admin_phone_model_path(phone), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+        No hay teléfonos registrados
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Almacenamiento</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivos</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @phone_models.any? %>
+            <% @phone_models.each do |phone| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <% if phone.image_url.present? %>
+                      <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                        <img src="<%= phone.image_url %>" alt="<%= phone.brand %>" class="max-w-full max-h-full object-contain">
+                      </div>
+                    <% end %>
+                    <div>
+                      <div class="font-medium text-gray-900"><%= phone.brand %> <%= phone.model %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-600"><%= phone.storage.present? ? phone.storage : "—" %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-semibold text-gray-900">L. <%= number_with_precision(phone.price, precision: 2, delimiter: ",") %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 text-xs rounded-full <%= phone.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= phone.active? ? "Activo" : "Inactivo" %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= phone.devices.count %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3">
+                  <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline font-medium" %>
+                  <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline font-medium" %>
+                  <% if phone.devices.empty? %>
+                    <%= link_to "Eliminar", admin_phone_model_path(phone), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline font-medium" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                No hay teléfonos registrados
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <% if @phone_models.respond_to?(:total_pages) && @phone_models.total_pages > 1 %>
+    <div class="mt-6 flex flex-col items-center gap-4">
+      <!-- Mobile Pagination -->
+      <div class="flex lg:hidden items-center gap-3">
+        <% if @phone_models.first_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page - 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+
+        <span class="text-sm text-gray-600"><%= @phone_models.current_page %> / <%= @phone_models.total_pages %></span>
+
+        <% if @phone_models.last_page? %>
+          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page + 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Desktop Pagination -->
+      <div class="hidden lg:flex items-center gap-2">
+        <% if @phone_models.first_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+
+        <div class="flex items-center gap-1">
+          <% (1..@phone_models.total_pages).each do |page| %>
+            <% if page == @phone_models.current_page %>
+              <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
+            <% elsif (page - @phone_models.current_page).abs <= 1 || page == 1 || page == @phone_models.total_pages %>
+              <%= link_to page, admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+            <% elsif page == 2 && @phone_models.current_page > 3 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% elsif page == @phone_models.total_pages - 1 && @phone_models.current_page < @phone_models.total_pages - 2 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @phone_models.last_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+      </div>
+
+      <p class="text-sm text-gray-500">
+        Mostrando <%= @phone_models.size %> de <%= @phone_models.total_count %> teléfonos
+      </p>
+    </div>
+  <% end %>
+</div>

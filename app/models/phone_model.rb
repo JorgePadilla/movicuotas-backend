@@ -15,7 +15,12 @@ class PhoneModel < ApplicationRecord
 
   # Instance methods
   def full_name
-    "#{brand} #{model} #{storage}GB #{color}".strip
+    if storage.present?
+      storage_display = storage.to_s.end_with?("GB") ? storage : "#{storage}GB"
+      "#{brand} #{model} #{storage_display}".strip
+    else
+      "#{brand} #{model}".strip
+    end
   end
 
   def self.available_models

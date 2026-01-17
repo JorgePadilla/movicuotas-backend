@@ -1,0 +1,122 @@
+<% content_for :title, "#{@phone_model.brand} #{@phone_model.model} - Admin - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Page header -->
+  <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex items-start gap-4">
+      <% if @phone_model.image_url.present? %>
+        <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <img src="<%= @phone_model.image_url %>" alt="<%= @phone_model.brand %>" class="max-w-full max-h-full object-contain">
+        </div>
+      <% end %>
+      <div>
+        <h1 class="text-3xl font-bold text-[#125282]"><%= @phone_model.brand %> <%= @phone_model.model %></h1>
+        <p class="text-gray-600 mt-2">
+          <span class="px-3 py-1 text-sm rounded-full <%= @phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+            <%= @phone_model.active? ? "Activo" : "Inactivo" %>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <%= link_to "Editar", edit_admin_phone_model_path(@phone_model), class: "bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+      <% if @phone_model.devices.empty? %>
+        <%= link_to "Eliminar", admin_phone_model_path(@phone_model), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{@phone_model.brand} #{@phone_model.model}? Esta acción no se puede deshacer." }, class: "bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Phone details -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Basic Info -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Información del Producto</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Marca</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.brand %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Modelo</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.model %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Almacenamiento</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.storage.present? ? @phone_model.storage : "No especificado" %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Precio</label>
+          <p class="text-2xl font-bold text-gray-900 mt-1">L. <%= number_with_precision(@phone_model.price, precision: 2, delimiter: ",") %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status & Stats -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-[#125282] mb-6">Estado y Estadísticas</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Estado</label>
+          <div class="mt-1">
+            <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= @phone_model.active? ? "Activo" : "Inactivo" %>
+            </span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Dispositivos Vendidos</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.devices.count %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Creado</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.created_at.strftime("%d de %B de %Y a las %H:%M") %></p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Última Actualización</label>
+          <p class="text-lg text-gray-900 mt-1"><%= @phone_model.updated_at.strftime("%d de %B de %Y a las %H:%M") %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image URL -->
+  <% if @phone_model.image_url.present? %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+      <h2 class="text-xl font-semibold text-[#125282] mb-4">URL de Imagen</h2>
+      <div class="flex items-center gap-4">
+        <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+          <img src="<%= @phone_model.image_url %>" alt="<%= @phone_model.brand %>" class="max-w-full max-h-full object-contain">
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-600 truncate"><%= @phone_model.image_url %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Protection notice if devices exist -->
+  <% if @phone_model.devices.any? %>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-8">
+      <div class="flex items-start gap-3">
+        <span class="text-yellow-600 text-xl">!</span>
+        <div>
+          <h3 class="text-yellow-800 font-medium">Este teléfono no puede eliminarse</h3>
+          <p class="text-yellow-700 mt-1 text-sm">
+            Existen <%= @phone_model.devices.count %> dispositivo(s) asociado(s) a este modelo.
+            Para eliminar el modelo, primero debe eliminar o reasignar todos los dispositivos.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Footer navigation -->
+  <div class="flex justify-between items-center">
+    <div>
+      <%= link_to "← Volver a Catálogo", admin_phone_models_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+    <div>
+      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
+    </div>
+  </div>
+</div>

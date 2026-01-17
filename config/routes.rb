@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       end
     end
     resources :audit_logs, only: [:index, :show]  # Audit log viewing (Admin only)
+    resources :phone_models  # Phone catalog management (Admin only)
     resources :contracts, only: [:index, :show]  # Contract management (QR handled by default_qr_codes)
     resources :default_qr_codes, only: [:index, :edit, :update] do  # Default QR code for all contracts
       member do

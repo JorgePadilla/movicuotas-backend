@@ -20,6 +20,9 @@
     <%= link_to "Gestión de Contratos", admin_contracts_path,
         class: "#{controller_name == 'contracts' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
+    <%= link_to "Catálogo de Teléfonos", admin_phone_models_path,
+        class: "#{controller_name == 'phone_models' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
+
     <%= link_to "QR por Defecto", admin_default_qr_codes_path,
         class: "#{controller_name == 'default_qr_codes' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
