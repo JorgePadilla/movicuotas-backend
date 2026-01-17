@@ -14,7 +14,7 @@
     <div class="flex flex-wrap gap-3">
       <%= link_to "Editar", edit_admin_phone_model_path(@phone_model), class: "bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
       <% if @phone_model.devices.empty? %>
-        <%= link_to "Eliminar", admin_phone_model_path(@phone_model), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{@phone_model.brand} #{@phone_model.model}? Esta acción no se puede deshacer." }, class: "bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+        <%= link_to "Eliminar", admin_phone_model_path(@phone_model), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{@phone_model.brand} #{@phone_model.model}? Esta acción no se puede deshacer." }, class: "bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
       <% end %>
     </div>
   </div>

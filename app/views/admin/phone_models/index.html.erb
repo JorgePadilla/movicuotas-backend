@@ -91,7 +91,7 @@
             <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline text-sm font-medium" %>
             <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline text-sm font-medium" %>
             <% if phone.devices.empty? %>
-              <%= link_to "Eliminar", admin_phone_model_path(phone), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
+              <%= link_to "Eliminar", admin_phone_model_path(phone), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
             <% end %>
           </div>
         </div>
@@ -142,7 +142,7 @@
                   <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline font-medium" %>
                   <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline font-medium" %>
                   <% if phone.devices.empty? %>
-                    <%= link_to "Eliminar", admin_phone_model_path(phone), method: :delete, data: { confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline font-medium" %>
+                    <%= link_to "Eliminar", admin_phone_model_path(phone), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline font-medium" %>
                   <% end %>
                 </td>
               </tr>
