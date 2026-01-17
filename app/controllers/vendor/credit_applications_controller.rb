@@ -200,7 +200,7 @@ module Vendor
     def send_otp
       verification_method = params[:verification_method]
 
-      unless %w[whatsapp email].include?(verification_method)
+      unless %w[sms email].include?(verification_method)
         flash[:alert] = "Por favor selecciona un metodo de verificacion."
         redirect_to verify_otp_vendor_credit_application_path(@credit_application)
         return

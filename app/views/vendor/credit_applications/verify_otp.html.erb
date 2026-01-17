@@ -32,41 +32,29 @@
         <div>
           <h2 class="text-xl font-bold text-gray-900">Verificacion de Identidad</h2>
           <p class="mt-2 text-gray-600">
-            El cliente recibira un codigo de 4 digitos para verificar su identidad.
-            Selecciona como desea recibirlo:
+            El cliente recibira un codigo de 4 digitos por SMS para verificar su identidad.
           </p>
         </div>
 
         <!-- Customer Info -->
         <div class="bg-gray-50 rounded-lg p-4 text-left max-w-md mx-auto">
-          <p class="text-sm text-gray-600">
-            <span class="font-medium">Telefono:</span> <%= @credit_application.customer.phone %>
-          </p>
-          <p class="text-sm text-gray-600 mt-1">
-            <span class="font-medium">Correo:</span> <%= @credit_application.customer.email %>
-          </p>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-[#125282] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+            <p class="text-sm text-gray-600">
+              <span class="font-medium">Telefono:</span> <%= @credit_application.customer.phone %>
+            </p>
+          </div>
         </div>
 
-        <!-- Method Selection Form -->
+        <!-- Send SMS Form -->
         <%= form_with url: send_otp_vendor_credit_application_path(@credit_application), method: :post, class: "space-y-6" do |f| %>
-          <div class="max-w-md mx-auto">
-            <!-- SMS Option (Pre-selected) -->
-            <label class="relative flex items-center p-4 border-2 border-[#125282] bg-[#125282]/5 rounded-lg cursor-pointer">
-              <input type="radio" name="verification_method" value="sms"
-                     class="h-5 w-5 text-[#125282] border-gray-300 focus:ring-[#125282]"
-                     checked required>
-              <div class="ml-3 flex items-center">
-                <svg class="w-6 h-6 text-[#125282] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                </svg>
-                <span class="text-sm font-medium text-gray-900">SMS</span>
-              </div>
-            </label>
-          </div>
+          <input type="hidden" name="verification_method" value="sms">
 
           <!-- Submit Button -->
           <div class="pt-4">
-            <%= f.submit "Enviar Codigo",
+            <%= f.submit "Enviar Codigo por SMS",
                 class: "w-full max-w-md mx-auto block px-6 py-3 bg-[#125282] text-white font-semibold rounded-lg hover:bg-[#0f4670] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282]" %>
           </div>
         <% end %>
