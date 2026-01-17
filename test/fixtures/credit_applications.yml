@@ -15,7 +15,7 @@ credit_app_approved:
   approved_amount: 5000.00
   employment_status: self_employed
   salary_range: range_10000_20000
-  verification_method: whatsapp
+  verification_method: sms
 
 credit_app_rejected:
   customer: customer_one

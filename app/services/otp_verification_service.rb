@@ -27,8 +27,8 @@ class OtpVerificationService
     raw_code = credit_application.generate_otp!
 
     delivery_result = case credit_application.verification_method
-    when "whatsapp"
-      send_via_whatsapp(raw_code)
+    when "sms"
+      send_via_sms(raw_code)
     when "email"
       send_via_email(raw_code)
     else
@@ -78,7 +78,7 @@ class OtpVerificationService
   private
 
   def valid_verification_method?
-    %w[whatsapp email].include?(credit_application.verification_method)
+    %w[sms email].include?(credit_application.verification_method)
   end
 
   def can_send?
@@ -94,16 +94,16 @@ class OtpVerificationService
     "#{HONDURAS_COUNTRY_CODE}#{customer.phone}"
   end
 
-  def send_via_whatsapp(code)
-    Rails.logger.info("[OtpVerificationService] Sending WhatsApp OTP to: #{formatted_phone}")
-    WhatsappService.new.send_otp(
+  def send_via_sms(code)
+    Rails.logger.info("[OtpVerificationService] Sending SMS OTP to: #{formatted_phone}")
+    SmsService.new.send_otp(
       phone_number: formatted_phone,
       code: code,
       customer_name: customer.full_name
     )
   rescue StandardError => e
-    Rails.logger.error("[OtpVerificationService] WhatsApp delivery failed: #{e.message}")
-    { success: false, error: "Error al enviar por WhatsApp: #{e.message}" }
+    Rails.logger.error("[OtpVerificationService] SMS delivery failed: #{e.message}")
+    { success: false, error: "Error al enviar SMS: #{e.message}" }
   end
 
   def send_via_email(code)
@@ -120,8 +120,8 @@ class OtpVerificationService
 
   def delivery_message
     case credit_application.verification_method
-    when "whatsapp"
-      "Codigo enviado por WhatsApp al #{masked_phone}"
+    when "sms"
+      "Codigo enviado por SMS al #{masked_phone}"
     when "email"
       "Codigo enviado al correo #{masked_email}"
     end

@@ -31,7 +31,7 @@ class CreditApplication < ApplicationRecord
   # Enums
   enum :employment_status, { employed: "employed", self_employed: "self_employed", unemployed: "unemployed", student: "student", retired: "retired" }, prefix: true
   enum :salary_range, { less_than_10000: "less_than_10000", range_10000_20000: "10000_20000", range_20000_30000: "20000_30000", range_30000_40000: "30000_40000", more_than_40000: "more_than_40000" }, prefix: true
-  enum :verification_method, { whatsapp: "whatsapp", email: "email" }, prefix: true
+  enum :verification_method, { sms: "sms", email: "email" }, prefix: true
   enum :otp_delivery_status, { pending: "pending", sent: "sent", delivered: "delivered", failed: "failed" }, prefix: :otp
 
   # OTP Constants
@@ -158,13 +158,6 @@ class CreditApplication < ApplicationRecord
   # Verifies the submitted OTP code
   # Returns { success: true/false, error: symbol, attempts_remaining: integer }
   def verify_otp(submitted_code)
-    # TEMPORARY BYPASS: Accept "1001" as valid code while WhatsApp API is being configured
-    # TODO: Remove this bypass once WhatsApp Business API is properly set up
-    if submitted_code == "1001"
-      update!(otp_verified_at: Time.current)
-      return { success: true }
-    end
-
     return { success: false, error: :expired } if otp_expired?
     return { success: false, error: :max_attempts } if otp_max_attempts_reached?
     return { success: false, error: :no_code } if otp_code.blank?

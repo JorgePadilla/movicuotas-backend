@@ -68,6 +68,9 @@ gem "chunky_png", "~> 1.4"
 # Firebase Cloud Messaging (FCM) for push notifications
 gem "googleauth", "~> 1.8"  # For Firebase service account authentication
 
+# AWS SNS for SMS notifications
+gem "aws-sdk-sns", "~> 1.0"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
