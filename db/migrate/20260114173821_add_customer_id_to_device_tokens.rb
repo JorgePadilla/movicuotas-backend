@@ -1,5 +1,8 @@
 class AddCustomerIdToDeviceTokens < ActiveRecord::Migration[8.1]
   def change
+    # Skip if customer_id column already exists (created via schema:load in development)
+    return if column_exists?(:device_tokens, :customer_id)
+
     # Add customer_id (nullable - token can belong to User OR Customer)
     add_reference :device_tokens, :customer, null: true, foreign_key: true
 
