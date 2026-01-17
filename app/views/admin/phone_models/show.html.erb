@@ -3,20 +3,13 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Page header -->
   <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div class="flex items-start gap-4">
-      <% if @phone_model.image_url.present? %>
-        <div class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-          <img src="<%= @phone_model.image_url %>" alt="<%= @phone_model.brand %>" class="max-w-full max-h-full object-contain">
-        </div>
-      <% end %>
-      <div>
-        <h1 class="text-3xl font-bold text-[#125282]"><%= @phone_model.brand %> <%= @phone_model.model %></h1>
-        <p class="text-gray-600 mt-2">
-          <span class="px-3 py-1 text-sm rounded-full <%= @phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-            <%= @phone_model.active? ? "Activo" : "Inactivo" %>
-          </span>
-        </p>
-      </div>
+    <div>
+      <h1 class="text-3xl font-bold text-[#125282]"><%= @phone_model.brand %> <%= @phone_model.model %></h1>
+      <p class="text-gray-600 mt-2">
+        <span class="px-3 py-1 text-sm rounded-full <%= @phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+          <%= @phone_model.active? ? "Activo" : "Inactivo" %>
+        </span>
+      </p>
     </div>
     <div class="flex flex-wrap gap-3">
       <%= link_to "Editar", edit_admin_phone_model_path(@phone_model), class: "bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
@@ -78,21 +71,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Image URL -->
-  <% if @phone_model.image_url.present? %>
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-      <h2 class="text-xl font-semibold text-[#125282] mb-4">URL de Imagen</h2>
-      <div class="flex items-center gap-4">
-        <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-          <img src="<%= @phone_model.image_url %>" alt="<%= @phone_model.brand %>" class="max-w-full max-h-full object-contain">
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm text-gray-600 truncate"><%= @phone_model.image_url %></p>
-        </div>
-      </div>
-    </div>
-  <% end %>
 
   <!-- Protection notice if devices exist -->
   <% if @phone_model.devices.any? %>

@@ -67,16 +67,9 @@
       <% @phone_models.each do |phone| %>
         <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
           <div class="flex justify-between items-start mb-3">
-            <div class="flex items-start gap-3">
-              <% if phone.image_url.present? %>
-                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <img src="<%= phone.image_url %>" alt="<%= phone.brand %>" class="max-w-full max-h-full object-contain">
-                </div>
-              <% end %>
-              <div>
-                <p class="font-bold text-gray-900"><%= phone.brand %> <%= phone.model %></p>
-                <p class="text-xs text-gray-500"><%= phone.storage.present? ? phone.storage : "—" %></p>
-              </div>
+            <div>
+              <p class="font-bold text-gray-900"><%= phone.brand %> <%= phone.model %></p>
+              <p class="text-xs text-gray-500"><%= phone.storage.present? ? phone.storage : "—" %></p>
             </div>
             <span class="px-2 py-1 text-xs rounded-full <%= phone.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
               <%= phone.active? ? "Activo" : "Inactivo" %>
@@ -129,16 +122,7 @@
             <% @phone_models.each do |phone| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <% if phone.image_url.present? %>
-                      <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
-                        <img src="<%= phone.image_url %>" alt="<%= phone.brand %>" class="max-w-full max-h-full object-contain">
-                      </div>
-                    <% end %>
-                    <div>
-                      <div class="font-medium text-gray-900"><%= phone.brand %> <%= phone.model %></div>
-                    </div>
-                  </div>
+                  <div class="font-medium text-gray-900"><%= phone.brand %> <%= phone.model %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-600"><%= phone.storage.present? ? phone.storage : "—" %></div>

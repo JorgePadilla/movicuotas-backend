@@ -83,7 +83,7 @@ module Admin
     end
 
     def phone_model_params
-      params.require(:phone_model).permit(:brand, :model, :storage, :price, :active, :image_url)
+      params.require(:phone_model).permit(:brand, :model, :storage, :price, :active)
     end
   end
 end
