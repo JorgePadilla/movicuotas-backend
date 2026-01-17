@@ -62,7 +62,7 @@ gem "prawn", "~> 2.4"
 gem "prawn-table", "~> 0.2.2"
 
 # QR code generation for MDM configuration
-gem "rqrcode", "~> 2.0"
+gem "rqrcode", "~> 3.2"
 gem "chunky_png", "~> 1.4"
 
 # Firebase Cloud Messaging (FCM) for push notifications
