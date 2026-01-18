@@ -32,12 +32,8 @@ production:
     schedule: at 9am every day
     description: "Send daily collection reminders to customers with overdue installments"
 
-  # Automatically block devices 30+ days overdue
-  auto_block_overdue_devices:
-    class: AutoBlockDeviceJob
-    queue: blocking
-    schedule: at 8am every day
-    description: "Automatically block devices 30+ days overdue"
+  # NOTE: Device blocking is done manually by employees via the supervisor dashboard
+  # AutoBlockDeviceJob is available for manual trigger in /admin/jobs if needed
 
   # Check for payment confirmations and send notifications
   check_payment_confirmations:

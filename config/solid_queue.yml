@@ -22,16 +22,12 @@ test:
 
 production:
   <<: *default
+  # Optimized for $10 Lightsail (1 vCPU, 1GB RAM)
+  # - Single process: less memory overhead
+  # - 3 workers: enough for low traffic
+  # - 1s polling: ~1 DB query/sec instead of ~30
   processes:
     - host: localhost
-      queues: [ default, mailers ]
-      concurrency: 5
-      polling_interval: 0.1
-    - host: localhost
-      queues: [ notifications, reminders ]
-      concurrency: 10
-      polling_interval: 0.1
-    - host: localhost
-      queues: [ blocking ]
+      queues: [ default, mailers, notifications, reminders, blocking ]
       concurrency: 3
-      polling_interval: 0.1
+      polling_interval: 1
