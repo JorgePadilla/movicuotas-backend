@@ -132,58 +132,6 @@
       </div>
     </div>
 
-    <!-- How to start -->
-    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <p class="text-sm font-medium text-gray-700 mb-3">Comandos de Terminal</p>
-
-      <% if Rails.env.development? %>
-        <!-- Development -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          <button onclick="navigator.clipboard.writeText('bin/dev'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Iniciar Todo', 2000)"
-                  class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Iniciar Todo
-          </button>
-          <button onclick="navigator.clipboard.writeText('bin/rails solid_queue:start'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Solo Queue', 2000)"
-                  class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Solo Queue
-          </button>
-          <button onclick="navigator.clipboard.writeText('pkill -f solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Detener', 2000)"
-                  class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Detener
-          </button>
-          <button onclick="navigator.clipboard.writeText('ps aux | grep solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Ver Estado', 2000)"
-                  class="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Ver Estado
-          </button>
-        </div>
-        <p class="text-xs text-gray-500 mt-2">Entorno: <span class="font-medium text-blue-600">Desarrollo</span></p>
-      <% else %>
-        <!-- Production -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          <button onclick="navigator.clipboard.writeText('sudo systemctl start solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Iniciar', 2000)"
-                  class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Iniciar
-          </button>
-          <button onclick="navigator.clipboard.writeText('sudo systemctl restart solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Reiniciar', 2000)"
-                  class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Reiniciar
-          </button>
-          <button onclick="navigator.clipboard.writeText('sudo systemctl stop solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Detener', 2000)"
-                  class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Detener
-          </button>
-          <button onclick="navigator.clipboard.writeText('sudo systemctl status solid_queue'); this.innerText='Copiado!'; setTimeout(() => this.innerText='Ver Estado', 2000)"
-                  class="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-            Ver Estado
-          </button>
-        </div>
-        <p class="text-xs text-gray-500 mt-2">Entorno: <span class="font-medium text-red-600">Producción</span></p>
-      <% end %>
-
-      <p class="text-xs text-gray-500 mt-1">
-        Haz clic en un botón para copiar el comando, luego pégalo en tu terminal.
-      </p>
-    </div>
   </div>
 
   <!-- Manual Job Triggers -->
