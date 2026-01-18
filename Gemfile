@@ -95,3 +95,9 @@ group :development do
   # Preview emails in browser instead of sending [https://github.com/ryanb/letter_opener]
   gem "letter_opener"
 end
+
+group :test do
+  # System testing with Capybara [https://github.com/teamcapybara/capybara]
+  gem "capybara"
+  gem "selenium-webdriver"
+end

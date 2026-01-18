@@ -2,27 +2,42 @@ installment_one:
   loan: loan_one
   installment_number: 1
   amount: 583.33
-  due_date: 2025-02-01
-  status: pending
+  due_date: <%= 45.days.ago.to_date %>
+  status: overdue
 
 installment_two:
   loan: loan_one
   installment_number: 2
   amount: 583.33
-  due_date: 2025-03-01
-  status: pending
+  due_date: <%= 15.days.ago.to_date %>
+  status: overdue
 
 installment_three:
   loan: loan_one
   installment_number: 3
   amount: 583.34
-  due_date: 2025-04-01
+  due_date: <%= 1.month.ago.to_date %>
   status: paid
-  paid_date: 2025-04-01
+  paid_date: <%= 1.month.ago.to_date %>
 
 installment_four:
   loan: loan_two
   installment_number: 1
   amount: 625.00
-  due_date: 2025-02-01
+  due_date: <%= 10.days.ago.to_date %>
+  status: overdue
+
+installment_five:
+  loan: loan_two
+  installment_number: 2
+  amount: 625.00
+  due_date: <%= 7.days.from_now.to_date %>
   status: pending
+
+installment_six:
+  loan: loan_completed
+  installment_number: 1
+  amount: 800.00
+  due_date: <%= 6.months.ago.to_date %>
+  status: paid
+  paid_date: <%= 6.months.ago.to_date %>

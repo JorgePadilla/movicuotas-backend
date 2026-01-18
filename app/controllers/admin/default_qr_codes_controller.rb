@@ -3,8 +3,8 @@
 module Admin
   class DefaultQrCodesController < ApplicationController
     before_action :set_default_qr_code
-    skip_after_action :verify_policy_scoped, only: [:index]
-    after_action :verify_authorized, except: [:index]
+    skip_after_action :verify_policy_scoped, only: [ :index ]
+    after_action :verify_authorized, except: [ :index ]
 
     # Admin default QR code management
     def index
@@ -26,14 +26,14 @@ module Admin
           @default_qr_code.upload_qr_code!(qr_code_file, current_user)
 
           redirect_to admin_default_qr_codes_path,
-                      notice: 'Código QR por defecto cargado exitosamente.'
+                      notice: "Código QR por defecto cargado exitosamente."
         rescue StandardError => e
           Rails.logger.error "QR code upload failed: #{e.message}"
           flash.now[:alert] = "Error al cargar el código QR: #{e.message}"
           render :edit, status: :unprocessable_entity
         end
       else
-        flash.now[:alert] = 'Por favor, selecciona un archivo QR.'
+        flash.now[:alert] = "Por favor, selecciona un archivo QR."
         render :edit, status: :unprocessable_entity
       end
     end
@@ -46,10 +46,10 @@ module Admin
         send_data @default_qr_code.qr_code.download,
                   filename: @default_qr_code.qr_code.filename.to_s,
                   type: @default_qr_code.qr_code.content_type,
-                  disposition: 'attachment'
+                  disposition: "attachment"
       else
         redirect_to admin_default_qr_codes_path,
-                    alert: 'No hay código QR disponible para descargar.'
+                    alert: "No hay código QR disponible para descargar."
       end
     end
 

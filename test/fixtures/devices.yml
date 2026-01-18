@@ -4,6 +4,7 @@ device_one:
   brand: Apple
   model: iPhone 14
   lock_status: unlocked
+  loan: loan_one
 
 device_two:
   phone_model: samsung_s24
@@ -11,6 +12,7 @@ device_two:
   brand: Samsung
   model: Galaxy S24
   lock_status: unlocked
+  loan: loan_two
 
 device_three:
   phone_model: google_pixel_8
@@ -18,3 +20,4 @@ device_three:
   brand: Google
   model: Pixel 8
   lock_status: locked
+  loan: loan_completed

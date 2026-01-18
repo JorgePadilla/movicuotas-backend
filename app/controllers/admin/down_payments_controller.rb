@@ -2,7 +2,7 @@
 
 module Admin
   class DownPaymentsController < ApplicationController
-    before_action :set_loan, only: [:show, :verify, :reject]
+    before_action :set_loan, only: [ :show, :verify, :reject ]
 
     # GET /admin/down_payments
     # List all loans with pending down payment verification (deposits only)
