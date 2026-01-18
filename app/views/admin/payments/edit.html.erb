@@ -18,7 +18,7 @@
   <% status_labels = { "pending" => "Pendiente", "verified" => "Verificado", "rejected" => "Rechazado" } %>
   <div class="mb-4">
     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border <%= status_colors[@payment.verification_status] %>">
-      Estado: <%= status_labels[@payment.verification_status]) %>
+      Estado: <%= status_labels[@payment.verification_status] %>
     </span>
   </div>
 

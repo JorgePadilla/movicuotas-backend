@@ -199,7 +199,11 @@ module Admin
     end
 
     def allocate_to_installments
-      allocations = params[:installment_allocations].permit!.to_h.transform_values(&:to_d)
+      return unless params[:installment_allocations].present?
+
+      # Safely permit installment allocation params by explicitly allowing only integer keys
+      allowed_keys = params[:installment_allocations].keys.select { |k| k.to_s.match?(/\A\d+\z/) }
+      allocations = params.require(:installment_allocations).permit(*allowed_keys).to_h.transform_values(&:to_d)
       @payment.allocate_to_installments(allocations) if allocations.values.sum.positive?
     end
   end

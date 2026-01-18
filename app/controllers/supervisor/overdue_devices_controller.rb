@@ -139,18 +139,21 @@ module Supervisor
     end
 
     def apply_sorting(devices)
-      case @sort_column
-      when "days_overdue"
-        devices.order(Arel.sql("(CURRENT_DATE - MIN(installments.due_date)) #{@sort_order}"))
-      when "total_overdue"
-        devices.order(Arel.sql("SUM(installments.amount) #{@sort_order}"))
-      when "customer_name"
-        devices.order(Arel.sql("customers.full_name #{@sort_order}"))
-      when "first_overdue_date"
-        devices.order(Arel.sql("MIN(installments.due_date) #{@sort_order}"))
-      else
-        devices.order(Arel.sql("(CURRENT_DATE - MIN(installments.due_date)) DESC"))
-      end
+      # Use explicit SQL strings to avoid Brakeman SQL injection warnings
+      # @sort_order is validated to only be "ASC" or "DESC" by validate_sort_order
+      order_sql = case @sort_column
+                  when "days_overdue"
+                    @sort_order == "ASC" ? "(CURRENT_DATE - MIN(installments.due_date)) ASC" : "(CURRENT_DATE - MIN(installments.due_date)) DESC"
+                  when "total_overdue"
+                    @sort_order == "ASC" ? "SUM(installments.amount) ASC" : "SUM(installments.amount) DESC"
+                  when "customer_name"
+                    @sort_order == "ASC" ? "customers.full_name ASC" : "customers.full_name DESC"
+                  when "first_overdue_date"
+                    @sort_order == "ASC" ? "MIN(installments.due_date) ASC" : "MIN(installments.due_date) DESC"
+                  else
+                    "(CURRENT_DATE - MIN(installments.due_date)) DESC"
+                  end
+      devices.order(Arel.sql(order_sql))
     end
 
     def parse_days_range
