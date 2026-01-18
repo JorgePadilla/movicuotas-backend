@@ -100,4 +100,6 @@ group :test do
   # System testing with Capybara [https://github.com/teamcapybara/capybara]
   gem "capybara"
   gem "selenium-webdriver"
+  # Pin minitest to 5.x (6.x breaks Rails test discovery)
+  gem "minitest", "~> 5.0"
 end
