@@ -1,6 +1,11 @@
 <% content_for :title, "Detalles del Préstamo - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Préstamos", path: admin_loans_path },
+    { name: @loan.contract_number }
+  ]) %>
+
   <!-- Page header -->
   <div class="mb-6 sm:mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -270,13 +275,4 @@
     <% end %>
   </div>
 
-  <!-- Footer navigation -->
-  <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-    <div>
-      <%= link_to "← Volver a Préstamos", admin_loans_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
-    </div>
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
-    </div>
-  </div>
 </div>

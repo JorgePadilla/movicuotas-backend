@@ -1,9 +1,14 @@
 <% content_for :title, "Historial de Pagos - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-[#125282]">Historial de Pagos (Solo Lectura)</h1>
-    <%= link_to "Volver", :back, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#125282] hover:bg-blue-700" %>
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Supervisor::BreadcrumbComponent.new(items: [
+    { name: "Dispositivos en Mora", path: supervisor_overdue_devices_path },
+    { name: "Historial de Pagos" }
+  ]) %>
+
+  <!-- Page header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Historial de Pagos (Solo Lectura)</h1>
   </div>
 
   <!-- Customer Header Card -->

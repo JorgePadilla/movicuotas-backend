@@ -1,11 +1,12 @@
 <% content_for :title, "Administrar QR por Defecto - Admin" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <%# Header with Back Button %>
-  <div class="mb-8">
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:text-[#0f4670] font-medium mb-4 inline-block" %>
-    <h1 class="text-4xl font-bold text-gray-900">Administrar Código QR</h1>
-    <p class="mt-2 text-gray-600">Este código QR se mostrará a todos los clientes para configurar sus dispositivos</p>
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [{ name: "QR por Defecto" }]) %>
+
+  <!-- Page header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Administrar Código QR</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Este código QR se mostrará a todos los clientes para configurar sus dispositivos</p>
   </div>
 
   <%# QR Code Section %>

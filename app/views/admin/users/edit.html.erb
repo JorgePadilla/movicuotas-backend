@@ -1,11 +1,16 @@
 <% content_for :title, "Editar Usuario - Admin - MOVICUOTAS" %>
 
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Usuarios", path: admin_users_path },
+    { name: @user.full_name, path: admin_user_path(@user) },
+    { name: "Editar" }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver a Usuarios", admin_users_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Editar Usuario</h1>
-    <p class="text-gray-600 mt-2"><%= @user.full_name %> (<%= @user.email %>)</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Editar Usuario</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base"><%= @user.full_name %> (<%= @user.email %>)</p>
   </div>
 
   <!-- Form -->

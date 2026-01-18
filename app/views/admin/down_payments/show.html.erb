@@ -1,13 +1,15 @@
 <% content_for :title, "Verificar Prima - Admin MOVICUOTAS" %>
 
-<div class="max-w-4xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Primas Pendientes", path: admin_down_payments_path },
+    { name: @loan.contract_number }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-6 md:mb-8">
-    <div class="flex items-center gap-2 mb-2">
-      <%= link_to "← Volver a lista", admin_down_payments_path, class: "text-sm text-[#125282] hover:underline" %>
-    </div>
-    <h1 class="text-2xl md:text-3xl font-bold text-[#125282]">Verificar Prima</h1>
-    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Revisar comprobante y aprobar o rechazar la prima.</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Verificar Prima</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Revisar comprobante y aprobar o rechazar la prima.</p>
   </div>
 
   <!-- Status badge -->

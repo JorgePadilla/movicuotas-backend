@@ -1,11 +1,15 @@
 <% content_for :title, "Cartera de Clientes - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Reportes", path: admin_reports_path },
+    { name: "Cartera de Clientes" }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Análisis de Cartera de Clientes</h1>
-    <p class="text-gray-600 mt-1 text-sm lg:text-base">Portafolio de crédito, análisis de riesgo y composición</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Análisis de Cartera de Clientes</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Portafolio de crédito, análisis de riesgo y composición</p>
   </div>
 
   <!-- Customer Statistics Overview -->
@@ -160,9 +164,4 @@
     <% end %>
   </div>
 
-  <!-- Footer navigation -->
-  <div class="flex justify-between items-center">
-    <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline font-medium text-sm" %>
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm" %>
-  </div>
 </div>

@@ -42,12 +42,16 @@
 
 <% content_for :title, "Detalle de Auditoría - Admin - MOVICUOTAS" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Auditoría", path: admin_audit_logs_path },
+    { name: "Registro ##{@audit_log.id}" }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver a Registros", admin_audit_logs_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Detalle de Auditoría</h1>
-    <p class="text-gray-600 mt-1 text-sm">Registro #<%= @audit_log.id %></p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Detalle de Auditoría</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Registro #<%= @audit_log.id %></p>
   </div>
 
   <!-- Main info card -->
@@ -180,9 +184,4 @@
       </div>
     </div>
   <% end %>
-
-  <!-- Navigation -->
-  <div class="flex justify-between items-center">
-    <%= link_to "← Volver a Registros", admin_audit_logs_path, class: "text-[#125282] hover:underline font-medium" %>
-  </div>
 </div>

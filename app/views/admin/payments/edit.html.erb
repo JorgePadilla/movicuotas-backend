@@ -1,11 +1,16 @@
 <% content_for :title, "Editar Pago - Admin - MOVICUOTAS" %>
 
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-2xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Pagos", path: admin_payments_path },
+    { name: "Pago ##{@payment.id}", path: admin_payment_path(@payment) },
+    { name: "Editar" }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver al Pago", admin_payment_path(@payment), class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Editar Pago</h1>
-    <p class="text-gray-600 mt-2">Actualiza la información del pago #<%= @payment.id %></p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Editar Pago</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Actualiza la información del pago #<%= @payment.id %></p>
   </div>
 
   <!-- Status Badge -->
@@ -13,7 +18,7 @@
   <% status_labels = { "pending" => "Pendiente", "verified" => "Verificado", "rejected" => "Rechazado" } %>
   <div class="mb-4">
     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border <%= status_colors[@payment.verification_status] %>">
-      Estado: <%= status_labels[@payment.verification_status] %>
+      Estado: <%= status_labels[@payment.verification_status]) %>
     </span>
   </div>
 

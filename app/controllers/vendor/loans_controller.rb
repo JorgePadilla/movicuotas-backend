@@ -80,17 +80,29 @@ module Vendor
       @completed_count = base_loans.where(status: %w[paid completed]).count
       @overdue_count = base_loans.joins(:installments).where(installments: { status: "overdue" }).distinct.count
 
+      # Set default filters if no filters are provided (first visit to page)
+      # Default: Active loans with overdue installments
+      if params[:status].blank? && params[:cuotas].blank? && params[:search].blank? && !params[:clear_filters]
+        @default_filters = true
+        @status_filter = "active"
+        @cuotas_filter = "con_vencidas"
+      else
+        @default_filters = false
+        @status_filter = params[:status]
+        @cuotas_filter = params[:cuotas]
+      end
+
       # Apply filters
       @loans = base_loans.order(created_at: :desc)
 
-      # Filter by loan status if provided
-      if params[:status].present?
-        @loans = filter_loans_by_status(@loans, params[:status])
+      # Filter by loan status
+      if @status_filter.present?
+        @loans = filter_loans_by_status(@loans, @status_filter)
       end
 
       # Filter by cuotas (installments) situation
-      if params[:cuotas].present?
-        @loans = filter_loans_by_cuotas(@loans, params[:cuotas])
+      if @cuotas_filter.present?
+        @loans = filter_loans_by_cuotas(@loans, @cuotas_filter)
       end
 
       # Search by customer name, contract number or IMEI

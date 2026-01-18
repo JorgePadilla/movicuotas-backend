@@ -1,10 +1,15 @@
 <% content_for :title, "Reporte de Ingresos - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Reportes", path: admin_reports_path },
+    { name: "Reporte de Ingresos" }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#125282]">Reporte de Ingresos y Cobranza</h1>
-    <p class="text-gray-600 mt-2">Análisis de tendencias de pagos, métodos de cobro y desempeño de vendedores</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Reporte de Ingresos y Cobranza</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Análisis de tendencias de pagos, métodos de cobro y desempeño de vendedores</p>
   </div>
 
   <!-- Date Range Filter -->
@@ -164,15 +169,5 @@
     <% else %>
       <p class="text-gray-500 text-center py-8">No hay datos de vendedores para este período</p>
     <% end %>
-  </div>
-
-  <!-- Footer navigation -->
-  <div class="flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver a Reportes", admin_reports_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
   </div>
 </div>

@@ -1,16 +1,21 @@
 <% content_for :title, "Detalles del Usuario - Admin - MOVICUOTAS" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Usuarios", path: admin_users_path },
+    { name: @user.full_name }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-8 flex items-center justify-between">
+  <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-[#125282]"><%= @user.full_name %></h1>
-      <p class="text-gray-600 mt-2"><%= @user.email %></p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]"><%= @user.full_name %></h1>
+      <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base"><%= @user.email %></p>
     </div>
-    <div class="space-x-3">
-      <%= link_to "Editar", edit_admin_user_path(@user), class: "bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+    <div class="flex gap-2 sm:gap-3">
+      <%= link_to "Editar", edit_admin_user_path(@user), class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
       <% if @user != current_user %>
-        <%= link_to "Eliminar", admin_user_path(@user), method: :delete, data: { confirm: "¿Estás seguro? Esta acción no se puede deshacer." }, class: "bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors" %>
+        <%= link_to "Eliminar", admin_user_path(@user), method: :delete, data: { confirm: "¿Estás seguro? Esta acción no se puede deshacer." }, class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
       <% end %>
     </div>
   </div>
@@ -85,16 +90,6 @@
         <p class="text-gray-700">✗ Limitado a su sucursal asignada</p>
         <p class="text-gray-700">✗ No puede verificar pagos ni bloquear dispositivos</p>
       <% end %>
-    </div>
-  </div>
-
-  <!-- Footer navigation -->
-  <div class="flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver a Usuarios", admin_users_path, class: "text-[#125282] hover:underline font-medium" %>
-    </div>
-    <div>
-      <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium" %>
     </div>
   </div>
 </div>

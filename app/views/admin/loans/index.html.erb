@@ -1,6 +1,8 @@
 <% content_for :title, "Gestión de Préstamos - Admin - MOVICUOTAS" %>
 
 <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [{ name: "Préstamos" }]) %>
+
   <!-- Page header -->
   <div class="mb-6 sm:mb-8">
     <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Gestión de Préstamos</h1>
@@ -28,8 +30,8 @@
     <!-- Branch filter -->
     <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2" do |f| %>
       <%= f.select :branch, [['Todas las sucursales', '']] + @branches.map { |b| [b, b] }, { selected: params[:branch] }, class: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
-      <%= f.hidden_field :search, value: params[:search] %>
-      <%= f.hidden_field :status, value: params[:status] %>
+      <%= f.hidden_field :search, value: params[:search]) %>
+      <%= f.hidden_field :status, value: params[:status]) %>
       <%= f.submit "Filtrar", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors cursor-pointer" %>
     <% end %>
   </div>
@@ -220,9 +222,4 @@
     </div>
   </div>
 
-  <!-- Footer navigation -->
-  <div class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-3">
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline font-medium text-sm sm:text-base" %>
-    <span class="text-xs sm:text-sm text-gray-500">Total: <%= @loans.respond_to?(:total_count) ? @loans.total_count : @loans.count %> préstamos</span>
-  </div>
 </div>

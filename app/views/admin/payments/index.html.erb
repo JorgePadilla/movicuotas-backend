@@ -1,13 +1,12 @@
 <% content_for :title, "Comprobantes - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [{ name: "Comprobantes" }]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <div class="mt-2">
-      <h1 class="text-2xl lg:text-3xl font-bold text-[#125282]">Comprobantes</h1>
-      <p class="text-gray-600 mt-1 text-sm lg:text-base">Verifica los comprobantes enviados por clientes. Solo los verificados se convierten en pagos.</p>
-    </div>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Comprobantes</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Verifica los comprobantes enviados por clientes. Solo los verificados se convierten en pagos.</p>
   </div>
 
   <!-- Search and filter section -->
@@ -57,9 +56,9 @@
         <%= f.label :date_to, "Hasta:", class: "block text-xs font-medium text-gray-600" %>
         <%= f.date_field :date_to, value: params[:date_to], class: "mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
       </div>
-      <%= f.hidden_field :search, value: params[:search] %>
-      <%= f.hidden_field :status, value: params[:status] %>
-      <%= f.hidden_field :method, value: params[:method] %>
+      <%= f.hidden_field :search, value: params[:search]) %>
+      <%= f.hidden_field :status, value: params[:status]) %>
+      <%= f.hidden_field :method, value: params[:method]) %>
       <%= f.submit "Filtrar", class: "w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
     <% end %>
   </div>

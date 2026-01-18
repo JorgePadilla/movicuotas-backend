@@ -1,26 +1,31 @@
 <% content_for :title, "Detalle del Job - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Jobs", path: admin_jobs_path },
+    { name: @job.class_name }
+  ]) %>
+
   <!-- Page header -->
-  <div class="mb-8 flex justify-between items-start">
+  <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
     <div>
-      <h1 class="text-3xl font-bold text-[#125282]"><%= @job.class_name %></h1>
-      <p class="text-gray-600 mt-2">ID: <%= @job.id %></p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]"><%= @job.class_name %></h1>
+      <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">ID: <%= @job.id %></p>
     </div>
     <div>
       <% case @job_status %>
       <% when 'completed' %>
-        <span class="px-4 py-2 text-lg rounded-full bg-green-100 text-green-800 font-medium">✓ Completado</span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-green-100 text-green-800 font-medium">Completado</span>
       <% when 'failed' %>
-        <span class="px-4 py-2 text-lg rounded-full bg-red-100 text-red-800 font-medium">✕ Fallido</span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-red-100 text-red-800 font-medium">Fallido</span>
       <% when 'running' %>
-        <span class="px-4 py-2 text-lg rounded-full bg-blue-100 text-blue-800 font-medium">● En ejecución</span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-blue-100 text-blue-800 font-medium">En ejecución</span>
       <% when 'pending' %>
-        <span class="px-4 py-2 text-lg rounded-full bg-orange-100 text-orange-800 font-medium">⏳ Pendiente</span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-orange-100 text-orange-800 font-medium">Pendiente</span>
       <% when 'scheduled' %>
-        <span class="px-4 py-2 text-lg rounded-full bg-indigo-100 text-indigo-800 font-medium">📅 Programado</span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-indigo-100 text-indigo-800 font-medium">Programado</span>
       <% else %>
-        <span class="px-4 py-2 text-lg rounded-full bg-gray-100 text-gray-800 font-medium"><%= @job_status %></span>
+        <span class="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-lg rounded-full bg-gray-100 text-gray-800 font-medium"><%= @job_status %></span>
       <% end %>
     </div>
   </div>
@@ -212,15 +217,4 @@
       <% end %>
     </div>
   <% end %>
-
-  <!-- Footer navigation -->
-  <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between items-center">
-    <div>
-      <%= link_to "← Volver a Monitoreo de Jobs", admin_jobs_path,
-          class: "text-[#125282] hover:underline font-medium" %>
-    </div>
-    <div class="text-sm text-gray-500">
-      Última actualización: <%= Time.current.strftime("%d/%m/%Y %H:%M:%S") %>
-    </div>
-  </div>
 </div>

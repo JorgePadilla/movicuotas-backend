@@ -1,11 +1,15 @@
 <% content_for :title, "Detalles del Contrato - Admin" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <%# Header with Back Button %>
-  <div class="mb-8">
-    <%= link_to "← Volver a contratos", admin_contracts_path, class: "text-[#125282] hover:text-[#0f4670] font-medium mb-4 inline-block" %>
-    <h1 class="text-4xl font-bold text-gray-900">Detalles del Contrato</h1>
-    <p class="mt-2 text-gray-600">ID del Contrato: <%= @contract.id %></p>
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Contratos", path: admin_contracts_path },
+    { name: "Contrato ##{@contract.id}" }
+  ]) %>
+
+  <!-- Page header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Detalles del Contrato</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">ID del Contrato: <%= @contract.id %></p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">

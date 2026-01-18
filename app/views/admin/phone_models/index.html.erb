@@ -1,13 +1,14 @@
 <% content_for :title, "Catálogo de Teléfonos - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [{ name: "Teléfonos" }]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-2 gap-4">
+  <div class="mb-6 sm:mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl lg:text-3xl font-bold text-[#125282]">Catálogo de Teléfonos</h1>
-        <p class="text-gray-600 mt-1 text-sm lg:text-base">Administra los modelos de teléfonos disponibles</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Catálogo de Teléfonos</h1>
+        <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Administra los modelos de teléfonos disponibles</p>
       </div>
       <%= link_to "Nuevo Teléfono", new_admin_phone_model_path, class: "bg-[#125282] hover:bg-[#0f4670] text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm text-center" %>
     </div>

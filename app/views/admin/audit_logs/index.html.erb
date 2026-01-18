@@ -37,12 +37,13 @@
 
 <% content_for :title, "Registros de Auditoría - Admin - MOVICUOTAS" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [{ name: "Auditoría" }]) %>
+
   <!-- Page header -->
-  <div class="mb-6">
-    <%= link_to "← Volver al Dashboard", admin_dashboard_path, class: "text-[#125282] hover:underline text-sm font-medium" %>
-    <h1 class="text-2xl lg:text-3xl font-bold text-[#125282] mt-2">Registros de Auditoría</h1>
-    <p class="text-gray-600 mt-1 text-sm lg:text-base">Historial de todas las acciones realizadas en el sistema</p>
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]">Registros de Auditoría</h1>
+    <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Historial de todas las acciones realizadas en el sistema</p>
   </div>
 
   <!-- Filters -->
