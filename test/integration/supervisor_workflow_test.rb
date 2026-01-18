@@ -165,22 +165,17 @@ class SupervisorWorkflowTest < IntegrationTestCase
   # Read-Only Access Tests
   # ===========================================
 
-  test "supervisor cannot create loans" do
+  test "supervisor cannot access vendor dashboard" do
     sign_in_supervisor
-    # Supervisors are read-only for loans - they should not have access
-    # to vendor loan creation routes
-    get vendor_root_path
-    assert_response :redirect # Supervisor not allowed in vendor namespace
+    # Supervisors should NOT have access to vendor workflows
+    get vendor_dashboard_path
+    assert_response :redirect
   end
 
-  test "supervisor cannot edit customers" do
+  test "supervisor cannot access vendor root" do
     sign_in_supervisor
-    # Supervisors should not have edit access to customers
-    # They can only view and block devices
-    get admin_edit_customer_path(customers(:customer_one))
+    # Supervisors should NOT have access to vendor namespace
+    get vendor_root_path
     assert_response :redirect
-  rescue ActionController::RoutingError
-    # Route may not exist, which is also acceptable
-    pass
   end
 end

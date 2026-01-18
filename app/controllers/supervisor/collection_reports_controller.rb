@@ -52,19 +52,11 @@ module Supervisor
     end
 
     def overdue_by_range(min_days, max_days)
-      Installment.overdue
-                 .where("(CURRENT_DATE - due_date) BETWEEN ? AND ?", min_days, max_days)
-                 .group_values_as_hash
-                 .then do |results|
-        {
-          count: Installment.overdue
-                           .where("(CURRENT_DATE - due_date) BETWEEN ? AND ?", min_days, max_days)
-                           .count,
-          total: Installment.overdue
-                           .where("(CURRENT_DATE - due_date) BETWEEN ? AND ?", min_days, max_days)
-                           .sum(:amount).to_f || 0.0
-        }
-      end
+      scope = Installment.overdue.where("(CURRENT_DATE - due_date) BETWEEN ? AND ?", min_days, max_days)
+      {
+        count: scope.count,
+        total: scope.sum(:amount).to_f
+      }
     end
 
     def fetch_overdue_by_branch

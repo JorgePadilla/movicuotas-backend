@@ -78,7 +78,7 @@ module Supervisor
     end
 
     def fetch_overdue_devices
-      devices = Device.joins(loan: :installments)
+      devices = Device.joins(loan: [ :installments, :customer ])
                       .where(installments: { status: "overdue" })
                       .select(
                         "devices.*",
@@ -140,15 +140,15 @@ module Supervisor
     def apply_sorting(devices)
       case @sort_column
       when "days_overdue"
-        devices.order("(CURRENT_DATE - MIN(installments.due_date)) #{@sort_order}")
+        devices.order(Arel.sql("(CURRENT_DATE - MIN(installments.due_date)) #{@sort_order}"))
       when "total_overdue"
-        devices.order("SUM(installments.amount) #{@sort_order}")
+        devices.order(Arel.sql("SUM(installments.amount) #{@sort_order}"))
       when "customer_name"
-        devices.order("customers.full_name #{@sort_order}")
+        devices.order(Arel.sql("customers.full_name #{@sort_order}"))
       when "first_overdue_date"
-        devices.order("MIN(installments.due_date) #{@sort_order}")
+        devices.order(Arel.sql("MIN(installments.due_date) #{@sort_order}"))
       else
-        devices.order("(CURRENT_DATE - MIN(installments.due_date)) DESC")
+        devices.order(Arel.sql("(CURRENT_DATE - MIN(installments.due_date)) DESC"))
       end
     end
 
@@ -225,7 +225,7 @@ module Supervisor
 
     def send_csv_export
       # Get unpaginated devices for full export
-      all_devices = Device.joins(loan: :installments)
+      all_devices = Device.joins(loan: [ :installments, :customer ])
                           .where(installments: { status: "overdue" })
                           .select(
                             "devices.*",

@@ -116,7 +116,8 @@
             </div>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
-            <% percentage = (@report_data[:by_days].values.max[:total] > 0) ? (data[:total] / @report_data[:by_days].values.max[:total] * 100) : 0 %>
+            <% max_total = @report_data[:by_days].values.map { |v| v[:total] }.max || 0 %>
+            <% percentage = (max_total > 0) ? (data[:total] / max_total * 100) : 0 %>
             <div class="bg-red-600 h-2 rounded-full" style="width: <%= percentage %>%"></div>
           </div>
         <% end %>

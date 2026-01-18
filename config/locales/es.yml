@@ -160,6 +160,8 @@ es:
 
   date:
     formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
       long: "%d de %B de %Y"
     month_names:
       -

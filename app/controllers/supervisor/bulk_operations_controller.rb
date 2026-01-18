@@ -49,7 +49,7 @@ module Supervisor
     def fetch_selected_devices(device_ids)
       return [] if device_ids.blank?
 
-      Device.joins(loan: :installments)
+      Device.joins(loan: [ :installments, :customer ])
             .where(installments: { status: "overdue" })
             .where(devices: { id: device_ids })
             .select(

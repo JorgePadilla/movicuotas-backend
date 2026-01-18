@@ -3,7 +3,9 @@
 module Vendor
   class DashboardPolicy < ::DashboardPolicy
     def index?
-      user.supervisor? || user.admin?
+      # Only vendedores and admins can access vendor dashboard
+      # Supervisors (cobradores) should NOT access vendor workflows
+      user.vendedor? || user.admin?
     end
 
     class Scope < Scope
