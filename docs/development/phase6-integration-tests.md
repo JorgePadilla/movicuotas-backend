@@ -83,5 +83,5 @@ bin/rails test test/integration/admin_workflow_test.rb:25
 - [x] Admin workflow tests created
 - [x] Supervisor workflow tests created
 - [x] Vendedor workflow tests created
-- [ ] Fix bugs discovered by tests
+- [x] Fix bugs discovered by tests (7 bugs fixed)
 - [ ] All tests passing
