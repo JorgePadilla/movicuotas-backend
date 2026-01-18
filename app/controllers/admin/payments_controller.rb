@@ -2,7 +2,7 @@
 
 module Admin
   class PaymentsController < ApplicationController
-    before_action :set_payment, only: [:show, :edit, :update, :destroy, :verify, :reject]
+    before_action :set_payment, only: [ :show, :edit, :update, :destroy, :verify, :reject ]
 
     # Available bank sources for payments
     BANK_SOURCES = [
@@ -187,14 +187,14 @@ module Admin
       # Admin and Supervisor can see all loans, Vendedor only their branch
       if current_user.admin? || current_user.supervisor?
         Loan.includes(:customer)
-            .where(status: [:active, :overdue])
+            .where(status: [ :active, :overdue ])
             .order("customers.full_name ASC")
-            .map { |l| ["#{l.contract_number} - #{l.customer.full_name}", l.id] }
+            .map { |l| [ "#{l.contract_number} - #{l.customer.full_name}", l.id ] }
       else
         Loan.includes(:customer)
-            .where(status: [:active, :overdue], branch_number: current_user.branch_number)
+            .where(status: [ :active, :overdue ], branch_number: current_user.branch_number)
             .order("customers.full_name ASC")
-            .map { |l| ["#{l.contract_number} - #{l.customer.full_name}", l.id] }
+            .map { |l| [ "#{l.contract_number} - #{l.customer.full_name}", l.id ] }
       end
     end
 

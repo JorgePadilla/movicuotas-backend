@@ -3,9 +3,9 @@
 module Supervisor
   class OverdueDevicesController < ApplicationController
     before_action :set_filters, only: :index
-    before_action :set_device, only: [:show, :block, :confirm_block]
+    before_action :set_device, only: [ :show, :block, :confirm_block ]
 
-    PER_PAGE_OPTIONS = [10, 25, 50].freeze
+    PER_PAGE_OPTIONS = [ 10, 25, 50 ].freeze
     DEFAULT_PER_PAGE = 25
     SORT_COLUMNS = %w[days_overdue total_overdue customer_name first_overdue_date].freeze
     DEFAULT_SORT = "days_overdue"
@@ -142,30 +142,30 @@ module Supervisor
       # Use explicit SQL strings to avoid Brakeman SQL injection warnings
       # @sort_order is validated to only be "ASC" or "DESC" by validate_sort_order
       order_sql = case @sort_column
-                  when "days_overdue"
+      when "days_overdue"
                     @sort_order == "ASC" ? "(CURRENT_DATE - MIN(installments.due_date)) ASC" : "(CURRENT_DATE - MIN(installments.due_date)) DESC"
-                  when "total_overdue"
+      when "total_overdue"
                     @sort_order == "ASC" ? "SUM(installments.amount) ASC" : "SUM(installments.amount) DESC"
-                  when "customer_name"
+      when "customer_name"
                     @sort_order == "ASC" ? "customers.full_name ASC" : "customers.full_name DESC"
-                  when "first_overdue_date"
+      when "first_overdue_date"
                     @sort_order == "ASC" ? "MIN(installments.due_date) ASC" : "MIN(installments.due_date) DESC"
-                  else
+      else
                     "(CURRENT_DATE - MIN(installments.due_date)) DESC"
-                  end
+      end
       devices.order(Arel.sql(order_sql))
     end
 
     def parse_days_range
       case params[:days_range]
       when "1-7"
-        [1, 7]
+        [ 1, 7 ]
       when "8-15"
-        [8, 15]
+        [ 8, 15 ]
       when "16-30"
-        [16, 30]
+        [ 16, 30 ]
       when "30+"
-        [31, 999]
+        [ 31, 999 ]
       else
         nil
       end

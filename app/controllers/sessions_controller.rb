@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
     log_email = email.present? ? "#{email[0..2]}...#{email.split('@').last}" : "blank"
     Rails.logger.info "SessionsController#create - Login attempt for email: #{log_email}"
 
-    user = email.present? ? User.where('email ILIKE ?', email).first : nil
+    user = email.present? ? User.where("email ILIKE ?", email).first : nil
 
     if user
       Rails.logger.info "SessionsController#create - User found: id=#{user.id}, active=#{user.active}, role=#{user.role}"
@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
       session = user.sessions.create!
 
       # Handle "Remember me" checkbox
-      remember_me = params[:remember_me] == '1'
+      remember_me = params[:remember_me] == "1"
       Rails.logger.info "SessionsController#create - Remember me checked: #{remember_me}"
 
       if remember_me

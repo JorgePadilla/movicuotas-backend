@@ -1,7 +1,7 @@
 class AddIndicesForOverdueDevicesOptimization < ActiveRecord::Migration[8.1]
   def change
     # Index for overdue installments filtering (status + due_date for sorting)
-    add_index :installments, [:status, :due_date], name: :idx_installments_status_due_date
+    add_index :installments, [ :status, :due_date ], name: :idx_installments_status_due_date
 
     # Index for installment-to-loan relationships
     add_index :installments, :loan_id, name: :idx_installments_loan_id
@@ -19,6 +19,6 @@ class AddIndicesForOverdueDevicesOptimization < ActiveRecord::Migration[8.1]
     add_index :customers, :full_name, name: :idx_customers_full_name
 
     # Index for device lock status and blocking operations
-    add_index :devices, [:lock_status, :locked_at], name: :idx_devices_lock_status_locked_at
+    add_index :devices, [ :lock_status, :locked_at ], name: :idx_devices_lock_status_locked_at
   end
 end

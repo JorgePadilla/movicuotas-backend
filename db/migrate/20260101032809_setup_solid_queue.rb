@@ -13,7 +13,7 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :last_heartbeat_at
-      t.index [:name, :supervisor_id], unique: true
+      t.index [ :name, :supervisor_id ], unique: true
       t.index :supervisor_id
     end
 
@@ -32,8 +32,8 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.index :active_job_id
       t.index :class_name
       t.index :finished_at
-      t.index [:queue_name, :finished_at]
-      t.index [:scheduled_at, :finished_at]
+      t.index [ :queue_name, :finished_at ]
+      t.index [ :scheduled_at, :finished_at ]
     end
 
     create_table :solid_queue_scheduled_executions do |t|
@@ -45,7 +45,7 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :job_id, unique: true
-      t.index [:scheduled_at, :priority, :job_id]
+      t.index [ :scheduled_at, :priority, :job_id ]
     end
 
     create_table :solid_queue_ready_executions do |t|
@@ -56,8 +56,8 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :job_id, unique: true
-      t.index [:priority, :job_id]
-      t.index [:queue_name, :priority, :job_id]
+      t.index [ :priority, :job_id ]
+      t.index [ :queue_name, :priority, :job_id ]
     end
 
     create_table :solid_queue_claimed_executions do |t|
@@ -67,7 +67,7 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :job_id, unique: true
-      t.index [:process_id, :job_id]
+      t.index [ :process_id, :job_id ]
     end
 
     create_table :solid_queue_failed_executions do |t|
@@ -88,8 +88,8 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
 
       t.timestamps
 
-      t.index [:concurrency_key, :priority, :job_id], name: "index_solid_queue_blocked_executions_for_release"
-      t.index [:expires_at, :concurrency_key]
+      t.index [ :concurrency_key, :priority, :job_id ], name: "index_solid_queue_blocked_executions_for_release"
+      t.index [ :expires_at, :concurrency_key ]
       t.index :job_id, unique: true
     end
 
@@ -118,7 +118,7 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :job_id, unique: true
-      t.index [:task_key, :run_at], unique: true
+      t.index [ :task_key, :run_at ], unique: true
     end
 
     create_table :solid_queue_pauses do |t|
@@ -137,7 +137,7 @@ class SetupSolidQueue < ActiveRecord::Migration[7.1]
       t.timestamps
 
       t.index :expires_at
-      t.index [:key, :value]
+      t.index [ :key, :value ]
       t.index :key, unique: true
     end
 

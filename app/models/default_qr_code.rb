@@ -2,7 +2,7 @@
 
 class DefaultQrCode < ApplicationRecord
   # Associations
-  belongs_to :qr_code_uploaded_by, class_name: 'User', optional: true
+  belongs_to :qr_code_uploaded_by, class_name: "User", optional: true
   has_one_attached :qr_code
 
   # Methods
@@ -17,7 +17,7 @@ class DefaultQrCode < ApplicationRecord
         qr_code.attach(
           io: qr_code_file,
           filename: "default_qr_code_#{Time.current.to_i}.png",
-          content_type: 'image/png'
+          content_type: "image/png"
         )
       elsif qr_code_file.respond_to?(:original_filename) && qr_code_file.respond_to?(:content_type)
         # ActionDispatch::Http::UploadedFile or similar
@@ -32,7 +32,7 @@ class DefaultQrCode < ApplicationRecord
       save!
 
       # Audit log
-      AuditLog.log(uploaded_by_user || User.system_user, 'default_qr_code_uploaded', self, {
+      AuditLog.log(uploaded_by_user || User.system_user, "default_qr_code_uploaded", self, {
         qr_code_filename: qr_code.filename,
         qr_code_uploaded_at: qr_code_uploaded_at
       }) if Rails.env.production? || Rails.env.development?

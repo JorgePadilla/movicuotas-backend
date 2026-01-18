@@ -175,7 +175,7 @@ class VendedorWorkflowTest < IntegrationTestCase
     )
     # The controller may redirect if date_of_birth can't be fetched
     # Just verify it doesn't raise an error
-    assert [200, 302].include?(response.status)
+    assert [ 200, 302 ].include?(response.status)
   end
 
   test "vendedor can calculate payment" do
@@ -188,7 +188,7 @@ class VendedorWorkflowTest < IntegrationTestCase
       date_of_birth: 25.years.ago.to_date.to_s
     }, as: :turbo_stream
     # Accept success or turbo_stream responses
-    assert [200, 302].include?(response.status)
+    assert [ 200, 302 ].include?(response.status)
   end
 
   # ===========================================

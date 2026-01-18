@@ -54,7 +54,7 @@ class Installment < ApplicationRecord
   def update_paid_amount
     # Only count payments that have been verified
     verified_paid = payment_installments.joins(:payment)
-                                        .where(payments: { verification_status: 'verified' })
+                                        .where(payments: { verification_status: "verified" })
                                         .sum(:amount)
     update(paid_amount: verified_paid)
 

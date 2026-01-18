@@ -5,7 +5,7 @@ module Vendor
     PNG_HEADER = "\x89PNG\r\n\x1a\n".b
 
     before_action :set_contract
-    after_action :verify_authorized, except: [:signature, :save_signature]
+    after_action :verify_authorized, except: [ :signature, :save_signature ]
 
     # Step 13: Display contract for review
     def show
@@ -29,12 +29,12 @@ module Vendor
       if params[:signature_data].present?
         # Decode base64 signature data
         signature_data = params[:signature_data]
-        signature_data = signature_data.split(',').last if signature_data.include?(',')
+        signature_data = signature_data.split(",").last if signature_data.include?(",")
         decoded_signature = Base64.decode64(signature_data)
 
         # Validate signature data
         if decoded_signature.blank?
-          flash.now[:alert] = 'La firma está vacía. Por favor, firme en el área designada.'
+          flash.now[:alert] = "La firma está vacía. Por favor, firme en el área designada."
           render :signature, status: :unprocessable_entity
           return
         end
@@ -48,7 +48,7 @@ module Vendor
         end
 
         # Create a temporary file
-        temp_file = Tempfile.new(['signature', '.png'], encoding: 'ascii-8bit')
+        temp_file = Tempfile.new([ "signature", ".png" ], encoding: "ascii-8bit")
         temp_file.write(decoded_signature)
         temp_file.flush
         temp_file.rewind
@@ -62,15 +62,15 @@ module Vendor
           Rails.logger.info "Contract sign! result: #{success.inspect}"
           if success
             # Update loan status if needed (loan should already be active)
-            @contract.loan.update(status: 'active') if @contract.loan.draft?
+            @contract.loan.update(status: "active") if @contract.loan.draft?
 
             # Create notification for customer (non-blocking - don't prevent redirect if fails)
             begin
               Notification.create!(
                 customer: @contract.loan.customer,
-                title: 'Contrato Firmado',
+                title: "Contrato Firmado",
                 body: "Tu contrato de crédito #{@contract.loan.contract_number} ha sido firmado exitosamente. Tu crédito está ahora activo.",
-                notification_type: 'contract_signed',
+                notification_type: "contract_signed",
                 sent_at: Time.current
               )
             rescue StandardError => notification_error
@@ -80,27 +80,27 @@ module Vendor
 
             # Redirect to down payment collection page (Step 14.5)
             redirect_to vendor_contract_down_payment_path(@contract),
-                        notice: 'Firma guardada exitosamente. Ahora recolecte la prima.'
+                        notice: "Firma guardada exitosamente. Ahora recolecte la prima."
           else
-            flash.now[:alert] = 'Error al guardar la firma. Intente nuevamente.'
+            flash.now[:alert] = "Error al guardar la firma. Intente nuevamente."
             render :signature, status: :unprocessable_entity
           end
         rescue ArgumentError => e
           Rails.logger.error "ActiveStorage attachment failed: #{e.class.name}: #{e.message}"
           Rails.logger.error "Tempfile details: path=#{temp_file.path}, size=#{temp_file.size}, closed?=#{temp_file.closed?}"
-          flash.now[:alert] = 'Error al procesar la firma. Por favor, intente nuevamente.'
+          flash.now[:alert] = "Error al procesar la firma. Por favor, intente nuevamente."
           render :signature, status: :unprocessable_entity
         rescue StandardError => e
           Rails.logger.error "Unexpected error saving signature: #{e.class.name}: #{e.message}"
           Rails.logger.error e.backtrace.join("\n")
-          flash.now[:alert] = 'Error inesperado al guardar la firma. Por favor, contacte al administrador.'
+          flash.now[:alert] = "Error inesperado al guardar la firma. Por favor, contacte al administrador."
           render :signature, status: :unprocessable_entity
         end
 
         temp_file.close
         temp_file.unlink
       else
-        flash.now[:alert] = 'No se detectó firma. Por favor, firme en el área designada.'
+        flash.now[:alert] = "No se detectó firma. Por favor, firme en el área designada."
         render :signature, status: :unprocessable_entity
       end
     end
@@ -117,11 +117,11 @@ module Vendor
 
         send_data pdf_data,
                   filename: filename,
-                  type: 'application/pdf',
-                  disposition: 'attachment'
+                  type: "application/pdf",
+                  disposition: "attachment"
       rescue StandardError => e
         Rails.logger.error "PDF generation failed: #{e.message}"
-        flash[:alert] = 'Error al generar el PDF. Por favor, intente nuevamente.'
+        flash[:alert] = "Error al generar el PDF. Por favor, intente nuevamente."
         redirect_to vendor_contract_path(@contract)
       end
     end
@@ -152,7 +152,7 @@ module Vendor
         @loan = @contract.loan
       else
         redirect_to vendor_customer_search_path,
-                    alert: 'No se especificó préstamo o contrato.'
+                    alert: "No se especificó préstamo o contrato."
       end
     end
 

@@ -45,14 +45,14 @@ class ContractGeneratorService
 
   # Generate PDF using Prawn
   def generate_pdf
-    require 'prawn'
-    require 'prawn/table'
+    require "prawn"
+    require "prawn/table"
     Prawn::Fonts::AFM.hide_m17n_warning = true
 
-    Prawn::Document.new(page_size: 'LETTER', page_layout: :portrait, margin: 72) do |pdf|
+    Prawn::Document.new(page_size: "LETTER", page_layout: :portrait, margin: 72) do |pdf|
       # Header with logo and title
       pdf.font_size 24
-      pdf.text 'CONTRATO DE CRÉDITO', align: :center, style: :bold, color: '125282'
+      pdf.text "CONTRATO DE CRÉDITO", align: :center, style: :bold, color: "125282"
       pdf.move_down 20
 
       # Contract number and date
@@ -88,25 +88,25 @@ class ContractGeneratorService
       # Use device data if available, otherwise fall back to credit_application data
       device_brand_model = if @device.present?
                              "#{@device.brand} / #{@device.model}"
-                           elsif @credit_application&.selected_phone_model.present?
+      elsif @credit_application&.selected_phone_model.present?
                              "#{@credit_application.selected_phone_model.brand} / #{@credit_application.selected_phone_model.model}"
-                           else
-                             '_________________________________________'
-                           end
+      else
+                             "_________________________________________"
+      end
       device_color = if @device.present? && @device.color.present?
                        @device.color
-                     elsif @credit_application&.selected_color.present?
+      elsif @credit_application&.selected_color.present?
                        @credit_application.selected_color
-                     else
-                       '_________________________________________'
-                     end
+      else
+                       "_________________________________________"
+      end
       device_imei = if @device.present?
                       @device.imei
-                    elsif @credit_application&.selected_imei.present?
+      elsif @credit_application&.selected_imei.present?
                       @credit_application.selected_imei
-                    else
-                      '_________________________________________________'
-                    end
+      else
+                      "_________________________________________________"
+      end
       pdf.text "Marca / Modelo: #{device_brand_model}"
       pdf.text "Color: #{device_color}"
       pdf.text "IMEI: #{device_imei}"
@@ -125,15 +125,15 @@ class ContractGeneratorService
 
       # Installment schedule
       pdf.font_size 16
-      pdf.text 'CRONOGRAMA DE PAGOS', style: :bold
+      pdf.text "CRONOGRAMA DE PAGOS", style: :bold
       pdf.move_down 10
 
       if @loan.installments.any?
-        data = [['#', 'Fecha Vencimiento', 'Monto', 'Estado']]
+        data = [ [ "#", "Fecha Vencimiento", "Monto", "Estado" ] ]
         @loan.installments.order(:installment_number).each do |inst|
           data << [
             inst.installment_number,
-            inst.due_date.strftime('%d/%m/%Y'),
+            inst.due_date.strftime("%d/%m/%Y"),
             format_currency(inst.amount.ceil),
             I18n.t("installment.status.#{inst.status}", default: inst.status).upcase
           ]
@@ -141,7 +141,7 @@ class ContractGeneratorService
 
         pdf.table(data, header: true, width: pdf.bounds.width) do |table|
           table.row(0).font_style = :bold
-          table.row(0).background_color = 'f3f4f6'
+          table.row(0).background_color = "f3f4f6"
           table.columns(0..3).align = :center
           table.columns(1).align = :left
         end
@@ -286,23 +286,23 @@ class ContractGeneratorService
 
       # Signature lines
       pdf.font_size 12
-      pdf.text '___________________________', align: :left
-      pdf.text 'EL CLIENTE', align: :left
+      pdf.text "___________________________", align: :left
+      pdf.text "EL CLIENTE", align: :left
       pdf.text "#{@customer.full_name}", align: :left
       pdf.text "No. Identidad: #{@customer.identification_number}", align: :left
       pdf.move_down 20
-      pdf.text '___________________________', align: :right
-      pdf.text 'LA EMPRESA', align: :right
-      pdf.text 'MOVICUOTAS', align: :right
+      pdf.text "___________________________", align: :right
+      pdf.text "LA EMPRESA", align: :right
+      pdf.text "MOVICUOTAS", align: :right
       pdf.text "Representante: #{@loan.user&.full_name || 'Supervisor Autorizado'}", align: :right
       pdf.text "Sucursal: #{@loan.branch_number}", align: :right
 
       # Footer
       pdf.repeat(:all) do
-        pdf.bounding_box([pdf.bounds.left, pdf.bounds.bottom + 40], width: pdf.bounds.width) do
+        pdf.bounding_box([ pdf.bounds.left, pdf.bounds.bottom + 40 ], width: pdf.bounds.width) do
           pdf.font_size 8
           pdf.text "Contrato generado automáticamente el #{Time.current.strftime('%d/%m/%Y %H:%M')}. Documento válido sin firma física.",
-                   align: :center, color: '6b7280'
+                   align: :center, color: "6b7280"
         end
       end
     end.render

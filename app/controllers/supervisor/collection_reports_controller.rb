@@ -131,32 +131,32 @@ module Supervisor
     def generate_csv
       CSV.generate(headers: true) do |csv|
         # Summary section
-        csv << ["Resumen de Cobranza"]
-        csv << ["Total Cuotas Vencidas", @report_data[:summary][:total_overdue_count]]
-        csv << ["Monto Total en Mora (RD$)", helpers.number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2)]
-        csv << ["Dispositivos Bloqueados", @report_data[:summary][:devices_blocked]]
-        csv << ["Dispositivos en Riesgo", @report_data[:summary][:devices_at_risk]]
+        csv << [ "Resumen de Cobranza" ]
+        csv << [ "Total Cuotas Vencidas", @report_data[:summary][:total_overdue_count] ]
+        csv << [ "Monto Total en Mora (RD$)", helpers.number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2) ]
+        csv << [ "Dispositivos Bloqueados", @report_data[:summary][:devices_blocked] ]
+        csv << [ "Dispositivos en Riesgo", @report_data[:summary][:devices_at_risk] ]
         csv << []
 
         # By days breakdown
-        csv << ["Desglose por Días de Mora"]
+        csv << [ "Desglose por Días de Mora" ]
         csv << %w[Rango Cantidad Monto]
         @report_data[:by_days].each do |range, data|
-          csv << [range, data[:count], helpers.number_with_precision(data[:total], precision: 2)]
+          csv << [ range, data[:count], helpers.number_with_precision(data[:total], precision: 2) ]
         end
         csv << []
 
         # By branch breakdown
-        csv << ["Desglose por Sucursal"]
-        csv << ["Sucursal", "Préstamos", "Monto Total"]
+        csv << [ "Desglose por Sucursal" ]
+        csv << [ "Sucursal", "Préstamos", "Monto Total" ]
         @report_data[:by_branch].each do |branch_data|
-          csv << [branch_data[:branch], branch_data[:loan_count], helpers.number_with_precision(branch_data[:total_amount], precision: 2)]
+          csv << [ branch_data[:branch], branch_data[:loan_count], helpers.number_with_precision(branch_data[:total_amount], precision: 2) ]
         end
         csv << []
 
         # Recent blocks
-        csv << ["Bloqueos Recientes"]
-        csv << ["IMEI", "Cliente", "Contrato", "Dispositivo", "Fecha Bloqueo"]
+        csv << [ "Bloqueos Recientes" ]
+        csv << [ "IMEI", "Cliente", "Contrato", "Dispositivo", "Fecha Bloqueo" ]
         @report_data[:recent_blocks].each do |block|
           csv << [
             block[:imei],

@@ -10,6 +10,6 @@ class AddCustomerIdToDeviceTokens < ActiveRecord::Migration[8.1]
     change_column_null :device_tokens, :user_id, true
 
     # Add index for customer lookups
-    add_index :device_tokens, [:customer_id, :active], name: "idx_device_tokens_by_customer_and_status"
+    add_index :device_tokens, [ :customer_id, :active ], name: "idx_device_tokens_by_customer_and_status"
   end
 end

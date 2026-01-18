@@ -19,7 +19,7 @@ class CreateDeviceTokens < ActiveRecord::Migration[8.1]
 
     add_index :device_tokens, :token, unique: true
     add_index :device_tokens, :active
-    add_index :device_tokens, [:user_id, :active], name: "idx_device_tokens_by_user_and_status"
-    add_index :device_tokens, [:platform, :active], name: "idx_device_tokens_by_platform_and_status"
+    add_index :device_tokens, [ :user_id, :active ], name: "idx_device_tokens_by_user_and_status"
+    add_index :device_tokens, [ :platform, :active ], name: "idx_device_tokens_by_platform_and_status"
   end
 end

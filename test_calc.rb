@@ -24,13 +24,13 @@ if calculator.valid?
   puts "Expected: 404.7261306"
   puts "Difference: #{result[:installment_amount] - 404.7261306}"
   puts "Age group: #{result[:age_group]}"
-  
+
   # Manual calculation for verification
   puts "\n=== Manual Calculation ==="
   p = 2450.0  # financed amount
   r = 0.125   # 12.5% biweekly rate
   n = 12.0    # installments
-  
+
   # PMT = P * (r(1+r)^n) / ((1+r)^n - 1)
   numerator = r * (1 + r) ** n
   denominator = (1 + r) ** n - 1

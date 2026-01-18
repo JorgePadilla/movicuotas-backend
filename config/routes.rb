@@ -40,7 +40,7 @@ Rails.application.routes.draw do
     # Admin management routes (Phase 3)
     resources :users  # User management
     resources :customers  # Customer management
-    resources :loans, only: [:index, :show]  # Loan management (view only)
+    resources :loans, only: [ :index, :show ]  # Loan management (view only)
     resources :payments do  # Payment management (Admin/Supervisor: full CRUD, Vendedor: view only)
       member do
         post :verify
@@ -52,15 +52,15 @@ Rails.application.routes.draw do
         post :mark_paid
       end
     end
-    resources :audit_logs, only: [:index, :show]  # Audit log viewing (Admin only)
+    resources :audit_logs, only: [ :index, :show ]  # Audit log viewing (Admin only)
     resources :phone_models  # Phone catalog management (Admin only)
-    resources :contracts, only: [:index, :show]  # Contract management (QR handled by default_qr_codes)
-    resources :default_qr_codes, only: [:index, :edit, :update] do  # Default QR code for all contracts
+    resources :contracts, only: [ :index, :show ]  # Contract management (QR handled by default_qr_codes)
+    resources :default_qr_codes, only: [ :index, :edit, :update ] do  # Default QR code for all contracts
       member do
         get :download
       end
     end
-    resources :reports, only: [:index] do  # Reports & analytics
+    resources :reports, only: [ :index ] do  # Reports & analytics
       collection do
         get :branch_analytics
         get :revenue_report
@@ -68,7 +68,7 @@ Rails.application.routes.draw do
         get :export_report
       end
     end
-    resources :jobs, only: [:index, :show] do  # Background job monitoring (Phase 5)
+    resources :jobs, only: [ :index, :show ] do  # Background job monitoring (Phase 5)
       collection do
         post :trigger
       end
@@ -79,7 +79,7 @@ Rails.application.routes.draw do
     end
 
     # Down payment verification (admin verifies deposit receipts)
-    resources :down_payments, only: [:index, :show] do
+    resources :down_payments, only: [ :index, :show ] do
       member do
         post :verify
         post :reject
@@ -93,7 +93,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index", as: :dashboard
 
     # Contract routes (Steps 13-14)
-    resources :contracts, only: [:show] do
+    resources :contracts, only: [ :show ] do
       member do
         get :signature
         post :save_signature
@@ -101,11 +101,11 @@ Rails.application.routes.draw do
         get :success  # Step 15: Success confirmation after signature
       end
       # Down payment collection (Step 14.5: between signature and success)
-      resource :down_payment, only: [:show, :update], controller: "down_payments"
+      resource :down_payment, only: [ :show, :update ], controller: "down_payments"
     end
 
     # Device selection (Step 10)
-    resources :device_selections, only: [:show, :update], param: :credit_application_id
+    resources :device_selections, only: [ :show, :update ], param: :credit_application_id
     # Confirmation (Step 11) - will be implemented in phase2-vendor-confirmation branch
     get "device_selections/:credit_application_id/confirmation", to: "device_selections#confirmation", as: :device_selection_confirmation
 
@@ -154,7 +154,7 @@ Rails.application.routes.draw do
   # Supervisor namespace - for payment verification, device blocking, collection reports
   namespace :supervisor do
     get "dashboard", to: "dashboard#index"
-    resources :overdue_devices, only: [:index, :show] do
+    resources :overdue_devices, only: [ :index, :show ] do
       member do
         get :block
         post :confirm_block
@@ -174,7 +174,7 @@ Rails.application.routes.draw do
       get "auth/forgot_contract", to: "auth#forgot_contract"
 
       # Device tokens for push notifications (FCM)
-      resources :device_tokens, only: [:create, :destroy] do
+      resources :device_tokens, only: [ :create, :destroy ] do
         collection do
           put :refresh
         end

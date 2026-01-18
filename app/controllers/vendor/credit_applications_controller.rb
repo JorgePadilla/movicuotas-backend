@@ -191,7 +191,7 @@ module Vendor
       if @credit_application.otp_verified? && !@credit_application.otp_expired?
         redirect_to employment_vendor_credit_application_path(@credit_application),
                     notice: "Verificacion ya completada."
-        return
+        nil
       end
       # Render verify_otp view - shows method selection if OTP not sent, code entry if sent
     end

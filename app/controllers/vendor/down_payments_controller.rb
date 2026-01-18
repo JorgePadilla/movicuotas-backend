@@ -14,7 +14,7 @@ module Vendor
       if @loan.down_payment_collected?
         redirect_to success_vendor_contract_path(@contract),
                     notice: "La prima ya fue registrada."
-        return
+        nil
       end
     end
 

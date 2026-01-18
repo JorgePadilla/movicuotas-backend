@@ -18,7 +18,7 @@ module Api
         return unauthorized_error("Invalid token") unless decoded
 
         @current_customer = Customer.find_by(id: decoded[:customer_id])
-        return unauthorized_error("Customer not found") unless @current_customer
+        unauthorized_error("Customer not found") unless @current_customer
       end
 
       def extract_token_from_header

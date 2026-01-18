@@ -2,7 +2,7 @@
 
 module Admin
   class LoansController < ApplicationController
-    before_action :set_loan, only: [:show]
+    before_action :set_loan, only: [ :show ]
 
     def index
       @loans = policy_scope(Loan).order(created_at: :desc)

@@ -21,10 +21,10 @@ class EnhanceNotificationsForPhase5 < ActiveRecord::Migration[7.1]
     end
 
     # Add constraints and indices
-    add_index :notifications, [:recipient_id, :recipient_type, :created_at], name: "idx_notifications_by_recipient_and_date", if_not_exists: true
-    add_index :notifications, [:status, :sent_at], name: "idx_notifications_pending_unsent", if_not_exists: true
-    add_index :notifications, [:notification_type, :created_at], name: "idx_notifications_by_type_and_date", if_not_exists: true
-    add_index :notifications, [:created_at], name: "idx_notifications_recent", if_not_exists: true
+    add_index :notifications, [ :recipient_id, :recipient_type, :created_at ], name: "idx_notifications_by_recipient_and_date", if_not_exists: true
+    add_index :notifications, [ :status, :sent_at ], name: "idx_notifications_pending_unsent", if_not_exists: true
+    add_index :notifications, [ :notification_type, :created_at ], name: "idx_notifications_by_type_and_date", if_not_exists: true
+    add_index :notifications, [ :created_at ], name: "idx_notifications_recent", if_not_exists: true
     add_index :notifications, :delivery_method, if_not_exists: true
 
     # Make customer_id nullable (since we support polymorphic recipients now)

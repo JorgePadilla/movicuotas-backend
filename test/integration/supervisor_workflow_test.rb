@@ -113,7 +113,7 @@ class SupervisorWorkflowTest < IntegrationTestCase
   test "supervisor can access bulk operations" do
     sign_in_supervisor
     get supervisor_bulk_operations_path, params: {
-      device_ids: [devices(:device_one).id, devices(:device_two).id]
+      device_ids: [ devices(:device_one).id, devices(:device_two).id ]
     }
     assert_response :success
   end

@@ -200,7 +200,7 @@ class NotificationTest < ActiveSupport::TestCase
 
     notification = Notification.send_payment_reminder(@customer, installment)
 
-    assert_includes notification.body, installment.due_date.strftime('%d/%m/%Y')
+    assert_includes notification.body, installment.due_date.strftime("%d/%m/%Y")
   end
 
   test "send_payment_reminder stores metadata" do
@@ -402,7 +402,7 @@ class NotificationTest < ActiveSupport::TestCase
           name: "Test",
           nested: { key: "value" }
         },
-        amounts: [100, 200, 300]
+        amounts: [ 100, 200, 300 ]
       }
     )
 

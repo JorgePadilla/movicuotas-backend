@@ -193,7 +193,7 @@ class ContractTest < ActiveSupport::TestCase
     ))
 
     # Create a fake signature file
-    signature_file = Tempfile.new(["sig", ".png"], encoding: 'BINARY')
+    signature_file = Tempfile.new([ "sig", ".png" ], encoding: "BINARY")
     signature_file.write("fake image data")
     signature_file.rewind
 
@@ -265,7 +265,7 @@ class ContractTest < ActiveSupport::TestCase
   test "upload_qr_code! method attaches QR code and sets metadata" do
     contract = @contract
 
-    qr_file = Tempfile.new(["qr", ".png"], encoding: 'BINARY')
+    qr_file = Tempfile.new([ "qr", ".png" ], encoding: "BINARY")
     qr_file.write("fake qr data")
     qr_file.rewind
 

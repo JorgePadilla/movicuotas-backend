@@ -41,7 +41,7 @@ class PhoneModelTest < ActiveSupport::TestCase
   end
 
   test "accepts valid brand values" do
-    brands = ["Apple", "Samsung", "Xiaomi", "Nokia", "Motorola"]
+    brands = [ "Apple", "Samsung", "Xiaomi", "Nokia", "Motorola" ]
     brands.each do |brand|
       phone = PhoneModel.new(brand: brand, model: "Test", price: 1000.00)
       assert phone.valid? || phone.errors[:model].present?, "Brand #{brand} should be valid"
@@ -106,7 +106,7 @@ class PhoneModelTest < ActiveSupport::TestCase
   end
 
   test "accepts valid prices" do
-    valid_prices = [0.01, 100.00, 5000.00, 50000.00]
+    valid_prices = [ 0.01, 100.00, 5000.00, 50000.00 ]
     valid_prices.each do |price|
       phone = PhoneModel.new(
         brand: "Test",
@@ -253,7 +253,7 @@ class PhoneModelTest < ActiveSupport::TestCase
     assert available.all? { |phone| phone.active? }
 
     # Check ordering
-    brands_and_models = available.map { |p| [p.brand, p.model] }
+    brands_and_models = available.map { |p| [ p.brand, p.model ] }
     assert_equal brands_and_models.sort, brands_and_models
   end
 

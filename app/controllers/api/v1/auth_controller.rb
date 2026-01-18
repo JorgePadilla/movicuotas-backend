@@ -1,7 +1,7 @@
 module Api
   module V1
     class AuthController < BaseController
-      skip_before_action :authenticate_api_user, only: [:login, :forgot_contract]
+      skip_before_action :authenticate_api_user, only: [ :login, :forgot_contract ]
 
       def login
         customer = Customer.find_by(identification_number: login_params[:identification_number])

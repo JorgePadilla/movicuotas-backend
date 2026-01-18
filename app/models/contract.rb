@@ -1,7 +1,7 @@
 class Contract < ApplicationRecord
   # Associations
   belongs_to :loan, optional: true
-  belongs_to :qr_code_uploaded_by, class_name: 'User', optional: true
+  belongs_to :qr_code_uploaded_by, class_name: "User", optional: true
   has_one_attached :contract_document
   has_one_attached :signature_image
   has_one_attached :qr_code
@@ -27,7 +27,7 @@ class Contract < ApplicationRecord
         signature_image.attach(
           io: signature_image_file,
           filename: "signature_#{Time.current.to_i}.png",
-          content_type: 'image/png'
+          content_type: "image/png"
         )
       elsif signature_image_file.respond_to?(:original_filename) && signature_image_file.respond_to?(:content_type)
         # ActionDispatch::Http::UploadedFile or similar
@@ -42,7 +42,7 @@ class Contract < ApplicationRecord
       save!
 
       # Audit log (doesn't affect return value)
-      AuditLog.log(user || User.system_user, 'contract_signed', self, {
+      AuditLog.log(user || User.system_user, "contract_signed", self, {
         signed_by_name: signed_by_name,
         signed_at: signed_at,
         loan_id: loan_id
@@ -74,7 +74,7 @@ class Contract < ApplicationRecord
         qr_code.attach(
           io: qr_code_file,
           filename: "qr_code_#{Time.current.to_i}.png",
-          content_type: 'image/png'
+          content_type: "image/png"
         )
       elsif qr_code_file.respond_to?(:original_filename) && qr_code_file.respond_to?(:content_type)
         # ActionDispatch::Http::UploadedFile or similar
@@ -89,7 +89,7 @@ class Contract < ApplicationRecord
       save!
 
       # Audit log
-      AuditLog.log(uploaded_by_user || User.system_user, 'qr_code_uploaded', self, {
+      AuditLog.log(uploaded_by_user || User.system_user, "qr_code_uploaded", self, {
         qr_code_filename: qr_code.filename,
         qr_code_uploaded_at: qr_code_uploaded_at,
         loan_id: loan_id
