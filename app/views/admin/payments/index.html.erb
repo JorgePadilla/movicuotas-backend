@@ -56,9 +56,9 @@
         <%= f.label :date_to, "Hasta:", class: "block text-xs font-medium text-gray-600" %>
         <%= f.date_field :date_to, value: params[:date_to], class: "mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
       </div>
-      <%= f.hidden_field :search, value: params[:search]) %>
-      <%= f.hidden_field :status, value: params[:status]) %>
-      <%= f.hidden_field :method, value: params[:method]) %>
+      <%= f.hidden_field :search, value: params[:search] %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <%= f.hidden_field :method, value: params[:method] %>
       <%= f.submit "Filtrar", class: "w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
     <% end %>
   </div>

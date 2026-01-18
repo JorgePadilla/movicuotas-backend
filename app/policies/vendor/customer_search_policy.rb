@@ -3,7 +3,8 @@
 module Vendor
   class CustomerSearchPolicy < ApplicationPolicy
     def index?
-      user.supervisor? || user.admin?
+      # Vendedores, supervisors, and admins can access customer search
+      user.vendedor? || user.supervisor? || user.admin?
     end
 
     class Scope < Scope

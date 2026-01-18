@@ -11,7 +11,8 @@ module Supervisor
     DEFAULT_SORT = "days_overdue"
 
     def index
-      authorize Device, policy_class: DevicePolicy
+      authorize Device, :index?, policy_class: DevicePolicy
+      skip_policy_scope
       @devices = fetch_overdue_devices
       @total_overdue_amount = calculate_total_overdue_amount
       @total_overdue_count = @devices.total_count
@@ -108,7 +109,7 @@ module Supervisor
 
     def apply_filter_min_days(devices)
       return devices unless @min_days.present? && @min_days > 0
-      devices.where("(CURRENT_DATE - MIN(installments.due_date)) >= ?", @min_days)
+      devices.having("(CURRENT_DATE - MIN(installments.due_date)) >= ?", @min_days)
     end
 
     def apply_filter_min_amount(devices)
@@ -134,7 +135,7 @@ module Supervisor
     def apply_filter_days_range(devices)
       return devices unless @days_range.present?
       min_days, max_days = @days_range
-      devices.where("(CURRENT_DATE - MIN(installments.due_date)) BETWEEN ? AND ?", min_days, max_days)
+      devices.having("(CURRENT_DATE - MIN(installments.due_date)) BETWEEN ? AND ?", min_days, max_days)
     end
 
     def apply_sorting(devices)

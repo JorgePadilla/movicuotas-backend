@@ -30,8 +30,8 @@
     <!-- Branch filter -->
     <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-2" do |f| %>
       <%= f.select :branch, [['Todas las sucursales', '']] + @branches.map { |b| [b, b] }, { selected: params[:branch] }, class: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm" %>
-      <%= f.hidden_field :search, value: params[:search]) %>
-      <%= f.hidden_field :status, value: params[:status]) %>
+      <%= f.hidden_field :search, value: params[:search] %>
+      <%= f.hidden_field :status, value: params[:status] %>
       <%= f.submit "Filtrar", class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors cursor-pointer" %>
     <% end %>
   </div>

@@ -7,7 +7,12 @@ module Vendor
     def show
       @application_number = params[:application_number]
       @credit_application = find_approved_application if @application_number.present?
-      authorize @credit_application if @credit_application.present?
+      if @credit_application.present?
+        authorize @credit_application
+      else
+        skip_authorization
+        skip_policy_scope
+      end
     end
 
     # Process application number submission
@@ -19,6 +24,8 @@ module Vendor
         authorize @credit_application
         render :show
       else
+        skip_authorization
+        skip_policy_scope
         flash.now[:alert] = "No se encontró una solicitud aprobada con el número #{@application_number}. Verifica el número e intenta nuevamente."
         render :show, status: :unprocessable_entity
       end

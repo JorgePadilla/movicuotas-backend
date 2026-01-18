@@ -201,13 +201,13 @@ module Admin
         loans.each do |loan|
           csv << [
             loan.contract_number,
-            loan.customer.full_name,
-            loan.status.titleize,
+            loan.customer&.full_name || 'N/A',
+            loan.status&.titleize || 'N/A',
             loan.total_amount,
             loan.total_paid,
             loan.remaining_balance,
             loan.number_of_installments,
-            loan.start_date.strftime('%d/%m/%Y'),
+            loan.start_date&.strftime('%d/%m/%Y') || 'N/A',
             loan.branch_number
           ]
         end

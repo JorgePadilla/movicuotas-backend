@@ -3,6 +3,9 @@
 module Supervisor
   class BulkOperationsController < ApplicationController
     def show
+      authorize Device, :lock?, policy_class: DevicePolicy
+      skip_policy_scope
+
       @device_ids = params[:device_ids]&.split(",") || []
       @devices = fetch_selected_devices(@device_ids)
       @total_amount = @devices.sum { |d| d.total_overdue.to_f }
@@ -12,7 +15,8 @@ module Supervisor
       @device_ids = params[:device_ids]&.split(",") || []
       @devices = fetch_selected_devices(@device_ids)
 
-      authorize Device, policy_class: DevicePolicy
+      authorize Device, :lock?, policy_class: DevicePolicy
+      skip_policy_scope
 
       results = {
         success: [],

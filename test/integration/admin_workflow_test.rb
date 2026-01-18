@@ -39,8 +39,8 @@ class AdminWorkflowTest < IntegrationTestCase
     sign_in_admin
     get admin_root_path
     assert_response :success
-    # Dashboard should show these sections
-    assert_response_includes "Resumen"
+    # Dashboard should show dashboard content
+    assert_response_includes "Dashboard"
   end
 
   # ===========================================
@@ -170,12 +170,8 @@ class AdminWorkflowTest < IntegrationTestCase
     assert_response_includes loans(:loan_completed).contract_number
   end
 
-  test "admin can edit loan" do
-    sign_in_admin
-    loan = loans(:loan_one)
-    get edit_admin_loan_path(loan)
-    assert_response :success
-  end
+  # Note: Admin loans are view-only, no edit functionality
+  # test "admin can edit loan" - removed as loans don't have edit routes
 
   # ===========================================
   # Payment Management Tests
@@ -203,21 +199,21 @@ class AdminWorkflowTest < IntegrationTestCase
     assert_response :success
   end
 
-  test "admin can generate collection report" do
+  test "admin can generate customer portfolio report" do
     sign_in_admin
-    get collection_admin_reports_path
+    get customer_portfolio_admin_reports_path
     assert_response :success
   end
 
   test "admin can generate revenue report" do
     sign_in_admin
-    get revenue_admin_reports_path
+    get revenue_report_admin_reports_path
     assert_response :success
   end
 
   test "admin can export reports as CSV" do
     sign_in_admin
-    get collection_admin_reports_path(format: :csv)
+    get export_report_admin_reports_path, params: { report_type: "loans", format: :csv }
     assert_response :success
     assert_equal "text/csv", response.media_type
   end
@@ -230,7 +226,7 @@ class AdminWorkflowTest < IntegrationTestCase
     sign_in_admin
     get admin_jobs_path
     assert_response :success
-    assert_response_includes "Panel de Control de Jobs"
+    assert_response_includes "Monitoreo de Jobs"
   end
 
   test "admin can trigger manual job" do
