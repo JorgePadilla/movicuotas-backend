@@ -32,6 +32,9 @@
     <%= link_to "Préstamos y Pagos", admin_loans_path,
         class: "#{controller_name == 'loans' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
+    <%= link_to "Dispositivos", admin_devices_path,
+        class: "#{controller_name == 'devices' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
+
     <%= link_to "Monitoreo de Jobs", admin_jobs_path,
         class: "#{controller_name == 'jobs' ? 'bg-[#125282] text-white' : 'bg-white border border-[#125282] text-[#125282] hover:text-white'} #{button_class}" %>
 
