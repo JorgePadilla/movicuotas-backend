@@ -3,15 +3,12 @@
 module Vendor
   class MdmChecklistsController < ApplicationController
     # Step 17: Device Configuration Checklist
-    # This controller handles the final verification that MDM configuration is complete
-    # before returning the device to the customer.
+    # This controller handles the final verification before returning the device.
     #
     # Flow:
-    # 1. Display checklist with three verification items:
-    #    - BluePrint scanned and configuration completed
-    #    - MDM app installed and confirmed
+    # 1. Display checklist with verification:
     #    - MoviCuotas app activated with activation code
-    # 2. User marks items as complete
+    # 2. User marks item as complete
     # 3. User submits checklist to finalize the sale and go to Thank You page (Step 18)
 
     before_action :set_mdm_blueprint
@@ -30,11 +27,9 @@ module Vendor
       @loan = @device.loan
       @customer = @loan.customer
 
-      # Validate that all required checklist items are checked
-      unless checklist_params[:blueprint_scanned] == "1" &&
-             checklist_params[:mdm_installed] == "1" &&
-             checklist_params[:movicuotas_installed] == "1"
-        flash.now[:alert] = "Por favor marca todos los elementos del checklist antes de continuar."
+      # Validate that the checklist item is checked
+      unless checklist_params[:movicuotas_installed] == "1"
+        flash.now[:alert] = "Por favor confirma que la app MOVICUOTAS está activada antes de continuar."
         return render :show, status: :unprocessable_entity
       end
 
@@ -66,11 +61,7 @@ module Vendor
     end
 
     def checklist_params
-      params.require(:mdm_checklist).permit(
-        :blueprint_scanned,
-        :mdm_installed,
-        :movicuotas_installed
-      )
+      params.require(:mdm_checklist).permit(:movicuotas_installed)
     end
 
     def clear_session_data

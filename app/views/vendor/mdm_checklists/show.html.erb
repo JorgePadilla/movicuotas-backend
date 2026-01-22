@@ -91,36 +91,10 @@
         <% end %>
 
         <%# Checklist Items %>
-        <div class="bg-white border-2 border-gray-200 rounded-xl p-4 md:p-6 space-y-3 md:space-y-4">
-          <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Lista de Verificación</h3>
+        <div class="bg-white border-2 border-gray-200 rounded-xl p-4 md:p-6">
+          <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Verificación Final</h3>
 
-          <%# Item 1: BluePrint Scanned %>
-          <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
-            <div class="flex items-center h-6 mt-1">
-              <%= f.check_box :blueprint_scanned, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
-            </div>
-            <div class="ml-3 md:ml-4 flex-1">
-              <label class="flex items-center cursor-pointer">
-                <span class="text-base md:text-lg font-semibold text-gray-900">BluePrint escaneado</span>
-              </label>
-              <p class="text-xs md:text-sm text-gray-600 mt-1">El cliente ha escaneado el código QR y el MDM ha iniciado la configuración.</p>
-            </div>
-          </div>
-
-          <%# Item 2: MDM App Installed %>
-          <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
-            <div class="flex items-center h-6 mt-1">
-              <%= f.check_box :mdm_installed, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
-            </div>
-            <div class="ml-3 md:ml-4 flex-1">
-              <label class="flex items-center cursor-pointer">
-                <span class="text-base md:text-lg font-semibold text-gray-900">App MDM instalada</span>
-              </label>
-              <p class="text-xs md:text-sm text-gray-600 mt-1">La app MDM muestra "Dispositivo protegido".</p>
-            </div>
-          </div>
-
-          <%# Item 3: MoviCuotas App Activated %>
+          <%# Item: MoviCuotas App Activated %>
           <div class="flex items-start p-3 md:p-4 border-2 border-gray-200 rounded-lg hover:bg-blue-50 transition-colors duration-200">
             <div class="flex items-center h-6 mt-1">
               <%= f.check_box :movicuotas_installed, { class: "w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#125282] text-[#125282] cursor-pointer" }, "1", "0" %>
@@ -146,10 +120,9 @@
               <h3 class="text-xs md:text-sm font-medium text-yellow-800">Importante</h3>
               <div class="mt-2 text-xs md:text-sm text-yellow-700">
                 <ul class="list-disc pl-4 md:pl-5 space-y-1">
-                  <li>No entregues el dispositivo hasta completar el checklist.</li>
-                  <li>Si hay problemas con MDM, escanea el QR nuevamente.</li>
-                  <li>Confirma que el cliente tenga su número registrado.</li>
-                  <li>Al completar, el dispositivo quedará protegido.</li>
+                  <li>No entregues el dispositivo hasta que la app esté activada.</li>
+                  <li>Confirma que el cliente vea la pantalla principal de MOVICUOTAS.</li>
+                  <li>El código de activación está impreso en el contrato.</li>
                 </ul>
               </div>
             </div>
