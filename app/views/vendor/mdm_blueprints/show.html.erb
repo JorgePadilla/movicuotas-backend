@@ -39,15 +39,17 @@
     </div>
 
     <div class="p-4 md:p-8">
-      <%# QR Code Display %>
+      <%# QR Code Display - Uses default QR code from admin panel %>
+      <% default_qr = DefaultQrCode.default %>
       <div class="flex flex-col items-center mb-6 md:mb-10">
-        <% if @mdm_blueprint.qr_code_image.attached? %>
+        <% if default_qr&.qr_code_present? %>
           <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-4 md:mb-6">
-            <%= image_tag url_for(@mdm_blueprint.qr_code_image), alt: "QR Code para configuración MDM", class: "w-48 h-48 md:w-64 md:h-64 object-contain" %>
+            <%= image_tag rails_blob_path(default_qr.qr_code, disposition: 'inline'), alt: "QR Code para configuración MDM", class: "w-48 h-48 md:w-64 md:h-64 object-contain" %>
           </div>
         <% else %>
-          <div class="bg-gray-100 p-8 md:p-12 rounded-xl mb-4 md:mb-6 text-center">
-            <p class="text-gray-600 text-sm md:text-base">Generando código QR...</p>
+          <div class="bg-yellow-50 border-2 border-yellow-300 p-8 md:p-12 rounded-xl mb-4 md:mb-6 text-center">
+            <p class="text-yellow-800 text-sm md:text-base font-medium">Código QR no disponible</p>
+            <p class="text-yellow-700 text-xs md:text-sm mt-2">Contacte al administrador para cargar el código QR.</p>
           </div>
         <% end %>
 
