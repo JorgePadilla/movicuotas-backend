@@ -6,9 +6,14 @@ module Vendor
     before_action :set_loan
 
     # GET /vendor/contracts/:contract_id/down_payment
-    # Step 14.5: Down payment collection (between signature and success)
+    # Step 15: Down payment collection (between signature and QR MDM)
     def show
-      authorize @loan, :collect_down_payment?
+      # Check if contract is signed before authorizing
+      unless @contract.signed?
+        redirect_to signature_vendor_contract_path(@contract),
+                    alert: "El contrato debe estar firmado antes de recolectar la prima."
+        return
+      end
 
       # If down payment already collected, redirect to QR MDM (step 16)
       if @loan.down_payment_collected?
@@ -20,12 +25,21 @@ module Vendor
           redirect_to success_vendor_contract_path(@contract),
                       notice: "La prima ya fue registrada."
         end
-        nil
+        return
       end
+
+      authorize @loan, :collect_down_payment?
     end
 
     # PATCH /vendor/contracts/:contract_id/down_payment
     def update
+      # Check if contract is signed
+      unless @contract.signed?
+        redirect_to signature_vendor_contract_path(@contract),
+                    alert: "El contrato debe estar firmado antes de recolectar la prima."
+        return
+      end
+
       authorize @loan, :collect_down_payment?
 
       payment_method = params[:down_payment_method]
