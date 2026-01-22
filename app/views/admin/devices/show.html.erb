@@ -1,0 +1,138 @@
+<% content_for :title, "Dispositivo #{@device.brand} #{@device.model} - Admin - MOVICUOTAS" %>
+
+<div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-4">
+  <%= render Admin::BreadcrumbComponent.new(items: [
+    { name: "Dispositivos", path: admin_devices_path },
+    { name: "#{@device.brand} #{@device.model}" }
+  ]) %>
+
+  <!-- Page header -->
+  <div class="mb-6 sm:mb-8">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#125282]"><%= @device.brand %> <%= @device.model %></h1>
+      <div class="flex gap-2">
+        <span class="px-3 py-1 text-sm rounded-full <%= @device.activated? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+          <%= @device.activated? ? 'Activado' : 'Pendiente' %>
+        </span>
+        <span class="px-3 py-1 text-sm rounded-full <%= @device.locked? ? 'bg-red-100 text-red-800' : @device.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %>">
+          <%= @device.locked? ? 'Bloqueado' : @device.pending? ? 'Pendiente Bloqueo' : 'Desbloqueado' %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device Information -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Información del Dispositivo</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm font-medium text-gray-500">Marca</p>
+        <p class="text-lg font-semibold text-[#125282]"><%= @device.brand %></p>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-500">Modelo</p>
+        <p class="text-lg font-semibold text-[#125282]"><%= @device.model %></p>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-500">Color</p>
+        <p class="text-lg font-semibold text-gray-900"><%= @device.color %></p>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-500">IMEI</p>
+        <p class="text-lg font-mono font-semibold text-gray-900"><%= @device.imei %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activation Code -->
+  <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center mb-6">
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">Código de Activación</h3>
+    <div class="bg-white rounded-lg py-4 px-6 inline-block shadow-sm border border-blue-100">
+      <span class="text-3xl font-mono font-bold text-[#125282] tracking-widest">
+        <%= @device.activation_code || "------" %>
+      </span>
+    </div>
+    <div class="mt-4 text-sm">
+      <% if @device.activated? %>
+        <p class="text-green-600 font-medium">Activado el <%= l(@device.activated_at, format: :long) %></p>
+      <% else %>
+        <p class="text-yellow-600 font-medium">Pendiente de activación</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Customer & Loan Information -->
+  <% if @customer %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Cliente y Préstamo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm font-medium text-gray-500">Cliente</p>
+          <p class="text-lg font-semibold text-[#125282]"><%= @customer.full_name %></p>
+          <p class="text-gray-600"><%= @customer.identification_number %></p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500">Teléfono</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @customer.phone_number %></p>
+        </div>
+        <% if @loan %>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Contrato</p>
+            <p class="text-lg font-semibold text-[#125282]"><%= @loan.contract_number %></p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Estado Préstamo</p>
+            <span class="px-3 py-1 text-sm rounded-full <%= @loan.active? ? 'bg-green-100 text-green-800' : @loan.paid? ? 'bg-blue-100 text-blue-800' : @loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= @loan.status.humanize %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+      <% if @loan %>
+        <div class="mt-4 pt-4 border-t border-gray-200">
+          <%= link_to "Ver Préstamo", admin_loan_path(@loan), class: "text-[#125282] hover:underline font-medium" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 mb-6 text-center text-gray-500">
+      Este dispositivo no está asignado a ningún cliente
+    </div>
+  <% end %>
+
+  <!-- MDM Status -->
+  <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Estado MDM</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm font-medium text-gray-500">Estado de Bloqueo</p>
+        <p class="text-lg font-semibold">
+          <% if @device.locked? %>
+            <span class="text-red-600">Bloqueado</span>
+          <% elsif @device.pending? %>
+            <span class="text-yellow-600">Pendiente de Bloqueo</span>
+          <% else %>
+            <span class="text-green-600">Desbloqueado</span>
+          <% end %>
+        </p>
+      </div>
+      <% if @device.locked_at %>
+        <div>
+          <p class="text-sm font-medium text-gray-500">Bloqueado desde</p>
+          <p class="text-lg font-semibold text-gray-900"><%= l(@device.locked_at, format: :long) %></p>
+        </div>
+      <% end %>
+      <% if @device.locked_by %>
+        <div>
+          <p class="text-sm font-medium text-gray-500">Bloqueado por</p>
+          <p class="text-lg font-semibold text-gray-900"><%= @device.locked_by.full_name %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-col sm:flex-row gap-4">
+    <%= link_to "← Volver a Dispositivos", admin_devices_path, class: "text-center bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors" %>
+  </div>
+</div>

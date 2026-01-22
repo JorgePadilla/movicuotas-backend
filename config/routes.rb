@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     resources :users  # User management
     resources :customers  # Customer management
     resources :loans, only: [ :index, :show ]  # Loan management (view only)
+    resources :devices, only: [ :index, :show ]  # Device management (view only)
     resources :payments do  # Payment management (Admin/Supervisor: full CRUD, Vendedor: view only)
       member do
         post :verify
