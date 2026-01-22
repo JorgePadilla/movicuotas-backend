@@ -149,6 +149,11 @@ class ContractGeneratorService
 
       pdf.move_down 30
 
+      # Activation Code Section
+      add_activation_code_section(pdf)
+
+      pdf.move_down 30
+
       # Sections 2-11 from new contract
       pdf.font_size 16
       pdf.text "2. Objeto del Contrato", style: :bold
@@ -359,6 +364,31 @@ class ContractGeneratorService
       "color: #9ca3af; font-weight: bold;"
     else
       "color: #6b7280;"
+    end
+  end
+
+  private
+
+  # Add activation code section to PDF
+  def add_activation_code_section(pdf)
+    activation_code = @device&.activation_code || "------"
+
+    # Draw blue background box
+    pdf.fill_color "E8F4FD"
+    pdf.fill_rectangle [0, pdf.cursor], pdf.bounds.width, 80
+    pdf.fill_color "000000"
+
+    # Center the content inside the box
+    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width, height: 80) do
+      pdf.move_down 10
+      pdf.font_size 12
+      pdf.text "CODIGO DE ACTIVACION", style: :bold, align: :center
+      pdf.move_down 8
+      pdf.font_size 28
+      pdf.text activation_code, style: :bold, align: :center, color: "125282"
+      pdf.font_size 9
+      pdf.move_down 8
+      pdf.text "Ingrese este codigo en la app MOVICUOTAS para activar su dispositivo", align: :center
     end
   end
 end

@@ -10,9 +10,9 @@ module Vendor
     # 1. Display checklist with three verification items:
     #    - BluePrint scanned and configuration completed
     #    - MDM app installed and confirmed
-    #    - MoviCuotas app installed and logged in
+    #    - MoviCuotas app activated with activation code
     # 2. User marks items as complete
-    # 3. User submits checklist to finalize the sale and return to Step 2
+    # 3. User submits checklist to finalize the sale and go to Thank You page (Step 18)
 
     before_action :set_mdm_blueprint
     before_action :authorize_mdm_blueprint
@@ -43,8 +43,8 @@ module Vendor
         # Clear any session data related to this sale
         clear_session_data
 
-        # Redirect back to customer search (Step 2 - main screen)
-        redirect_to vendor_customer_search_path,
+        # Redirect to success/thank you page (Step 18)
+        redirect_to success_vendor_contract_path(@loan.contract),
                     notice: "¡Felicidades! El proceso de venta ha sido completado. El dispositivo está configurado y listo para usar."
       else
         flash.now[:alert] = "Error al completar el proceso. Por favor intenta nuevamente."

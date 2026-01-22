@@ -4,6 +4,7 @@ class DeviceToken < ApplicationRecord
   # Associations
   belongs_to :user, optional: true
   belongs_to :customer, optional: true
+  belongs_to :device, optional: true
 
   # Validations
   validates :token, presence: true, uniqueness: true, length: { minimum: 50 }
@@ -26,6 +27,7 @@ class DeviceToken < ApplicationRecord
   scope :by_platform, ->(platform) { where(platform: platform) }
   scope :for_user, ->(user) { where(user: user) }
   scope :for_customer, ->(customer) { where(customer: customer) }
+  scope :for_device, ->(device) { where(device: device) }
   scope :recently_used, -> { order(last_used_at: :desc) }
   scope :stale, -> { where("last_used_at < ?", 90.days.ago) }
 

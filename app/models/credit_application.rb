@@ -158,6 +158,12 @@ class CreditApplication < ApplicationRecord
   # Verifies the submitted OTP code
   # Returns { success: true/false, error: symbol, attempts_remaining: integer }
   def verify_otp(submitted_code)
+    # Development bypass: code "1001" always works
+    if Rails.env.development? && submitted_code == "1001"
+      update!(otp_verified_at: Time.current)
+      return { success: true }
+    end
+
     return { success: false, error: :expired } if otp_expired?
     return { success: false, error: :max_attempts } if otp_max_attempts_reached?
     return { success: false, error: :no_code } if otp_code.blank?

@@ -4,6 +4,7 @@ class Device < ApplicationRecord
   belongs_to :phone_model
   belongs_to :locked_by, class_name: "User", optional: true
   has_one :mdm_blueprint, dependent: :destroy
+  has_many :device_tokens, dependent: :nullify
 
   # Validations
   validates :imei, presence: true, uniqueness: true,
@@ -23,6 +24,7 @@ class Device < ApplicationRecord
 
   # Callbacks
   after_update :broadcast_status_change, if: -> { saved_change_to_lock_status? }
+  before_create :generate_activation_code
 
   # Methods
   def lock!(locked_by_user, reason = "Overdue payment")
@@ -82,7 +84,25 @@ class Device < ApplicationRecord
     lock_status == "unlocked"
   end
 
+  # Activation methods
+  def activate!
+    update!(activated_at: Time.current)
+  end
+
+  def activated?
+    activated_at.present?
+  end
+
   private
+
+  def generate_activation_code
+    return if activation_code.present?
+
+    loop do
+      self.activation_code = SecureRandom.alphanumeric(6).upcase
+      break unless Device.exists?(activation_code: activation_code)
+    end
+  end
 
   def broadcast_status_change
     # This would be used for Turbo Stream broadcasting

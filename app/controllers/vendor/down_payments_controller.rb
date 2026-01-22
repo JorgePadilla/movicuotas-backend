@@ -10,10 +10,16 @@ module Vendor
     def show
       authorize @loan, :collect_down_payment?
 
-      # If down payment already collected, redirect to success
+      # If down payment already collected, redirect to QR MDM (step 16)
       if @loan.down_payment_collected?
-        redirect_to success_vendor_contract_path(@contract),
-                    notice: "La prima ya fue registrada."
+        @device = @loan.device
+        if @device&.mdm_blueprint.present?
+          redirect_to vendor_mdm_blueprint_path(@device.mdm_blueprint),
+                      notice: "La prima ya fue registrada."
+        else
+          redirect_to success_vendor_contract_path(@contract),
+                      notice: "La prima ya fue registrada."
+        end
         nil
       end
     end
@@ -53,8 +59,7 @@ module Vendor
       end
 
       @loan.confirm_cash_down_payment!(current_user)
-      redirect_to success_vendor_contract_path(@contract),
-                  notice: "Prima en efectivo registrada exitosamente."
+      redirect_to_next_step("Prima en efectivo registrada exitosamente.")
     end
 
     def handle_deposit_payment
@@ -70,8 +75,16 @@ module Vendor
       @loan.down_payment_receipt.attach(receipt)
       @loan.submit_deposit_down_payment!(current_user)
 
-      redirect_to success_vendor_contract_path(@contract),
-                  notice: "Comprobante de depósito registrado. Pendiente de verificación por administración."
+      redirect_to_next_step("Comprobante de depósito registrado. Pendiente de verificación por administración.")
+    end
+
+    def redirect_to_next_step(message)
+      device = @loan.device
+      if device&.mdm_blueprint.present?
+        redirect_to vendor_mdm_blueprint_path(device.mdm_blueprint), notice: message
+      else
+        redirect_to success_vendor_contract_path(@contract), notice: message
+      end
     end
   end
 end

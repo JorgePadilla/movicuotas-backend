@@ -5,6 +5,7 @@ device_one:
   model: iPhone 14
   lock_status: unlocked
   loan: loan_one
+  activation_code: "ABC123"
 
 device_two:
   phone_model: samsung_s24
@@ -13,6 +14,7 @@ device_two:
   model: Galaxy S24
   lock_status: unlocked
   loan: loan_two
+  activation_code: "DEF456"
 
 device_three:
   phone_model: google_pixel_8
@@ -21,3 +23,4 @@ device_three:
   model: Pixel 8
   lock_status: locked
   loan: loan_completed
+  activation_code: "GHI789"

@@ -173,6 +173,9 @@ Rails.application.routes.draw do
       post "auth/login", to: "auth#login"
       get "auth/forgot_contract", to: "auth#forgot_contract"
 
+      # Device activation (FCM token linking)
+      post "devices/activate", to: "devices#activate"
+
       # Device tokens for push notifications (FCM)
       resources :device_tokens, only: [ :create, :destroy ] do
         collection do

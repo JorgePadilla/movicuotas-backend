@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_20_225651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -133,6 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
     t.string "app_version"
     t.datetime "created_at", null: false
     t.bigint "customer_id"
+    t.bigint "device_id"
     t.string "device_name"
     t.datetime "invalidated_at"
     t.datetime "last_used_at"
@@ -144,6 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
     t.index ["active"], name: "index_device_tokens_on_active"
     t.index ["customer_id", "active"], name: "idx_device_tokens_by_customer_and_status"
     t.index ["customer_id"], name: "index_device_tokens_on_customer_id"
+    t.index ["device_id"], name: "index_device_tokens_on_device_id"
     t.index ["platform", "active"], name: "idx_device_tokens_by_platform_and_status"
     t.index ["token"], name: "index_device_tokens_on_token", unique: true
     t.index ["user_id", "active"], name: "idx_device_tokens_by_user_and_status"
@@ -151,6 +153,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
   end
 
   create_table "devices", force: :cascade do |t|
+    t.datetime "activated_at"
+    t.string "activation_code", limit: 8
     t.string "brand", null: false
     t.string "color"
     t.datetime "created_at", null: false
@@ -163,6 +167,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
     t.text "notes"
     t.bigint "phone_model_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["activation_code"], name: "index_devices_on_activation_code", unique: true
     t.index ["imei"], name: "idx_devices_imei"
     t.index ["imei"], name: "index_devices_on_imei", unique: true
     t.index ["loan_id"], name: "idx_devices_loan_id"
@@ -490,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_191854) do
   add_foreign_key "credit_applications", "users", column: "vendor_id"
   add_foreign_key "default_qr_codes", "users", column: "qr_code_uploaded_by_id"
   add_foreign_key "device_tokens", "customers"
+  add_foreign_key "device_tokens", "devices"
   add_foreign_key "device_tokens", "users"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"

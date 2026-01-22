@@ -1,42 +1,38 @@
-<% content_for :title, "¡Crédito Aplicado! - MOVICUOTAS" %>
+<% content_for :title, "¡Gracias por tu Confianza! - MOVICUOTAS" %>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <%# Progress Indicator %>
   <div class="mb-8 sm:mb-12 overflow-x-auto">
     <div class="flex items-center justify-between gap-1 sm:gap-4 mb-4 min-w-min sm:min-w-0">
       <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">14</div>
-        <span class="font-medium text-gray-500 text-xs sm:text-base">Firma</span>
-      </div>
-      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200">
-        <div class="h-1 bg-[#125282] w-full"></div>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">15</div>
-        <span class="font-medium text-gray-500 text-xs sm:text-base">Prima</span>
-      </div>
-      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-gray-200">
-        <div class="h-1 bg-[#125282] w-full"></div>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">16</div>
-        <span class="font-medium text-gray-700 text-xs sm:text-base">Crédito</span>
+        <span class="font-medium text-gray-500 text-xs sm:text-base">QR MDM</span>
+      </div>
+      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-[#125282]"></div>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">17</div>
+        <span class="font-medium text-gray-500 text-xs sm:text-base">Checklist</span>
+      </div>
+      <div class="h-1 flex-shrink-0 w-6 sm:flex-1 sm:mx-2 sm:mx-4 bg-[#125282]"></div>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#125282] text-white flex items-center justify-center font-bold text-xs sm:text-sm">18</div>
+        <span class="font-medium text-gray-700 text-xs sm:text-base">Gracias</span>
       </div>
     </div>
-    <p class="text-center text-xs sm:text-sm text-gray-500 mt-2">Paso 16 de 19 - Flujo de Venta</p>
+    <p class="text-center text-xs sm:text-sm text-gray-500 mt-2">Paso 18 de 18 - Flujo de Venta Completado</p>
   </div>
 
-  <%# Success Card %>
-  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-green-500">
-    <div class="bg-gradient-to-r from-green-500 to-green-600 p-8 text-center">
+  <%# Thank You Card %>
+  <div class="bg-white shadow-xl rounded-2xl overflow-hidden border-4 border-[#125282]">
+    <div class="bg-gradient-to-r from-[#125282] to-[#0f4670] p-8 text-center">
       <div class="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-6">
-        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
         </svg>
       </div>
-      <h1 class="text-4xl font-bold text-white mb-4">¡Crédito Aplicado!</h1>
-      <p class="text-xl text-green-100 mb-2">Felicidades. Estás a unos pasos de disfrutar de tu nueva compra.</p>
-      <p class="text-green-100">El contrato ha sido firmado y el crédito está ahora activo.</p>
+      <h1 class="text-4xl font-bold text-white mb-4">¡Gracias por tu Confianza!</h1>
+      <p class="text-xl text-blue-100 mb-2">Es un placer servirte. Estamos aquí para apoyarte en cada paso.</p>
+      <p class="text-lg text-blue-100 font-medium">MOVICUOTAS - Tu Crédito, Tu Móvil</p>
     </div>
 
     <div class="p-8">
@@ -81,52 +77,24 @@
         </div>
       </div>
 
-      <%# QR Code Section - Uses default QR code %>
-      <% default_qr = DefaultQrCode.default %>
-
-      <% if default_qr&.qr_code_present? %>
-        <div class="bg-white border-2 border-green-500 rounded-xl p-8 mb-8">
-          <div class="flex flex-col md:flex-row items-center gap-8">
-            <div class="flex-shrink-0">
-              <h3 class="text-xl font-bold text-gray-900 mb-4">Código QR para Configuración</h3>
-              <img src="<%= rails_blob_path(default_qr.qr_code, disposition: 'inline') %>"
-                   alt="QR Code for Device Configuration"
-                   class="w-48 h-48 border-4 border-[#125282] rounded-lg">
-              <p class="text-sm text-gray-600 mt-4 text-center">
-                El cliente debe escanear este código<br>para configurar el dispositivo
-              </p>
-            </div>
-            <div class="flex-grow">
-              <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
-                <h4 class="text-lg font-bold text-blue-900 mb-4">¿Cómo usar el Código QR?</h4>
-                <ol class="list-decimal list-inside text-sm text-blue-800 space-y-2">
-                  <li><strong>Abre la cámara</strong> del dispositivo del cliente</li>
-                  <li><strong>Apunta</strong> la cámara hacia el código QR</li>
-                  <li><strong>Sigue las instrucciones</strong> que aparecerán en pantalla</li>
-                  <li><strong>Confirma la configuración</strong> del dispositivo MDM</li>
-                  <li><strong>¡Listo!</strong> El dispositivo está configurado y protegido</li>
-                </ol>
-              </div>
-            </div>
-          </div>
+      <%# Activation Code Section %>
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 text-center mb-8">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">
+          Código de Activación
+        </h3>
+        <div class="bg-white rounded-lg py-4 px-6 inline-block shadow-sm border border-blue-100">
+          <span class="text-3xl font-mono font-bold text-[#125282] tracking-widest">
+            <%= @contract.loan.device&.activation_code || "------" %>
+          </span>
         </div>
-      <% else %>
-        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-8 mb-8">
-          <div class="flex items-center gap-4">
-            <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2m0-12a9 9 0 110 18 9 9 0 010-18z"></path>
-            </svg>
-            <div>
-              <h3 class="text-lg font-bold text-yellow-900">Código QR No Disponible</h3>
-              <p class="text-sm text-yellow-800">El código QR para configuración del dispositivo no está disponible. Por favor, contacta al administrador para que cargue el código QR por defecto.</p>
-            </div>
-          </div>
-        </div>
-      <% end %>
+        <p class="text-sm text-gray-600 mt-3">
+          El cliente debe ingresar este código en la app MOVICUOTAS<br>
+          para activar su dispositivo y recibir notificaciones.
+        </p>
+      </div>
 
-      <%# Action Buttons %>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <%# Download Contract Button %>
+      <%# Action Button: Download Contract %>
+      <div class="mb-8">
         <%= link_to download_vendor_contract_path(@contract),
                     class: "group flex flex-col items-center justify-center p-8 bg-[#125282] hover:bg-[#0f4670] rounded-xl transition-colors duration-200 text-white text-center" do %>
           <svg class="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -135,34 +103,23 @@
           <h3 class="text-xl font-bold mb-2">Descargar Contrato</h3>
           <p class="text-blue-100">Guarda una copia del contrato firmado en tu dispositivo.</p>
         <% end %>
-
-        <%# Thank You Message %>
-        <div class="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-200 text-center">
-          <svg class="w-12 h-12 mb-4 text-[#125282]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-          </svg>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Gracias por tu Confianza</h3>
-          <p class="text-gray-600">Es un placer servirte. Estamos aquí para apoyarte en cada paso.</p>
-          <p class="text-sm text-[#125282] font-medium mt-3">MOVICUOTAS - Tu Crédito, Tu Móvil</p>
-        </div>
       </div>
 
       <%# Important Notes %>
-      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8">
+      <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-8">
         <div class="flex">
           <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
           </div>
           <div class="ml-3">
-            <h3 class="text-sm font-medium text-yellow-800">Recordatorios importantes</h3>
-            <div class="mt-2 text-sm text-yellow-700">
+            <h3 class="text-sm font-medium text-green-800">¡Venta completada exitosamente!</h3>
+            <div class="mt-2 text-sm text-green-700">
               <ul class="list-disc pl-5 space-y-1">
-                <li>El cliente debe escanear el código QR en el siguiente paso para configurar el dispositivo.</li>
-                <li>Verifica que la aplicación MDM esté instalada y funcionando antes de entregar el teléfono.</li>
+                <li>El dispositivo ha sido configurado y está listo para entregar al cliente.</li>
                 <li>Recuerda al cliente las fechas de pago quincenales para evitar mora.</li>
-                <li>Guarda una copia del contrato firmado para tus registros.</li>
+                <li>Descarga una copia del contrato firmado para tus registros.</li>
               </ul>
             </div>
           </div>
@@ -170,14 +127,9 @@
       </div>
 
       <%# Navigation %>
-      <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200">
-        <div>
-          <%= link_to "← Volver al contrato", vendor_contract_path(@contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
-        </div>
-        <div class="mt-4 md:mt-0">
-          <%= link_to "Nueva Búsqueda de Cliente", vendor_customer_search_path,
-                      class: "bg-gray-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800" %>
-        </div>
+      <div class="flex flex-col md:flex-row justify-center items-center pt-8 border-t border-gray-200">
+        <%= link_to "Nueva Búsqueda de Cliente", vendor_customer_search_path,
+                    class: "bg-gray-800 text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800" %>
       </div>
     </div>
   </div>
