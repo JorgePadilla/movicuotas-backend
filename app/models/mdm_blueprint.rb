@@ -12,7 +12,7 @@ class MdmBlueprint < ApplicationRecord
 
   # Callbacks
   before_validation :generate_qr_code_data, if: -> { qr_code_data.blank? }
-  after_create :generate_qr_code_image
+  after_commit :generate_qr_code_image, on: :create
 
   # Methods
   def generate_qr_code_data
