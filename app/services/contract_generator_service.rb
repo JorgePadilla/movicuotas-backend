@@ -375,11 +375,11 @@ class ContractGeneratorService
 
     # Draw blue background box
     pdf.fill_color "E8F4FD"
-    pdf.fill_rectangle [0, pdf.cursor], pdf.bounds.width, 80
+    pdf.fill_rectangle [ 0, pdf.cursor ], pdf.bounds.width, 80
     pdf.fill_color "000000"
 
     # Center the content inside the box
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width, height: 80) do
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width, height: 80) do
       pdf.move_down 10
       pdf.font_size 12
       pdf.text "CODIGO DE ACTIVACION", style: :bold, align: :center

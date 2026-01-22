@@ -3,7 +3,7 @@
 module Api
   module V1
     class DevicesController < BaseController
-      skip_before_action :authenticate_api_user, only: [:activate]
+      skip_before_action :authenticate_api_user, only: [ :activate ]
 
       # POST /api/v1/devices/activate
       # Activates a device using an activation code and registers the FCM token
