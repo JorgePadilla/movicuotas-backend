@@ -218,6 +218,7 @@ module Vendor
       loan = Loan.new(
         customer: customer,
         user: current_user, # Creator (vendor)
+        credit_application: credit_application,
         branch_number: branch_number,
         status: "draft", # Will become active after contract signature
         total_amount: phone_price,
@@ -330,7 +331,10 @@ module Vendor
       )
 
       if device.save
-        Rails.logger.info "Device created: id=#{device.id}, imei=#{device.imei}"
+        Rails.logger.info "Device created: id=#{device.id}, imei=#{device.imei}, activation_code=#{device.activation_code}"
+        # Create MDM blueprint for the device
+        device.create_mdm_blueprint!
+        Rails.logger.info "MDM Blueprint created for device #{device.id}"
         device
       else
         Rails.logger.error "Failed to create device: #{device.errors.full_messages}"

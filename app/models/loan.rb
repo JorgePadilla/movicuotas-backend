@@ -2,6 +2,7 @@ class Loan < ApplicationRecord
   # Associations
   belongs_to :customer
   belongs_to :user  # Creator (admin or supervisor)
+  belongs_to :credit_application, optional: true
   belongs_to :down_payment_confirmed_by, class_name: "User", optional: true
   has_one :device, dependent: :destroy
   has_many :installments, dependent: :destroy

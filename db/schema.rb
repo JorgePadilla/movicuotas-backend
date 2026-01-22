@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_22_031704) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -204,6 +204,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_031704) do
     t.string "branch_number", null: false
     t.string "contract_number", null: false
     t.datetime "created_at", null: false
+    t.bigint "credit_application_id"
     t.bigint "customer_id", null: false
     t.decimal "down_payment_amount", precision: 10, scale: 2, null: false
     t.datetime "down_payment_confirmed_at"
@@ -225,6 +226,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_031704) do
     t.index ["branch_number"], name: "idx_loans_branch_number"
     t.index ["branch_number"], name: "index_loans_on_branch_number"
     t.index ["contract_number"], name: "index_loans_on_contract_number", unique: true
+    t.index ["credit_application_id"], name: "index_loans_on_credit_application_id"
     t.index ["customer_id"], name: "index_loans_on_customer_id"
     t.index ["down_payment_verification_status"], name: "index_loans_on_down_payment_verification_status"
     t.index ["status"], name: "index_loans_on_status"
@@ -501,6 +503,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_031704) do
   add_foreign_key "devices", "phone_models"
   add_foreign_key "devices", "users", column: "locked_by_id"
   add_foreign_key "installments", "loans"
+  add_foreign_key "loans", "credit_applications"
   add_foreign_key "loans", "customers"
   add_foreign_key "loans", "users"
   add_foreign_key "loans", "users", column: "down_payment_confirmed_by_id"
