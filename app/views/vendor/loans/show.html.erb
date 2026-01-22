@@ -155,21 +155,61 @@
 
   <!-- Device information -->
   <% if @loan.device %>
+    <% device = @loan.device %>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
-      <h3 class="text-xl font-semibold text-gray-900 mb-4">📱 Dispositivo Asignado</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-900">📱 Dispositivo Asignado</h3>
+        <span class="px-3 py-1 text-sm rounded-full font-medium <%= device.locked? ? 'bg-red-100 text-red-800' : device.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
+          <%= device.locked? ? '🔒 Bloqueado' : device.pending? ? '⏳ Pendiente' : '🔓 Desbloqueado' %>
+        </span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         <div class="bg-gray-50 p-4 rounded-lg">
           <p class="text-sm text-gray-500">Modelo</p>
-          <p class="font-medium"><%= @loan.device.phone_model.brand %> <%= @loan.device.phone_model.model %></p>
+          <p class="font-medium"><%= device.phone_model.brand %> <%= device.phone_model.model %></p>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg">
           <p class="text-sm text-gray-500">IMEI</p>
-          <p class="font-medium"><%= @loan.device.imei %></p>
+          <p class="font-medium font-mono"><%= device.imei %></p>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg">
           <p class="text-sm text-gray-500">Color</p>
-          <p class="font-medium"><%= @loan.device.color %></p>
+          <p class="font-medium"><%= device.color %></p>
         </div>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-500">Código Activación</p>
+          <p class="font-medium font-mono text-[#125282]"><%= device.activation_code || '------' %></p>
+        </div>
+      </div>
+
+      <% if device.locked? && device.locked_at %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+          <p class="text-sm text-red-800">
+            <strong>Bloqueado:</strong> <%= l(device.locked_at, format: :long) %>
+            <% if device.locked_by %>
+              por <%= device.locked_by.full_name %>
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+
+      <!-- Block/Unblock Actions -->
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+        <% if device.locked? %>
+          <% if policy(@loan).unblock_device? %>
+            <%= button_to "🔓 Desbloquear Dispositivo", unblock_device_vendor_loan_path(@loan),
+                method: :post,
+                data: { turbo_confirm: "¿Estás seguro de que deseas desbloquear este dispositivo?" },
+                class: "px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm font-medium" %>
+          <% end %>
+        <% else %>
+          <% if policy(@loan).block_device? %>
+            <%= button_to "🔒 Bloquear Dispositivo", block_device_vendor_loan_path(@loan),
+                method: :post,
+                data: { turbo_confirm: "¿Estás seguro de que deseas bloquear este dispositivo? El cliente no podrá usar el teléfono." },
+                class: "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium" %>
+          <% end %>
+        <% end %>
       </div>
     </div>
   <% end %>

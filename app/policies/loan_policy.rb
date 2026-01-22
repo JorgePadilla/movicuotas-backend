@@ -47,6 +47,16 @@ class LoanPolicy < ApplicationPolicy
     admin? || supervisor?
   end
 
+  # Block device - Admin, Supervisor, and Vendedor can block
+  def block_device?
+    admin? || supervisor? || vendedor?
+  end
+
+  # Unblock device - Admin and Vendedor can unblock
+  def unblock_device?
+    admin? || vendedor?
+  end
+
   # Scope: Filter loans based on role
   # - Admin: All loans
   # - Supervisor: All loans (NOT branch-limited)

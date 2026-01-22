@@ -17,7 +17,7 @@ module Vendor
     # - loan_attributes: Payment calculator results (total_amount, down_payment_percentage, etc.)
 
     before_action :set_prerequisites, only: [ :create ]
-    before_action :set_loan, only: [ :show, :download_contract ]
+    before_action :set_loan, only: [ :show, :download_contract, :block_device, :unblock_device ]
 
     # GET /vendor/loans/new
     # This would be the entry point from Step 14 (contract signature)
@@ -140,6 +140,53 @@ module Vendor
                 filename: "contrato-#{@loan.contract_number}.pdf",
                 type: "application/pdf",
                 disposition: "attachment"
+    end
+
+    # POST /vendor/loans/:id/block_device
+    # Manually block the device
+    def block_device
+      authorize @loan, :block_device?
+
+      device = @loan.device
+      unless device
+        redirect_to vendor_loan_path(@loan), alert: "Este préstamo no tiene un dispositivo asignado."
+        return
+      end
+
+      if device.locked?
+        redirect_to vendor_loan_path(@loan), alert: "El dispositivo ya está bloqueado."
+        return
+      end
+
+      if device.lock!(current_user, "Bloqueo manual por vendedor")
+        device.confirm_lock!
+        redirect_to vendor_loan_path(@loan), notice: "Dispositivo bloqueado exitosamente."
+      else
+        redirect_to vendor_loan_path(@loan), alert: "No se pudo bloquear el dispositivo."
+      end
+    end
+
+    # POST /vendor/loans/:id/unblock_device
+    # Manually unblock the device
+    def unblock_device
+      authorize @loan, :unblock_device?
+
+      device = @loan.device
+      unless device
+        redirect_to vendor_loan_path(@loan), alert: "Este préstamo no tiene un dispositivo asignado."
+        return
+      end
+
+      unless device.locked?
+        redirect_to vendor_loan_path(@loan), alert: "El dispositivo no está bloqueado."
+        return
+      end
+
+      if device.unlock!(current_user, "Desbloqueo manual por vendedor")
+        redirect_to vendor_loan_path(@loan), notice: "Dispositivo desbloqueado exitosamente."
+      else
+        redirect_to vendor_loan_path(@loan), alert: "No se pudo desbloquear el dispositivo."
+      end
     end
 
     private

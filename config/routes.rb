@@ -140,6 +140,8 @@ Rails.application.routes.draw do
     resources :loans, only: [ :new, :create, :show, :index ] do
       member do
         get :download_contract
+        post :block_device
+        post :unblock_device
       end
     end
     # MDM Blueprint (Step 16) and Checklist (Step 17)
