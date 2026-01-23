@@ -26,9 +26,18 @@ module Api
         json = JSON.parse(response.body)
 
         assert_equal "Dispositivo activado correctamente", json["message"]
-        assert_nil json["token"], "Should NOT return JWT token (login required after)"
-        assert_nil json["customer"], "Should NOT return customer data"
-        assert_nil json["loan"], "Should NOT return loan data"
+        assert json["token"].present?, "Should return JWT token for authentication"
+        assert json["activated_at"].present?, "Should return activation timestamp"
+
+        # Customer data
+        assert json["customer"].present?, "Should return customer data"
+        assert_equal @customer.id, json["customer"]["id"]
+        assert_equal @customer.full_name, json["customer"]["full_name"]
+
+        # Loan data
+        assert json["loan"].present?, "Should return loan data"
+        assert_equal @loan.id, json["loan"]["id"]
+        assert_equal @loan.contract_number, json["loan"]["contract_number"]
 
         @device.reload
         assert @device.activated?, "Device should be activated"

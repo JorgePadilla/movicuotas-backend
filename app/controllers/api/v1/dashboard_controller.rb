@@ -27,10 +27,13 @@ module Api
         device = loan.device
         return nil unless device
 
+        phone_model = device.phone_model
+        phone_model_name = phone_model ? "#{phone_model.brand} #{phone_model.model}" : nil
+
         {
           imei: device.imei,
-          phone_model: device.phone_model&.name,
-          status: device.status,
+          phone_model: phone_model_name,
+          lock_status: device.lock_status,
           is_blocked: device.locked?
         }
       end

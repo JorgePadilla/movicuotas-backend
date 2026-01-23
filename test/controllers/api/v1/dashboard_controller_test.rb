@@ -15,25 +15,31 @@ module Api
         )
 
         @phone_model = PhoneModel.create!(
-          model: "Samsung Galaxy",
+          model: "Galaxy S21",
           brand: "Samsung",
           price: 700.00
+        )
+
+        @device = Device.create!(
+          imei: "999888777666555",
+          phone_model: @phone_model,
+          brand: "Samsung",
+          model: "Galaxy S21"
         )
 
         @loan = Loan.create!(
           customer: @customer,
           contract_number: "CONT-002",
-          phone_model: @phone_model,
-          principal_amount: 700.00,
           total_amount: 800.00,
+          financed_amount: 700.00,
           interest_rate: 12.5,
-          loan_period_months: 12,
           start_date: Date.today,
           end_date: 12.months.from_now,
-          installment_day: 15,
           number_of_installments: 12,
           status: "active"
         )
+
+        @device.update!(loan: @loan)
 
         Installment.create!(
           loan: @loan,

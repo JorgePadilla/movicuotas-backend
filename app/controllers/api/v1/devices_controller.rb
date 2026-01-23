@@ -38,11 +38,16 @@ module Api
             activated_at: device.activated_at.iso8601
           }
 
+          # Generate JWT token for the customer (allows app to skip login)
+          if customer
+            response_data[:token] = generate_token(customer)
+          end
+
           if customer
             response_data[:customer] = {
               id: customer.id,
               full_name: customer.full_name,
-              phone_number: customer.phone_number
+              phone: customer.phone
             }
           end
 
@@ -66,6 +71,17 @@ module Api
         else
           render_error(device_token.errors.full_messages.join(", "), :unprocessable_entity)
         end
+      end
+
+      private
+
+      def generate_token(customer)
+        payload = {
+          customer_id: customer.id,
+          exp: 30.days.from_now.to_i,
+          iat: Time.now.to_i
+        }
+        JWT.encode(payload, Rails.application.secret_key_base, "HS256")
       end
     end
   end

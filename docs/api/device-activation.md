@@ -32,25 +32,27 @@ POST /api/v1/devices/activate
 
 ```json
 {
-  "success": true,
-  "data": {
-    "message": "Dispositivo activado correctamente",
-    "customer": {
-      "id": 123,
-      "full_name": "Juan Pérez",
-      "phone_number": "99887766"
-    },
-    "loan": {
-      "id": 456,
-      "contract_number": "S01-2026-01-22-000001",
-      "total_amount": 15000.00,
-      "remaining_balance": 12500.00,
-      "next_payment_date": "2026-02-05",
-      "next_payment_amount": 1250.00
-    }
+  "message": "Dispositivo activado correctamente",
+  "activated_at": "2026-01-22T14:30:00Z",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "customer": {
+    "id": 123,
+    "full_name": "Juan Pérez",
+    "phone": "99887766"
+  },
+  "loan": {
+    "id": 456,
+    "contract_number": "S01-2026-01-22-000001",
+    "total_amount": 15000.00,
+    "remaining_balance": 12500.00,
+    "status": "active",
+    "next_payment_date": "2026-02-05",
+    "next_payment_amount": 1250.00
   }
 }
 ```
+
+**Nota**: El campo `token` es un JWT válido por 30 días. La app debe guardarlo en almacenamiento seguro y usarlo para autenticar llamadas a la API.
 
 ### 400 Bad Request - Falta FCM token
 
@@ -100,16 +102,18 @@ POST /api/v1/devices/activate
 │  2. Verifica que no esté ya activado                            │
 │  3. Crea/actualiza DeviceToken con FCM token                    │
 │  4. Marca Device como activado (activated_at = now)             │
-│  5. Retorna datos del cliente y préstamo                        │
+│  5. Genera JWT token para el customer                           │
+│  6. Retorna token, datos del cliente y préstamo                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                        APP MÓVIL                                 │
 ├─────────────────────────────────────────────────────────────────┤
-│  6. Guarda datos del cliente/préstamo localmente               │
-│  7. Navega al Dashboard principal                               │
-│  8. Ahora puede recibir notificaciones push                    │
+│  7. Guarda JWT token en almacenamiento seguro                   │
+│  8. Guarda datos del cliente/préstamo localmente               │
+│  9. Navega al Dashboard principal (sin login adicional)         │
+│ 10. Ahora puede recibir notificaciones push                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
