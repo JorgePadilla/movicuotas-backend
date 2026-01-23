@@ -16,12 +16,15 @@ module Api
         # Validate required parameters
         return render_error("Token FCM requerido", :bad_request) if params[:fcm_token].blank?
 
+        loan = device.loan
+        customer = loan&.customer
+
         # Create or update device token linked to device
         device_token = device.device_tokens.find_or_initialize_by(token: params[:fcm_token])
         device_token.assign_attributes(
           platform: params[:platform] || "android",
           device_name: params[:device_name],
-          customer: device.loan&.customer,
+          customer: customer,
           active: true,
           last_used_at: Time.current
         )
@@ -29,9 +32,37 @@ module Api
         if device_token.save
           device.activate!
 
-          render_success({
-            message: "Dispositivo activado correctamente"
-          })
+          # Build response with customer and loan data
+          response_data = {
+            message: "Dispositivo activado correctamente",
+            activated_at: device.activated_at.iso8601
+          }
+
+          if customer
+            response_data[:customer] = {
+              id: customer.id,
+              full_name: customer.full_name,
+              phone_number: customer.phone_number
+            }
+          end
+
+          if loan
+            next_installment = loan.next_installment
+            response_data[:loan] = {
+              id: loan.id,
+              contract_number: loan.contract_number,
+              total_amount: loan.total_amount.to_f,
+              remaining_balance: loan.remaining_balance.to_f,
+              status: loan.status
+            }
+
+            if next_installment
+              response_data[:loan][:next_payment_date] = next_installment.due_date.iso8601
+              response_data[:loan][:next_payment_amount] = next_installment.amount.to_f
+            end
+          end
+
+          render_success(response_data)
         else
           render_error(device_token.errors.full_messages.join(", "), :unprocessable_entity)
         end
