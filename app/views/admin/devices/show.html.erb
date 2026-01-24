@@ -55,6 +55,14 @@
     <div class="mt-4 text-sm">
       <% if @device.activated? %>
         <p class="text-green-600 font-medium">Activado el <%= l(@device.activated_at, format: :long) %></p>
+        <% if policy(@device).reset_activation? %>
+          <div class="mt-4">
+            <%= button_to "Reiniciar Activación", reset_activation_admin_device_path(@device),
+                method: :post,
+                class: "bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors",
+                data: { turbo_confirm: "¿Estás seguro? Esto permitirá que el código #{@device.activation_code} sea usado nuevamente en otro teléfono." } %>
+          </div>
+        <% end %>
       <% else %>
         <p class="text-yellow-600 font-medium">Pendiente de activación</p>
       <% end %>

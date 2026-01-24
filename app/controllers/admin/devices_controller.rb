@@ -41,5 +41,16 @@ module Admin
       @loan = @device.loan
       @customer = @loan&.customer
     end
+
+    def reset_activation
+      @device = Device.find(params[:id])
+      authorize @device
+
+      if @device.reset_activation!(current_user)
+        redirect_to admin_device_path(@device), notice: "Activación reiniciada. El código #{@device.activation_code} puede usarse nuevamente."
+      else
+        redirect_to admin_device_path(@device), alert: "No se pudo reiniciar la activación. El dispositivo no estaba activado."
+      end
+    end
   end
 end

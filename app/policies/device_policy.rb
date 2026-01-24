@@ -43,6 +43,11 @@ class DevicePolicy < ApplicationPolicy
     admin?
   end
 
+  # Reset device activation - Admin only
+  def reset_activation?
+    admin?
+  end
+
   # Scope: All roles can see all devices
   # - Admin: All devices
   # - Supervisor: All devices (for blocking purposes)

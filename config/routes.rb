@@ -41,7 +41,11 @@ Rails.application.routes.draw do
     resources :users  # User management
     resources :customers  # Customer management
     resources :loans, only: [ :index, :show ]  # Loan management (view only)
-    resources :devices, only: [ :index, :show ]  # Device management (view only)
+    resources :devices, only: [ :index, :show ] do  # Device management
+      member do
+        post :reset_activation  # Reset activation to allow re-use of code
+      end
+    end
     resources :payments do  # Payment management (Admin/Supervisor: full CRUD, Vendedor: view only)
       member do
         post :verify

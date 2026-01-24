@@ -93,6 +93,25 @@ class Device < ApplicationRecord
     activated_at.present?
   end
 
+  def reset_activation!(user)
+    return false unless activated?
+
+    update!(activated_at: nil)
+
+    # Clear any existing device tokens for this device
+    device_tokens.destroy_all
+
+    # Create audit log
+    AuditLog.log(
+      user,
+      "device_activation_reset",
+      self,
+      { activation_code: activation_code, previous_activated_at: activated_at_before_last_save }
+    )
+
+    true
+  end
+
   private
 
   def generate_activation_code
