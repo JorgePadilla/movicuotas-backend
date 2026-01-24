@@ -7,8 +7,8 @@ module Admin
       "MarkInstallmentsOverdueJob" => "Marcar Cuotas Vencidas",
       "PaymentReminderNotificationJob" => "Recordatorios de Pago",
       "OverduePaymentNotificationJob" => "Notificaciones de Mora",
-      "AutoBlockDeviceJob" => "Auto-Bloquear Dispositivos",
       "SendPushNotificationJob" => "Enviar Push Notification",
+      "SendTestNotificationJob" => "Notificación de Prueba",
       "CheckPaymentConfirmationsJob" => "Verificar Confirmaciones de Pago",
       "CleanupOldNotificationsJob" => "Limpiar Notificaciones Antiguas"
     }.freeze

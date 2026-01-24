@@ -222,17 +222,18 @@
         <% end %>
       </div>
 
-      <!-- 4. Auto Block Device -->
-      <div class="border border-gray-200 rounded-lg p-3 lg:p-4 hover:shadow-md transition-shadow">
-        <h4 class="font-medium text-gray-900 text-sm mb-1">Auto-Bloquear Dispositivos</h4>
-        <p class="text-xs text-gray-600 mb-2 hidden sm:block">Bloquea dispositivos con 30+ días mora.</p>
+      <!-- 4. Test Notification -->
+      <div class="border border-green-200 rounded-lg p-3 lg:p-4 hover:shadow-md transition-shadow bg-green-50">
+        <h4 class="font-medium text-gray-900 text-sm mb-1">Notificación de Prueba</h4>
+        <p class="text-xs text-gray-600 mb-2 hidden sm:block">Envía push a todos los dispositivos</p>
         <%= form_with url: trigger_admin_jobs_path, method: :post, local: true do |f| %>
-          <%= f.hidden_field :job_class, value: "AutoBlockDeviceJob" %>
-          <%= f.submit "Ejecutar",
-              class: "bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-medium transition-colors w-full text-xs",
-              data: { confirm: "ACCIÓN CRÍTICA: ¿Continuar?" } %>
+          <%= f.hidden_field :job_class, value: "SendTestNotificationJob" %>
+          <%= f.submit "Enviar Prueba",
+              class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded font-medium transition-colors w-full text-xs",
+              data: { confirm: "¿Enviar notificación de prueba a TODOS los dispositivos?" } %>
         <% end %>
       </div>
+
     </div>
   </div>
 

@@ -38,7 +38,7 @@ production:
   # - 1s polling: ~1 DB query/sec instead of ~30
   processes:
     - host: localhost
-      queues: [ default, mailers, notifications, reminders, blocking ]
+      queues: [ default, mailers, notifications, reminders ]
       concurrency: 3
       polling_interval: 1
 ```
@@ -50,14 +50,11 @@ production:
 | Job | Queue | Schedule | Purpose |
 |-----|-------|----------|---------|
 | MarkInstallmentsOverdueJob | reminders | 12:01 AM daily | Mark past-due installments as overdue |
-| DailyCollectionReminderJob | reminders | 9:00 AM daily | Send payment reminders to customers |
+| PaymentReminderNotificationJob | reminders | 8:00 AM daily | Send payment reminders (3 days, 1 day before, day of) |
+| OverduePaymentNotificationJob | reminders | 8:00 AM daily | Send overdue notifications (1 and 3 days after) |
 | CheckPaymentConfirmationsJob | notifications | Every 30 min | Notify customers of payment status |
 | CleanupOldNotificationsJob | default | 2:00 AM daily | Delete old notification records |
 | SendPushNotificationJob | notifications | Event-driven | Send FCM push notifications |
-| SendOverdueNotificationJob | notifications | Manual trigger | Escalating overdue notifications |
-| SendLatePaymentWarningJob | notifications | Manual trigger | Warnings before device blocking |
-| NotifySupervisorsJob | notifications | Manual trigger | Daily reports to supervisors |
-| AutoBlockDeviceJob | blocking | Manual trigger | Block devices (not automated) |
 
 ### Recurring Jobs
 
@@ -65,7 +62,8 @@ Configured in `config/recurring.yml`. Active scheduled jobs:
 
 - **12:01 AM** - `MarkInstallmentsOverdueJob`: Updates installment statuses
 - **2:00 AM** - `CleanupOldNotificationsJob`: Cleans up old records
-- **9:00 AM** - `DailyCollectionReminderJob`: Sends customer reminders
+- **8:00 AM** - `PaymentReminderNotificationJob`: Sends payment reminders
+- **8:00 AM** - `OverduePaymentNotificationJob`: Sends overdue notifications
 - **Every 30 min** - `CheckPaymentConfirmationsJob`: Payment status notifications
 - **Hourly :12** - Built-in cleanup of finished Solid Queue jobs
 
@@ -73,13 +71,28 @@ Configured in `config/recurring.yml`. Active scheduled jobs:
 
 Available at `/admin/jobs` for admin users:
 
-- MarkInstallmentsOverdueJob
-- SendOverdueNotificationJob
-- SendLatePaymentWarningJob
-- NotifySupervisorsJob
-- AutoBlockDeviceJob
+- MarkInstallmentsOverdueJob (Marcar Cuotas Vencidas)
+- PaymentReminderNotificationJob (Recordatorios de Pago)
+- OverduePaymentNotificationJob (Notificaciones de Mora)
 
-**Note:** Device blocking (`AutoBlockDeviceJob`) is intentionally manual. Employees view overdue devices in the supervisor dashboard and block them manually via the MDM system.
+### Push Notification Schedule
+
+All notifications are sent at **8:00 AM Honduras time** (America/Tegucigalpa):
+
+**Before Due Date:**
+| Days | Message |
+|------|---------|
+| -3 días | "Tu próxima cuota vence en 3 días. Monto: L. {amount}, Fecha: {date}" |
+| -1 día | "Mañana vence tu cuota. Evita atrasos pagando L. {amount} a tiempo" |
+| Día de pago | "Hoy vence tu cuota. Paga hoy L. {amount} y mantén tu teléfono activo." |
+
+**After Due Date (Overdue):**
+| Days | Message |
+|------|---------|
+| +1 día | "Tu cuota está vencida. Ponte al día para evitar restricciones en tu dispositivo." |
+| +3 días | "Tu dispositivo puede estar restringido. ¿Necesitas ayuda? Contáctanos." |
+
+**Note:** Device blocking is done **manually** by employees via the supervisor dashboard. There is no automatic device blocking integration.
 
 ---
 
@@ -113,6 +126,7 @@ Web UI available at `/admin/jobs` for monitoring:
 - View queued, running, and failed jobs
 - Retry failed jobs
 - See job execution times
+- Trigger manual job execution
 
 ### Useful Commands
 
@@ -149,3 +163,7 @@ bin/dev
 # Option 2: Manually
 bundle exec rake solid_queue:start
 ```
+
+---
+
+**Last Updated**: January 2026

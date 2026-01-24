@@ -92,19 +92,8 @@ module Admin
       "MarkInstallmentsOverdueJob",
       "PaymentReminderNotificationJob",
       "OverduePaymentNotificationJob",
-      "AutoBlockDeviceJob"
+      "SendTestNotificationJob"
     ].freeze
-
-    # Mapeo de nombres de jobs a español para mostrar en el UI
-    JOB_CLASS_NAMES_ES = {
-      "MarkInstallmentsOverdueJob" => "Marcar Cuotas Vencidas",
-      "PaymentReminderNotificationJob" => "Recordatorios de Pago",
-      "OverduePaymentNotificationJob" => "Notificaciones de Mora",
-      "AutoBlockDeviceJob" => "Auto-Bloquear Dispositivos",
-      "SendPushNotificationJob" => "Enviar Push Notification",
-      "CheckPaymentConfirmationsJob" => "Verificar Confirmaciones de Pago",
-      "CleanupOldNotificationsJob" => "Limpiar Notificaciones Antiguas"
-    }.freeze
 
     # Jobs internos de Rails/SolidQueue que no queremos mostrar en el dashboard
     INTERNAL_JOB_PREFIXES = [
