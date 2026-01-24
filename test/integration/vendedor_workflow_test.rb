@@ -278,4 +278,126 @@ class VendedorWorkflowTest < IntegrationTestCase
     get block_supervisor_overdue_device_path(device)
     assert_response :redirect
   end
+
+  # ===========================================
+  # BUG FIX INTEGRATION TEST: Device Lock Status
+  # This test verifies the fix for the bug where completing
+  # the MDM checklist incorrectly set lock_status to "locked"
+  # ===========================================
+
+  test "complete sale workflow - device stays unlocked after MDM checklist completion" do
+    # Use supervisor since MDM Blueprint policy requires admin? or supervisor?
+    sign_in_supervisor
+
+    # Get an existing device and verify it starts as unlocked
+    device = devices(:device_one)
+    # Ensure device starts as unlocked (no lock states = unlocked)
+    device.lock_states.destroy_all
+    assert_equal "unlocked", device.lock_status, "Device should start as unlocked"
+
+    # Create MDM Blueprint for the device
+    mdm_blueprint = MdmBlueprint.create!(
+      device: device,
+      status: "active",
+      qr_code_data: { device_id: device.id }.to_json
+    )
+
+    # Step 17: Access MDM Checklist
+    get vendor_mdm_blueprint_mdm_checklist_path(mdm_blueprint)
+    assert_response :success
+
+    # Step 17: Complete MDM Checklist (vendor confirms app is installed)
+    post vendor_mdm_blueprint_mdm_checklist_path(mdm_blueprint), params: {
+      mdm_checklist: { movicuotas_installed: "1" }
+    }
+
+    # Should redirect to success page
+    assert_response :redirect
+    assert_match /success/, response.location
+
+    # CRITICAL ASSERTION: Device MUST remain unlocked after completing MDM checklist
+    # This is the main bug fix verification
+    device.reload
+    assert_equal "unlocked", device.lock_status,
+      "BUG FIX: Device lock_status should remain 'unlocked' after MDM checklist completion. " \
+      "Previously, the code incorrectly set it to 'locked', causing new devices to appear " \
+      "as blocked to customers immediately after purchase."
+
+    # Additional verification: locked_by_id and locked_at should be nil
+    # (since device was never actually blocked for non-payment)
+    assert_nil device.locked_by_id, "locked_by_id should be nil since device was never blocked"
+    assert_nil device.locked_at, "locked_at should be nil since device was never blocked"
+
+    # Clean up
+    mdm_blueprint.destroy
+  end
+
+  test "customer scenario - multiple sales maintain correct lock status" do
+    # Scenario: Simulate multiple customers (A, B, C) completing purchases
+    # All devices should remain unlocked after sale completion
+    sign_in_supervisor
+
+    devices_to_test = [ devices(:device_one), devices(:device_two) ]
+
+    devices_to_test.each_with_index do |device, index|
+      # Reset device to unlocked state (no lock states = unlocked)
+      device.lock_states.destroy_all
+
+      # Create MDM Blueprint
+      mdm_blueprint = MdmBlueprint.find_or_create_by!(device: device) do |bp|
+        bp.status = "active"
+        bp.qr_code_data = { device_id: device.id }.to_json
+      end
+
+      # Complete MDM Checklist
+      post vendor_mdm_blueprint_mdm_checklist_path(mdm_blueprint), params: {
+        mdm_checklist: { movicuotas_installed: "1" }
+      }
+
+      # Verify device stays unlocked
+      device.reload
+      assert_equal "unlocked", device.lock_status,
+        "Customer #{index + 1}: Device should remain unlocked after sale completion"
+    end
+  end
+
+  test "device lock status only changes via explicit blocking for non-payment" do
+    # This test documents the correct behavior:
+    # - Devices start as 'unlocked' when created
+    # - Devices stay 'unlocked' after MDM checklist completion
+    # - Devices only become 'locked' when explicitly blocked for non-payment
+
+    sign_in_supervisor
+    device = devices(:device_one)
+
+    # 1. Device starts unlocked (no lock states = unlocked)
+    device.lock_states.destroy_all
+    assert_equal "unlocked", device.lock_status
+
+    # 2. Create and complete MDM checklist
+    mdm_blueprint = MdmBlueprint.find_or_create_by!(device: device) do |bp|
+      bp.status = "active"
+      bp.qr_code_data = { device_id: device.id }.to_json
+    end
+
+    post vendor_mdm_blueprint_mdm_checklist_path(mdm_blueprint), params: {
+      mdm_checklist: { movicuotas_installed: "1" }
+    }
+
+    # 3. Device should still be unlocked after MDM completion
+    device.reload
+    assert_equal "unlocked", device.lock_status,
+      "Device must stay unlocked after MDM checklist - this is the bug fix"
+
+    # 4. Only explicit lock! call should change status
+    # (This would happen through supervisor/cobrador interface for non-payment)
+    supervisor = users(:supervisor)
+    device.lock!(supervisor, "Non-payment test")
+
+    device.reload
+    # Note: lock! sets status to "pending" first (waiting for MDM confirmation)
+    assert_equal "pending", device.lock_status
+    assert_equal supervisor.id, device.locked_by_id
+    assert_not_nil device.locked_at
+  end
 end

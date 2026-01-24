@@ -34,17 +34,12 @@ module Vendor
       end
 
       # Mark device configuration as complete
-      if @device.update(lock_status: "locked")
-        # Clear any session data related to this sale
-        clear_session_data
+      # Device stays unlocked - lock_status only changes via lock!/unlock! for non-payment
+      clear_session_data
 
-        # Redirect to success/thank you page (Step 18)
-        redirect_to success_vendor_contract_path(@loan.contract),
-                    notice: "¡Felicidades! El proceso de venta ha sido completado. El dispositivo está configurado y listo para usar."
-      else
-        flash.now[:alert] = "Error al completar el proceso. Por favor intenta nuevamente."
-        render :show, status: :unprocessable_entity
-      end
+      # Redirect to success/thank you page (Step 18)
+      redirect_to success_vendor_contract_path(@loan.contract),
+                  notice: "¡Felicidades! El proceso de venta ha sido completado. El dispositivo está configurado y listo para usar."
     end
 
     private

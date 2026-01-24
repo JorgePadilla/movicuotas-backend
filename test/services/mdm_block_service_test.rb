@@ -42,7 +42,10 @@ class MdmBlockServiceTest < ActiveSupport::TestCase
   end
 
   test "cannot block already locked device" do
-    @device.update(lock_status: "locked")
+    # Use DeviceLockService to create a locked state
+    DeviceLockService.lock!(@device, @supervisor, reason: "Test lock")
+    DeviceLockService.confirm_lock!(@device, @supervisor)
+
     service = MdmBlockService.new(@device, @supervisor)
     result = service.block!
 
@@ -57,7 +60,8 @@ class MdmBlockServiceTest < ActiveSupport::TestCase
 
     audit_log = AuditLog.last
     assert_equal @supervisor, audit_log.user
-    assert_equal "device_lock_requested", audit_log.action
+    # Audit log is now created by DeviceLockState model
+    assert_equal "device_lock_state_changed", audit_log.action
   end
 
   test "locked_by user is set correctly" do

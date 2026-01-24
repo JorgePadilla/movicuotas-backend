@@ -2,74 +2,64 @@ class Device < ApplicationRecord
   # Associations
   belongs_to :loan, optional: true
   belongs_to :phone_model
-  belongs_to :locked_by, class_name: "User", optional: true
   has_one :mdm_blueprint, dependent: :destroy
   has_many :device_tokens, dependent: :nullify
+  has_many :lock_states, class_name: "DeviceLockState", dependent: :destroy
 
   # Validations
   validates :imei, presence: true, uniqueness: true,
             format: { with: /\A\d{15}\z/, message: "debe tener 15 dígitos" }
   validates :brand, presence: true
   validates :model, presence: true
-  validates :lock_status, presence: true, inclusion: { in: %w[unlocked pending locked] }
 
-  # Enums
-  enum :lock_status, { unlocked: "unlocked", pending: "pending", locked: "locked" }, default: "unlocked"
+  # Scopes - using subqueries for current lock state
+  scope :locked, -> {
+    where(id: DeviceLockState.select(:device_id)
+      .where("device_lock_states.id = (SELECT MAX(id) FROM device_lock_states dls WHERE dls.device_id = device_lock_states.device_id)")
+      .where(status: "locked"))
+  }
 
-  # Scopes
-  scope :locked, -> { where(lock_status: "locked") }
-  scope :pending_lock, -> { where(lock_status: "pending") }
-  scope :unlocked, -> { where(lock_status: "unlocked") }
+  scope :pending_lock, -> {
+    where(id: DeviceLockState.select(:device_id)
+      .where("device_lock_states.id = (SELECT MAX(id) FROM device_lock_states dls WHERE dls.device_id = device_lock_states.device_id)")
+      .where(status: "pending"))
+  }
+
+  scope :unlocked, -> {
+    left_joins(:lock_states)
+      .where(device_lock_states: { id: nil })
+      .or(
+        where(id: DeviceLockState.select(:device_id)
+          .where("device_lock_states.id = (SELECT MAX(id) FROM device_lock_states dls WHERE dls.device_id = device_lock_states.device_id)")
+          .where(status: "unlocked"))
+      )
+      .distinct
+  }
+
   scope :with_overdue_loans, -> { joins(loan: :installments).where(installments: { status: "overdue" }).distinct }
 
   # Callbacks
-  after_update :broadcast_status_change, if: -> { saved_change_to_lock_status? }
   before_create :generate_activation_code
 
-  # Methods
-  def lock!(locked_by_user, reason = "Overdue payment")
-    return false unless unlocked?
-
-    update!(
-      lock_status: "pending",
-      locked_by: locked_by_user,
-      locked_at: Time.current
-    )
-
-    # Create audit log
-    AuditLog.log(
-      locked_by_user,
-      "device_lock_requested",
-      self,
-      { reason: reason, lock_status: [ "unlocked", "pending" ] }
-    )
-
-    true
+  # Lock state delegation methods (for backward compatibility)
+  def current_lock_state
+    lock_states.order(created_at: :desc).first
   end
 
-  def confirm_lock!
-    return false unless pending?
-    update!(lock_status: "locked")
+  def lock_status
+    current_lock_state&.status || "unlocked"
   end
 
-  def unlock!(unlocked_by_user, reason = "Payment received")
-    return false unless locked?
+  def locked_by
+    current_lock_state&.initiated_by
+  end
 
-    update!(
-      lock_status: "unlocked",
-      locked_by: nil,
-      locked_at: nil
-    )
+  def locked_by_id
+    current_lock_state&.initiated_by_id
+  end
 
-    # Create audit log
-    AuditLog.log(
-      unlocked_by_user,
-      "device_unlocked",
-      self,
-      { reason: reason, lock_status: [ "locked", "unlocked" ] }
-    )
-
-    true
+  def locked_at
+    current_lock_state&.confirmed_at || current_lock_state&.initiated_at
   end
 
   def locked?
@@ -82,6 +72,22 @@ class Device < ApplicationRecord
 
   def unlocked?
     lock_status == "unlocked"
+  end
+
+  # Lock methods delegating to DeviceLockService (for backward compatibility)
+  def lock!(user, reason = "Overdue payment")
+    result = DeviceLockService.lock!(self, user, reason: reason)
+    result[:success]
+  end
+
+  def confirm_lock!(user = nil)
+    result = DeviceLockService.confirm_lock!(self, user)
+    result[:success]
+  end
+
+  def unlock!(user, reason = "Payment received")
+    result = DeviceLockService.unlock!(self, user, reason: reason)
+    result[:success]
   end
 
   # Activation methods
@@ -121,10 +127,5 @@ class Device < ApplicationRecord
       self.activation_code = SecureRandom.alphanumeric(6).upcase
       break unless Device.exists?(activation_code: activation_code)
     end
-  end
-
-  def broadcast_status_change
-    # This would be used for Turbo Stream broadcasting
-    # BroadcastReplaceJob.perform_later(self, "device_#{id}_status")
   end
 end

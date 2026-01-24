@@ -320,14 +320,14 @@ module Vendor
       end
 
       # Create new device
+      # Note: Lock status is managed via DeviceLockState model, devices start unlocked by default
       device = Device.new(
         loan: loan,
         phone_model: phone_model,
         imei: imei,
         brand: phone_model.brand,
         model: phone_model.model,
-        color: color,
-        lock_status: "unlocked"
+        color: color
       )
 
       if device.save

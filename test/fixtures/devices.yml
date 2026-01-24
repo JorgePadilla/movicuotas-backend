@@ -3,7 +3,6 @@ device_one:
   imei: "123456789012345"
   brand: Apple
   model: iPhone 14
-  lock_status: unlocked
   loan: loan_one
   activation_code: "ABC123"
 
@@ -12,7 +11,6 @@ device_two:
   imei: "987654321098765"
   brand: Samsung
   model: Galaxy S24
-  lock_status: unlocked
   loan: loan_two
   activation_code: "DEF456"
 
@@ -21,6 +19,5 @@ device_three:
   imei: "555666777888999"
   brand: Google
   model: Pixel 8
-  lock_status: locked
   loan: loan_completed
   activation_code: "GHI789"

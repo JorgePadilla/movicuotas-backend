@@ -182,6 +182,7 @@ Rails.application.routes.draw do
 
       # Device activation (FCM token linking)
       post "devices/activate", to: "devices#activate"
+      get "devices/check_imei", to: "devices#check_imei"
 
       # Device tokens for push notifications (FCM)
       resources :device_tokens, only: [ :create, :destroy ] do

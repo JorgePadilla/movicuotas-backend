@@ -21,7 +21,9 @@ module Supervisor
         blocked_devices: {
           locked_count: Device.locked.count,
           pending_count: Device.pending_lock.count,
-          recent_locked: Device.locked.where("locked_at >= ?", 7.days.ago).count
+          recent_locked: Device.locked.joins(:lock_states)
+            .where("device_lock_states.status = 'locked' AND device_lock_states.confirmed_at >= ?", 7.days.ago)
+            .distinct.count
         }
       }
     end

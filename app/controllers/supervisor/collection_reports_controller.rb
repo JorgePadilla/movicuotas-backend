@@ -43,9 +43,8 @@ module Supervisor
         total_overdue_count: Installment.overdue.count,
         total_overdue_amount: Installment.overdue.sum(:amount).to_f || 0.0,
         devices_blocked: Device.locked.count,
-        devices_at_risk: Device.joins(loan: :installments)
+        devices_at_risk: Device.unlocked.joins(loan: :installments)
                               .where(installments: { status: "overdue" })
-                              .where(lock_status: "unlocked")
                               .distinct.count
       }
     end
@@ -83,10 +82,12 @@ module Supervisor
 
     def fetch_recent_blocks(date_range)
       Device.locked
-            .where("locked_at >= ?", date_range.begin)
+            .joins(:lock_states)
+            .where("device_lock_states.confirmed_at >= ?", date_range.begin)
             .includes(loan: :customer)
-            .order(locked_at: :desc)
+            .order("device_lock_states.confirmed_at DESC")
             .limit(50)
+            .distinct
             .map do |device|
         {
           imei: device.imei,
@@ -100,9 +101,11 @@ module Supervisor
 
     def fetch_recent_blocks_paginated(date_range)
       Device.locked
-            .where("locked_at >= ?", date_range.begin)
+            .joins(:lock_states)
+            .where("device_lock_states.confirmed_at >= ?", date_range.begin)
             .includes(loan: :customer)
-            .order(locked_at: :desc)
+            .order("device_lock_states.confirmed_at DESC")
+            .distinct
             .page(params[:page])
             .per(20)
     end

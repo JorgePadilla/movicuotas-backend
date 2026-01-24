@@ -23,11 +23,11 @@ class LoanFinalizationServiceTest < ActiveSupport::TestCase
       application_number: "APP-#{Time.current.strftime('%Y%m%d')}-999999"
     )
     # Create a device (phone) not assigned to any loan
+    # Note: Lock status is managed via DeviceLockState, devices start unlocked by default
     @device = Device.create!(
       imei: "123456789012345",
       brand: "Test Brand",
       model: "Test Model",
-      lock_status: :unlocked,
       phone_model: PhoneModel.first || PhoneModel.create!(brand: "Test Brand", model: "Test Model", storage: 128, color: "Black", price: 5000.00, active: true)
     )
     # Create a contract (unsigned initially)

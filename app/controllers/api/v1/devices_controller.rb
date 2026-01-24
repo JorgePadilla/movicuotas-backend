@@ -3,7 +3,7 @@
 module Api
   module V1
     class DevicesController < BaseController
-      skip_before_action :authenticate_api_user, only: [ :activate ]
+      skip_before_action :authenticate_api_user, only: [ :activate, :check_imei ]
 
       # POST /api/v1/devices/activate
       # Activates a device using an activation code and registers the FCM token
@@ -70,6 +70,26 @@ module Api
           render_success(response_data)
         else
           render_error(device_token.errors.full_messages.join(", "), :unprocessable_entity)
+        end
+      end
+
+      # GET /api/v1/devices/check_imei?imei=xxx
+      # Checks if an IMEI is available for use (for vendor device selection)
+      def check_imei
+        imei = params[:imei]&.strip
+
+        unless imei.present? && imei.match?(/\A\d{15}\z/)
+          return render_success({ available: false, message: "IMEI debe tener 15 dígitos numéricos" })
+        end
+
+        existing_device = Device.find_by(imei: imei)
+
+        if existing_device.nil?
+          render_success({ available: true })
+        elsif existing_device.loan_id.nil? || existing_device.loan&.cancelled? || existing_device.loan&.paid?
+          render_success({ available: true, message: "IMEI disponible para reasignación" })
+        else
+          render_success({ available: false, message: "IMEI ya en uso con préstamo activo" })
         end
       end
 

@@ -1,0 +1,9 @@
+# Lock state for device_three (locked)
+device_three_locked:
+  device: device_three
+  status: locked
+  reason: "Test locked device"
+  initiated_by: admin
+  confirmed_by: admin
+  initiated_at: <%= 1.day.ago %>
+  confirmed_at: <%= 1.day.ago %>

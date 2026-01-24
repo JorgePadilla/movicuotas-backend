@@ -92,6 +92,82 @@ module Api
         @device.reload
         assert @device.activated?
       end
+
+      # ===========================================
+      # check_imei endpoint tests
+      # ===========================================
+
+      test "check_imei returns available true for new IMEI" do
+        new_imei = "111222333444555"
+        assert_nil Device.find_by(imei: new_imei), "IMEI should not exist"
+
+        get api_v1_devices_check_imei_url, params: { imei: new_imei }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert json["available"], "New IMEI should be available"
+      end
+
+      test "check_imei returns available false for IMEI with active loan" do
+        # device_one has loan_one which is active
+        assert_equal "active", @device.loan.status
+
+        get api_v1_devices_check_imei_url, params: { imei: @device.imei }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert_not json["available"], "IMEI with active loan should not be available"
+        assert_equal "IMEI ya en uso con préstamo activo", json["message"]
+      end
+
+      test "check_imei returns available true for IMEI with cancelled loan" do
+        # Create a device with a cancelled loan to test reassignment availability
+        cancelled_loan = loans(:loan_two)
+        cancelled_loan.update_column(:status, "cancelled")  # Use update_column to bypass validations
+
+        device_with_cancelled = devices(:device_two)
+        assert_equal "cancelled", device_with_cancelled.loan.reload.status
+
+        get api_v1_devices_check_imei_url, params: { imei: device_with_cancelled.imei }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert json["available"], "IMEI with cancelled loan should be available for reassignment"
+        assert_equal "IMEI disponible para reasignación", json["message"]
+      end
+
+      test "check_imei returns error for invalid IMEI format - too short" do
+        get api_v1_devices_check_imei_url, params: { imei: "12345" }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert_not json["available"]
+        assert_equal "IMEI debe tener 15 dígitos numéricos", json["message"]
+      end
+
+      test "check_imei returns error for invalid IMEI format - non-numeric" do
+        get api_v1_devices_check_imei_url, params: { imei: "12345678901234A" }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert_not json["available"]
+        assert_equal "IMEI debe tener 15 dígitos numéricos", json["message"]
+      end
+
+      test "check_imei returns error for empty IMEI" do
+        get api_v1_devices_check_imei_url, params: { imei: "" }, as: :json
+
+        assert_response :success
+        json = JSON.parse(response.body)
+        assert_not json["available"]
+      end
+
+      test "check_imei does not require authentication" do
+        # No authentication headers, should still work
+        get api_v1_devices_check_imei_url, params: { imei: "111222333444555" }, as: :json
+
+        assert_response :success
+      end
     end
   end
 end

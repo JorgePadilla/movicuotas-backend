@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_24_192922) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -128,6 +128,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "device_lock_states", force: :cascade do |t|
+    t.datetime "confirmed_at"
+    t.bigint "confirmed_by_id"
+    t.datetime "created_at", null: false
+    t.bigint "device_id", null: false
+    t.datetime "initiated_at"
+    t.bigint "initiated_by_id"
+    t.jsonb "metadata", default: {}
+    t.string "reason"
+    t.string "status", default: "unlocked", null: false
+    t.datetime "updated_at", null: false
+    t.index ["confirmed_by_id"], name: "index_device_lock_states_on_confirmed_by_id"
+    t.index ["device_id", "created_at"], name: "index_device_lock_states_on_device_id_and_created_at"
+    t.index ["device_id"], name: "index_device_lock_states_on_device_id"
+    t.index ["initiated_by_id"], name: "index_device_lock_states_on_initiated_by_id"
+    t.index ["status"], name: "index_device_lock_states_on_status"
+  end
+
   create_table "device_tokens", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "app_version"
@@ -160,9 +178,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
     t.datetime "created_at", null: false
     t.string "imei", null: false
     t.bigint "loan_id"
-    t.string "lock_status", default: "unlocked"
-    t.datetime "locked_at"
-    t.bigint "locked_by_id"
     t.string "model", null: false
     t.text "notes"
     t.bigint "phone_model_id", null: false
@@ -172,9 +187,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
     t.index ["imei"], name: "index_devices_on_imei", unique: true
     t.index ["loan_id"], name: "idx_devices_loan_id"
     t.index ["loan_id"], name: "index_devices_on_loan_id"
-    t.index ["lock_status", "locked_at"], name: "idx_devices_lock_status_locked_at"
-    t.index ["lock_status"], name: "index_devices_on_lock_status"
-    t.index ["locked_by_id"], name: "index_devices_on_locked_by_id"
     t.index ["phone_model_id"], name: "index_devices_on_phone_model_id"
   end
 
@@ -496,12 +508,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_032902) do
   add_foreign_key "credit_applications", "phone_models", column: "selected_phone_model_id"
   add_foreign_key "credit_applications", "users", column: "vendor_id"
   add_foreign_key "default_qr_codes", "users", column: "qr_code_uploaded_by_id"
+  add_foreign_key "device_lock_states", "devices"
+  add_foreign_key "device_lock_states", "users", column: "confirmed_by_id"
+  add_foreign_key "device_lock_states", "users", column: "initiated_by_id"
   add_foreign_key "device_tokens", "customers"
   add_foreign_key "device_tokens", "devices"
   add_foreign_key "device_tokens", "users"
   add_foreign_key "devices", "loans"
   add_foreign_key "devices", "phone_models"
-  add_foreign_key "devices", "users", column: "locked_by_id"
   add_foreign_key "installments", "loans"
   add_foreign_key "loans", "credit_applications"
   add_foreign_key "loans", "customers"

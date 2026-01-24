@@ -14,7 +14,18 @@ module Admin
       end
 
       # Filter by lock status
-      @devices = @devices.where(lock_status: params[:lock_status]) if params[:lock_status].present?
+      if params[:lock_status].present?
+        @devices = case params[:lock_status]
+        when "locked"
+          @devices.locked
+        when "pending"
+          @devices.pending_lock
+        when "unlocked"
+          @devices.unlocked
+        else
+          @devices
+        end
+      end
 
       # Search by IMEI, activation code, or customer name
       if params[:search].present?

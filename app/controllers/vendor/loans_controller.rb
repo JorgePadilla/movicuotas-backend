@@ -298,11 +298,11 @@ module Vendor
     def filter_loans_by_device_status(loans, device_status_filter)
       case device_status_filter
       when "locked"
-        loans.joins(:device).where(devices: { lock_status: "locked" })
+        loans.joins(:device).merge(Device.locked)
       when "pending"
-        loans.joins(:device).where(devices: { lock_status: "pending" })
+        loans.joins(:device).merge(Device.pending_lock)
       when "unlocked"
-        loans.joins(:device).where(devices: { lock_status: "unlocked" })
+        loans.joins(:device).merge(Device.unlocked)
       else
         loans
       end

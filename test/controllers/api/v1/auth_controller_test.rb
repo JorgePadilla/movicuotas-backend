@@ -45,13 +45,13 @@ module Api
           status: "active"
         )
 
+        # Lock status is now managed via DeviceLockState, devices start unlocked by default
         @device = Device.create!(
           loan: @loan,
           phone_model: @phone_model,
           imei: "123456789012345",
           brand: "Apple",
-          model: "iPhone 14",
-          lock_status: "unlocked"
+          model: "iPhone 14"
         )
       end
 
