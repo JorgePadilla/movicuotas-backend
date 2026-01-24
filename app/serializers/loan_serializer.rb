@@ -16,6 +16,7 @@ class LoanSerializer
       financed_amount: @loan.financed_amount,
       interest_rate: @loan.interest_rate,
       number_of_installments: @loan.number_of_installments,
+      installment_amount: @loan.installment_amount,
       start_date: @loan.start_date,
       end_date: @loan.end_date,
       branch_number: @loan.branch_number,

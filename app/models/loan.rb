@@ -61,6 +61,11 @@ class Loan < ApplicationRecord
     installments.pending.order(:due_date).first
   end
 
+  # Returns the installment amount (all installments have the same amount)
+  def installment_amount
+    installments.first&.amount || 0
+  end
+
   def overdue_installments
     installments.overdue
   end
