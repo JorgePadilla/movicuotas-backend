@@ -82,14 +82,16 @@ module Vendor
 
       # Set default filters if no filters are provided (first visit to page)
       # Default: Active loans with overdue installments
-      if params[:status].blank? && params[:cuotas].blank? && params[:search].blank? && !params[:clear_filters]
+      if params[:status].blank? && params[:cuotas].blank? && params[:device_status].blank? && params[:search].blank? && !params[:clear_filters]
         @default_filters = true
         @status_filter = "active"
         @cuotas_filter = "con_vencidas"
+        @device_status_filter = nil
       else
         @default_filters = false
         @status_filter = params[:status]
         @cuotas_filter = params[:cuotas]
+        @device_status_filter = params[:device_status]
       end
 
       # Apply filters
@@ -103,6 +105,11 @@ module Vendor
       # Filter by cuotas (installments) situation
       if @cuotas_filter.present?
         @loans = filter_loans_by_cuotas(@loans, @cuotas_filter)
+      end
+
+      # Filter by device lock status (MDM)
+      if @device_status_filter.present?
+        @loans = filter_loans_by_device_status(@loans, @device_status_filter)
       end
 
       # Search by customer name, contract number or IMEI
@@ -283,6 +290,19 @@ module Vendor
       when "pendientes"
         # Loans with pending installments
         loans.joins(:installments).where(installments: { status: "pending" }).distinct
+      else
+        loans
+      end
+    end
+
+    def filter_loans_by_device_status(loans, device_status_filter)
+      case device_status_filter
+      when "locked"
+        loans.joins(:device).where(devices: { lock_status: "locked" })
+      when "pending"
+        loans.joins(:device).where(devices: { lock_status: "pending" })
+      when "unlocked"
+        loans.joins(:device).where(devices: { lock_status: "unlocked" })
       else
         loans
       end

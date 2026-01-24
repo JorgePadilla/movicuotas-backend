@@ -94,10 +94,6 @@
           <span class="text-gray-500">Financiado</span>
           <span class="font-medium text-gray-900">L. <%= number_with_delimiter(@loan.financed_amount, delimiter: ',') %></span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-500">Tasa</span>
-          <span class="font-medium text-gray-900"><%= @loan.interest_rate %>%</span>
-        </div>
       </div>
     </div>
 

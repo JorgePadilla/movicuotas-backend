@@ -38,42 +38,52 @@
 
   <!-- Filters -->
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 mb-6">
-    <%= form_with url: vendor_payments_path, method: :get, class: "space-y-3" do %>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <div class="flex-1">
-          <input type="text" name="search" value="<%= params[:search] %>"
-                 placeholder="Buscar por cliente, contrato o referencia..."
-                 class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
-        </div>
-        <div class="w-full sm:w-auto">
-          <select name="method" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
-            <option value="">Método: Todos</option>
+    <%= form_with url: vendor_payments_path, method: :get, class: "space-y-4" do %>
+      <!-- Search -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Buscar</label>
+        <input type="text" name="search" value="<%= params[:search] %>"
+               placeholder="Cliente, contrato o referencia..."
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
+      </div>
+
+      <!-- Filters Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- Método de Pago -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Método de Pago</label>
+          <select name="method" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent" onchange="this.form.submit()">
+            <option value="">Todos</option>
             <option value="cash" <%= "selected" if params[:method] == "cash" %>>Efectivo</option>
             <option value="transfer" <%= "selected" if params[:method] == "transfer" %>>Transferencia</option>
             <option value="card" <%= "selected" if params[:method] == "card" %>>Tarjeta</option>
             <option value="other" <%= "selected" if params[:method] == "other" %>>Otro</option>
           </select>
         </div>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <div class="flex-1 sm:flex-none">
-          <label class="text-xs text-gray-500 block mb-1">Desde</label>
+
+        <!-- Fecha Desde -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Fecha Desde</label>
           <input type="date" name="date_from" value="<%= params[:date_from] %>"
                  class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
         </div>
-        <div class="flex-1 sm:flex-none">
-          <label class="text-xs text-gray-500 block mb-1">Hasta</label>
+
+        <!-- Fecha Hasta -->
+        <div>
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Fecha Hasta</label>
           <input type="date" name="date_to" value="<%= params[:date_to] %>"
                  class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#125282] focus:border-transparent">
         </div>
-        <div class="flex gap-2 items-end">
-          <button type="submit" class="flex-1 sm:flex-none px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#0f4670] text-sm transition-colors">
-            Buscar
-          </button>
-          <% if params[:search].present? || params[:method].present? || params[:date_from].present? || params[:date_to].present? %>
-            <%= link_to "Limpiar", vendor_payments_path, class: "flex-1 sm:flex-none px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 text-sm text-center transition-colors" %>
-          <% end %>
-        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 sm:flex-none px-6 py-2 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#0f4670] text-sm transition-colors">
+          Buscar
+        </button>
+        <% if params[:search].present? || params[:method].present? || params[:date_from].present? || params[:date_to].present? %>
+          <%= link_to "Limpiar", vendor_payments_path, class: "flex-1 sm:flex-none px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 text-sm text-center transition-colors" %>
+        <% end %>
       </div>
     <% end %>
   </div>
