@@ -81,13 +81,20 @@ module Supervisor
     end
 
     def fetch_recent_blocks(date_range)
-      Device.locked
-            .joins(:lock_states)
-            .where("device_lock_states.confirmed_at >= ?", date_range.begin)
+      # Use a subquery to get distinct device IDs first, then load devices with proper ordering
+      # This avoids the PostgreSQL DISTINCT/ORDER BY conflict
+      device_ids = DeviceLockState
+                     .where(status: "locked")
+                     .where("confirmed_at >= ?", date_range.begin)
+                     .select("DISTINCT ON (device_id) device_id, confirmed_at")
+                     .order("device_id, confirmed_at DESC")
+
+      Device.where(id: device_ids.map(&:device_id))
             .includes(loan: :customer)
+            .joins(:lock_states)
+            .where(device_lock_states: { status: "locked" })
             .order("device_lock_states.confirmed_at DESC")
             .limit(50)
-            .distinct
             .map do |device|
         {
           imei: device.imei,
@@ -100,12 +107,14 @@ module Supervisor
     end
 
     def fetch_recent_blocks_paginated(date_range)
+      # Use GROUP BY instead of DISTINCT to include the ORDER BY column
       Device.locked
             .joins(:lock_states)
             .where("device_lock_states.confirmed_at >= ?", date_range.begin)
             .includes(loan: :customer)
-            .order("device_lock_states.confirmed_at DESC")
-            .distinct
+            .select("devices.*, MAX(device_lock_states.confirmed_at) as last_confirmed_at")
+            .group("devices.id")
+            .order("last_confirmed_at DESC")
             .page(params[:page])
             .per(20)
     end

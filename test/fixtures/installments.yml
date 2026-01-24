@@ -41,3 +41,18 @@ installment_six:
   due_date: <%= 6.months.ago.to_date %>
   status: paid
   paid_date: <%= 6.months.ago.to_date %>
+
+# Pending installment for loan_one (for testing status changes)
+installment_seven:
+  loan: loan_one
+  installment_number: 4
+  amount: 583.33
+  due_date: <%= 14.days.from_now.to_date %>
+  status: pending
+
+installment_eight:
+  loan: loan_one
+  installment_number: 5
+  amount: 583.33
+  due_date: <%= 28.days.from_now.to_date %>
+  status: pending

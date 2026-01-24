@@ -185,8 +185,9 @@ class LoanFinalizationService
     AuditLog.create!(
       user: @current_user,
       action: "loan_finalized",
-      resource: loan,
-      changes: {
+      resource_type: loan.class.name,
+      resource_id: loan.id,
+      change_details: {
         contract_number: loan.contract_number,
         total_amount: loan.total_amount,
         customer_id: loan.customer_id,

@@ -80,7 +80,9 @@ class Payment < ApplicationRecord
       AuditLog.create!(
         user: user,
         action: "payment_verified",
-        details: {
+        resource_type: self.class.name,
+        resource_id: id,
+        change_details: {
           payment_id: id,
           amount: amount,
           reference_number: reference_number,
@@ -106,7 +108,9 @@ class Payment < ApplicationRecord
       AuditLog.create!(
         user: user,
         action: "payment_rejected",
-        details: {
+        resource_type: self.class.name,
+        resource_id: id,
+        change_details: {
           payment_id: id,
           amount: amount,
           reason: reason
