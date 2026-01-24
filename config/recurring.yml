@@ -25,12 +25,19 @@ production:
     schedule: at 12:01am every day
     description: "Mark past-due installments as overdue and update loan status"
 
-  # Send daily collection reminders to customers with overdue installments
-  daily_collection_reminders:
-    class: DailyCollectionReminderJob
+  # Payment reminder notifications (3 days before, 1 day before, day of payment)
+  payment_reminder_notifications:
+    class: PaymentReminderNotificationJob
     queue: reminders
-    schedule: at 9am every day
-    description: "Send daily collection reminders to customers with overdue installments"
+    schedule: at 8am every day America/Tegucigalpa
+    description: "Envía recordatorios de pago 3 días antes, 1 día antes, y el día del vencimiento"
+
+  # Overdue payment notifications (1 day and 3 days after)
+  overdue_payment_notifications:
+    class: OverduePaymentNotificationJob
+    queue: reminders
+    schedule: at 8am every day America/Tegucigalpa
+    description: "Envía notificaciones a clientes con cuotas vencidas (1 y 3 días después)"
 
   # NOTE: Device blocking is done manually by employees via the supervisor dashboard
   # AutoBlockDeviceJob is available for manual trigger in /admin/jobs if needed
