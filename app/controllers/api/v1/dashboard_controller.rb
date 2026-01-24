@@ -17,7 +17,8 @@ module Api
           next_payment: next_payment ? InstallmentSerializer.new(next_payment).as_json : nil,
           overdue_count: overdue_count,
           total_overdue_amount: total_overdue_amount,
-          device_status: get_device_status(loan)
+          device_status: get_device_status(loan),
+          unread_notifications_count: customer.notifications.unread.count
         })
       end
 

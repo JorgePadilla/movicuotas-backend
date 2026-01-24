@@ -194,7 +194,14 @@ Rails.application.routes.draw do
       get "dashboard", to: "dashboard#show"
       get "installments", to: "installments#index"
       post "payments", to: "payments#create"
-      get "notifications", to: "notifications#index"
+      resources :notifications, only: [:index] do
+        collection do
+          post :mark_all_read
+        end
+        member do
+          post :mark_read
+        end
+      end
     end
   end
 end

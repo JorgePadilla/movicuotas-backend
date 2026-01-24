@@ -20,6 +20,22 @@ module Api
           }
         })
       end
+
+      def mark_read
+        notification = current_customer.notifications.find_by(id: params[:id])
+
+        if notification
+          notification.mark_as_read!
+          render_success({ message: "Notification marked as read" })
+        else
+          render_error("Notification not found", :not_found)
+        end
+      end
+
+      def mark_all_read
+        current_customer.notifications.unread.update_all(read_at: Time.current)
+        render_success({ message: "All notifications marked as read" })
+      end
     end
   end
 end
