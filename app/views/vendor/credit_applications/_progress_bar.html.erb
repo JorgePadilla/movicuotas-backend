@@ -8,16 +8,16 @@
   { number: 5, name: "Resumen" }
 ] %>
 
-<%# Mobile Progress: Simple dots %>
-<div class="flex md:hidden items-center justify-center space-x-1 mb-2">
+<%# Mobile Progress: Simple dots - optimized for Pixel phones %>
+<div class="flex md:hidden items-center justify-center space-x-1.5 mb-2">
   <% steps.each_with_index do |step, index| %>
-    <div class="w-3 h-3 rounded-full <%= step[:number] <= current_step ? 'bg-[#125282]' : 'bg-gray-300' %>"></div>
+    <div class="w-3.5 h-3.5 rounded-full <%= step[:number] <= current_step ? 'bg-[#125282]' : 'bg-gray-300' %> <%= step[:number] == current_step ? 'ring-2 ring-offset-1 ring-[#125282]' : '' %>"></div>
     <% if index < steps.length - 1 %>
-      <div class="w-4 h-0.5 <%= step[:number] < current_step ? 'bg-[#125282]' : 'bg-gray-300' %>"></div>
+      <div class="w-5 h-0.5 <%= step[:number] < current_step ? 'bg-[#125282]' : 'bg-gray-300' %>"></div>
     <% end %>
   <% end %>
 </div>
-<p class="md:hidden text-center text-xs text-gray-500 mb-4">Paso <%= current_step %> de 5</p>
+<p class="md:hidden text-center text-sm text-gray-600 mb-4 font-medium">Paso <%= current_step %> de 5</p>
 
 <%# Desktop Progress: Full labels %>
 <div class="hidden md:flex items-center justify-between mb-2">

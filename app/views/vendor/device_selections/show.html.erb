@@ -96,11 +96,11 @@
 
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-6 border-t border-gray-200">
       <div class="order-2 md:order-1">
-        <%= link_to "← Volver a búsqueda", vendor_customer_search_path, class: "text-sm text-[#125282] hover:underline" %>
+        <%= link_to "← Volver a búsqueda", vendor_customer_search_path, class: "text-sm text-[#125282] hover:underline py-2" %>
       </div>
-      <div class="flex flex-col sm:flex-row gap-4 order-1 md:order-2">
-        <%= link_to "Cancelar", vendor_customer_search_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-center" %>
-        <%= f.submit "Siguiente →", class: "px-6 py-2 bg-[#125282] text-white font-medium rounded-md hover:bg-[#125282]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282] cursor-pointer" %>
+      <div class="flex flex-col sm:flex-row gap-3 order-1 md:order-2">
+        <%= link_to "Cancelar", vendor_customer_search_path, class: "px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-center text-sm" %>
+        <%= f.submit "Siguiente →", class: "px-6 py-2.5 bg-[#125282] text-white font-medium rounded-lg hover:bg-[#125282]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#125282] cursor-pointer text-sm" %>
       </div>
     </div>
   <% end %>
