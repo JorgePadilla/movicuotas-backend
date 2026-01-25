@@ -6,12 +6,18 @@ require "capybara/rails"
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
 
+  # Reset session before each test to ensure isolation
+  setup do
+    Capybara.reset_sessions!
+  end
+
   # Helper to sign in a user via the login form
   def sign_in_as(user, password: "password123")
-    visit new_session_path
+    visit login_path
     fill_in "email", with: user.email
     fill_in "password", with: password
     click_button "Iniciar Sesión"
+    wait_for_turbo
   end
 
   # Helper to sign in admin
@@ -36,6 +42,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   # Wait for Turbo to finish loading
   def wait_for_turbo
-    sleep 0.1 # Brief pause for Turbo Drive
+    # Wait for page to be fully loaded and redirects to complete
+    sleep 0.5
+
+    # Wait for any Turbo-related processing to complete
+    Timeout.timeout(5) do
+      loop until page.evaluate_script("document.readyState") == "complete"
+    end
+  rescue Timeout::Error
+    # Continue if timeout
   end
 end
