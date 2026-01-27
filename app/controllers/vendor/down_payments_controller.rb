@@ -10,6 +10,7 @@ module Vendor
     def show
       # Check if contract is signed before authorizing
       unless @contract.signed?
+        skip_authorization
         redirect_to signature_vendor_contract_path(@contract),
                     alert: "El contrato debe estar firmado antes de recolectar la prima."
         return
@@ -17,6 +18,7 @@ module Vendor
 
       # If down payment already collected, redirect to QR MDM (step 16)
       if @loan.down_payment_collected?
+        skip_authorization
         @device = @loan.device
         if @device&.mdm_blueprint.present?
           redirect_to vendor_mdm_blueprint_path(@device.mdm_blueprint),
@@ -35,6 +37,7 @@ module Vendor
     def update
       # Check if contract is signed
       unless @contract.signed?
+        skip_authorization
         redirect_to signature_vendor_contract_path(@contract),
                     alert: "El contrato debe estar firmado antes de recolectar la prima."
         return
