@@ -24,7 +24,7 @@ class Loan < ApplicationRecord
   validates :interest_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
   validates :number_of_installments, presence: true, numericality: { greater_than: 0 }, inclusion: { in: [ 6, 8, 12 ] }
   validates :start_date, presence: true
-  validate :start_date_not_in_past
+  validate :start_date_not_in_past, on: :create
   validate :approved_amount_covers_total_amount
 
   # Enums
