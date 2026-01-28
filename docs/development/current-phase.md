@@ -1,12 +1,22 @@
-## Current Phase: Phase 4 (Cobrador Interface Implementation) ✅ COMPLETED
+## Current Phase: All Phases Complete ✅
 
-All four phases completed successfully. System ready for deployment.
+All phases completed successfully. System ready for deployment.
+
+### User Roles (4 Total)
+| Role | Description |
+|------|-------------|
+| **Master** | Highest privileges - all admin permissions + can delete loans |
+| **Admin** | Full system access (cannot delete loans) |
+| **Supervisor** | Payment verification, device blocking, collections (all branches) |
+| **Vendedor** | Sales, customer registration (branch-limited) |
+
+> **Note**: In older documentation, "Supervisor" was called "Cobrador". The codebase uses `supervisor` as the role name.
 
 ### Phase 1 ✅ COMPLETED
 - Project planning and comprehensive documentation
 - Database schema design and model generation
 - Rails 8 built-in authentication with Pundit policies
-- Three user roles: Admin, Vendedor, Cobrador
+- Four user roles: Master, Admin, Supervisor, Vendedor
 - Complete permissions matrix and authorization system
 - Vendor workflow specification (18-screen process)
 - Basic CRUD setup for all core models
@@ -34,12 +44,12 @@ All four phases completed successfully. System ready for deployment.
 - CSV data export for reporting
 
 ### Phase 4 ✅ COMPLETED (2026-01-01)
-**Cobrador Interface - Collection Management System**
+**Supervisor Interface - Collection Management System**
 **Development Strategy**: Parallel feature branches with git worktrees (All merged to main)
 
 #### All Features Completed (11/11)
 
-**1. ✅ Cobrador Dashboard** (feature/phase4-cobrador-dashboard)
+**1. ✅ Supervisor Dashboard** (feature/phase4-cobrador-dashboard)
    - Real-time metrics on overdue installments
    - Blocked devices tracking
    - Breakdown by days overdue (1-7, 8-15, 16-30, 30+)
@@ -63,7 +73,7 @@ All four phases completed successfully. System ready for deployment.
    - Upcoming installments preview
 
 **4. ✅ Device Blocking Service**
-   - Authorization checks (Cobrador/Admin only)
+   - Authorization checks (Master/Admin/Supervisor/Vendedor)
    - Lock status management
    - Audit logging
    - MDM job queue ready
@@ -73,11 +83,11 @@ All four phases completed successfully. System ready for deployment.
    - Complete device/customer/overdue info
    - Confirmation workflow
 
-**6. ✅ Payment History (Read-Only)**
+**6. ✅ Payment History (Read-Only for Supervisor)**
    - Complete installments history
    - Payment records with verification status
    - Summary statistics
-   - No edit/delete capabilities
+   - No edit/delete capabilities for Supervisor
 
 **7. ✅ Collection Reports**
    - Date range filtering
@@ -87,7 +97,7 @@ All four phases completed successfully. System ready for deployment.
    - Recent blocks table
 
 **8. ✅ MDM API Integration Ready**
-   - Authorization checks (Cobrador/Admin only)
+   - Authorization checks (all roles can block)
    - Lock status management
    - Audit logging integration
    - Job queue ready for async processing
@@ -95,12 +105,12 @@ All four phases completed successfully. System ready for deployment.
 **9. ✅ Payment History Dashboard**
    - Complete payment records with verification status
    - Search and filtering capabilities
-   - Read-only access for Cobradores
+   - Read-only access for Supervisors
    - Payment receipt tracking
 
 **10. ✅ Collection Reports & Analytics**
    - Daily/weekly/monthly collection reports
-   - Performance metrics by branch/cobrador
+   - Performance metrics by branch/supervisor
    - Trend analysis and comparisons
    - Advanced filtering and search
 

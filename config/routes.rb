@@ -5,11 +5,12 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Mission Control Jobs Dashboard (admin only)
+  # Mission Control Jobs Dashboard (admin and master only)
   constraints ->(request) {
     session_id = request.cookie_jar.signed[:session_token]
     session = Session.find_by(id: session_id) if session_id
-    session&.user&.admin?
+    user = session&.user
+    user&.admin? || user&.master?
   } do
     mount MissionControl::Jobs::Engine, at: "/admin/jobs_dashboard"
   end
@@ -40,7 +41,7 @@ Rails.application.routes.draw do
     # Admin management routes (Phase 3)
     resources :users  # User management
     resources :customers  # Customer management
-    resources :loans, only: [ :index, :show ]  # Loan management (view only)
+    resources :loans, only: [ :index, :show, :destroy ]  # Loan management (master can delete)
     resources :devices, only: [ :index, :show ] do  # Device management
       member do
         post :reset_activation  # Reset activation to allow re-use of code

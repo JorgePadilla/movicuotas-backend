@@ -6,46 +6,49 @@ class User < ApplicationRecord
   has_secure_password
 
   # Validations
-  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :full_name, presence: true
-  validates :role, presence: true, inclusion: { in: %w[admin vendedor cobrador] }
-
-  # Optional: Add password validations
+  validates :role, presence: true, inclusion: { in: %w[master admin supervisor vendedor] }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
-  enum role: { admin: 'admin', vendedor: 'vendedor', cobrador: 'cobrador' }
+  # Roles:
+  # - master: Full system access + loan deletion (highest privileges)
+  # - admin: Full system access
+  # - supervisor: Payment verification, device blocking (NOT branch-limited)
+  # - vendedor: Customer registration, loan creation (branch-limited)
+  enum :role, { master: "master", admin: "admin", supervisor: "supervisor", vendedor: "vendedor" }, default: "vendedor"
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
-
-  # Role helpers
-  def admin?
-    role == 'admin'
-  end
-
-  def vendedor?
-    role == 'vendedor'
-  end
-
-  def cobrador?
-    role == 'cobrador'
-  end
+  has_many :loans, dependent: :restrict_with_error
 
   # Permission helpers
+  def admin_or_master?
+    master? || admin?
+  end
+
   def can_create_loans?
-    admin? || vendedor?
+    admin_or_master? || vendedor?
   end
 
   def can_block_devices?
-    admin? || cobrador?
+    admin_or_master? || supervisor?
+  end
+
+  def can_verify_payments?
+    admin_or_master? || supervisor?
   end
 
   def can_manage_users?
-    admin?
+    admin_or_master?
   end
 
   def can_delete_records?
-    admin?
+    admin_or_master?
+  end
+
+  def can_delete_loans?
+    master?
   end
 
   # System user for automated actions
@@ -105,12 +108,12 @@ class SessionsController < ApplicationController
 
   def after_sign_in_path_for(user)
     case user.role
-    when 'admin'
+    when 'master', 'admin'
       admin_dashboard_path
+    when 'supervisor'
+      supervisor_dashboard_path
     when 'vendedor'
       vendor_customer_search_path  # Main screen for vendors
-    when 'cobrador'
-      cobrador_dashboard_path
     else
       root_path
     end
@@ -166,11 +169,13 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   # Public pages
-  root "pages#home"
+  root "home#index"
 
   # Role-specific routes
   namespace :admin do
+    root to: "dashboard#index"
     get 'dashboard', to: 'dashboard#index'
+    resources :loans, only: [:index, :show, :destroy]  # Master can delete loans
     # ... other admin routes
   end
 
@@ -179,9 +184,9 @@ Rails.application.routes.draw do
     # ... other vendor routes
   end
 
-  namespace :cobrador do
+  namespace :supervisor do
     get 'dashboard', to: 'dashboard#index'
-    # ... other cobrador routes
+    # ... other supervisor routes
   end
 end
 ```
@@ -197,7 +202,7 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.string :password_digest, null: false
       t.string :full_name, null: false
       t.string :role, null: false, default: 'vendedor'
-      t.string :branch_number  # For vendors and cobradores
+      t.string :branch_number  # For vendors
       t.boolean :active, default: true
 
       t.timestamps
@@ -218,6 +223,48 @@ class CreateSessions < ActiveRecord::Migration[8.0]
       t.timestamps
     end
   end
+end
+```
+
+### Default Users (Seeds)
+
+```ruby
+# db/seeds.rb
+
+# Master user (highest privileges - can delete loans)
+User.find_or_create_by!(email: 'master@movicuotas.com') do |user|
+  user.full_name = 'Master Usuario'
+  user.password = 'Honduras1!'
+  user.role = 'master'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
+# Admin user
+User.find_or_create_by!(email: 'admin@movicuotas.com') do |user|
+  user.full_name = 'Administrador Principal'
+  user.password = 'password123'
+  user.role = 'admin'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
+# Supervisor user
+User.find_or_create_by!(email: 'supervisor@movicuotas.com') do |user|
+  user.full_name = 'Supervisor Ejemplo'
+  user.password = 'password123'
+  user.role = 'supervisor'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
+# Vendedor user
+User.find_or_create_by!(email: 'vendedor@movicuotas.com') do |user|
+  user.full_name = 'Vendedor Ejemplo'
+  user.password = 'password123'
+  user.role = 'vendedor'
+  user.branch_number = 'S01'
+  user.active = true
 end
 ```
 
@@ -257,4 +304,3 @@ class PasswordsController < ApplicationController
   end
 end
 ```
-

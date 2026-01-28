@@ -1,9 +1,10 @@
 ## Core Domain Models
 
-### Three User Types
-1. **Administrators (Admin)**: Full access to all features
-2. **Vendedores (Sales Staff)**: Limited to customer/loan management and sales process
-3. **Cobradores (Collection Agents)**: Read-only access focused on overdue accounts and MDM device control
+### Four User Types
+1. **Master**: Highest privileges - all admin permissions plus ability to delete loans
+2. **Administrators (Admin)**: Full access to all features except loan deletion
+3. **Supervisors**: Payment verification, device blocking, collection reports (all branches, NOT branch-limited)
+4. **Vendedores (Sales Staff)**: Customer/loan management and sales process (branch-limited)
 
 ### Main Entities
 1. **Customer**: End customer buying on credit (with date of birth for age calculation)

@@ -35,7 +35,11 @@ movicuotas-backend/
 
 ## Core Domain Models ([details](docs/business-rules/domain-models.md))
 
-**Three User Types**: Admin (full access), Vendedor (sales), Cobrador (collections, read-only)
+**Four User Types**:
+- **Master**: Highest privileges - all admin permissions + can delete loans
+- **Admin**: Full system access
+- **Supervisor**: Payment verification, device blocking (all branches)
+- **Vendedor**: Sales, customer registration (branch-limited)
 
 **Main Entities**: Customer, Device, Loan, Installment, Payment, CreditApplication, PhoneModel, Contract, MdmBlueprint
 
@@ -54,7 +58,7 @@ Detailed documentation is organized into focused files:
 
 ### Business Rules
 - [Vendor Workflow (18 screens)](docs/business-rules/vendor-workflow.md)
-- [Cobrador Workflow](docs/business-rules/cobrador-workflow.md)
+- [Supervisor Workflow](docs/business-rules/cobrador-workflow.md) *(file named cobrador-workflow.md)*
 - [Domain Models](docs/business-rules/domain-models.md)
 - [Permissions Matrix](docs/business-rules/permissions-matrix.md)
 - [Vendor Reminders](docs/business-rules/vendor-reminders.md)
@@ -82,7 +86,7 @@ Detailed documentation is organized into focused files:
 ## Current Status (Summary)
 
 **Status**: All Phases Complete ✅
-**Last Updated**: 2026-01-18
+**Last Updated**: 2026-01-28
 
 ### All Phases Completed
 
@@ -91,15 +95,16 @@ Detailed documentation is organized into focused files:
 | Phase 1 | Authentication & Authorization | ✅ Complete |
 | Phase 2 | Vendor Workflow (18 Screens) | ✅ Complete |
 | Phase 3 | Admin Dashboard & Management | ✅ Complete |
-| Phase 4 | Cobrador Interface | ✅ Complete |
+| Phase 4 | Supervisor Interface | ✅ Complete |
 | Phase 5 | Background Jobs & Notifications | ✅ Complete |
 
 ### Key Features
 - **Vendor Portal**: Complete 18-screen workflow for phone sales and credit applications
 - **Admin Dashboard**: Analytics, user management, loan management, payment verification
-- **Cobrador Interface**: Overdue tracking, device blocking, collection reports
+- **Supervisor Interface**: Overdue tracking, device blocking, collection reports, payment verification
 - **Background Jobs**: Solid Queue with FCM notifications, daily reminders, auto-cleanup
 - **API**: REST API for Flutter mobile app
+- **Master Role**: Special role with loan deletion capability
 
 *Detailed status: [docs/development/project-status.md](docs/development/project-status.md)*
 

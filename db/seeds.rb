@@ -28,6 +28,16 @@ if Rails.env.development? || Rails.env.test? || Rails.env.production?
 
 # 1. Create Users
 puts "Creating users..."
+
+# Master user (highest privileges - can delete loans)
+master = User.find_or_create_by!(email: 'master@movicuotas.com') do |user|
+  user.full_name = 'Master Usuario'
+  user.password = 'Honduras1!'
+  user.role = 'master'
+  user.branch_number = 'S01'
+  user.active = true
+end
+
 admin = User.find_or_create_by!(email: 'admin@movicuotas.com') do |user|
   user.full_name = 'Administrador Principal'
   user.password = 'password123'

@@ -15,8 +15,13 @@ class ApplicationPolicy
   end
 
   # Role helpers
+  def master?
+    user&.master?
+  end
+
   def admin?
-    user&.admin?
+    # Master has all admin permissions
+    user&.admin? || user&.master?
   end
 
   def supervisor?

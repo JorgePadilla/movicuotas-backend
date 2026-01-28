@@ -2,7 +2,7 @@
 
 module Admin
   class LoansController < ApplicationController
-    before_action :set_loan, only: [ :show ]
+    before_action :set_loan, only: [ :show, :destroy ]
 
     def index
       @loans = policy_scope(Loan).order(created_at: :desc)
@@ -30,6 +30,12 @@ module Admin
 
     def show
       authorize @loan
+    end
+
+    def destroy
+      authorize @loan
+      @loan.destroy
+      redirect_to admin_loans_path, notice: "Préstamo eliminado exitosamente."
     end
 
     private

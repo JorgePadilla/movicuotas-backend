@@ -4,41 +4,50 @@ class User < ApplicationRecord
   # Validations
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :full_name, presence: true
-  validates :role, presence: true, inclusion: { in: %w[admin supervisor vendedor] }
+  validates :role, presence: true, inclusion: { in: %w[master admin supervisor vendedor] }
   validates :branch_number, format: { with: /\A[A-Z0-9]+\z/, message: "solo letras mayúsculas y números" }, allow_blank: true
 
   # Optional: Add password validations
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
 
   # Roles:
+  # - master: Full system access + loan deletion (highest privileges)
   # - admin: Full system access
   # - supervisor: Payment verification, device blocking (NOT branch-limited)
   # - vendedor: Customer registration, loan creation (branch-limited)
-  enum :role, { admin: "admin", supervisor: "supervisor", vendedor: "vendedor" }, default: "vendedor"
+  enum :role, { master: "master", admin: "admin", supervisor: "supervisor", vendedor: "vendedor" }, default: "vendedor"
 
   # Rails 8 authentication uses sessions
   has_many :sessions, dependent: :destroy
   has_many :loans, dependent: :restrict_with_error
 
   # Permission helpers
+  def admin_or_master?
+    master? || admin?
+  end
+
   def can_create_loans?
-    admin? || vendedor?
+    admin_or_master? || vendedor?
   end
 
   def can_block_devices?
-    admin? || supervisor?
+    admin_or_master? || supervisor?
   end
 
   def can_verify_payments?
-    admin? || supervisor?
+    admin_or_master? || supervisor?
   end
 
   def can_manage_users?
-    admin?
+    admin_or_master?
   end
 
   def can_delete_records?
-    admin?
+    admin_or_master?
+  end
+
+  def can_delete_loans?
+    master?
   end
 
   # Password reset functionality (requires reset_digest and reset_sent_at columns)

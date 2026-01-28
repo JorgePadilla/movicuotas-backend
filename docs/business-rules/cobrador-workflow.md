@@ -1,7 +1,9 @@
-## Cobrador (Collection Agent) Workflow
+## Supervisor (Collection Agent) Workflow
+
+> **Note**: In the codebase, this role is called `supervisor` (not `cobrador`). The Supervisor role handles payment verification, device blocking, and collection management.
 
 ### Overview
-The Cobrador role is specifically designed for collection agents who manage overdue accounts and device blocking through MDM. This role has read-only access to most data but can execute device locks.
+The Supervisor role is designed for collection agents and supervisors who manage overdue accounts, verify payments, and control device blocking through MDM. This role can see all branches (NOT branch-limited) and has elevated permissions for collections.
 
 ### Access Level: READ + MDM CONTROL
 
@@ -20,10 +22,10 @@ The Cobrador role is specifically designed for collection agents who manage over
 - ❌ Cannot edit customer information
 - ❌ Cannot access system configuration
 
-### Cobrador Dashboard
+### Supervisor Dashboard
 
 ```ruby
-def cobrador_dashboard
+def supervisor_dashboard
   {
     overdue_devices: {
       total_count: Installment.overdue.count,
@@ -123,7 +125,7 @@ end
 
 ### Block Device via MDM
 
-**CRITICAL BUSINESS RULE:** Only Cobradores and Admins can block devices.
+**CRITICAL BUSINESS RULE:** Master, Admin, Supervisor, and Vendedor can all block devices.
 
 ```ruby
 # app/services/mdm_block_service.rb
@@ -175,7 +177,7 @@ class MdmBlockService
   private
 
   def can_block?
-    @user.admin? || @user.cobrador?
+    @user.master? || @user.admin? || @user.supervisor? || @user.vendedor?
   end
 
   def calculate_overdue_days
@@ -191,7 +193,7 @@ end
 ```
 
 **UI Flow:**
-1. Cobrador views overdue device detail
+1. Supervisor views overdue device detail
 2. Clicks "🔴 Bloquear Dispositivo" button
 3. Confirmation screen shows:
    - Device info

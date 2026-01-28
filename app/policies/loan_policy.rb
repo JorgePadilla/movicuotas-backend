@@ -25,7 +25,7 @@ class LoanPolicy < ApplicationPolicy
   end
 
   def destroy?
-    admin?  # Only admin can delete loans
+    master?  # Only master can delete loans (not regular admin)
   end
 
   # Manual approval - Admin only (Vendedor submissions are auto-approved)
@@ -63,7 +63,7 @@ class LoanPolicy < ApplicationPolicy
   # - Vendedor: Only loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.supervisor?
+      if user&.master? || user&.admin? || user&.supervisor?
         scope.all
       elsif user&.vendedor?
         # Vendedores can only see loans in their branch

@@ -6,10 +6,18 @@
 - ✅ Phase 1: Authentication & Authorization (COMPLETED)
 - ✅ Phase 2: Vendor Workflow (18 Screens) (COMPLETED)
 - ✅ Phase 3: Admin Dashboard & Management (COMPLETED)
-- ✅ Phase 4: Cobrador Interface (COMPLETED)
+- ✅ Phase 4: Supervisor Interface (COMPLETED) - *Note: Originally named "Cobrador" in docs*
 - ✅ Phase 5: Background Jobs & Notifications (COMPLETED)
 
 **Current Status:** Production-ready. All core features implemented.
+
+### User Roles (4 total)
+| Role | Description |
+|------|-------------|
+| **Master** | Highest privileges - all admin permissions + can delete loans |
+| **Admin** | Full system access (cannot delete loans) |
+| **Supervisor** | Payment verification, device blocking, collections (all branches) |
+| **Vendedor** | Sales, customer registration (branch-limited) |
 
 **Screen Count:** 18 screens total
 ```
@@ -35,8 +43,8 @@ Pantalla 17: Checklist Final
 Pantalla 18: Tracking de Préstamo
 ```
 
-**Phase 4 Milestones (Cobrador Interface) - COMPLETED:**
-- [x] Cobrador Dashboard with real-time metrics
+**Phase 4 Milestones (Supervisor Interface) - COMPLETED:**
+- [x] Supervisor Dashboard with real-time metrics
 - [x] Overdue Devices List with advanced filtering
 - [x] Device Detail Page with complete overdue information
 - [x] Device Blocking Service (MDM integration ready)
@@ -60,7 +68,7 @@ Pantalla 18: Tracking de Préstamo
 - ✅ Production server optimization (reduced from 8 processes to 4)
 
 **Phase 4 Summary (COMPLETED - 2026-01-01):**
-- ✅ Cobrador Dashboard with real-time metrics
+- ✅ Supervisor Dashboard with real-time metrics
 - ✅ Overdue Devices List with advanced filtering
 - ✅ Device Detail Page with complete overdue information
 - ✅ Device Blocking Service (MDM integration ready)
@@ -81,6 +89,17 @@ Pantalla 18: Tracking de Préstamo
 - ✅ Role-based access control with Pundit policies
 - ✅ CSV data export functionality
 - ✅ Comprehensive Admin Analytics
+
+**Recent Changes (v2.1 - 2026-01-28):**
+- ✅ Added **Master** role with highest privileges
+- ✅ Master can delete loans (Admin cannot)
+- ✅ Updated User model with `master` enum value
+- ✅ Updated ApplicationPolicy with `master?` helper
+- ✅ Updated LoanPolicy to restrict `destroy?` to master only
+- ✅ Added `destroy` action to Admin::LoansController
+- ✅ Added master user to seeds (master@movicuotas.com)
+- ✅ Updated all documentation with 4-role system
+- ✅ Clarified "Cobrador" → "Supervisor" naming in docs
 
 **Recent Changes (v2.0 - 2026-01-01):**
 - ✅ Created Phase 5 git worktree: phase5-jobs-notif
