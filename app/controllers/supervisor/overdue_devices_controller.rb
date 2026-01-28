@@ -3,7 +3,7 @@
 module Supervisor
   class OverdueDevicesController < ApplicationController
     before_action :set_filters, only: :index
-    before_action :set_device, only: [ :show, :block, :confirm_block ]
+    before_action :set_device, only: [ :show, :block, :confirm_block, :confirm_unblock ]
 
     PER_PAGE_OPTIONS = [ 10, 25, 50 ].freeze
     DEFAULT_PER_PAGE = 25
