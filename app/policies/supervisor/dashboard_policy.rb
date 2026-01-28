@@ -3,7 +3,7 @@
 module Supervisor
   class DashboardPolicy < ::DashboardPolicy
     def index?
-      user.supervisor? || user.admin?
+      supervisor? || admin?  # admin? includes master
     end
 
     class Scope < Scope

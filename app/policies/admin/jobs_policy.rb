@@ -3,23 +3,23 @@
 module Admin
   class JobsPolicy < ::ApplicationPolicy
     def index?
-      user.admin?
+      admin?  # Uses ApplicationPolicy#admin? which includes master
     end
 
     def show?
-      user.admin?
+      admin?
     end
 
     def retry?
-      user.admin?
+      admin?
     end
 
     def trigger?
-      user.admin?
+      admin?
     end
 
     def cancel?
-      user.admin?
+      admin?
     end
 
     class Scope < Scope

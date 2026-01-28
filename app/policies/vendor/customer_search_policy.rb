@@ -4,7 +4,7 @@ module Vendor
   class CustomerSearchPolicy < ApplicationPolicy
     def index?
       # Vendedores, supervisors, and admins can access customer search
-      user.vendedor? || user.supervisor? || user.admin?
+      vendedor? || supervisor? || admin?  # admin? includes master
     end
 
     class Scope < Scope

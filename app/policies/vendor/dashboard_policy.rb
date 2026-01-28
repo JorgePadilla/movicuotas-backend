@@ -4,7 +4,7 @@ module Vendor
   class DashboardPolicy < ::DashboardPolicy
     def index?
       # Vendedores, supervisors, and admins can access vendor dashboard
-      user.vendedor? || user.supervisor? || user.admin?
+      vendedor? || supervisor? || admin?  # admin? includes master
     end
 
     class Scope < Scope

@@ -4,15 +4,15 @@ module Vendor
   class PaymentCalculatorPolicy < ApplicationPolicy
     # Step 12: Payment Calculator - accessible to supervisors and admins
     def new?
-      user.supervisor? || user.admin?
+      supervisor? || admin?  # admin? includes master
     end
 
     def create?
-      user.supervisor? || user.admin?
+      supervisor? || admin?
     end
 
     def calculate?
-      user.supervisor? || user.admin?
+      supervisor? || admin?
     end
 
     class Scope < Scope

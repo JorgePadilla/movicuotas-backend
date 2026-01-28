@@ -17,7 +17,7 @@ class HomeController < ApplicationController
 
     # User is logged in - redirect based on role
     case current_user.role
-    when "admin"
+    when "master", "admin"
       redirect_to admin_dashboard_path
     when "supervisor"
       redirect_to supervisor_dashboard_path

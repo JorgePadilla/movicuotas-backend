@@ -3,7 +3,7 @@
 module Admin
   class DashboardPolicy < ::DashboardPolicy
     def index?
-      user.admin?
+      admin?  # Uses ApplicationPolicy#admin? which includes master
     end
 
     class Scope < Scope
