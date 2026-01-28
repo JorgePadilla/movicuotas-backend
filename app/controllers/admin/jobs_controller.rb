@@ -79,7 +79,7 @@ module Admin
     end
 
     def authorize_admin
-      redirect_to root_path, alert: "Acceso denegado" unless current_user&.admin?
+      redirect_to root_path, alert: "Acceso denegado" unless current_user&.admin_or_master?
     end
 
     def set_job

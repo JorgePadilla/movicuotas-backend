@@ -156,7 +156,7 @@ module Admin
     private
 
     def authorize_admin
-      redirect_to login_path, alert: "Acceso denegado" unless current_user&.admin?
+      redirect_to login_path, alert: "Acceso denegado" unless current_user&.admin_or_master?
     end
 
     def export_loans(format)

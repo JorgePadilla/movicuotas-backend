@@ -18,7 +18,7 @@
           <%= loan_status_es(@loan.status) %>
         </span>
         <% if current_user.master? %>
-          <%= button_to "Eliminar Préstamo", admin_loan_path(@loan), method: :delete, data: { confirm: "¿Estás seguro de que deseas eliminar este préstamo? Esta acción no se puede deshacer y eliminará todas las cuotas y pagos asociados." }, class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
+          <%= link_to "Eliminar Préstamo", admin_loan_path(@loan), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de que deseas eliminar este préstamo? Esta acción no se puede deshacer y eliminará todas las cuotas y pagos asociados." }, class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm" %>
         <% end %>
       </div>
     </div>
