@@ -23,6 +23,7 @@ module Admin
       @contract = Contract.find(params[:id])
       @loan = @contract.loan
       @customer = @loan&.customer
+      @credit_application = @loan&.credit_application
     end
   end
 end

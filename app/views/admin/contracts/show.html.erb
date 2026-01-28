@@ -126,4 +126,62 @@
       <p class="text-gray-500">Sin información de préstamo disponible</p>
     <% end %>
   </div>
+
+  <%# Photos from Credit Application (Step 2) - Admin only %>
+  <% if @credit_application.present? %>
+    <div class="bg-white shadow-lg rounded-lg p-8 mt-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Fotografías de Verificación</h2>
+      <p class="text-sm text-gray-500 mb-4">Documentos capturados durante la solicitud de crédito</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <%# ID Front %>
+        <div class="border rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500 mb-3">Cédula - Frente</p>
+          <% if @credit_application.id_front_image.attached? %>
+            <%= link_to rails_blob_path(@credit_application.id_front_image, disposition: "inline"), target: "_blank", class: "block" do %>
+              <%= image_tag rails_blob_path(@credit_application.id_front_image, disposition: "inline"),
+                  class: "w-full h-48 object-cover rounded-lg hover:opacity-90 transition cursor-pointer",
+                  alt: "Cédula Frente" %>
+            <% end %>
+          <% else %>
+            <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+              <span class="text-gray-400">No disponible</span>
+            </div>
+          <% end %>
+        </div>
+
+        <%# ID Back %>
+        <div class="border rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500 mb-3">Cédula - Reverso</p>
+          <% if @credit_application.id_back_image.attached? %>
+            <%= link_to rails_blob_path(@credit_application.id_back_image, disposition: "inline"), target: "_blank", class: "block" do %>
+              <%= image_tag rails_blob_path(@credit_application.id_back_image, disposition: "inline"),
+                  class: "w-full h-48 object-cover rounded-lg hover:opacity-90 transition cursor-pointer",
+                  alt: "Cédula Reverso" %>
+            <% end %>
+          <% else %>
+            <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+              <span class="text-gray-400">No disponible</span>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Facial Verification %>
+        <div class="border rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500 mb-3">Verificación Facial</p>
+          <% if @credit_application.facial_verification_image.attached? %>
+            <%= link_to rails_blob_path(@credit_application.facial_verification_image, disposition: "inline"), target: "_blank", class: "block" do %>
+              <%= image_tag rails_blob_path(@credit_application.facial_verification_image, disposition: "inline"),
+                  class: "w-full h-48 object-cover rounded-lg hover:opacity-90 transition cursor-pointer",
+                  alt: "Verificación Facial" %>
+            <% end %>
+          <% else %>
+            <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+              <span class="text-gray-400">No disponible</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

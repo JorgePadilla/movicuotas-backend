@@ -40,6 +40,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Load session if available, but don't require it (no redirect)
+  def load_session_if_available
+    if session_record = Session.find_by(id: cookies.signed[:session_token])
+      Current.session = session_record
+    end
+  end
+
   def current_user
     Current.session&.user
   end

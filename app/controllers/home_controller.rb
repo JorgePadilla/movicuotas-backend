@@ -4,6 +4,7 @@
 # For non-authenticated users, redirects to login without error message
 class HomeController < ApplicationController
   skip_before_action :authenticate, only: :index
+  before_action :load_session_if_available, only: :index
   skip_after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized, only: :index
 
