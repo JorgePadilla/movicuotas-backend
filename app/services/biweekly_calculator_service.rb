@@ -280,13 +280,16 @@ class BiweeklyCalculatorService
   end
 
   # Generate installment schedule with due dates
+  # First installment starts 15 days after loan start date
+  # Subsequent installments are every 15 days (bi-weekly/quincenal)
   # @param installment_amount [Numeric] Calculated installment amount
   # @return [Array<Hash>] Installment schedule with due dates and amounts
   def generate_installment_schedule(installment_amount)
     schedule = []
 
     @number_of_installments.times do |i|
-      due_date = @start_date + (i * 14).days
+      # First installment is 15 days after start_date, then every 15 days
+      due_date = @start_date + ((i + 1) * 15).days
 
       schedule << {
         installment_number: i + 1,
