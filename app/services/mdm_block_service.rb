@@ -12,10 +12,10 @@ class MdmBlockService
     return { error: "Already blocked" } if @device.locked?
 
     ActiveRecord::Base.transaction do
-      # Update device status to pending
+      # Lock device directly (skip pending state)
       @device.lock!(@user, @reason)
+      @device.confirm_lock!(@user)
 
-      # Create audit log (already done in Device#lock!)
       # Queue MDM blocking job
       MdmBlockDeviceJob.perform_later(@device.id) if defined?(MdmBlockDeviceJob)
 
@@ -23,7 +23,7 @@ class MdmBlockService
       notify_customer if @device.loan&.customer.present?
     end
 
-    { success: true, message: "Dispositivo marcado para bloqueo" }
+    { success: true, message: "Dispositivo bloqueado exitosamente" }
   end
 
   def unblock!
