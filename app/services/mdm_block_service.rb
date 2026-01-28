@@ -29,6 +29,11 @@ class MdmBlockService
   def unblock!
     return { error: "Unauthorized" } unless can_unblock?
     return { error: "Device is not locked" } unless @device.locked?
+    if has_overdue_installments?
+      overdue_amount = @device.loan.installments.overdue.sum(:amount)
+      overdue_count = @device.loan.installments.overdue.count
+      return { error: "No se puede desbloquear: el cliente tiene #{overdue_count} cuota(s) en mora por L. #{overdue_amount.round(2)}. Debe regularizar los pagos primero." }
+    end
 
     ActiveRecord::Base.transaction do
       # Update device status to unlocked
@@ -49,6 +54,10 @@ class MdmBlockService
 
   def can_unblock?
     @user.admin? || @user.supervisor?
+  end
+
+  def has_overdue_installments?
+    @device.loan&.installments&.overdue&.exists? || false
   end
 
   def notify_customer
