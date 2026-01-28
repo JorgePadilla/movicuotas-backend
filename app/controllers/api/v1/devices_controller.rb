@@ -85,11 +85,9 @@ module Api
         existing_device = Device.find_by(imei: imei)
 
         if existing_device.nil?
-          render_success({ available: true })
-        elsif existing_device.loan_id.nil? || existing_device.loan&.cancelled? || existing_device.loan&.paid?
-          render_success({ available: true, message: "IMEI disponible para reasignación" })
+          render_success({ available: true, message: "IMEI disponible" })
         else
-          render_success({ available: false, message: "IMEI ya en uso con préstamo activo" })
+          render_success({ available: false, message: "IMEI ya registrado en otro préstamo" })
         end
       end
 

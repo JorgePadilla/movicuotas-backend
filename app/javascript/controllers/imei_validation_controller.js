@@ -55,10 +55,10 @@ export default class extends Controller {
       const response = await fetch(`${this.checkUrlValue}?imei=${imei}`)
       const data = await response.json()
 
-      if (data.data && data.data.available) {
-        this.showSuccess(data.data.message || "IMEI disponible")
-      } else if (data.data) {
-        this.showError(data.data.message || "IMEI no disponible")
+      if (data.available) {
+        this.showSuccess(data.message || "IMEI disponible")
+      } else if (data.available === false) {
+        this.showError(data.message || "IMEI no disponible")
       } else {
         this.showError("Error al verificar IMEI")
       }
