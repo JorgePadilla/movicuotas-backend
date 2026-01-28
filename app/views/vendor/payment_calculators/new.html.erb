@@ -4,22 +4,12 @@
   <h1 class="text-3xl font-bold text-[#125282] mb-2">Calculadora de Pagos</h1>
   <p class="text-gray-600 mb-8">Paso 12: Calcula las cuotas quincenales para el crédito.</p>
 
-  <%# Phone and Approved Amount Summary %>
+  <%# Phone Price Summary %>
   <div class="bg-white shadow rounded-lg p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">Resumen del Teléfono</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-4">
-        <div>
-          <p class="text-sm font-medium text-gray-500">Precio del Teléfono</p>
-          <p class="text-2xl font-bold text-[#125282]">L. <%= number_with_delimiter(@phone_price.round(2), delimiter: ",") %></p>
-        </div>
-      </div>
-      <div class="space-y-4">
-        <div>
-          <p class="text-sm font-medium text-gray-500">Financiamiento Disponible</p>
-          <p class="text-xl font-semibold text-gray-900">L. <%= number_with_delimiter((@approved_amount - @phone_price).round(2), delimiter: ",") %></p>
-        </div>
-      </div>
+    <div>
+      <p class="text-sm font-medium text-gray-500">Precio del Teléfono</p>
+      <p class="text-2xl font-bold text-[#125282]">L. <%= number_with_delimiter(@phone_price.round(2), delimiter: ",") %></p>
     </div>
   </div>
 
