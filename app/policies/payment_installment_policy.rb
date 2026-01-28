@@ -33,7 +33,7 @@ class PaymentInstallmentPolicy < ApplicationPolicy
   # - Vendedor: Payment_installments for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.supervisor?
+      if user&.master? || user&.admin? || user&.supervisor?
         scope.all
       elsif user&.vendedor?
         # Vendedor sees payment_installments for loans in their branch

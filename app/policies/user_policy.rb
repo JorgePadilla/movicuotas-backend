@@ -32,10 +32,10 @@ class UserPolicy < ApplicationPolicy
     admin?
   end
 
-  # Scope: Only admins can see users
+  # Scope: Only admins and master can see users
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       else
         scope.none

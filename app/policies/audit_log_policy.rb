@@ -26,10 +26,10 @@ class AuditLogPolicy < ApplicationPolicy
     false  # Audit logs cannot be deleted (preserve audit trail)
   end
 
-  # Scope: Only admin can see audit logs
+  # Scope: Only admin and master can see audit logs
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       else
         scope.none

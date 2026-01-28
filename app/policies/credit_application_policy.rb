@@ -101,7 +101,7 @@ class CreditApplicationPolicy < ApplicationPolicy
   # - Supervisor: No access (handles device blocking/payments only)
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       elsif user&.vendedor?
         # Vendedor can only see applications they created

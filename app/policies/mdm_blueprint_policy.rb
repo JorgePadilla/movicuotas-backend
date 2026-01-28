@@ -32,7 +32,7 @@ class MdmBlueprintPolicy < ApplicationPolicy
   # - Supervisor: Blueprints for devices they assigned
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       elsif user&.supervisor?
         # Assuming mdm_blueprint belongs to device, and device belongs to loan, and loan belongs to user (supervisor)

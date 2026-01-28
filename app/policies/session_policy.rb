@@ -29,10 +29,10 @@ class SessionPolicy < ApplicationPolicy
     update?
   end
 
-  # Scope: Admin sees all, users see only their own sessions
+  # Scope: Admin and master see all, users see only their own sessions
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       elsif user.present?
         scope.where(user: user)

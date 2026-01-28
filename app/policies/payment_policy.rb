@@ -49,7 +49,7 @@ class PaymentPolicy < ApplicationPolicy
   # - Vendedor: Only payments for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.supervisor?
+      if user&.master? || user&.admin? || user&.supervisor?
         scope.all
       elsif user&.vendedor?
         # Vendedores can only see payments for loans in their branch

@@ -64,7 +64,7 @@ class ContractPolicy < ApplicationPolicy
   # - Vendedor: Contracts for loans in their branch
   class Scope < Scope
     def resolve
-      if user&.admin? || user&.supervisor?
+      if user&.master? || user&.admin? || user&.supervisor?
         scope.all
       elsif user&.vendedor?
         # Vendedor sees contracts for loans in their branch

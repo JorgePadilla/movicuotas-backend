@@ -33,10 +33,10 @@ class NotificationPolicy < ApplicationPolicy
   # - Other roles: No access
   class Scope < Scope
     def resolve
-      if user&.admin?
+      if user&.admin? || user&.master?
         scope.all
       else
-        scope.none  # Only admin can see notifications
+        scope.none  # Only admin and master can see notifications
       end
     end
   end
