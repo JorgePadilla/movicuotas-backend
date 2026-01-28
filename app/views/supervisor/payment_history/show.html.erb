@@ -47,7 +47,7 @@
     <div class="bg-white shadow rounded-lg p-4">
       <p class="text-sm text-gray-500">Total Pagado</p>
       <p class="text-lg font-bold text-gray-900">
-        RD$ <%= number_with_precision(@payment_history[:summary][:total_paid], precision: 2) %>
+        L. <%= number_with_precision(@payment_history[:summary][:total_paid], precision: 2) %>
       </p>
     </div>
   </div>
@@ -63,10 +63,10 @@
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuota #</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Vencimiento</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (RD$)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (L.)</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Pago</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Pagado (RD$)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Pagado (L.)</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -75,7 +75,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">#<%= inst[:number] %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= l inst[:due_date], format: :short %></td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                RD$ <%= number_with_precision(inst[:amount], precision: 2) %>
+                L. <%= number_with_precision(inst[:amount], precision: 2) %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <% case inst[:status] %>
@@ -98,7 +98,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                 <% if inst[:paid_amount] > 0 %>
-                  RD$ <%= number_with_precision(inst[:paid_amount], precision: 2) %>
+                  L. <%= number_with_precision(inst[:paid_amount], precision: 2) %>
                 <% else %>
                   <span class="text-gray-400">-</span>
                 <% end %>
@@ -121,7 +121,7 @@
           <thead class="bg-gray-50">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (RD$)</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto (L.)</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verificado</th>
@@ -133,7 +133,7 @@
               <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= l payment[:date], format: :short %></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                  RD$ <%= number_with_precision(payment[:amount], precision: 2) %>
+                  L. <%= number_with_precision(payment[:amount], precision: 2) %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= payment[:method] %></td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono"><%= payment[:reference] %></td>

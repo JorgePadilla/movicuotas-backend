@@ -20,8 +20,8 @@
         <p class="text-3xl font-bold text-gray-900"><%= @devices.length %></p>
       </div>
       <div>
-        <p class="text-sm text-gray-500">Monto Total en Mora (RD$)</p>
-        <p class="text-3xl font-bold text-red-600">RD$ <%= number_with_precision(@total_amount, precision: 2) %></p>
+        <p class="text-sm text-gray-500">Monto Total en Mora (L.)</p>
+        <p class="text-3xl font-bold text-red-600">L. <%= number_with_precision(@total_amount, precision: 2) %></p>
       </div>
       <div>
         <p class="text-sm text-gray-500">Dispositivos a Bloquear</p>
@@ -45,7 +45,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IMEI</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Modelo</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto (RD$)</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto (L.)</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
             </tr>
           </thead>
@@ -62,7 +62,7 @@
                   <%= "#{device.brand} #{device.model}".truncate(20) %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
-                  RD$ <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
+                  L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <% if device.lock_status == "locked" %>

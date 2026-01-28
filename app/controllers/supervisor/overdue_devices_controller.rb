@@ -269,7 +269,7 @@ module Supervisor
           "Modelo",
           "Contrato",
           "Cuotas Vencidas",
-          "Monto (RD$)",
+          "Monto (L.)",
           "Primer Vencimiento",
           "Días de Atraso",
           "Estado Bloqueo",

@@ -145,7 +145,7 @@ module Supervisor
         # Summary section
         csv << [ "Resumen de Cobranza" ]
         csv << [ "Total Cuotas Vencidas", @report_data[:summary][:total_overdue_count] ]
-        csv << [ "Monto Total en Mora (RD$)", helpers.number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2) ]
+        csv << [ "Monto Total en Mora (L.)", helpers.number_with_precision(@report_data[:summary][:total_overdue_amount], precision: 2) ]
         csv << [ "Dispositivos Bloqueados", @report_data[:summary][:devices_blocked] ]
         csv << [ "Dispositivos en Riesgo", @report_data[:summary][:devices_at_risk] ]
         csv << []
