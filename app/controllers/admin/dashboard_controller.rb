@@ -10,6 +10,7 @@ module Admin
 
       # User statistics
       @total_users = User.count
+      @master_users = User.where(role: "master").count
       @admin_users = User.where(role: "admin").count
       @supervisor_users = User.where(role: "supervisor").count
       @vendedor_users = User.where(role: "vendedor").count

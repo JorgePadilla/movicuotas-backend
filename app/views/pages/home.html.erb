@@ -9,7 +9,7 @@
         </div>
         <div class="flex items-center space-x-4">
           <% if current_user %>
-            <% if current_user.admin? %>
+            <% if current_user.admin_or_master? %>
               <%= link_to "Admin", admin_dashboard_path, class: "text-sm bg-[#125282] text-white hover:bg-[#0f4670] px-4 py-2 rounded transition-colors" %>
             <% end %>
             <%= link_to "Cerrar Sesión", logout_path, data: { turbo_method: :delete }, class: "text-sm bg-gray-200 text-gray-800 hover:bg-gray-300 px-4 py-2 rounded transition-colors" %>

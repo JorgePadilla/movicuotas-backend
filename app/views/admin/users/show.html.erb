@@ -48,7 +48,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-600">Función</label>
           <div class="mt-1">
-            <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : @user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
+            <span class="px-4 py-2 text-lg rounded-lg font-medium <%= @user.role == 'master' ? 'bg-red-100 text-red-800' : @user.role == 'admin' ? 'bg-purple-100 text-purple-800' : @user.role == 'supervisor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
               <%= role_es(@user.role) %>
             </span>
           </div>
@@ -69,12 +69,20 @@
   <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
     <h2 class="text-xl font-semibold text-[#125282] mb-6">Permisos</h2>
     <div class="space-y-2">
-      <% if @user.admin? %>
+      <% if @user.master? %>
         <p class="text-gray-700">✓ Acceso a todas las funciones administrativas</p>
         <p class="text-gray-700">✓ Gestión de usuarios y roles</p>
         <p class="text-gray-700">✓ Acceso al panel de control del sistema</p>
         <p class="text-gray-700">✓ Generación de reportes</p>
         <p class="text-gray-700">✓ Acceso a todas las sucursales</p>
+        <p class="text-gray-700 font-semibold text-red-600">✓ Puede eliminar préstamos</p>
+      <% elsif @user.admin? %>
+        <p class="text-gray-700">✓ Acceso a todas las funciones administrativas</p>
+        <p class="text-gray-700">✓ Gestión de usuarios y roles</p>
+        <p class="text-gray-700">✓ Acceso al panel de control del sistema</p>
+        <p class="text-gray-700">✓ Generación de reportes</p>
+        <p class="text-gray-700">✓ Acceso a todas las sucursales</p>
+        <p class="text-gray-700">✗ No puede eliminar préstamos</p>
       <% elsif @user.supervisor? %>
         <p class="text-gray-700">✓ Visualización de cuentas en mora</p>
         <p class="text-gray-700">✓ Bloqueo de dispositivos MDM</p>

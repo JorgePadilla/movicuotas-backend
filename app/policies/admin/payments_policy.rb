@@ -13,7 +13,7 @@ module Admin
 
     class Scope < Scope
       def resolve
-        user&.admin? ? scope.all : scope.none
+        (user&.admin? || user&.master?) ? scope.all : scope.none
       end
     end
   end

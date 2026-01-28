@@ -49,11 +49,11 @@ class MdmBlockService
   private
 
   def can_block?
-    @user.admin? || @user.supervisor?
+    @user.admin_or_master? || @user.supervisor? || @user.vendedor?
   end
 
   def can_unblock?
-    @user.admin? || @user.supervisor?
+    @user.admin_or_master? || @user.supervisor? || @user.vendedor?
   end
 
   def has_overdue_installments?

@@ -81,7 +81,7 @@ module Admin
       authorize @payment
 
       # If created by Admin/Supervisor, auto-verify if requested
-      if params[:auto_verify] == "1" && (current_user.admin? || current_user.supervisor?)
+      if params[:auto_verify] == "1" && (current_user.admin_or_master? || current_user.supervisor?)
         @payment.verification_status = "verified"
         @payment.verified_by = current_user
         @payment.verified_at = Time.current
@@ -185,7 +185,7 @@ module Admin
 
     def loans_for_select
       # Admin and Supervisor can see all loans, Vendedor only their branch
-      if current_user.admin? || current_user.supervisor?
+      if current_user.admin_or_master? || current_user.supervisor?
         Loan.includes(:customer)
             .where(status: [ :active, :overdue ])
             .order("customers.full_name ASC")

@@ -32,7 +32,12 @@
   <!-- Role -->
   <div>
     <%= f.label :role, "Función", class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.select :role, [['Administrador', 'admin'], ['Supervisor', 'supervisor'], ['Vendedor', 'vendedor']], { prompt: 'Selecciona una función' }, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <% role_options = [['Administrador', 'admin'], ['Supervisor', 'supervisor'], ['Vendedor', 'vendedor']] %>
+    <% role_options.unshift(['Master', 'master']) if current_user.master? %>
+    <%= f.select :role, role_options, { prompt: 'Selecciona una función' }, class: "mt-1 block w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282]" %>
+    <% if current_user.master? %>
+      <p class="text-xs text-red-600 mt-2">Solo usuarios Master pueden crear otros usuarios Master.</p>
+    <% end %>
   </div>
 
   <!-- Password (only on new) -->

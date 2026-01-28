@@ -66,7 +66,7 @@ module Vendor
     end
 
     def loans_scope
-      if current_user.admin?
+      if current_user.admin_or_master?
         Loan.all
       else
         current_user.loans
