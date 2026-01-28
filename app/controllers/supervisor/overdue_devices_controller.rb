@@ -60,6 +60,21 @@ module Supervisor
       end
     end
 
+    def confirm_unblock
+      authorize @device, :unlock?, policy_class: DevicePolicy
+
+      service = MdmBlockService.new(@device, current_user)
+      result = service.unblock!
+
+      if result[:success]
+        redirect_to supervisor_overdue_device_path(@device),
+                    notice: result[:message]
+      else
+        redirect_to supervisor_overdue_device_path(@device),
+                    alert: result[:error]
+      end
+    end
+
     private
 
     def set_device

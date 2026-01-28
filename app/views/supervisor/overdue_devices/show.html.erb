@@ -70,7 +70,16 @@
 
   <!-- Loan Information Card -->
   <div class="bg-white shadow rounded-lg p-6 mb-6">
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">Información del Préstamo</h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-900">Información del Préstamo</h2>
+      <%= link_to supervisor_loan_payment_history_path(@device.loan_id),
+                  class: "inline-flex items-center px-4 py-2 border border-[#125282] text-sm font-medium rounded-md text-[#125282] bg-white hover:bg-[#125282] hover:text-white transition" do %>
+        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Ver Historial de Pagos
+      <% end %>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
         <p class="text-sm text-gray-500">Número de Contrato</p>
@@ -193,11 +202,16 @@
       </p>
     </div>
   <% else %>
-    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-      <h2 class="text-lg font-semibold text-green-900 mb-4">Dispositivo Bloqueado</h2>
-      <p class="text-green-700">
-        Este dispositivo está actualmente bloqueado a través del sistema MDM. Solo los administradores pueden desbloquearlo.
+    <div class="bg-gray-50 border-l-4 border-gray-500 rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Dispositivo Bloqueado</h2>
+      <p class="text-gray-700 mb-4">
+        Este dispositivo está actualmente bloqueado a través del sistema MDM.
       </p>
+      <%= button_to "🟢 Desbloquear Dispositivo",
+                    confirm_unblock_supervisor_overdue_device_path(@device),
+                    method: :post,
+                    class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700",
+                    data: { confirm: "¿Está seguro que desea desbloquear este dispositivo?" } %>
     </div>
   <% end %>
 </div>

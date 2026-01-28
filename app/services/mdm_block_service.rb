@@ -26,9 +26,28 @@ class MdmBlockService
     { success: true, message: "Dispositivo marcado para bloqueo" }
   end
 
+  def unblock!
+    return { error: "Unauthorized" } unless can_unblock?
+    return { error: "Device is not locked" } unless @device.locked?
+
+    ActiveRecord::Base.transaction do
+      # Update device status to unlocked
+      @device.unlock!(@user, "Manual unlock by #{@user.role}")
+
+      # Queue MDM unblocking job
+      MdmUnblockDeviceJob.perform_later(@device.id) if defined?(MdmUnblockDeviceJob)
+    end
+
+    { success: true, message: "Dispositivo desbloqueado exitosamente" }
+  end
+
   private
 
   def can_block?
+    @user.admin? || @user.supervisor?
+  end
+
+  def can_unblock?
     @user.admin? || @user.supervisor?
   end
 

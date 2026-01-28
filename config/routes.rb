@@ -165,6 +165,7 @@ Rails.application.routes.draw do
       member do
         get :block
         post :confirm_block
+        post :confirm_unblock
       end
     end
     get "bulk-operations", to: "bulk_operations#show", as: "bulk_operations"

@@ -38,9 +38,9 @@ class DevicePolicy < ApplicationPolicy
     admin? || supervisor?
   end
 
-  # Unblock device - Admin only
+  # Unblock device - Admin and Supervisor
   def unlock?
-    admin?
+    admin? || supervisor?
   end
 
   # Reset device activation - Admin only
