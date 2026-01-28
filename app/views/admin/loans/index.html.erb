@@ -98,43 +98,43 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @loans.any? %>
             <% @loans.each do |loan| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-4 whitespace-nowrap">
                   <span class="font-medium text-[#125282]"><%= loan.contract_number %></span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900"><%= loan.customer.full_name %></div>
                   <div class="text-xs text-gray-600"><%= loan.customer.identification_number %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600"><%= loan.branch_number %></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">L. <%= number_with_delimiter(loan.total_paid, delimiter: ',') %></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600"><%= loan.branch_number %></td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">L. <%= number_with_delimiter(loan.total_amount, delimiter: ',') %></td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-green-600">L. <%= number_with_delimiter(loan.total_paid, delimiter: ',') %></td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium <%= loan.remaining_balance > 0 ? 'text-red-600' : 'text-green-600' %>">
                   L. <%= number_with_delimiter(loan.remaining_balance, delimiter: ',') %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-4 whitespace-nowrap">
                   <span class="px-3 py-1 text-sm rounded-full <%= loan.active? ? 'bg-green-100 text-green-800' : loan.paid? ? 'bg-blue-100 text-blue-800' : loan.overdue? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
                     <%= loan_status_es(loan.status) %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="px-4 py-4 whitespace-nowrap text-sm">
                   <span class="font-medium"><%= loan.paid_installments.count %></span>/<span class="text-gray-600"><%= loan.installments.count %></span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="px-4 py-4 whitespace-nowrap text-sm">
                   <div class="flex items-center gap-3">
                     <%= link_to admin_loan_path(loan), class: "text-[#125282] hover:text-[#0f4670] transition-colors", title: "Ver detalles" do %>
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +155,7 @@
             <% end %>
           <% else %>
             <tr>
-              <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+              <td colspan="9" class="px-4 py-8 text-center text-gray-500">
                 No hay préstamos que coincidan con tu búsqueda
               </td>
             </tr>
