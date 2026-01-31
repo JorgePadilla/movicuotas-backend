@@ -86,7 +86,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
       <div>
         <span class="text-gray-600">Supervisor:</span>
-        <span class="font-medium text-gray-900 ml-2"><%= @loan.down_payment_confirmed_by&.name || @loan.user&.name || "-" %></span>
+        <span class="font-medium text-gray-900 ml-2"><%= @loan.down_payment_confirmed_by&.full_name || @loan.user&.full_name || "-" %></span>
       </div>
       <div>
         <span class="text-gray-600">Fecha de Envío:</span>
