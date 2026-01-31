@@ -187,11 +187,18 @@ module Vendor
 
     # Step 5.5: OTP Verification page
     def verify_otp
+      # Ensure all 3 photos are uploaded before proceeding
+      unless photos_already_attached?
+        redirect_to photos_vendor_credit_application_path(@credit_application),
+                    alert: "Debe capturar las 3 fotografías requeridas (frente de identidad, reverso de identidad y verificación facial) antes de continuar."
+        return
+      end
+
       # Check if already verified - allow proceeding
       if @credit_application.otp_verified? && !@credit_application.otp_expired?
         redirect_to employment_vendor_credit_application_path(@credit_application),
                     notice: "Verificacion ya completada."
-        nil
+        return
       end
       # Render verify_otp view - shows method selection if OTP not sent, code entry if sent
     end
