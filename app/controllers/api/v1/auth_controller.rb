@@ -4,15 +4,25 @@ module Api
       skip_before_action :authenticate_api_user, only: [ :login, :forgot_contract ]
 
       def login
+        Rails.logger.info "[API Login] Attempt with identification_number: #{login_params[:identification_number]}"
+
         customer = Customer.find_by(identification_number: login_params[:identification_number])
 
-        return render_error("Número de identidad no encontrado", :unauthorized) unless customer
+        unless customer
+          Rails.logger.info "[API Login] Customer not found for: #{login_params[:identification_number]}"
+          return render_error("Número de identidad no encontrado", :unauthorized)
+        end
+
+        Rails.logger.info "[API Login] Customer found: id=#{customer.id}, total_loans=#{customer.loans.count}, active_loans=#{customer.loans.active.count}, loan_statuses=#{customer.loans.pluck(:status)}"
 
         # Find active loan, fallback to most recent loan
         loan = customer.loans.active.order(created_at: :desc).first ||
                customer.loans.order(created_at: :desc).first
 
-        return render_error("No se encontró un préstamo asociado", :unauthorized) unless loan
+        unless loan
+          Rails.logger.info "[API Login] No loans found for customer #{customer.id}"
+          return render_error("No se encontró un préstamo asociado", :unauthorized)
+        end
 
         token = generate_token(customer)
 

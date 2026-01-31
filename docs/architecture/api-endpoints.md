@@ -58,7 +58,7 @@ All errors follow this format:
 
 #### POST /auth/login
 
-Authenticate a customer using their identification number and contract number.
+Authenticate a customer using their identification number.
 
 **Authentication**: Not required
 
@@ -67,8 +67,7 @@ Authenticate a customer using their identification number and contract number.
 ```json
 {
   "auth": {
-    "identification_number": "0801199012345",
-    "contract_number": "MC-2026-0001"
+    "identification_number": "0801199012345"
   }
 }
 ```
@@ -553,7 +552,7 @@ The API is versioned via the URL path (`/api/v1/`). Breaking changes will result
 ```bash
 curl -X POST https://movicuotas.com/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"auth":{"identification_number":"0801199012345","contract_number":"MC-2026-0001"}}'
+  -d '{"auth":{"identification_number":"0801199012345"}}'
 ```
 
 **Get Dashboard**:
