@@ -223,8 +223,8 @@
                   </button>
 
                   <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                    <%# Supervisor Dashboard link - only for admin/master %>
-                    <% if current_user.admin? %>
+                    <%# Supervisor Dashboard link - only for supervisor role %>
+                    <% if current_user.supervisor? %>
                       <%= link_to supervisor_dashboard_path, class: "flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 #{current_page?(supervisor_dashboard_path) ? 'bg-gray-50 text-[#125282] font-medium' : ''}" do %>
                         <svg class="mr-3 h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
@@ -323,8 +323,8 @@
               </span>
             </div>
 
-            <%# Supervisor Dashboard - only for admin/master %>
-            <% if current_user.admin? %>
+            <%# Supervisor-specific menu items %>
+            <% if current_user.supervisor? %>
               <div class="pt-3 border-t border-white/10">
                 <h4 class="text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">Supervisor</h4>
                 <div class="space-y-1">
