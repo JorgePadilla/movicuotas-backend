@@ -90,6 +90,17 @@ Pantalla 18: Tracking de Préstamo
 - ✅ CSV data export functionality
 - ✅ Comprehensive Admin Analytics
 
+**Recent Changes (v2.2 - 2026-01-31):**
+- ✅ Set application timezone to Honduras (`Central America`, UTC-6)
+- ✅ Fixed phone catalog filtering: now filters by financed amount (price - down payment) instead of raw price
+- ✅ Fixed down payment form missing `multipart: true` (caused 500 error on deposit receipt upload)
+- ✅ Fixed admin users delete button (changed Rails UJS syntax to Turbo syntax)
+- ✅ Restricted supervisor dashboard access to admin/master only (supervisors no longer have access)
+- ✅ Added SVG icons for loan table actions (view/delete)
+- ✅ Reduced admin loans table padding (`px-6` → `px-4`) to eliminate horizontal scroll
+- ✅ Removed "(sin accesorios)" text from phone catalog views
+- ✅ Updated permissions matrix, common pitfalls, and vendor workflow documentation
+
 **Recent Changes (v2.1 - 2026-01-28):**
 - ✅ Added **Master** role with highest privileges
 - ✅ Master can delete loans (Admin cannot)

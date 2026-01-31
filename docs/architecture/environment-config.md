@@ -1,3 +1,13 @@
+## Timezone
+
+Application timezone is set to Honduras (Central America, UTC-6) in `config/application.rb`:
+```ruby
+config.time_zone = "Central America"
+```
+- Database stores times in UTC (Rails default)
+- Rails converts to Honduras time for display (`Time.zone.now`)
+- No daylight saving time adjustments needed
+
 ## Environment-Specific Behavior
 
 ### Development

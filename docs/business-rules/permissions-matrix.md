@@ -49,7 +49,9 @@
 | System configuration | ✅ | ✅ | ❌ | ❌ |
 | View audit logs | ✅ | ✅ | ❌ | ❌ |
 | Mission Control Jobs | ✅ | ✅ | ❌ | ❌ |
-| Dashboard access | ✅ Full | ✅ Full | ✅ Collection | ✅ Sales |
+| Admin Dashboard | ✅ | ✅ | ❌ | ❌ |
+| Supervisor Dashboard | ✅ | ✅ | ❌ | ❌ |
+| Vendor Dashboard | ✅ | ✅ | ✅ | ✅ |
 
 ### Key Differences: Master vs Admin
 

@@ -161,9 +161,14 @@ end
 #### Step 10: Catálogo Teléfonos (Device Selection)
 **UI Elements:**
 - Visual grid of phone models with prices
-- **Logic:** Backend validates `phone_price <= approved_amount`
 - Fields appear when model selected: IMEI, Color
 - Button: "Siguiente" (to Step 11)
+
+**Phone Filtering Logic (Age-Based):**
+- Phones are filtered by **financed amount** (price - down payment), NOT by raw price
+- Max phone price = `max_financing / (1 - min_down_payment_percentage)`
+- **Age 21-49**: Max financed L. 3,500, min DP 30% → max phone price L. 5,000
+- **Age 50-60**: Max financed L. 3,000, min DP 40% → max phone price L. 5,000
 
 **Note:** NO accessories feature. Phone only.
 
@@ -226,7 +231,9 @@ payment = financed_amount * (bi_weekly_rate * (1 + bi_weekly_rate) ** periods) /
 **Implementation Notes:**
 - Use interest rates from table above (NOT annual_rate / 26)
 - Validate customer age from date_of_birth
-- Enforce age-based restrictions on down payment and max financed amount
+- Enforce age-based restrictions on down payment and max financed amount:
+  - **50-60 years**: Max financed L. 3,000 (only 40% and 50% DP)
+  - **21-49 years**: Max financed L. 3,500 (all DP options)
 - Available payment terms: 6, 8, 10, 12 bi-weekly periods (note: 10 was added)
 - Store bi_weekly_rate used in loan record for audit trail
 
