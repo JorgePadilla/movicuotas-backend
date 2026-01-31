@@ -64,7 +64,7 @@
   </div>
 
   <!-- Payment Method Form -->
-  <%= form_with url: vendor_contract_down_payment_path(@contract), method: :patch, local: true, multipart: true, data: { turbo: false, controller: "down-payment" } do %>
+  <%= form_with url: vendor_contract_down_payment_path(@contract), method: :patch, local: true, multipart: true, data: { turbo: false } do %>
     <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Método de Pago</h2>
 
