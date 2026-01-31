@@ -2,17 +2,17 @@
 
 module Vendor
   class PaymentCalculatorPolicy < ApplicationPolicy
-    # Step 12: Payment Calculator - accessible to supervisors and admins
+    # Step 12: Payment Calculator - part of vendor workflow
     def new?
-      supervisor? || admin?  # admin? includes master
+      vendedor? || supervisor? || admin?
     end
 
     def create?
-      supervisor? || admin?
+      vendedor? || supervisor? || admin?
     end
 
     def calculate?
-      supervisor? || admin?
+      vendedor? || supervisor? || admin?
     end
 
     class Scope < Scope
