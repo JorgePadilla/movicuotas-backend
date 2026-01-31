@@ -6,18 +6,25 @@ module Api
       def login
         customer = Customer.find_by(identification_number: login_params[:identification_number])
 
-        return render_error("Invalid credentials", :unauthorized) unless customer
+        return render_error("Número de identidad no encontrado", :unauthorized) unless customer
 
-        loan = customer.loans.where(contract_number: login_params[:contract_number]).first
+        # Find active loan, fallback to most recent loan
+        loan = customer.loans.active.order(created_at: :desc).first ||
+               customer.loans.order(created_at: :desc).first
 
-        return render_error("Invalid credentials", :unauthorized) unless loan
+        return render_error("No se encontró un préstamo asociado", :unauthorized) unless loan
 
         token = generate_token(customer)
+
+        # Check if device is already activated
+        device = loan.device
+        device_activated = device&.activated? || false
 
         render_success({
           token: token,
           customer: CustomerSerializer.new(customer).as_json,
-          loan: LoanSerializer.new(loan).as_json
+          loan: LoanSerializer.new(loan).as_json,
+          device_activated: device_activated
         })
       end
 
@@ -38,7 +45,7 @@ module Api
       private
 
       def login_params
-        params.require(:auth).permit(:identification_number, :contract_number)
+        params.require(:auth).permit(:identification_number)
       end
 
       def forgot_contract_params

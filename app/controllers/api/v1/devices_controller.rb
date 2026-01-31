@@ -11,7 +11,6 @@ module Api
         device = Device.find_by(activation_code: params[:activation_code]&.upcase)
 
         return render_error("Codigo de activacion invalido", :not_found) unless device
-        return render_error("Este dispositivo ya fue activado", :unprocessable_entity) if device.activated?
 
         # Validate required parameters
         return render_error("Token FCM requerido", :bad_request) if params[:fcm_token].blank?
@@ -30,20 +29,18 @@ module Api
         )
 
         if device_token.save
-          device.activate!
+          # Activate device if not already activated
+          device.activate! unless device.activated?
 
           # Build response with customer and loan data
           response_data = {
-            message: "Dispositivo activado correctamente",
+            message: device.activated_at_previously_changed? ? "Dispositivo activado correctamente" : "Sesión iniciada correctamente",
             activated_at: device.activated_at.iso8601
           }
 
           # Generate JWT token for the customer (allows app to skip login)
           if customer
             response_data[:token] = generate_token(customer)
-          end
-
-          if customer
             response_data[:customer] = {
               id: customer.id,
               full_name: customer.full_name,
