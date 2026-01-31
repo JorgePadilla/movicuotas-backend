@@ -120,15 +120,15 @@
     </div>
 
     <!-- Deposit Upload Section (hidden by default) -->
-    <div id="deposit-section" class="hidden bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6" data-down-payment-target="depositSection">
+    <div id="deposit-section" class="hidden bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Comprobante de Depósito</h3>
-      <p class="text-sm text-gray-600 mb-4">Suba una imagen del comprobante de depósito o transferencia.</p>
+      <p class="text-sm text-gray-600 mb-4">Tome una foto o seleccione una imagen del comprobante de depósito o transferencia.</p>
 
-      <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#125282] transition-colors"
+      <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[#125282] transition-colors"
            data-controller="file-upload"
            data-file-upload-target="area"
            data-action="click->file-upload#openFilePicker dragover->file-upload#handleDragOver drop->file-upload#handleDrop">
-        <input type="file" name="down_payment_receipt" accept="image/*"
+        <input type="file" name="down_payment_receipt" accept="image/*" capture="environment"
                class="hidden"
                data-file-upload-target="input"
                data-action="change->file-upload#handleFileSelect">
@@ -138,14 +138,15 @@
             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <p class="mt-2 text-sm text-gray-600">
-            <span class="text-[#125282] font-medium">Haga clic para seleccionar</span> o arrastre una imagen
+            <span class="text-[#125282] font-medium">Tomar foto o seleccionar imagen</span>
           </p>
-          <p class="mt-1 text-xs text-gray-500">PNG, JPG hasta 10MB</p>
+          <p class="mt-1 text-xs text-gray-500">La imagen se comprime automáticamente</p>
         </div>
 
         <div data-file-upload-target="preview" class="hidden">
+          <img data-file-upload-target="thumbnail" class="hidden mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2" alt="Vista previa">
           <p class="text-sm text-green-600 font-medium" data-file-upload-target="fileName"></p>
-          <p class="text-xs text-gray-500 mt-1">Haga clic para cambiar</p>
+          <p class="text-xs text-gray-500 mt-1">Toque para cambiar</p>
         </div>
       </div>
 
