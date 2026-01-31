@@ -12,7 +12,7 @@ class MdmBlueprintPolicy < ApplicationPolicy
   end
 
   def show?
-    admin? || supervisor?  # Admin and Supervisor can view blueprint details
+    vendedor? || admin? || supervisor?  # Vendedor needs access for Step 16 (QR code)
   end
 
   def create?
