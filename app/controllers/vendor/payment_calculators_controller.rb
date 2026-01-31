@@ -20,12 +20,6 @@ module Vendor
       session[:approved_amount] = @approved_amount if @approved_amount > 0
       session[:credit_application_id] = @credit_application_id if @credit_application_id.present?
 
-      # Validate phone price against approved amount
-      if @phone_price > 0 && @approved_amount > 0 && @phone_price > @approved_amount
-        flash[:alert] = "El precio del teléfono (L. #{@phone_price}) excede el monto aprobado (L. #{@approved_amount})"
-        redirect_to vendor_customer_search_path and return
-      end
-
       # Get customer date of birth for age validation
       @date_of_birth = fetch_date_of_birth
       unless @date_of_birth
@@ -36,6 +30,16 @@ module Vendor
       # Calculate customer age to determine default down payment
       @customer_age = calculate_customer_age(@date_of_birth)
       is_senior_customer = @customer_age && @customer_age >= 50 && @customer_age <= 60
+
+      # Validate financed amount (phone price - min down payment) against approved amount
+      if @phone_price > 0 && @approved_amount > 0
+        min_dp = is_senior_customer ? 0.40 : 0.30
+        financed = @phone_price * (1 - min_dp)
+        if financed > @approved_amount
+          flash[:alert] = "El monto a financiar (L. #{financed.round(2)}) excede el máximo permitido (L. #{@approved_amount})"
+          redirect_to vendor_customer_search_path and return
+        end
+      end
 
       # Default calculator values
       # Senior customers (50-60 years) default to 40%, others to 30%
@@ -179,9 +183,12 @@ module Vendor
 
       Rails.logger.info "Using customer: id=#{customer.id}, name=#{customer.full_name || 'N/A'}"
 
-      # Validate phone price against approved amount
-      if phone_price > approved_amount
-        return Loan.new.tap { |l| l.errors.add(:base, "El precio del teléfono excede el monto aprobado") }
+      # Validate financed amount against approved amount
+      customer_age = calculate_customer_age(date_of_birth)
+      min_dp = (customer_age && customer_age >= 50 && customer_age <= 60) ? 0.40 : 0.30
+      financed = phone_price * (1 - min_dp)
+      if financed > approved_amount
+        return Loan.new.tap { |l| l.errors.add(:base, "El monto a financiar excede el máximo permitido") }
       end
 
       # Calculate using BiweeklyCalculatorService
