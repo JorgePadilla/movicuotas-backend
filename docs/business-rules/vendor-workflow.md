@@ -179,6 +179,8 @@ end
 - Display: Selected phone model, Total price (phone only)
 - Button: "Siguiente" (to Step 12)
 
+**Validation:** Same age-based financed amount rule applies. The link to Step 12 passes `approved_amount` (max financed amount for age group). The calculator validates that `phone_price * (1 - min_down_payment) <= approved_amount`.
+
 ---
 
 #### Step 12: Calculadora (Payment Calculator)
@@ -190,6 +192,12 @@ end
 - Button: "Generar Crédito" (to Step 13)
 
 **Calculation:** Based on phone price ONLY (no accessories)
+
+**Validation (Age-Based Financed Amount):**
+- On entry (`new` action): validates `phone_price * (1 - min_dp) <= max_financing`
+- On loan creation (`create` action): same validation before persisting
+- Compares the **financed amount** (price minus minimum down payment for age), NOT the raw phone price
+- Example: Phone L. 4,500, age 25 → financed = 4,500 × 0.70 = L. 3,150 ≤ L. 3,500 ✓
 
 ---
 
@@ -207,8 +215,9 @@ end
 
 - **Credit available for ages:** 21 - 60 years
 - **Age-based limits:**
-  - **50-60 years:** Only 40% and 50% down payment options
-  - **21-49 years:** All down payment options (30%, 40%, 50%)
+  - **50-60 years:** Only 40% and 50% down payment options, max financed L. 3,000
+  - **21-49 years:** All down payment options (30%, 40%, 50%), max financed L. 3,500
+- **CRITICAL:** All validations across Steps 10, 11, 12, and 13 compare the **financed amount** (`phone_price * (1 - min_down_payment)`), NOT the raw phone price, against the age-based max financing limit
 
 **Calculation Example:**
 ```

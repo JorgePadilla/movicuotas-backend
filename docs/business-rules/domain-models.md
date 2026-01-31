@@ -8,6 +8,9 @@
 
 ### Main Entities
 1. **Customer**: End customer buying on credit (with date of birth for age calculation)
+   - **Age 21-49**: All down payment options (30%, 40%, 50%), max financed L. 3,500
+   - **Age 50-60**: Only 40% and 50% down payment, max financed L. 3,000
+   - **CRITICAL**: All phone/loan validations use financed amount (`price × (1 - min_dp)`), NOT raw price
 2. **Device**: Mobile phone with IMEI and MDM tracking
 3. **Loan**: Credit agreement with contract number (format: `S01-2025-12-04-000001`)
    - **CRITICAL**: Track loan status across ALL stores/branches

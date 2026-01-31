@@ -116,8 +116,12 @@ class CreditApplication < ApplicationRecord
   def selected_phone_price_within_approved_amount
     return unless selected_phone_model_id.present? && approved_amount.present?
 
-    if selected_phone_model.price > approved_amount
-      errors.add(:selected_phone_model_id, "el precio del teléfono (#{selected_phone_model.price}) excede el monto aprobado (#{approved_amount})")
+    # Calculate financed amount using minimum down payment for age group
+    min_dp = senior_customer? ? 0.40 : 0.30
+    financed = selected_phone_model.price * (1 - min_dp)
+
+    if financed > approved_amount
+      errors.add(:selected_phone_model_id, "el monto a financiar (L. #{financed.round(2)}) excede el máximo permitido (L. #{approved_amount})")
     end
   end
 
@@ -208,6 +212,15 @@ class CreditApplication < ApplicationRecord
   end
 
   private
+
+  def senior_customer?
+    return false unless customer&.date_of_birth.present?
+
+    age = customer.age rescue nil
+    return false unless age
+
+    age >= 50 && age <= 60
+  end
 
   def generate_application_number
     max_retries = 10
