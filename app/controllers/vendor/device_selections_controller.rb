@@ -7,29 +7,28 @@ module Vendor
     before_action :authorize_credit_application
     before_action :ensure_device_selected, only: [ :confirmation ]
 
-    # Age-based maximum financing amounts
+    # Age-based maximum financed amounts (price - down payment)
     MAX_FINANCING_SENIOR = 3000  # 50-60 years
     MAX_FINANCING_STANDARD = 3500  # 21-49 years
+
+    # Minimum down payment percentages per age group
+    MIN_DOWN_PAYMENT_SENIOR = 0.40  # 50-60 years: 40% or 50%
+    MIN_DOWN_PAYMENT_STANDARD = 0.30  # 21-49 years: 30%, 40%, or 50%
 
     # Step 10: Catálogo Teléfonos (Device Selection)
     # GET /vendor/device_selection/:credit_application_id
     def show
-      max_price = max_financing_amount_for_customer
-      @phone_models = PhoneModel.active.where("price <= ?", max_price).order(:brand, :model)
-      @max_financing_amount = max_price
+      load_phone_catalog
     end
 
     # Step 10: Process device selection
     # PATCH /vendor/device_selection/:credit_application_id
     def update
-      # Validate selected phone is within customer's max financing amount
-      max_price = max_financing_amount_for_customer
       selected_phone = PhoneModel.find_by(id: device_selection_params[:selected_phone_model_id])
 
-      if selected_phone && selected_phone.price > max_price
-        @phone_models = PhoneModel.active.where("price <= ?", max_price).order(:brand, :model)
-        @max_financing_amount = max_price
-        flash.now[:alert] = "El teléfono seleccionado excede el monto máximo de financiamiento (L. #{number_with_delimiter(max_price)})."
+      if selected_phone && max_financed_amount(selected_phone.price) > max_financing_amount_for_customer
+        load_phone_catalog
+        flash.now[:alert] = "El monto financiado del teléfono seleccionado excede el máximo permitido (L. #{number_with_delimiter(max_financing_amount_for_customer)})."
         render :show, status: :unprocessable_entity
         return
       end
@@ -38,8 +37,7 @@ module Vendor
         redirect_to vendor_device_selection_confirmation_path(@credit_application),
                     notice: "Teléfono seleccionado correctamente. Proceda a confirmación."
       else
-        @phone_models = PhoneModel.active.where("price <= ?", max_price).order(:brand, :model)
-        @max_financing_amount = max_price
+        load_phone_catalog
         flash.now[:alert] = "Error al seleccionar el teléfono. Verifique los datos."
         render :show, status: :unprocessable_entity
       end
@@ -82,21 +80,43 @@ module Vendor
       )
     end
 
+    def load_phone_catalog
+      max_price = max_phone_price_for_customer
+      @phone_models = PhoneModel.active.where("price <= ?", max_price).order(:brand, :model)
+      @max_financing_amount = max_financing_amount_for_customer
+    end
+
+    # Max phone price = max_financing / (1 - min_down_payment_pct)
+    # This ensures: price - (price * min_dp) <= max_financing
+    def max_phone_price_for_customer
+      if senior_customer?
+        (MAX_FINANCING_SENIOR / (1 - MIN_DOWN_PAYMENT_SENIOR)).floor
+      else
+        (MAX_FINANCING_STANDARD / (1 - MIN_DOWN_PAYMENT_STANDARD)).floor
+      end
+    end
+
+    # The financed amount using the minimum down payment for the age group
+    def max_financed_amount(phone_price)
+      min_dp = senior_customer? ? MIN_DOWN_PAYMENT_SENIOR : MIN_DOWN_PAYMENT_STANDARD
+      phone_price * (1 - min_dp)
+    end
+
     # Calculate max financing amount based on customer age
     # 50-60 years: L. 3,000
     # 21-49 years: L. 3,500
     def max_financing_amount_for_customer
+      senior_customer? ? MAX_FINANCING_SENIOR : MAX_FINANCING_STANDARD
+    end
+
+    def senior_customer?
       customer = @credit_application.customer
-      return MAX_FINANCING_STANDARD unless customer&.date_of_birth.present?
+      return false unless customer&.date_of_birth.present?
 
       age = customer_age(customer.date_of_birth)
-      return MAX_FINANCING_STANDARD unless age
+      return false unless age
 
-      if age >= 50 && age <= 60
-        MAX_FINANCING_SENIOR
-      else
-        MAX_FINANCING_STANDARD
-      end
+      age >= 50 && age <= 60
     end
 
     def customer_age(date_of_birth)
