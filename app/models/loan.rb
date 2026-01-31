@@ -169,9 +169,11 @@ class Loan < ApplicationRecord
   end
 
   def approved_amount_covers_total_amount
-    return unless approved_amount.present? && total_amount.present?
-    if approved_amount < total_amount
-      errors.add(:approved_amount, "debe ser mayor o igual al monto total del teléfono")
+    return unless approved_amount.present? && total_amount.present? && down_payment_percentage.present?
+    # Compare approved amount against financed amount (total - down payment), not raw price
+    financed = total_amount * (1 - down_payment_percentage / 100.0)
+    if approved_amount < financed
+      errors.add(:approved_amount, "el monto a financiar (L. #{financed.round(2)}) excede el máximo permitido (L. #{approved_amount})")
     end
   end
 
