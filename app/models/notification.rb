@@ -21,6 +21,7 @@ class Notification < ApplicationRecord
     payment_confirmation: "payment_confirmation",
     overdue_warning: "overdue_warning",
     device_blocking_alert: "device_blocking_alert",
+    contract_signed: "contract_signed",
     general: "general"
   }, default: "general"
 
