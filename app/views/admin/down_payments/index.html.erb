@@ -145,7 +145,7 @@
                   <%= loan.down_payment_confirmed_at&.strftime("%d/%m/%Y %H:%M") || "-" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <%= loan.user&.name || "-" %>
+                  <%= loan.user&.full_name || "-" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <%= link_to "Ver Comprobante", admin_down_payment_path(loan),
