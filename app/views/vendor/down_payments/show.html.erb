@@ -128,7 +128,7 @@
            data-controller="file-upload"
            data-file-upload-target="area"
            data-action="click->file-upload#openFilePicker dragover->file-upload#handleDragOver drop->file-upload#handleDrop">
-        <input type="file" name="down_payment_receipt" accept="image/*" capture="environment"
+        <input type="file" name="down_payment_receipt" accept="image/*"
                class="hidden"
                data-file-upload-target="input"
                data-action="change->file-upload#handleFileSelect">
@@ -144,9 +144,15 @@
         </div>
 
         <div data-file-upload-target="preview" class="hidden">
+          <div class="flex items-center justify-center gap-2 mb-3">
+            <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-sm font-semibold text-green-700">Comprobante cargado</span>
+          </div>
           <img data-file-upload-target="thumbnail" class="hidden mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2" alt="Vista previa">
           <p class="text-sm text-green-600 font-medium" data-file-upload-target="fileName"></p>
-          <p class="text-xs text-gray-500 mt-1">Toque para cambiar</p>
+          <p class="text-xs text-[#125282] font-medium mt-2 underline">Toque para cambiar imagen</p>
         </div>
       </div>
 
