@@ -276,7 +276,7 @@ Can be developed **in parallel** after Phase 1:
 feature/phase6-api-authentication
   - Depends on: phase1-authentication
   - Token-based auth (JWT or similar)
-  - Login with identification_number + contract_number
+  - Login with identification_number
   - Files: app/controllers/api/v1/auth_controller.rb
 
 # Branch 28: API - Customer Dashboard

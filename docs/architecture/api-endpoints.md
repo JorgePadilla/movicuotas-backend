@@ -583,4 +583,4 @@ curl -X GET "https://movicuotas.com/api/v1/notifications?page=1&per_page=10" \
 
 ---
 
-*Last updated: 2026-01-05*
+*Last updated: 2026-02-01*

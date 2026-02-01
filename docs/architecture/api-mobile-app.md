@@ -37,14 +37,13 @@ Header: Authorization: Bearer {token}
 POST /auth/login
 ```
 
-**Description**: Authenticate customer using identification number and contract number
+**Description**: Authenticate customer using identification number
 
 **Request Body**:
 ```json
 {
   "auth": {
-    "identification_number": "1234567890123",
-    "contract_number": "CONT-001"
+    "identification_number": "1234567890123"
   }
 }
 ```
@@ -414,8 +413,7 @@ curl -X POST https://api.movicuotas.com/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "auth": {
-      "identification_number": "1234567890123",
-      "contract_number": "CONT-001"
+      "identification_number": "1234567890123"
     }
   }'
 ```
