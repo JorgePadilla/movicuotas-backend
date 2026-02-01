@@ -182,8 +182,9 @@ class Loan < ApplicationRecord
   def generate_contract_number
     # Format: {branch}-{date}-{sequence}
     date_part = Time.current.strftime("%Y-%m-%d")
-    sequence = Loan.where(branch_number: branch_number, start_date: start_date).count + 1
-    self.contract_number = "#{branch_number}-#{date_part}-#{sequence.to_s.rjust(6, '0')}"
+    prefix = "#{branch_number}-#{date_part}-"
+    existing_count = Loan.where("contract_number LIKE ?", "#{prefix}%").count
+    self.contract_number = "#{prefix}#{(existing_count + 1).to_s.rjust(6, '0')}"
   end
 
   def calculate_amounts
