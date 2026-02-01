@@ -255,14 +255,16 @@ module Vendor
         Rails.logger.info "Loan save failed: errors=#{loan.errors.full_messages}, contract_number=#{loan.contract_number}"
         # Check if save failed due to contract number uniqueness
         if loan.errors[:contract_number].any?
-          Rails.logger.info "Contract number uniqueness error, trying to find existing loan with contract_number: #{loan.contract_number}"
-          # Try to find the existing loan with this contract number
-          existing_loan = Loan.find_by(contract_number: loan.contract_number)
+          Rails.logger.info "Contract number uniqueness error, trying to find existing draft loan with contract_number: #{loan.contract_number}"
+          existing_loan = Loan.find_by(contract_number: loan.contract_number, status: "draft")
           if existing_loan
-            Rails.logger.info "Found existing loan: id=#{existing_loan.id}, contract_number=#{existing_loan.contract_number}"
+            Rails.logger.info "Found existing draft loan: id=#{existing_loan.id}, contract_number=#{existing_loan.contract_number}"
             return existing_loan
           else
-            Rails.logger.error "No existing loan found with contract_number: #{loan.contract_number}"
+            # Contract number taken by a non-draft loan, generate a new one
+            Rails.logger.info "No draft loan found, retrying with new contract number"
+            loan.contract_number = nil
+            return loan if loan.save
           end
         end
       end
@@ -273,20 +275,15 @@ module Vendor
     # Find existing draft loan for customer created today
     # We look for draft loans for this customer created recently
     def find_existing_draft_loan(customer, phone_price, approved_amount, credit_application_id)
-      # First, try to find by credit_application_id if we store it somewhere
-      # (currently not stored, but we could add it to session or loan metadata)
+      scope = Loan.where(customer: customer, status: "draft")
 
-      # For now, find loans for this customer created in the last 7 days
-      # This is a simplification - in production, we should have a better way
-      # to associate loans with credit applications
-      recent_date = 7.days.ago
+      if credit_application_id.present?
+        scope = scope.where(credit_application_id: credit_application_id)
+      end
 
-      existing_loan = Loan.where(
-        customer: customer,
-        created_at: recent_date..Time.current
-      ).order(created_at: :desc).first
+      existing_loan = scope.order(created_at: :desc).first
 
-      Rails.logger.info "find_existing_draft_loan: customer_id=#{customer.id}, found_loan_id=#{existing_loan&.id}, contract_number=#{existing_loan&.contract_number}"
+      Rails.logger.info "find_existing_draft_loan: customer_id=#{customer.id}, credit_application_id=#{credit_application_id}, found_loan_id=#{existing_loan&.id}, contract_number=#{existing_loan&.contract_number}"
       existing_loan
     end
 
