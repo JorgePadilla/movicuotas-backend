@@ -55,7 +55,7 @@
 
         <div class="flex flex-col gap-2 w-full sm:flex-row sm:gap-3 sm:w-auto order-1 sm:order-2">
           <% if @contract.signed? %>
-            <%= link_to "Continuar →", vendor_contract_down_payment_path(@contract), class: "px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm text-center" %>
+            <%= link_to "Continuar →", signature_vendor_contract_path(@contract), class: "px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm text-center" %>
           <% else %>
             <%= link_to "Aceptar y Firmar →", signature_vendor_contract_path(@contract), class: "px-4 py-2.5 bg-[#125282] text-white rounded-lg hover:bg-[#0f4670] transition-colors font-medium text-sm text-center" %>
           <% end %>
