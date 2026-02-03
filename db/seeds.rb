@@ -22,9 +22,17 @@ if Rails.env.development? || Rails.env.test? || Rails.env.production?
     AuditLog.delete_all
     Session.delete_all
     User.delete_all
+    SystemSetting.delete_all
   end
 
   puts "Seeding data..."
+
+# 0. System Settings
+puts "Creating system settings..."
+SystemSetting.find_or_create_by!(key: "support_phone_number") do |s|
+  s.value = "97902401"
+  s.description = "Número de teléfono de soporte mostrado en la app móvil"
+end
 
 # 1. Create Users
 puts "Creating users..."

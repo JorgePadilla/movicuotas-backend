@@ -91,6 +91,10 @@ Rails.application.routes.draw do
         post :reject
       end
     end
+
+    # System settings (admin/master only)
+    get "settings", to: "settings#index", as: :settings
+    patch "settings", to: "settings#update"
   end
 
   namespace :vendor do
@@ -192,6 +196,9 @@ Rails.application.routes.draw do
           put :refresh
         end
       end
+
+      # Public settings (no auth required)
+      get "settings", to: "settings#index"
 
       # Customer endpoints
       get "dashboard", to: "dashboard#show"
