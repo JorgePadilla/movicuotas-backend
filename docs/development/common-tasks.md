@@ -29,3 +29,14 @@ bin/rails db:rollback
 bin/rails db:reset           # Drop, create, migrate, seed
 ```
 
+### Production Data Reset
+```bash
+# See full guide: docs/development/production-reset.md
+pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql  # 1. Backup
+sudo systemctl stop solid_queue                       # 2. Stop workers
+RAILS_ENV=production rails db:seed:replant            # 3. Truncate + re-seed
+RAILS_ENV=production rails runner \
+  "ActiveStorage::Blob.unattached.each(&:purge_later)" # 4. Clean S3
+sudo systemctl start solid_queue                       # 5. Restart workers
+```
+

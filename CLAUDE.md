@@ -70,6 +70,7 @@ Detailed documentation is organized into focused files:
 - [Testing Guidelines](docs/development/testing-guidelines.md)
 - [Background Jobs](docs/development/background-jobs.md)
 - [Common Tasks & Commands](docs/development/common-tasks.md)
+- [Production Data Reset](docs/development/production-reset.md)
 - [Common Pitfalls](docs/development/common-pitfalls.md)
 - [Vendor Implementation Notes](docs/development/vendor-implementation-notes.md)
 - [Development Philosophy](docs/development/philosophy.md)

@@ -1,4 +1,25 @@
 class Customer < ApplicationRecord
+  HONDURAS_DEPARTMENTS = [
+    "Atlántida",
+    "Choluteca",
+    "Colón",
+    "Comayagua",
+    "Copán",
+    "Cortés",
+    "El Paraíso",
+    "Francisco Morazán",
+    "Gracias a Dios",
+    "Intibucá",
+    "Islas de la Bahía",
+    "La Paz",
+    "Lempira",
+    "Ocotepeque",
+    "Olancho",
+    "Santa Bárbara",
+    "Valle",
+    "Yoro"
+  ].freeze
+
   # Associations
   has_many :loans, dependent: :restrict_with_error
   has_many :credit_applications, dependent: :destroy
@@ -16,6 +37,7 @@ class Customer < ApplicationRecord
             format: { with: /\A\d{8}\z/, message: "debe tener 8 dígitos" },
             length: { is: 8 }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :department, inclusion: { in: HONDURAS_DEPARTMENTS, message: "debe ser un departamento válido de Honduras" }, allow_blank: true
   validates :status, inclusion: { in: %w[active suspended blocked] }
 
   # Enums
