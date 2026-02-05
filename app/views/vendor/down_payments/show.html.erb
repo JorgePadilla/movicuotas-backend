@@ -1,5 +1,6 @@
 <%# Step 15: Down Payment Collection (Prima) %>
 <% content_for :title, "Recolección de Prima - MOVICUOTAS" %>
+<% receipt_attached = @loan.down_payment_receipt.attached? %>
 
 <div class="max-w-3xl mx-auto px-2 sm:px-3 lg:px-4 py-4">
   <!-- Step Header -->
@@ -89,7 +90,8 @@
             <input type="radio" name="down_payment_method" value="deposit"
                    class="mt-1 h-4 w-4 text-[#125282] border-gray-300 focus:ring-[#125282]"
                    data-action="change->down-payment#toggleMethod"
-                   data-down-payment-target="depositRadio">
+                   data-down-payment-target="depositRadio"
+                   <%= "checked" if receipt_attached %>>
             <div class="ml-3">
               <span class="text-base font-medium text-gray-900">Depósito / Transferencia</span>
               <p class="text-sm text-gray-600 mt-1">El cliente realiza un depósito o transferencia. Se requiere subir el comprobante.</p>
@@ -120,12 +122,13 @@
     </div>
 
     <!-- Deposit Upload Section (hidden by default) -->
-    <div id="deposit-section" class="hidden bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+    <div id="deposit-section" class="<%= 'hidden' unless receipt_attached %> bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Comprobante de Depósito</h3>
       <p class="text-sm text-gray-600 mb-4">Tome una foto o seleccione una imagen del comprobante de depósito o transferencia.</p>
 
       <div data-controller="file-upload"
-           data-file-upload-target="area">
+           data-file-upload-target="area"
+           class="<%= 'border-2 border-green-500 bg-green-50 rounded-lg' if receipt_attached %>">
         <input type="file" name="down_payment_receipt" accept="image/*"
                class="hidden"
                data-file-upload-target="input"
@@ -133,7 +136,7 @@
                id="receipt-input">
 
         <!-- Placeholder: buttons for camera and gallery -->
-        <div data-file-upload-target="placeholder">
+        <div data-file-upload-target="placeholder" class="<%= 'hidden' if receipt_attached %>">
           <div class="grid grid-cols-2 gap-3">
             <button type="button" onclick="document.getElementById('receipt-camera').click()"
                     class="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#125282] hover:bg-blue-50 transition-colors">
@@ -160,7 +163,7 @@
                onchange="document.getElementById('receipt-input').files = this.files; document.getElementById('receipt-input').dispatchEvent(new Event('change'))">
 
         <!-- Preview after upload -->
-        <div data-file-upload-target="preview" class="hidden">
+        <div data-file-upload-target="preview" class="<%= 'hidden' unless receipt_attached %>">
           <div class="border-2 border-green-500 bg-green-50 rounded-lg p-4 text-center">
             <div class="flex items-center justify-center gap-2 mb-3">
               <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,9 +171,13 @@
               </svg>
               <span class="text-sm font-semibold text-green-700">Comprobante cargado</span>
             </div>
-            <img data-file-upload-target="thumbnail" class="hidden mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2" alt="Vista previa">
-            <p class="text-sm text-green-600 font-medium" data-file-upload-target="fileName"></p>
-            <button type="button" onclick="document.getElementById('receipt-input').value=''; document.getElementById('receipt-camera').value=''; this.closest('[data-controller]').querySelector('[data-file-upload-target=placeholder]').classList.remove('hidden'); this.closest('[data-file-upload-target=preview]').classList.add('hidden'); this.closest('[data-controller]').querySelector('[data-file-upload-target=area]').classList.remove('border-green-500','bg-green-50');"
+            <% if receipt_attached %>
+              <%= image_tag @loan.down_payment_receipt, data: { file_upload_target: "thumbnail" }, class: "mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2", alt: "Vista previa" %>
+            <% else %>
+              <img data-file-upload-target="thumbnail" class="hidden mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2" alt="Vista previa">
+            <% end %>
+            <p class="text-sm text-green-600 font-medium" data-file-upload-target="fileName"><%= "Comprobante guardado" if receipt_attached %></p>
+            <button type="button" onclick="document.getElementById('receipt-input').value=''; document.getElementById('receipt-camera').value=''; var ctrl=this.closest('[data-controller]'); ctrl.querySelector('[data-file-upload-target=placeholder]').classList.remove('hidden'); this.closest('[data-file-upload-target=preview]').classList.add('hidden'); ctrl.querySelector('[data-file-upload-target=area]').classList.remove('border-2','border-green-500','bg-green-50','rounded-lg'); var thumb=ctrl.querySelector('[data-file-upload-target=thumbnail]'); thumb.src=''; thumb.className='hidden mx-auto max-h-48 rounded-lg shadow-sm border border-gray-200 mb-2'; ctrl.querySelector('[data-file-upload-target=fileName]').textContent='';"
                     class="mt-3 inline-flex items-center gap-1 text-sm text-[#125282] font-medium hover:underline">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -246,5 +253,8 @@
 
     if (cashRadio) cashRadio.addEventListener('change', toggleSections);
     if (depositRadio) depositRadio.addEventListener('change', toggleSections);
+
+    // If a radio is already checked (e.g. deposit receipt exists), show the right section
+    toggleSections();
   });
 </script>
