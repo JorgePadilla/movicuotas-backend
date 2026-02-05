@@ -101,6 +101,7 @@ export default class extends Controller {
         const dataTransfer = new DataTransfer()
         dataTransfer.items.add(file)
         this.inputTarget.files = dataTransfer.files
+        this.inputTarget.dispatchEvent(new Event('change', { bubbles: true }))
 
         // Show preview
         if (this.hasPreviewTarget) {
