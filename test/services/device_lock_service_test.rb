@@ -16,12 +16,12 @@ class DeviceLockServiceTest < ActiveSupport::TestCase
   # ============================================
 
   test "lock! creates pending lock state for unlocked device" do
-    result = DeviceLockService.lock!(@device, @admin, reason: "Overdue payment")
+    result = DeviceLockService.lock!(@device, @admin, reason: "Pago vencido")
 
     assert result[:success]
     assert_not_nil result[:state]
     assert_equal "pending", result[:state].status
-    assert_equal "Overdue payment", result[:state].reason
+    assert_equal "Pago vencido", result[:state].reason
     assert_equal @admin, result[:state].initiated_by
     assert_not_nil result[:state].initiated_at
   end
@@ -49,7 +49,7 @@ class DeviceLockServiceTest < ActiveSupport::TestCase
     result = DeviceLockService.lock!(@device, @admin)
 
     assert result[:success]
-    assert_equal "Overdue payment", result[:state].reason
+    assert_equal "Pago vencido", result[:state].reason
   end
 
   # ============================================

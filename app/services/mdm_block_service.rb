@@ -4,7 +4,7 @@ class MdmBlockService
   def initialize(device, user)
     @device = device
     @user = user
-    @reason = "Overdue payment"
+    @reason = "Pago vencido"
   end
 
   def block!
@@ -37,7 +37,7 @@ class MdmBlockService
 
     ActiveRecord::Base.transaction do
       # Update device status to unlocked
-      @device.unlock!(@user, "Manual unlock by #{@user.role}")
+      @device.unlock!(@user, "Desbloqueo manual por #{@user.role}")
 
       # Queue MDM unblocking job
       MdmUnblockDeviceJob.perform_later(@device.id) if defined?(MdmUnblockDeviceJob)

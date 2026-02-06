@@ -77,6 +77,17 @@ module ApplicationHelper
     GENDER_ES[gender.to_s] || gender.to_s.titleize
   end
 
+  LOCK_REASON_ES = {
+    "Overdue payment" => "Pago vencido",
+    "Payment received" => "Pago recibido",
+    "Migrated from legacy data" => "Migrado de datos anteriores"
+  }.freeze
+
+  def lock_reason_es(reason)
+    return "—" if reason.blank?
+    LOCK_REASON_ES[reason] || reason
+  end
+
   def sortable_header(column, title, opts = {})
     is_current = @sort_column == column.to_s
     direction = if is_current && @sort_direction == "asc"

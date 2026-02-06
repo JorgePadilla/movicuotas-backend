@@ -276,7 +276,7 @@
                 <td class="px-6 py-4 text-sm text-gray-600"><%= lock_state.created_at.strftime("%d/%m/%Y %H:%M") %></td>
                 <td class="px-6 py-4 text-sm font-mono text-gray-900"><%= lock_state.device.imei %></td>
                 <td class="px-6 py-4 text-sm font-medium text-gray-900"><%= lock_state.device.loan&.customer&.full_name || "—" %></td>
-                <td class="px-6 py-4 text-sm text-gray-600"><%= lock_state.reason || "—" %></td>
+                <td class="px-6 py-4 text-sm text-gray-600"><%= lock_reason_es(lock_state.reason) %></td>
                 <td class="px-6 py-4 text-sm text-gray-600"><%= lock_state.initiated_by&.full_name || "Sistema" %></td>
               </tr>
             <% end %>
@@ -295,7 +295,7 @@
             <p class="text-sm font-medium text-gray-900"><%= lock_state.device.loan&.customer&.full_name || "—" %></p>
             <p class="text-xs font-mono text-gray-500 mt-1">IMEI: <%= lock_state.device.imei %></p>
             <% if lock_state.reason.present? %>
-              <p class="text-xs text-gray-500 mt-1">Motivo: <%= lock_state.reason %></p>
+              <p class="text-xs text-gray-500 mt-1">Motivo: <%= lock_reason_es(lock_state.reason) %></p>
             <% end %>
             <p class="text-xs text-gray-400 mt-1">Por: <%= lock_state.initiated_by&.full_name || "Sistema" %></p>
           </div>

@@ -1,6 +1,6 @@
 class DeviceLockService
   class << self
-    def lock!(device, user, reason: "Overdue payment")
+    def lock!(device, user, reason: "Pago vencido")
       return { success: false, error: "Device already locked or pending" } unless device.unlocked?
 
       state = DeviceLockState.create!(
@@ -32,7 +32,7 @@ class DeviceLockService
       { success: true, state: state }
     end
 
-    def unlock!(device, user, reason: "Payment received")
+    def unlock!(device, user, reason: "Pago recibido")
       return { success: false, error: "Device not locked" } unless device.locked?
 
       state = DeviceLockState.create!(

@@ -75,7 +75,7 @@ class Device < ApplicationRecord
   end
 
   # Lock methods delegating to DeviceLockService (for backward compatibility)
-  def lock!(user, reason = "Overdue payment")
+  def lock!(user, reason = "Pago vencido")
     result = DeviceLockService.lock!(self, user, reason: reason)
     result[:success]
   end
@@ -85,7 +85,7 @@ class Device < ApplicationRecord
     result[:success]
   end
 
-  def unlock!(user, reason = "Payment received")
+  def unlock!(user, reason = "Pago recibido")
     result = DeviceLockService.unlock!(self, user, reason: reason)
     result[:success]
   end
