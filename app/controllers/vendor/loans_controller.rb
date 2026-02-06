@@ -130,8 +130,8 @@ module Vendor
       if params[:search].present?
         search_term = "%#{params[:search]}%"
         @loans = @loans.left_joins(:customer, :device)
-                       .where("customers.full_name ILIKE ? OR loans.contract_number ILIKE ? OR devices.imei ILIKE ?",
-                              search_term, search_term, search_term)
+                       .where("customers.full_name ILIKE ? OR customers.identification_number ILIKE ? OR loans.contract_number ILIKE ? OR devices.imei ILIKE ?",
+                              search_term, search_term, search_term, search_term)
                        .distinct
       end
 

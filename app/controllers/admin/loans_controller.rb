@@ -31,7 +31,7 @@ module Admin
       if params[:search].present?
         search_term = "%#{params[:search]}%"
         @loans = @loans.joins(:customer)
-                       .where("loans.contract_number ILIKE ? OR customers.full_name ILIKE ?", search_term, search_term)
+                       .where("loans.contract_number ILIKE ? OR customers.full_name ILIKE ? OR customers.identification_number ILIKE ?", search_term, search_term, search_term)
                        .distinct
       end
 

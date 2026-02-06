@@ -14,7 +14,7 @@
     <!-- Search -->
     <%= form_with url: admin_loans_path, method: :get, local: true, class: "flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4" do |f| %>
       <div class="flex-1">
-        <%= f.search_field :search, placeholder: "Buscar por contrato o cliente...", value: params[:search], class: "w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm sm:text-base" %>
+        <%= f.search_field :search, placeholder: "Buscar por contrato, cliente o identidad...", value: params[:search], class: "w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-[#125282] focus:border-[#125282] text-sm sm:text-base" %>
       </div>
       <%= f.submit "Buscar", class: "bg-[#125282] hover:bg-[#0f4670] text-white px-6 py-2.5 rounded-lg font-medium transition-colors cursor-pointer" %>
     <% end %>
