@@ -2,8 +2,20 @@
 
 module Admin
   class DevicesController < ApplicationController
+    include Sortable
+
     def index
-      @devices = policy_scope(Device).includes(:loan, :phone_model, loan: :customer).order(created_at: :desc)
+      set_sort_params(
+        allowed_columns: %w[imei lock_status created_at],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "imei" => "devices.imei",
+        "lock_status" => "devices.lock_status",
+        "created_at" => "devices.created_at"
+      }
+      @devices = policy_scope(Device).includes(:loan, :phone_model, loan: :customer).order(sort_order_sql(column_mapping))
 
       # Filter by activation status
       case params[:activation]

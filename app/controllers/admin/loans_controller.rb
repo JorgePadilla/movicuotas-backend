@@ -2,10 +2,24 @@
 
 module Admin
   class LoansController < ApplicationController
+    include Sortable
     before_action :set_loan, only: [ :show, :destroy ]
 
     def index
-      @loans = policy_scope(Loan).order(created_at: :desc)
+      set_sort_params(
+        allowed_columns: %w[contract_number customer_name branch_number total_amount status created_at],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "contract_number" => "loans.contract_number",
+        "customer_name" => "customers.full_name",
+        "branch_number" => "loans.branch_number",
+        "total_amount" => "loans.total_amount",
+        "status" => "loans.status",
+        "created_at" => "loans.created_at"
+      }
+      @loans = policy_scope(Loan).left_joins(:customer).order(sort_order_sql(column_mapping))
 
       # Filter by status if provided
       @loans = @loans.where(status: params[:status]) if params[:status].present?

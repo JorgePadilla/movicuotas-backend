@@ -2,11 +2,24 @@
 
 module Admin
   class UsersController < ApplicationController
+    include Sortable
     before_action :set_user, only: [ :show, :edit, :update, :destroy ]
     before_action :authorize_user_management, except: [ :index ]
 
     def index
-      @users = policy_scope(User).order(created_at: :desc)
+      set_sort_params(
+        allowed_columns: %w[full_name email role created_at updated_at],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "full_name" => "users.full_name",
+        "email" => "users.email",
+        "role" => "users.role",
+        "created_at" => "users.created_at",
+        "updated_at" => "users.updated_at"
+      }
+      @users = policy_scope(User).order(sort_order_sql(column_mapping))
       @users = @users.where(role: params[:role]) if params[:role].present?
 
       # Paginate results (20 per page)

@@ -216,11 +216,11 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+          <%= sortable_header :contract_number, "Contrato" %>
+          <%= sortable_header :customer_name, "Cliente" %>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+          <%= sortable_header :total_amount, "Monto" %>
+          <%= sortable_header :status, "Estado" %>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Próx. Venc.</th>
         </tr>
@@ -316,7 +316,7 @@
 
   <!-- Pagination -->
   <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
-    <% pagination_params = { search: params[:search], status: @status_filter, cuotas: @cuotas_filter, device_status: @device_status_filter }.compact_blank %>
+    <% pagination_params = { search: params[:search], status: @status_filter, cuotas: @cuotas_filter, device_status: @device_status_filter, sort: params[:sort], direction: params[:direction] }.compact_blank %>
     <div class="mt-6 flex flex-col items-center gap-4">
       <!-- Mobile Pagination -->
       <div class="flex lg:hidden items-center gap-3">

@@ -167,13 +167,35 @@
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input type="checkbox" id="select-all" onchange="toggleAllSelections()" class="rounded border-gray-300">
               </th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <%
+                # Helper for supervisor overdue sort headers (uses sort/order params)
+                overdue_sort_params = request.query_parameters.except("page")
+              %>
+              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'customer_name' ? 'text-[#125282]' : 'text-gray-500' %>">
+                <% new_order = (@sort_column == "customer_name" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                <%= link_to url_for(overdue_sort_params.merge(sort: "customer_name", order: new_order)), class: "flex items-center gap-1" do %>
+                  Cliente
+                  <span class="text-[10px]"><%= @sort_column == "customer_name" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                <% end %>
+              </th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
               <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Días</th>
+              <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'total_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
+                <% new_order = (@sort_column == "total_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                <%= link_to url_for(overdue_sort_params.merge(sort: "total_overdue", order: new_order)), class: "flex items-center justify-end gap-1" do %>
+                  Monto
+                  <span class="text-[10px]"><%= @sort_column == "total_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                <% end %>
+              </th>
+              <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'days_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
+                <% new_order = (@sort_column == "days_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                <%= link_to url_for(overdue_sort_params.merge(sort: "days_overdue", order: new_order)), class: "flex items-center justify-end gap-1" do %>
+                  Días
+                  <span class="text-[10px]"><%= @sort_column == "days_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                <% end %>
+              </th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>

@@ -93,12 +93,12 @@
         <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
+            <%= sortable_header :imei, "IMEI", px: 6 %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código Activación</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado App</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado MDM</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activado</th>
+            <%= sortable_header :lock_status, "Estado MDM", px: 6 %>
+            <%= sortable_header :created_at, "Activado", px: 6 %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
@@ -162,13 +162,13 @@
         <% if @devices.first_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], page: @devices.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "← Anterior", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @devices.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
         <span class="text-sm text-gray-600"><%= @devices.current_page %> / <%= @devices.total_pages %></span>
         <% if @devices.last_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], page: @devices.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "Siguiente →", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @devices.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
       </div>
 
@@ -177,14 +177,14 @@
         <% if @devices.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], page: @devices.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @devices.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
         <div class="flex items-center gap-1">
           <% (1..@devices.total_pages).each do |page| %>
             <% if page == @devices.current_page %>
               <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
             <% elsif (page - @devices.current_page).abs <= 1 || page == 1 || page == @devices.total_pages %>
-              <%= link_to page, admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], sort: params[:sort], direction: params[:direction], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @devices.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @devices.total_pages - 1 && @devices.current_page < @devices.total_pages - 2 %>
@@ -195,7 +195,7 @@
         <% if @devices.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], page: @devices.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_devices_path(activation: params[:activation], lock_status: params[:lock_status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @devices.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
     </div>

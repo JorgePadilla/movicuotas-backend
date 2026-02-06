@@ -98,13 +98,13 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Total</th>
+            <%= sortable_header :contract_number, "Contrato", px: 4 %>
+            <%= sortable_header :customer_name, "Cliente", px: 4 %>
+            <%= sortable_header :branch_number, "Sucursal", px: 4 %>
+            <%= sortable_header :total_amount, "Monto Total", px: 4 %>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <%= sortable_header :status, "Estado", px: 4 %>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
@@ -173,13 +173,13 @@
         <% if @loans.first_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
         <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
         <% if @loans.last_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
       </div>
 
@@ -188,14 +188,14 @@
         <% if @loans.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
         <div class="flex items-center gap-1">
           <% (1..@loans.total_pages).each do |page| %>
             <% if page == @loans.current_page %>
               <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
             <% elsif (page - @loans.current_page).abs <= 1 || page == 1 || page == @loans.total_pages %>
-              <%= link_to page, admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @loans.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @loans.total_pages - 1 && @loans.current_page < @loans.total_pages - 2 %>
@@ -206,7 +206,7 @@
         <% if @loans.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
     </div>

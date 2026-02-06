@@ -2,6 +2,7 @@
 
 module Vendor
   class PaymentsController < ApplicationController
+    include Sortable
     skip_after_action :verify_policy_scoped, only: :index
 
     # GET /vendor/payments
@@ -18,8 +19,19 @@ module Vendor
       @this_month_count = base_payments.where(payment_date: Date.current.beginning_of_month..Date.current.end_of_month).count
       @this_month_amount = base_payments.where(payment_date: Date.current.beginning_of_month..Date.current.end_of_month).sum(:amount)
 
-      # Apply filters
-      @payments = base_payments.order(payment_date: :desc)
+      # Sort params
+      set_sort_params(
+        allowed_columns: %w[payment_date amount payment_method],
+        default_column: "payment_date"
+      )
+
+      # Apply filters and sorting
+      column_mapping = {
+        "payment_date" => "payments.payment_date",
+        "amount" => "payments.amount",
+        "payment_method" => "payments.payment_method"
+      }
+      @payments = base_payments.order(sort_order_sql(column_mapping))
 
       # Filter by payment method
       @payments = @payments.where(payment_method: params[:method]) if params[:method].present?

@@ -2,6 +2,7 @@
 
 module Vendor
   class LoansController < ApplicationController
+    include Sortable
     # Step 15: Crédito Aplicado (Loan Finalization & Success)
     # This controller handles loan finalization after all previous steps are completed.
     #
@@ -80,6 +81,12 @@ module Vendor
       @completed_count = base_loans.where(status: %w[paid completed]).count
       @overdue_count = base_loans.joins(:installments).where(installments: { status: "overdue" }).distinct.count
 
+      # Sort params
+      set_sort_params(
+        allowed_columns: %w[contract_number customer_name total_amount status created_at],
+        default_column: "created_at"
+      )
+
       # Set default filters if no filters are provided (first visit to page)
       # Default: Active loans with overdue installments
       if params[:status].blank? && params[:cuotas].blank? && params[:device_status].blank? && params[:search].blank? && !params[:clear_filters]
@@ -94,8 +101,15 @@ module Vendor
         @device_status_filter = params[:device_status]
       end
 
-      # Apply filters
-      @loans = base_loans.order(created_at: :desc)
+      # Apply filters and sorting
+      column_mapping = {
+        "contract_number" => "loans.contract_number",
+        "customer_name" => "customers.full_name",
+        "total_amount" => "loans.total_amount",
+        "status" => "loans.status",
+        "created_at" => "loans.created_at"
+      }
+      @loans = base_loans.left_joins(:customer).order(sort_order_sql(column_mapping))
 
       # Filter by loan status
       if @status_filter.present?

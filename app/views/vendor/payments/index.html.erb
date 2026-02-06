@@ -153,11 +153,11 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+            <%= sortable_header :payment_date, "Fecha", px: 6 %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
+            <%= sortable_header :amount, "Monto", px: 6 %>
+            <%= sortable_header :payment_method, "Método", px: 6 %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
@@ -217,7 +217,7 @@
         <% if @payments.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", vendor_payments_path(page: @payments.current_page - 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to]),
+          <%= link_to "← Anterior", vendor_payments_path(page: @payments.current_page - 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], sort: params[:sort], direction: params[:direction]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
@@ -226,7 +226,7 @@
         <% if @payments.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", vendor_payments_path(page: @payments.current_page + 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to]),
+          <%= link_to "Siguiente →", vendor_payments_path(page: @payments.current_page + 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], sort: params[:sort], direction: params[:direction]),
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
@@ -234,14 +234,14 @@
       <!-- Desktop Pagination -->
       <div class="hidden lg:flex items-center gap-2">
         <% unless @payments.first_page? %>
-          <%= link_to "← Anterior", vendor_payments_path(page: @payments.current_page - 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to]),
+          <%= link_to "← Anterior", vendor_payments_path(page: @payments.current_page - 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], sort: params[:sort], direction: params[:direction]),
               class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
         <% end %>
 
         <span class="px-3 py-2 text-sm text-gray-600">Página <%= @payments.current_page %> de <%= @payments.total_pages %></span>
 
         <% unless @payments.last_page? %>
-          <%= link_to "Siguiente →", vendor_payments_path(page: @payments.current_page + 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to]),
+          <%= link_to "Siguiente →", vendor_payments_path(page: @payments.current_page + 1, search: params[:search], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], sort: params[:sort], direction: params[:direction]),
               class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
         <% end %>
       </div>
