@@ -64,6 +64,7 @@
     <% end %>
 
     <%= form_with url: vendor_loans_path, method: :get, class: "space-y-4" do %>
+      <input type="hidden" name="filtered" value="true">
       <!-- Search -->
       <div>
         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Buscar</label>

@@ -89,7 +89,7 @@ module Vendor
 
       # Set default filters if no filters are provided (first visit to page)
       # Default: Active loans with overdue installments
-      if params[:status].blank? && params[:cuotas].blank? && params[:device_status].blank? && params[:search].blank? && !params[:clear_filters]
+      if params[:status].blank? && params[:cuotas].blank? && params[:device_status].blank? && params[:search].blank? && !params[:clear_filters] && !params[:filtered]
         @default_filters = true
         @status_filter = "active"
         @cuotas_filter = "con_vencidas"
