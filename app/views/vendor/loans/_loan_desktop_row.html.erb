@@ -5,7 +5,7 @@
   when 'cancelled' then 'bg-gray-100 text-gray-800'
   else 'bg-gray-100 text-gray-800'
 end %>
-<tr id="desktop_loan_<%= loan.id %>" class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="window.location='<%= vendor_loan_path(loan) %>'">
+<tr id="desktop_loan_<%= loan.id %>" class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= vendor_loan_path(loan) %>')">
   <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-600">
     <%= loan.created_at.strftime("%d/%m/%Y") %>
   </td>

@@ -85,28 +85,24 @@ module ApplicationHelper
       "asc"
     end
 
-    arrow = if is_current
-      @sort_direction == "asc" ? " \u25B2" : " \u25BC"
-    else
-      ""
-    end
-
-    css = "px-#{opts[:px] || 3} py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none group"
-    css += if is_current
-      " text-[#125282]"
-    else
-      " text-gray-500"
-    end
+    turbo_frame = opts[:turbo_frame]
+    css = "px-#{opts[:px] || 3} py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer select-none group"
+    css += is_current ? " text-[#125282]" : " text-gray-500"
 
     merged_params = request.query_parameters.except("page").merge(sort: column, direction: direction)
+    link_data = turbo_frame ? { turbo_frame: turbo_frame } : {}
 
     content_tag(:th, scope: "col", class: css) do
-      link_to(url_for(merged_params), class: "flex items-center gap-1 no-underline hover:no-underline") do
+      link_to(url_for(merged_params), data: link_data, class: "flex items-center gap-1.5 no-underline hover:text-[#125282] transition-colors") do
         concat(title)
         if is_current
-          concat(content_tag(:span, arrow, class: "text-[10px]"))
+          if @sort_direction == "asc"
+            concat(content_tag(:span, "↑", class: "text-xs font-bold text-[#125282]"))
+          else
+            concat(content_tag(:span, "↓", class: "text-xs font-bold text-[#125282]"))
+          end
         else
-          concat(content_tag(:span, " \u25B2\u25BC", class: "text-[10px] text-gray-300 group-hover:text-gray-400"))
+          concat(content_tag(:span, "·", class: "text-xs text-gray-300 group-hover:text-gray-400"))
         end
       end
     end

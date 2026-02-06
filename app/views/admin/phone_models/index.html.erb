@@ -62,37 +62,37 @@
     <% end %>
   </div>
 
+  <%= turbo_frame_tag "phone_models_table" do %>
   <!-- Mobile Card View -->
   <div class="block lg:hidden space-y-4">
     <% if @phone_models.any? %>
-      <% @phone_models.each do |phone| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <% @phone_models.each do |phone_model| %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="Turbo.visit('<%= admin_phone_model_path(phone_model) %>')">
           <div class="flex justify-between items-start mb-3">
             <div>
-              <p class="font-bold text-gray-900"><%= phone.brand %> <%= phone.model %></p>
-              <p class="text-xs text-gray-500"><%= phone.storage.present? ? phone.storage : "—" %></p>
+              <p class="font-bold text-gray-900"><%= phone_model.brand %> <%= phone_model.model %></p>
+              <p class="text-xs text-gray-500"><%= phone_model.storage.present? ? phone_model.storage : "—" %></p>
             </div>
-            <span class="px-2 py-1 text-xs rounded-full <%= phone.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-              <%= phone.active? ? "Activo" : "Inactivo" %>
+            <span class="px-2 py-1 text-xs rounded-full <%= phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= phone_model.active? ? "Activo" : "Inactivo" %>
             </span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 text-sm mb-3">
             <div>
               <span class="text-gray-500 text-xs">Precio</span>
-              <p class="text-gray-900 font-semibold">L. <%= number_with_precision(phone.price, precision: 2, delimiter: ",") %></p>
+              <p class="text-gray-900 font-semibold">L. <%= number_with_precision(phone_model.price, precision: 2, delimiter: ",") %></p>
             </div>
             <div>
               <span class="text-gray-500 text-xs">Dispositivos</span>
-              <p class="text-gray-700"><%= phone.devices.count %></p>
+              <p class="text-gray-700"><%= phone_model.devices.count %></p>
             </div>
           </div>
 
-          <div class="pt-3 border-t border-gray-100 flex gap-3">
-            <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline text-sm font-medium" %>
-            <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline text-sm font-medium" %>
-            <% if phone.devices.empty? %>
-              <%= link_to "Eliminar", admin_phone_model_path(phone), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
+          <div class="pt-3 border-t border-gray-100 flex gap-3" onclick="event.stopPropagation()">
+            <%= link_to "Editar", edit_admin_phone_model_path(phone_model), class: "text-green-600 hover:underline text-sm font-medium" %>
+            <% if phone_model.devices.empty? %>
+              <%= link_to "Eliminar", admin_phone_model_path(phone_model), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone_model.brand} #{phone_model.model}?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
             <% end %>
           </div>
         </div>
@@ -106,13 +106,18 @@
 
   <!-- Desktop Table View -->
   <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Haz clic en cualquier fila para ver los detalles del teléfono
+    </p>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Almacenamiento</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+            <%= sortable_header :brand, "Marca", px: 6, turbo_frame: "phone_models_table" %>
+            <%= sortable_header :model, "Modelo", px: 6, turbo_frame: "phone_models_table" %>
+            <%= sortable_header :storage, "Almacenamiento", px: 6, turbo_frame: "phone_models_table" %>
+            <%= sortable_header :price, "Precio", px: 6, turbo_frame: "phone_models_table" %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivos</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -120,37 +125,39 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @phone_models.any? %>
-            <% @phone_models.each do |phone| %>
-              <tr class="hover:bg-gray-50">
+            <% @phone_models.each do |phone_model| %>
+              <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= admin_phone_model_path(phone_model) %>')">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="font-medium text-gray-900"><%= phone.brand %> <%= phone.model %></div>
+                  <div class="font-medium text-gray-900"><%= phone_model.brand %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-600"><%= phone.storage.present? ? phone.storage : "—" %></div>
+                  <div class="text-sm text-gray-900"><%= phone_model.model %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-semibold text-gray-900">L. <%= number_with_precision(phone.price, precision: 2, delimiter: ",") %></div>
+                  <div class="text-sm text-gray-600"><%= phone_model.storage.present? ? phone_model.storage : "—" %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 text-xs rounded-full <%= phone.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                    <%= phone.active? ? "Activo" : "Inactivo" %>
+                  <div class="text-sm font-semibold text-gray-900">L. <%= number_with_precision(phone_model.price, precision: 2, delimiter: ",") %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 text-xs rounded-full <%= phone_model.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= phone_model.active? ? "Activo" : "Inactivo" %>
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= phone.devices.count %>
+                  <%= phone_model.devices.count %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                  <%= link_to "Ver", admin_phone_model_path(phone), class: "text-[#125282] hover:underline font-medium" %>
-                  <%= link_to "Editar", edit_admin_phone_model_path(phone), class: "text-green-600 hover:underline font-medium" %>
-                  <% if phone.devices.empty? %>
-                    <%= link_to "Eliminar", admin_phone_model_path(phone), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone.brand} #{phone.model}?" }, class: "text-red-600 hover:underline font-medium" %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3" onclick="event.stopPropagation()">
+                  <%= link_to "Editar", edit_admin_phone_model_path(phone_model), class: "text-green-600 hover:underline font-medium" %>
+                  <% if phone_model.devices.empty? %>
+                    <%= link_to "Eliminar", admin_phone_model_path(phone_model), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar #{phone_model.brand} #{phone_model.model}?" }, class: "text-red-600 hover:underline font-medium" %>
                   <% end %>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                 No hay teléfonos registrados
               </td>
             </tr>
@@ -168,7 +175,7 @@
         <% if @phone_models.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page - 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @phone_models.current_page - 1), data: { turbo_frame: "phone_models_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
         <span class="text-sm text-gray-600"><%= @phone_models.current_page %> / <%= @phone_models.total_pages %></span>
@@ -176,7 +183,7 @@
         <% if @phone_models.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page + 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @phone_models.current_page + 1), data: { turbo_frame: "phone_models_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
 
@@ -185,7 +192,7 @@
         <% if @phone_models.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @phone_models.current_page - 1), data: { turbo_frame: "phone_models_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
 
         <div class="flex items-center gap-1">
@@ -193,7 +200,7 @@
             <% if page == @phone_models.current_page %>
               <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
             <% elsif (page - @phone_models.current_page).abs <= 1 || page == 1 || page == @phone_models.total_pages %>
-              <%= link_to page, admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], sort: params[:sort], direction: params[:direction], page: page), data: { turbo_frame: "phone_models_table" }, class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @phone_models.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @phone_models.total_pages - 1 && @phone_models.current_page < @phone_models.total_pages - 2 %>
@@ -205,7 +212,7 @@
         <% if @phone_models.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], page: @phone_models.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_phone_models_path(brand: params[:brand], status: params[:status], search: params[:search], sort: params[:sort], direction: params[:direction], page: @phone_models.current_page + 1), data: { turbo_frame: "phone_models_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
 
@@ -213,5 +220,6 @@
         Mostrando <%= @phone_models.size %> de <%= @phone_models.total_count %> teléfonos
       </p>
     </div>
+  <% end %>
   <% end %>
 </div>

@@ -50,11 +50,29 @@ module Admin
       # Group by payment method for visualization
       @payments_by_method = payments_for_stats.group(:payment_method).sum(:amount)
 
-      # Order by earliest installment due date (for verification queue), then by payment date
+      # Sorting
       @payments = @payments.left_joins(:installments)
                            .select("payments.*, MIN(installments.due_date) AS earliest_due_date")
                            .group("payments.id")
-                           .order(Arel.sql("MIN(installments.due_date) ASC NULLS LAST, payments.payment_date DESC"))
+
+      sort_column = params[:sort]
+      sort_direction = params[:direction] == "desc" ? "DESC" : "ASC"
+
+      case sort_column
+      when "date"
+        @payments = @payments.order(Arel.sql("payments.payment_date #{sort_direction}"))
+      when "amount"
+        @payments = @payments.order(Arel.sql("payments.amount #{sort_direction}"))
+      when "due_date"
+        @payments = @payments.order(Arel.sql("MIN(installments.due_date) #{sort_direction} NULLS LAST"))
+      when "status"
+        @payments = @payments.order(Arel.sql("payments.verification_status #{sort_direction}"))
+      when "method"
+        @payments = @payments.order(Arel.sql("payments.payment_method #{sort_direction}"))
+      else
+        # Default: earliest due date ASC, then payment date DESC
+        @payments = @payments.order(Arel.sql("MIN(installments.due_date) ASC NULLS LAST, payments.payment_date DESC"))
+      end
 
       # Paginate results (20 per page)
       @payments = @payments.page(params[:page]).per(20)

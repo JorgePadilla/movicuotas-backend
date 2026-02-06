@@ -24,11 +24,12 @@
     <% end %>
   </div>
 
+  <%= turbo_frame_tag "contracts_table" do %>
   <!-- Mobile Card View -->
   <div class="block lg:hidden space-y-4">
     <% if @contracts.any? %>
       <% @contracts.each do |contract| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="Turbo.visit('<%= admin_contract_path(contract) %>')">
           <div class="flex justify-between items-start mb-3">
             <div>
               <% if contract.loan&.customer %>
@@ -75,10 +76,6 @@
               <% end %>
             </div>
           </div>
-
-          <div class="pt-3 border-t border-gray-100">
-            <%= link_to "Ver Detalles →", admin_contract_path(contract), class: "text-[#125282] hover:underline text-sm font-medium" %>
-          </div>
         </div>
       <% end %>
     <% else %>
@@ -90,21 +87,24 @@
 
   <!-- Desktop Table View -->
   <div class="hidden lg:block bg-white shadow-lg rounded-lg overflow-hidden">
+    <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Haz clic en cualquier fila para ver los detalles del contrato
+    </p>
     <table class="w-full">
       <thead class="bg-gray-100 border-b-2 border-gray-300">
         <tr>
-          <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Contrato</th>
+          <%= sortable_header :contract_number, "Contrato", px: 6, turbo_frame: "contracts_table" %>
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Cliente</th>
           <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Préstamo</th>
-          <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Firmado</th>
-          <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">Fecha</th>
-          <th class="px-6 py-4 text-right text-sm font-bold text-gray-700">Acciones</th>
+          <%= sortable_header :status, "Estado", px: 6, turbo_frame: "contracts_table" %>
+          <%= sortable_header :created_at, "Fecha", px: 6, turbo_frame: "contracts_table" %>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
         <% if @contracts.any? %>
           <% @contracts.each do |contract| %>
-            <tr class="hover:bg-gray-50 transition-colors">
+            <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= admin_contract_path(contract) %>')">
               <td class="px-6 py-4">
                 <span class="font-medium text-[#125282]"><%= contract.id %></span>
               </td>
@@ -142,14 +142,11 @@
                   <span class="text-gray-400">—</span>
                 <% end %>
               </td>
-              <td class="px-6 py-4 text-right">
-                <%= link_to "Ver", admin_contract_path(contract), class: "text-[#125282] hover:text-[#0f4670] font-medium" %>
-              </td>
             </tr>
           <% end %>
         <% else %>
           <tr>
-            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
               No hay contratos que coincidan con tu búsqueda
             </td>
           </tr>
@@ -160,13 +157,15 @@
 
   <!-- Pagination -->
   <% if @contracts.respond_to?(:total_pages) && @contracts.total_pages > 1 %>
+    <% pagination_params = { search: params[:search], sort: params[:sort], direction: params[:direction] }.compact_blank %>
     <div class="mt-6 flex flex-col items-center gap-4">
       <!-- Mobile Pagination -->
       <div class="flex lg:hidden items-center gap-3">
         <% if @contracts.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_contracts_path(search: params[:search], page: @contracts.current_page - 1),
+          <%= link_to "← Anterior", admin_contracts_path(pagination_params.merge(page: @contracts.current_page - 1)),
+              data: { turbo_frame: "contracts_table" },
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
@@ -175,15 +174,53 @@
         <% if @contracts.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_contracts_path(search: params[:search], page: @contracts.current_page + 1),
+          <%= link_to "Siguiente →", admin_contracts_path(pagination_params.merge(page: @contracts.current_page + 1)),
+              data: { turbo_frame: "contracts_table" },
               class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
 
       <!-- Desktop Pagination -->
-      <div class="hidden lg:flex justify-center">
-        <%= paginate @contracts %>
+      <div class="hidden lg:flex justify-center items-center gap-2">
+        <% if @contracts.first_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_contracts_path(pagination_params.merge(page: @contracts.current_page - 1)),
+              data: { turbo_frame: "contracts_table" },
+              class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+
+        <div class="flex items-center gap-1">
+          <% (1..@contracts.total_pages).each do |page| %>
+            <% if page == @contracts.current_page %>
+              <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium">
+                <%= page %>
+              </span>
+            <% elsif (page - @contracts.current_page).abs <= 1 || page == 1 || page == @contracts.total_pages %>
+              <%= link_to page, admin_contracts_path(pagination_params.merge(page: page)),
+                  data: { turbo_frame: "contracts_table" },
+                  class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+            <% elsif page == 2 && @contracts.current_page > 3 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% elsif page == @contracts.total_pages - 1 && @contracts.current_page < @contracts.total_pages - 2 %>
+              <span class="px-2 py-2 text-gray-500">...</span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @contracts.last_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_contracts_path(pagination_params.merge(page: @contracts.current_page + 1)),
+              data: { turbo_frame: "contracts_table" },
+              class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+      </div>
+
+      <div class="text-center text-xs sm:text-sm text-gray-500">
+        Página <%= @contracts.current_page %> de <%= @contracts.total_pages %> • <%= @contracts.size %> de <%= @contracts.total_count %> contratos
       </div>
     </div>
+  <% end %>
   <% end %>
 </div>

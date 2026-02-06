@@ -2,15 +2,28 @@
 
 module Admin
   class DownPaymentsController < ApplicationController
+    include Sortable
     before_action :set_loan, only: [ :show, :verify, :reject ]
 
     # GET /admin/down_payments
     # List all loans with pending down payment verification (deposits only)
     def index
+      set_sort_params(
+        allowed_columns: %w[contract_number branch_number down_payment_amount created_at],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "contract_number" => "loans.contract_number",
+        "branch_number" => "loans.branch_number",
+        "down_payment_amount" => "loans.down_payment_amount",
+        "created_at" => "loans.created_at"
+      }
+
       @loans = policy_scope(Loan)
                  .down_payment_pending_verification
                  .includes(:customer, :contract, :user)
-                 .order(created_at: :desc)
+                 .order(sort_order_sql(column_mapping))
 
       # Filter by branch if provided
       @loans = @loans.where(branch_number: params[:branch]) if params[:branch].present?

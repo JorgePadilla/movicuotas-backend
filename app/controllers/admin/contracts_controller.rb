@@ -2,14 +2,25 @@
 
 module Admin
   class ContractsController < ApplicationController
+    include Sortable
     before_action :set_contract, only: [ :show ]
     after_action :verify_authorized, except: [ :index ]
 
     # Admin contracts index with filtering and search
     def index
-      @contracts = policy_scope(Contract)
-      @contracts = @contracts.joins(:loan).where("loans.contract_number ILIKE ?", "%#{params[:search]}%") if params[:search].present?
-      @contracts = @contracts.order(created_at: :desc).page(params[:page]).per(25)
+      set_sort_params(
+        allowed_columns: %w[created_at contract_number status],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "created_at" => "contracts.created_at",
+        "contract_number" => "loans.contract_number",
+        "status" => "contracts.status"
+      }
+      @contracts = policy_scope(Contract).left_joins(:loan)
+      @contracts = @contracts.where("loans.contract_number ILIKE ?", "%#{params[:search]}%") if params[:search].present?
+      @contracts = @contracts.order(sort_order_sql(column_mapping)).page(params[:page]).per(25)
     end
 
     # View contract details

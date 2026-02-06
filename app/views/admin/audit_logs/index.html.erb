@@ -126,86 +126,89 @@
   </div>
 
   <!-- Table -->
-  <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha/Hora</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recurso</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% if @audit_logs.any? %>
-            <% @audit_logs.each do |log| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                  <div><%= log.created_at.strftime("%d/%m/%Y") %></div>
-                  <div class="text-xs text-gray-500"><%= log.created_at.strftime("%H:%M:%S") %></div>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900"><%= log.user&.full_name || "Sistema" %></div>
-                  <div class="text-xs text-gray-500"><%= translate_role(log.user&.role) %></div>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <% action_color = case log.action
-                    when /create|add|new/ then 'bg-green-100 text-green-800'
-                    when /update|edit|change/ then 'bg-blue-100 text-blue-800'
-                    when /delete|remove|destroy/ then 'bg-red-100 text-red-800'
-                    when /verify|approve|paid|confirmed/ then 'bg-emerald-100 text-emerald-800'
-                    when /reject|deny|block/ then 'bg-orange-100 text-orange-800'
-                    else 'bg-gray-100 text-gray-800'
-                  end %>
-                  <span class="px-2 py-1 text-xs rounded-full font-medium <%= action_color %>">
-                    <%= translate_action(log.action) %>
-                  </span>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                  <div class="text-gray-900"><%= translate_resource_type(log.resource_type) %></div>
-                  <div class="text-xs text-gray-500">#<%= log.resource_id %></div>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                  <%= log.ip_address || "—" %>
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                  <%= link_to "Ver", admin_audit_log_path(log), class: "text-[#125282] hover:underline font-medium" %>
+  <%= turbo_frame_tag "audit_logs_table" do %>
+    <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+      <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+        <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Haz clic en cualquier fila para ver los detalles del registro
+      </p>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <%= sortable_header :created_at, "Fecha/Hora", px: 4, turbo_frame: "audit_logs_table" %>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+              <%= sortable_header :action, "Acción", px: 4, turbo_frame: "audit_logs_table" %>
+              <%= sortable_header :resource_type, "Recurso", px: 4, turbo_frame: "audit_logs_table" %>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @audit_logs.any? %>
+              <% @audit_logs.each do |log| %>
+                <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= admin_audit_log_path(log) %>')">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    <div><%= log.created_at.strftime("%d/%m/%Y") %></div>
+                    <div class="text-xs text-gray-500"><%= log.created_at.strftime("%H:%M:%S") %></div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900"><%= log.user&.full_name || "Sistema" %></div>
+                    <div class="text-xs text-gray-500"><%= translate_role(log.user&.role) %></div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <% action_color = case log.action
+                      when /create|add|new/ then 'bg-green-100 text-green-800'
+                      when /update|edit|change/ then 'bg-blue-100 text-blue-800'
+                      when /delete|remove|destroy/ then 'bg-red-100 text-red-800'
+                      when /verify|approve|paid|confirmed/ then 'bg-emerald-100 text-emerald-800'
+                      when /reject|deny|block/ then 'bg-orange-100 text-orange-800'
+                      else 'bg-gray-100 text-gray-800'
+                    end %>
+                    <span class="px-2 py-1 text-xs rounded-full font-medium <%= action_color %>">
+                      <%= translate_action(log.action) %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <div class="text-gray-900"><%= translate_resource_type(log.resource_type) %></div>
+                    <div class="text-xs text-gray-500">#<%= log.resource_id %></div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <%= log.ip_address || "—" %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                  No se encontraron registros de auditoría
                 </td>
               </tr>
             <% end %>
-          <% else %>
-            <tr>
-              <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                No se encontraron registros de auditoría
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <% if @audit_logs.respond_to?(:total_pages) && @audit_logs.total_pages > 1 %>
-    <div class="mt-6 flex justify-center items-center gap-2">
-      <% if @audit_logs.first_page? %>
-        <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
-      <% else %>
-        <%= link_to "← Anterior", admin_audit_logs_path(page: @audit_logs.current_page - 1, user_id: params[:user_id], action_type: params[:action_type], resource_type: params[:resource_type], date_from: params[:date_from], date_to: params[:date_to]), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-      <% end %>
+    <!-- Pagination -->
+    <% if @audit_logs.respond_to?(:total_pages) && @audit_logs.total_pages > 1 %>
+      <% pagination_params = { user_id: params[:user_id], action_type: params[:action_type], resource_type: params[:resource_type], date_from: params[:date_from], date_to: params[:date_to], sort: params[:sort], direction: params[:direction] }.compact_blank %>
+      <div class="mt-6 flex justify-center items-center gap-2">
+        <% if @audit_logs.first_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+        <% else %>
+          <%= link_to "← Anterior", admin_audit_logs_path(pagination_params.merge(page: @audit_logs.current_page - 1)), data: { turbo_frame: "audit_logs_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
 
-      <span class="px-4 py-2 text-gray-600">
-        Página <%= @audit_logs.current_page %> de <%= @audit_logs.total_pages %>
-      </span>
+        <span class="px-4 py-2 text-gray-600">
+          Página <%= @audit_logs.current_page %> de <%= @audit_logs.total_pages %>
+        </span>
 
-      <% if @audit_logs.last_page? %>
-        <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
-      <% else %>
-        <%= link_to "Siguiente →", admin_audit_logs_path(page: @audit_logs.current_page + 1, user_id: params[:user_id], action_type: params[:action_type], resource_type: params[:resource_type], date_from: params[:date_from], date_to: params[:date_to]), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-      <% end %>
-    </div>
+        <% if @audit_logs.last_page? %>
+          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+        <% else %>
+          <%= link_to "Siguiente →", admin_audit_logs_path(pagination_params.merge(page: @audit_logs.current_page + 1)), data: { turbo_frame: "audit_logs_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </div>

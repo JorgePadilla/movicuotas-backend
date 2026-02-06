@@ -43,11 +43,12 @@
     <%= link_to "Vendedores", admin_users_path(role: 'vendedor'), class: "#{params[:role] == 'vendedor' ? 'bg-blue-600 text-white' : 'bg-white border border-blue-200 text-blue-600'} px-3 py-1 rounded-lg font-medium text-xs transition-colors" %>
   </div>
 
+  <%= turbo_frame_tag "users_table" do %>
   <!-- Mobile Card View -->
   <div class="block lg:hidden space-y-4">
     <% if @users.any? %>
       <% @users.each do |user| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="Turbo.visit('<%= admin_user_path(user) %>')">
           <div class="flex justify-between items-start mb-3">
             <div>
               <p class="font-bold text-gray-900"><%= user.full_name %></p>
@@ -69,8 +70,7 @@
             </div>
           </div>
 
-          <div class="pt-3 border-t border-gray-100 flex gap-3">
-            <%= link_to "Ver", admin_user_path(user), class: "text-[#125282] hover:underline text-sm font-medium" %>
+          <div class="pt-3 border-t border-gray-100 flex gap-3" onclick="event.stopPropagation()">
             <%= link_to "Editar", edit_admin_user_path(user), class: "text-green-600 hover:underline text-sm font-medium" %>
             <% if user != current_user %>
               <%= link_to "Eliminar", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, class: "text-red-600 hover:underline text-sm font-medium" %>
@@ -87,23 +87,27 @@
 
   <!-- Desktop Table View -->
   <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Haz clic en cualquier fila para ver los detalles del usuario
+    </p>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <%= sortable_header :full_name, "Nombre", px: 6 %>
-            <%= sortable_header :email, "Email", px: 6 %>
+            <%= sortable_header :full_name, "Nombre", px: 6, turbo_frame: "users_table" %>
+            <%= sortable_header :email, "Email", px: 6, turbo_frame: "users_table" %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sucursal</th>
-            <%= sortable_header :role, "Rol", px: 6 %>
-            <%= sortable_header :created_at, "Creado", px: 6 %>
-            <%= sortable_header :updated_at, "Última Actividad", px: 6 %>
+            <%= sortable_header :role, "Rol", px: 6, turbo_frame: "users_table" %>
+            <%= sortable_header :created_at, "Creado", px: 6, turbo_frame: "users_table" %>
+            <%= sortable_header :updated_at, "Última Actividad", px: 6, turbo_frame: "users_table" %>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @users.any? %>
             <% @users.each do |user| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= admin_user_path(user) %>')">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="font-medium text-gray-900"><%= user.full_name %></div>
                 </td>
@@ -124,8 +128,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                   <%= user.updated_at.strftime("%d/%m/%Y %H:%M") %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                  <%= link_to "Ver", admin_user_path(user), class: "text-[#125282] hover:underline font-medium" %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3" onclick="event.stopPropagation()">
                   <%= link_to "Editar", edit_admin_user_path(user), class: "text-green-600 hover:underline font-medium" %>
                   <% if user != current_user %>
                     <%= link_to "Eliminar", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, class: "text-red-600 hover:underline font-medium" %>
@@ -147,13 +150,14 @@
 
   <!-- Pagination -->
   <% if @users.respond_to?(:total_pages) && @users.total_pages > 1 %>
+    <% pagination_params = { role: params[:role], sort: params[:sort], direction: params[:direction] }.compact_blank %>
     <div class="mt-6 flex flex-col items-center gap-4">
       <!-- Mobile Pagination -->
       <div class="flex lg:hidden items-center gap-3">
         <% if @users.first_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_users_path(role: params[:role], sort: params[:sort], direction: params[:direction], page: @users.current_page - 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <%= link_to "← Anterior", admin_users_path(pagination_params.merge(page: @users.current_page - 1)), data: { turbo_frame: "users_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
 
         <span class="text-sm text-gray-600"><%= @users.current_page %> / <%= @users.total_pages %></span>
@@ -161,7 +165,7 @@
         <% if @users.last_page? %>
           <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_users_path(role: params[:role], sort: params[:sort], direction: params[:direction], page: @users.current_page + 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <%= link_to "Siguiente →", admin_users_path(pagination_params.merge(page: @users.current_page + 1)), data: { turbo_frame: "users_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
         <% end %>
       </div>
 
@@ -170,7 +174,7 @@
         <% if @users.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_users_path(role: params[:role], sort: params[:sort], direction: params[:direction], page: @users.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_users_path(pagination_params.merge(page: @users.current_page - 1)), data: { turbo_frame: "users_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
 
         <div class="flex items-center gap-1">
@@ -178,7 +182,7 @@
             <% if page == @users.current_page %>
               <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
             <% elsif (page - @users.current_page).abs <= 1 || page == 1 || page == @users.total_pages %>
-              <%= link_to page, admin_users_path(role: params[:role], sort: params[:sort], direction: params[:direction], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_users_path(pagination_params.merge(page: page)), data: { turbo_frame: "users_table" }, class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @users.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @users.total_pages - 1 && @users.current_page < @users.total_pages - 2 %>
@@ -190,7 +194,7 @@
         <% if @users.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_users_path(role: params[:role], sort: params[:sort], direction: params[:direction], page: @users.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_users_path(pagination_params.merge(page: @users.current_page + 1)), data: { turbo_frame: "users_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
 
@@ -198,5 +202,6 @@
         Mostrando <%= @users.size %> de <%= @users.total_count %> usuarios
       </p>
     </div>
+  <% end %>
   <% end %>
 </div>

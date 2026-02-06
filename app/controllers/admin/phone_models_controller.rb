@@ -2,11 +2,25 @@
 
 module Admin
   class PhoneModelsController < ApplicationController
+    include Sortable
+
     before_action :set_phone_model, only: [ :show, :edit, :update, :destroy ]
     before_action :authorize_phone_model_management
 
     def index
-      @phone_models = policy_scope(PhoneModel).order(brand: :asc, model: :asc)
+      set_sort_params(
+        allowed_columns: %w[brand model storage price created_at],
+        default_column: "brand"
+      )
+      column_mapping = {
+        "brand" => "phone_models.brand",
+        "model" => "phone_models.model",
+        "storage" => "phone_models.storage",
+        "price" => "phone_models.price",
+        "created_at" => "phone_models.created_at"
+      }
+
+      @phone_models = policy_scope(PhoneModel).order(sort_order_sql(column_mapping))
 
       # Filter by brand
       if params[:brand].present?

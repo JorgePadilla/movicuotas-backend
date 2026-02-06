@@ -2,10 +2,23 @@
 
 module Admin
   class CustomersController < ApplicationController
+    include Sortable
     before_action :set_customer, only: [ :show, :edit, :update ]
 
     def index
-      @customers = policy_scope(Customer).order(created_at: :desc)
+      set_sort_params(
+        allowed_columns: %w[full_name identification_number phone status created_at],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "full_name" => "customers.full_name",
+        "identification_number" => "customers.identification_number",
+        "phone" => "customers.phone",
+        "status" => "customers.status",
+        "created_at" => "customers.created_at"
+      }
+      @customers = policy_scope(Customer).order(sort_order_sql(column_mapping))
 
       # Filter by status if provided
       @customers = @customers.where(status: params[:status]) if params[:status].present?

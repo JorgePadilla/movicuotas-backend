@@ -2,10 +2,22 @@
 
 module Admin
   class AuditLogsController < ApplicationController
+    include Sortable
+
     def index
       authorize :audit_log, :index?
 
-      @audit_logs = policy_scope(AuditLog).includes(:user).order(created_at: :desc)
+      set_sort_params(
+        allowed_columns: %w[created_at action resource_type],
+        default_column: "created_at"
+      )
+
+      column_mapping = {
+        "created_at" => "audit_logs.created_at",
+        "action" => "audit_logs.action",
+        "resource_type" => "audit_logs.resource_type"
+      }
+      @audit_logs = policy_scope(AuditLog).includes(:user).order(sort_order_sql(column_mapping))
 
       # Filter by user
       if params[:user_id].present?

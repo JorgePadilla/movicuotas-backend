@@ -90,225 +90,230 @@
     </div>
   </div>
 
-  <!-- Mobile Card View -->
-  <div class="block lg:hidden space-y-4">
-    <% if @devices.any? %>
-      <% @devices.each do |device| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 device-row" data-device-id="<%= device.id %>">
-          <div class="flex justify-between items-start mb-3">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()">
+  <%= turbo_frame_tag "overdue_devices_table" do %>
+    <!-- Mobile Card View -->
+    <div class="block lg:hidden space-y-4">
+      <% if @devices.any? %>
+        <% @devices.each do |device| %>
+          <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 device-row hover:bg-blue-50 cursor-pointer transition-colors" data-device-id="<%= device.id %>" onclick="Turbo.visit('<%= supervisor_overdue_device_path(device) %>')">
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()" onclick="event.stopPropagation()">
+                <div>
+                  <p class="font-bold text-gray-900"><%= device.customer_name %></p>
+                  <p class="text-xs text-gray-500"><%= device.contract_number %></p>
+                </div>
+              </div>
+              <% if device.lock_status == "locked" %>
+                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Bloqueado</span>
+              <% elsif device.lock_status == "pending" %>
+                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
+              <% else %>
+                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Activo</span>
+              <% end %>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-sm mb-3">
               <div>
-                <p class="font-bold text-gray-900"><%= device.customer_name %></p>
-                <p class="text-xs text-gray-500"><%= device.contract_number %></p>
+                <span class="text-gray-500 text-xs">Dispositivo</span>
+                <p class="text-gray-700 truncate"><%= "#{device.brand} #{device.model}".truncate(18) %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">IMEI</span>
+                <p class="font-mono text-gray-700">...<%= device.imei[-5..] %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Cuotas Mora</span>
+                <p class="font-bold text-red-600"><%= device.overdue_count %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Días Atraso</span>
+                <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
+                  <%= device.days_overdue %> días
+                </span>
               </div>
             </div>
-            <% if device.lock_status == "locked" %>
-              <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Bloqueado</span>
-            <% elsif device.lock_status == "pending" %>
-              <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Pendiente</span>
-            <% else %>
-              <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Activo</span>
-            <% end %>
-          </div>
 
-          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-            <div>
-              <span class="text-gray-500 text-xs">Dispositivo</span>
-              <p class="text-gray-700 truncate"><%= "#{device.brand} #{device.model}".truncate(18) %></p>
+            <div class="bg-red-50 rounded-lg p-2 mb-3">
+              <span class="text-xs text-gray-500">Monto Adeudado</span>
+              <p class="text-lg font-bold text-red-600">L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %></p>
             </div>
-            <div>
-              <span class="text-gray-500 text-xs">IMEI</span>
-              <p class="font-mono text-gray-700">...<%= device.imei[-5..] %></p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Cuotas Mora</span>
-              <p class="font-bold text-red-600"><%= device.overdue_count %></p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Días Atraso</span>
-              <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
-                <%= device.days_overdue %> días
-              </span>
-            </div>
-          </div>
 
-          <div class="bg-red-50 rounded-lg p-2 mb-3">
-            <span class="text-xs text-gray-500">Monto Adeudado</span>
-            <p class="text-lg font-bold text-red-600">L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %></p>
+            <div class="pt-3 border-t border-gray-100 flex justify-end items-center">
+              <% if device.lock_status == "unlocked" %>
+                <%= link_to "Bloquear", block_supervisor_overdue_device_path(device), class: "text-red-600 hover:underline text-sm font-medium", onclick: "event.stopPropagation()" %>
+              <% end %>
+            </div>
           </div>
-
-          <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
-            <%= link_to "Ver Detalles", supervisor_overdue_device_path(device), class: "text-[#125282] hover:underline text-sm font-medium" %>
-            <% if device.lock_status == "unlocked" %>
-              <%= link_to "Bloquear", block_supervisor_overdue_device_path(device), class: "text-red-600 hover:underline text-sm font-medium" %>
-            <% end %>
-          </div>
+        <% end %>
+      <% else %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
+          <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
+          <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
         </div>
       <% end %>
-    <% else %>
-      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
-        <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Desktop Table View -->
-  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <% if @devices.any? %>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200" id="devices-table">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <input type="checkbox" id="select-all" onchange="toggleAllSelections()" class="rounded border-gray-300">
-              </th>
-              <%
-                # Helper for supervisor overdue sort headers (uses sort/order params)
-                overdue_sort_params = request.query_parameters.except("page")
-              %>
-              <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'customer_name' ? 'text-[#125282]' : 'text-gray-500' %>">
-                <% new_order = (@sort_column == "customer_name" && @sort_order == "ASC") ? "DESC" : "ASC" %>
-                <%= link_to url_for(overdue_sort_params.merge(sort: "customer_name", order: new_order)), class: "flex items-center gap-1" do %>
-                  Cliente
-                  <span class="text-[10px]"><%= @sort_column == "customer_name" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
-                <% end %>
-              </th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-              <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'total_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
-                <% new_order = (@sort_column == "total_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
-                <%= link_to url_for(overdue_sort_params.merge(sort: "total_overdue", order: new_order)), class: "flex items-center justify-end gap-1" do %>
-                  Monto
-                  <span class="text-[10px]"><%= @sort_column == "total_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
-                <% end %>
-              </th>
-              <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'days_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
-                <% new_order = (@sort_column == "days_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
-                <%= link_to url_for(overdue_sort_params.merge(sort: "days_overdue", order: new_order)), class: "flex items-center justify-end gap-1" do %>
-                  Días
-                  <span class="text-[10px]"><%= @sort_column == "days_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
-                <% end %>
-              </th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @devices.each do |device| %>
-              <tr class="hover:bg-gray-50 device-row" data-device-id="<%= device.id %>">
-                <td class="px-4 py-4 whitespace-nowrap">
-                  <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()">
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  <%= device.customer_name %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
-                  <%= device.imei[-5..] %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= "#{device.brand} #{device.model}".truncate(20) %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
-                  <%= device.contract_number %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <%= device.overdue_count %>
-                  </span>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
-                  L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-right">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
-                    <%= device.days_overdue %> días
-                  </span>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm">
-                  <% if device.lock_status == "locked" %>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      Bloqueado
-                    </span>
-                  <% elsif device.lock_status == "pending" %>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      Pendiente
-                    </span>
-                  <% else %>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Activo
-                    </span>
-                  <% end %>
-                </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
-                  <%= link_to "Ver", supervisor_overdue_device_path(device), class: "text-[#125282] hover:underline font-medium" %>
-                  <% if device.lock_status == "unlocked" %>
-                    <%= link_to "Bloquear", block_supervisor_overdue_device_path(device), class: "text-red-600 hover:underline font-medium" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% else %>
-      <div class="px-6 py-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
-        <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Pagination -->
-  <% if @devices.respond_to?(:total_pages) && @devices.total_pages > 1 %>
-    <div class="mt-6 flex flex-col items-center gap-4">
-      <!-- Mobile Pagination -->
-      <div class="flex lg:hidden items-center gap-3">
-        <% if @devices.first_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
-        <% else %>
-          <%= link_to "← Anterior", supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
-              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
-
-        <span class="text-sm text-gray-600"><%= @devices.current_page %> / <%= @devices.total_pages %></span>
-
-        <% if @devices.last_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
-        <% else %>
-          <%= link_to "Siguiente →", supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
-              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
-      </div>
-
-      <!-- Desktop Pagination -->
-      <div class="hidden lg:flex items-center gap-2">
-        <% unless @devices.first_page? %>
-          <%= link_to "← Anterior", supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
-              class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
-        <% end %>
-
-        <span class="px-3 py-2 text-sm text-gray-600">Página <%= @devices.current_page %> de <%= @devices.total_pages %></span>
-
-        <% unless @devices.last_page? %>
-          <%= link_to "Siguiente →", supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
-              class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
-        <% end %>
-      </div>
-
-      <p class="text-sm text-gray-500">
-        Mostrando <%= @devices.offset_value + 1 %> a <%= [@devices.offset_value + @devices.size, @devices.total_count].min %> de <%= @devices.total_count %> dispositivos
-      </p>
     </div>
+
+    <!-- Desktop Table View -->
+    <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+      <% if @devices.any? %>
+        <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">Haz clic en cualquier fila para ver los detalles del dispositivo</p>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200" id="devices-table">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input type="checkbox" id="select-all" onchange="toggleAllSelections()" class="rounded border-gray-300">
+                </th>
+                <%
+                  # Helper for supervisor overdue sort headers (uses sort/order params)
+                  overdue_sort_params = request.query_parameters.except("page")
+                %>
+                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'customer_name' ? 'text-[#125282]' : 'text-gray-500' %>">
+                  <% new_order = (@sort_column == "customer_name" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                  <%= link_to url_for(overdue_sort_params.merge(sort: "customer_name", order: new_order)), class: "flex items-center gap-1", data: { turbo_frame: "overdue_devices_table" } do %>
+                    Cliente
+                    <span class="text-[10px]"><%= @sort_column == "customer_name" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                  <% end %>
+                </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IMEI</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+                <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'total_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
+                  <% new_order = (@sort_column == "total_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                  <%= link_to url_for(overdue_sort_params.merge(sort: "total_overdue", order: new_order)), class: "flex items-center justify-end gap-1", data: { turbo_frame: "overdue_devices_table" } do %>
+                    Monto
+                    <span class="text-[10px]"><%= @sort_column == "total_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                  <% end %>
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-[#125282] select-none <%= @sort_column == 'days_overdue' ? 'text-[#125282]' : 'text-gray-500' %>">
+                  <% new_order = (@sort_column == "days_overdue" && @sort_order == "ASC") ? "DESC" : "ASC" %>
+                  <%= link_to url_for(overdue_sort_params.merge(sort: "days_overdue", order: new_order)), class: "flex items-center justify-end gap-1", data: { turbo_frame: "overdue_devices_table" } do %>
+                    Días
+                    <span class="text-[10px]"><%= @sort_column == "days_overdue" ? (@sort_order == "ASC" ? "\u25B2" : "\u25BC") : "\u25B2\u25BC" %></span>
+                  <% end %>
+                </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @devices.each do |device| %>
+                <tr class="hover:bg-blue-50 cursor-pointer transition-colors device-row" data-device-id="<%= device.id %>" onclick="Turbo.visit('<%= supervisor_overdue_device_path(device) %>')">
+                  <td class="px-4 py-4 whitespace-nowrap" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="device-checkbox rounded border-gray-300" value="<%= device.id %>" onchange="updateBulkActionsUI()">
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <%= device.customer_name %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
+                    <%= device.imei[-5..] %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <%= "#{device.brand} #{device.model}".truncate(20) %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-mono text-xs">
+                    <%= device.contract_number %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <%= device.overdue_count %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-right text-red-600">
+                    L. <%= number_with_precision(device.total_overdue || 0, precision: 2) %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= device.days_overdue > 30 ? 'bg-red-100 text-red-800' : device.days_overdue > 15 ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800' %>">
+                      <%= device.days_overdue %> días
+                    </span>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm">
+                    <% if device.lock_status == "locked" %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Bloqueado
+                      </span>
+                    <% elsif device.lock_status == "pending" %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Pendiente
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Activo
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2" onclick="event.stopPropagation()">
+                    <% if device.lock_status == "unlocked" %>
+                      <%= link_to "Bloquear", block_supervisor_overdue_device_path(device), class: "text-red-600 hover:underline font-medium" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="px-6 py-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-lg font-medium text-gray-900 mb-2">No hay dispositivos en mora</p>
+          <p class="text-gray-600 text-sm">No se encontraron dispositivos que coincidan con los filtros.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Pagination -->
+    <% if @devices.respond_to?(:total_pages) && @devices.total_pages > 1 %>
+      <div class="mt-6 flex flex-col items-center gap-4">
+        <!-- Mobile Pagination -->
+        <div class="flex lg:hidden items-center gap-3">
+          <% if @devices.first_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">&larr; Anterior</span>
+          <% else %>
+            <%= link_to "&larr; Anterior".html_safe, supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+                class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm",
+                data: { turbo_frame: "overdue_devices_table" } %>
+          <% end %>
+
+          <span class="text-sm text-gray-600"><%= @devices.current_page %> / <%= @devices.total_pages %></span>
+
+          <% if @devices.last_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente &rarr;</span>
+          <% else %>
+            <%= link_to "Siguiente &rarr;".html_safe, supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+                class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm",
+                data: { turbo_frame: "overdue_devices_table" } %>
+          <% end %>
+        </div>
+
+        <!-- Desktop Pagination -->
+        <div class="hidden lg:flex items-center gap-2">
+          <% unless @devices.first_page? %>
+            <%= link_to "&larr; Anterior".html_safe, supervisor_overdue_devices_path(page: @devices.current_page - 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+                class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm",
+                data: { turbo_frame: "overdue_devices_table" } %>
+          <% end %>
+
+          <span class="px-3 py-2 text-sm text-gray-600">Página <%= @devices.current_page %> de <%= @devices.total_pages %></span>
+
+          <% unless @devices.last_page? %>
+            <%= link_to "Siguiente &rarr;".html_safe, supervisor_overdue_devices_path(page: @devices.current_page + 1, days_range: params[:days_range], branch: params[:branch], customer: params[:customer]),
+                class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm",
+                data: { turbo_frame: "overdue_devices_table" } %>
+          <% end %>
+        </div>
+
+        <p class="text-sm text-gray-500">
+          Mostrando <%= @devices.offset_value + 1 %> a <%= [@devices.offset_value + @devices.size, @devices.total_count].min %> de <%= @devices.total_count %> dispositivos
+        </p>
+      </div>
+    <% end %>
   <% end %>
 </div>
 

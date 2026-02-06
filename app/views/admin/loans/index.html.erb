@@ -36,11 +36,12 @@
     <% end %>
   </div>
 
+  <%= turbo_frame_tag "loans_table" do %>
   <!-- Mobile: Card view -->
   <div class="block lg:hidden space-y-4">
     <% if @loans.any? %>
       <% @loans.each do |loan| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="Turbo.visit('<%= admin_loan_path(loan) %>')">
           <!-- Header: Contract + Status -->
           <div class="flex justify-between items-start mb-3">
             <div class="flex-1 min-w-0 mr-3">
@@ -76,9 +77,6 @@
 
           <!-- Actions -->
           <div class="pt-3 border-t border-gray-100 flex gap-2">
-            <%= link_to admin_loan_path(loan), class: "flex-1 text-center bg-[#125282] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#0f4670] transition-colors" do %>
-              Ver Detalles
-            <% end %>
             <% if current_user.master? %>
               <%= link_to "Eliminar", admin_loan_path(loan), data: { turbo_method: :delete, turbo_confirm: "¿Eliminar préstamo #{loan.contract_number}?" }, class: "px-4 text-center bg-red-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors" %>
             <% end %>
@@ -94,25 +92,31 @@
 
   <!-- Desktop: Table view -->
   <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+    <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Haz clic en cualquier fila para ver los detalles del préstamo
+    </p>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <%= sortable_header :contract_number, "Contrato", px: 4 %>
-            <%= sortable_header :customer_name, "Cliente", px: 4 %>
-            <%= sortable_header :branch_number, "Sucursal", px: 4 %>
-            <%= sortable_header :total_amount, "Monto Total", px: 4 %>
+            <%= sortable_header :contract_number, "Contrato", px: 4, turbo_frame: "loans_table" %>
+            <%= sortable_header :customer_name, "Cliente", px: 4, turbo_frame: "loans_table" %>
+            <%= sortable_header :branch_number, "Sucursal", px: 4, turbo_frame: "loans_table" %>
+            <%= sortable_header :total_amount, "Monto Total", px: 4, turbo_frame: "loans_table" %>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
-            <%= sortable_header :status, "Estado", px: 4 %>
+            <%= sortable_header :status, "Estado", px: 4, turbo_frame: "loans_table" %>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <% if current_user.master? %>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <% end %>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @loans.any? %>
             <% @loans.each do |loan| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="Turbo.visit('<%= admin_loan_path(loan) %>')">
                 <td class="px-4 py-4 whitespace-nowrap">
                   <span class="font-medium text-[#125282]"><%= loan.contract_number %></span>
                 </td>
@@ -134,28 +138,20 @@
                 <td class="px-4 py-4 whitespace-nowrap text-sm">
                   <span class="font-medium"><%= loan.paid_installments_count %></span>/<span class="text-gray-600"><%= loan.number_of_installments %></span>
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm">
-                  <div class="flex items-center gap-3">
-                    <%= link_to admin_loan_path(loan), class: "text-[#125282] hover:text-[#0f4670] transition-colors", title: "Ver detalles" do %>
+                <% if current_user.master? %>
+                  <td class="px-4 py-4 whitespace-nowrap text-sm" onclick="event.stopPropagation()">
+                    <%= link_to admin_loan_path(loan), data: { turbo_method: :delete, turbo_confirm: "¿Eliminar préstamo #{loan.contract_number}? Esta acción no se puede deshacer." }, class: "text-red-600 hover:text-red-700 transition-colors", title: "Eliminar" do %>
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                       </svg>
                     <% end %>
-                    <% if current_user.master? %>
-                      <%= link_to admin_loan_path(loan), data: { turbo_method: :delete, turbo_confirm: "¿Eliminar préstamo #{loan.contract_number}? Esta acción no se puede deshacer." }, class: "text-red-600 hover:text-red-700 transition-colors", title: "Eliminar" do %>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                      <% end %>
-                    <% end %>
-                  </div>
-                </td>
+                  </td>
+                <% end %>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="9" class="px-4 py-8 text-center text-gray-500">
+              <td colspan="<%= current_user.master? ? 9 : 8 %>" class="px-4 py-8 text-center text-gray-500">
                 No hay préstamos que coincidan con tu búsqueda
               </td>
             </tr>
@@ -167,19 +163,20 @@
 
   <!-- Pagination -->
   <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
+    <% pagination_params = { status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction] }.compact_blank %>
     <div class="mt-6 mb-4 sm:mb-6">
       <!-- Mobile pagination -->
       <div class="flex sm:hidden justify-between items-center gap-2">
         <% if @loans.first_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "← Anterior", admin_loans_path(pagination_params.merge(page: @loans.current_page - 1)), data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
         <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
         <% if @loans.last_page? %>
           <span class="px-3 py-2 text-gray-400 text-sm">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
+          <%= link_to "Siguiente →", admin_loans_path(pagination_params.merge(page: @loans.current_page + 1)), data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg text-sm font-medium" %>
         <% end %>
       </div>
 
@@ -188,14 +185,14 @@
         <% if @loans.first_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
         <% else %>
-          <%= link_to "← Anterior", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "← Anterior", admin_loans_path(pagination_params.merge(page: @loans.current_page - 1)), data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
         <div class="flex items-center gap-1">
           <% (1..@loans.total_pages).each do |page| %>
             <% if page == @loans.current_page %>
               <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
             <% elsif (page - @loans.current_page).abs <= 1 || page == 1 || page == @loans.total_pages %>
-              <%= link_to page, admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <%= link_to page, admin_loans_path(pagination_params.merge(page: page)), data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
             <% elsif page == 2 && @loans.current_page > 3 %>
               <span class="px-2 py-2 text-gray-500">...</span>
             <% elsif page == @loans.total_pages - 1 && @loans.current_page < @loans.total_pages - 2 %>
@@ -206,13 +203,14 @@
         <% if @loans.last_page? %>
           <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
         <% else %>
-          <%= link_to "Siguiente →", admin_loans_path(status: params[:status], branch: params[:branch], search: params[:search], sort: params[:sort], direction: params[:direction], page: @loans.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <%= link_to "Siguiente →", admin_loans_path(pagination_params.merge(page: @loans.current_page + 1)), data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
         <% end %>
       </div>
     </div>
     <div class="text-center text-xs sm:text-sm text-gray-500 mb-6">
       Página <%= @loans.current_page %> de <%= @loans.total_pages %> • <%= @loans.size %> de <%= @loans.total_count %> préstamos
     </div>
+  <% end %>
   <% end %>
 
   <!-- Summary stats -->

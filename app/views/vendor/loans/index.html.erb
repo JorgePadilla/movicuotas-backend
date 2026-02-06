@@ -126,106 +126,107 @@
     <% end %>
   </div>
 
-  <!-- Mobile Card View -->
-  <div class="block lg:hidden space-y-3">
-    <% if @loans.any? %>
-      <% @loans.each do |loan| %>
-        <%= render "loan_mobile_card", loan: loan %>
+  <%= turbo_frame_tag "loans_table" do %>
+    <!-- Mobile Card View -->
+    <div class="block lg:hidden space-y-3">
+      <% if @loans.any? %>
+        <% @loans.each do |loan| %>
+          <%= render "loan_mobile_card", loan: loan %>
+        <% end %>
+      <% else %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p class="text-lg font-medium text-gray-900 mb-2">No hay préstamos registrados</p>
+          <p class="text-gray-600 text-sm mb-4">Comienza una nueva búsqueda de cliente para iniciar un préstamo.</p>
+          <%= link_to "Nueva Búsqueda", vendor_customer_search_path, data: { turbo_frame: "_top" }, class: "inline-block px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+        </div>
       <% end %>
-    <% else %>
-      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <p class="text-lg font-medium text-gray-900 mb-2">No hay préstamos registrados</p>
-        <p class="text-gray-600 text-sm mb-4">Comienza una nueva búsqueda de cliente para iniciar un préstamo.</p>
-        <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "inline-block px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-      </div>
-    <% end %>
-  </div>
+    </div>
 
-  <!-- Desktop Table View -->
-  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
-      <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      Haz clic en cualquier fila para ver los detalles del préstamo
-    </p>
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <%= sortable_header :created_at, "Creado" %>
-          <%= sortable_header :contract_number, "Contrato" %>
-          <%= sortable_header :customer_name, "Cliente" %>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
-          <%= sortable_header :total_amount, "Monto" %>
-          <%= sortable_header :status, "Estado" %>
-          <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
-          <%= sortable_header :next_due_date, "Próx. Venc." %>
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        <% if @loans.any? %>
-          <% @loans.each do |loan| %>
-            <%= render "loan_desktop_row", loan: loan %>
-          <% end %>
-        <% else %>
+    <!-- Desktop Table View -->
+    <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+      <p class="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+        <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Haz clic en cualquier fila para ver los detalles del préstamo
+      </p>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
           <tr>
-            <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+            <%= sortable_header :created_at, "Creado", turbo_frame: "loans_table" %>
+            <%= sortable_header :contract_number, "Contrato", turbo_frame: "loans_table" %>
+            <%= sortable_header :customer_name, "Cliente", turbo_frame: "loans_table" %>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
+            <%= sortable_header :total_amount, "Monto", turbo_frame: "loans_table" %>
+            <%= sortable_header :status, "Estado", turbo_frame: "loans_table" %>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
+            <%= sortable_header :next_due_date, "Próx. Venc.", turbo_frame: "loans_table" %>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @loans.any? %>
+            <% @loans.each do |loan| %>
+              <%= render "loan_desktop_row", loan: loan %>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                 <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
                 <p class="text-lg font-medium text-gray-900 mb-2">No hay préstamos registrados</p>
                 <p class="text-gray-600 mb-4">Comienza una nueva búsqueda de cliente para iniciar un préstamo.</p>
-                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, class: "inline-block px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+                <%= link_to "Nueva Búsqueda", vendor_customer_search_path, data: { turbo_frame: "_top" }, class: "inline-block px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
               </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
-    <% pagination_params = { search: params[:search], status: @status_filter, cuotas: @cuotas_filter, device_status: @device_status_filter, sort: params[:sort], direction: params[:direction] }.compact_blank %>
-    <div class="mt-6 flex flex-col items-center gap-4">
-      <!-- Mobile Pagination -->
-      <div class="flex lg:hidden items-center gap-3">
-        <% if @loans.first_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
-        <% else %>
-          <%= link_to "← Anterior", vendor_loans_path(pagination_params.merge(page: @loans.current_page - 1)),
-              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
+    <!-- Pagination -->
+    <% if @loans.respond_to?(:total_pages) && @loans.total_pages > 1 %>
+      <% pagination_params = { search: params[:search], status: @status_filter, cuotas: @cuotas_filter, device_status: @device_status_filter, sort: params[:sort], direction: params[:direction] }.compact_blank %>
+      <div class="mt-6 flex flex-col items-center gap-4">
+        <!-- Mobile Pagination -->
+        <div class="flex lg:hidden items-center gap-3">
+          <% if @loans.first_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+          <% else %>
+            <%= link_to "← Anterior", vendor_loans_path(pagination_params.merge(page: @loans.current_page - 1)),
+                data: { turbo_frame: "loans_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <% end %>
 
-        <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
+          <span class="text-sm text-gray-600"><%= @loans.current_page %> / <%= @loans.total_pages %></span>
 
-        <% if @loans.last_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
-        <% else %>
-          <%= link_to "Siguiente →", vendor_loans_path(pagination_params.merge(page: @loans.current_page + 1)),
-              class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
+          <% if @loans.last_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+          <% else %>
+            <%= link_to "Siguiente →", vendor_loans_path(pagination_params.merge(page: @loans.current_page + 1)),
+                data: { turbo_frame: "loans_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <% end %>
+        </div>
+
+        <!-- Desktop Pagination -->
+        <div class="hidden lg:flex items-center gap-2">
+          <% unless @loans.first_page? %>
+            <%= link_to "← Anterior", vendor_loans_path(pagination_params.merge(page: @loans.current_page - 1)),
+                data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
+          <% end %>
+
+          <span class="px-3 py-2 text-sm text-gray-600">Página <%= @loans.current_page %> de <%= @loans.total_pages %></span>
+
+          <% unless @loans.last_page? %>
+            <%= link_to "Siguiente →", vendor_loans_path(pagination_params.merge(page: @loans.current_page + 1)),
+                data: { turbo_frame: "loans_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
+          <% end %>
+        </div>
+
+        <p class="text-sm text-gray-500">
+          Mostrando <%= @loans.offset_value + 1 %> a <%= [@loans.offset_value + @loans.size, @loans.total_count].min %> de <%= @loans.total_count %> préstamos
+        </p>
       </div>
-
-      <!-- Desktop Pagination -->
-      <div class="hidden lg:flex items-center gap-2">
-        <% unless @loans.first_page? %>
-          <%= link_to "← Anterior", vendor_loans_path(pagination_params.merge(page: @loans.current_page - 1)),
-              class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm" %>
-        <% end %>
-
-        <span class="px-3 py-2 text-sm text-gray-600">Página <%= @loans.current_page %> de <%= @loans.total_pages %></span>
-
-        <% unless @loans.last_page? %>
-          <%= link_to "Siguiente →", vendor_loans_path(pagination_params.merge(page: @loans.current_page + 1)),
-              class: "px-3 py-2 bg-[#125282] text-white rounded-lg hover:bg-[#125282]/90 text-sm" %>
-        <% end %>
-      </div>
-
-      <p class="text-sm text-gray-500">
-        Mostrando <%= @loans.offset_value + 1 %> a <%= [@loans.offset_value + @loans.size, @loans.total_count].min %> de <%= @loans.total_count %> préstamos
-      </p>
-    </div>
+    <% end %>
   <% end %>
 </div>

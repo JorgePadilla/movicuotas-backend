@@ -24,6 +24,19 @@ module Supervisor
           recent_locked: Device.locked.joins(:lock_states)
             .where("device_lock_states.status = 'locked' AND device_lock_states.confirmed_at >= ?", 7.days.ago)
             .distinct.count
+        },
+        pending_verifications: Payment.pending_verification.count,
+        recent_blocks: DeviceLockState.locked_states
+          .includes(device: { loan: :customer }, initiated_by: [])
+          .order(created_at: :desc)
+          .limit(5),
+        today_payments: {
+          count: Payment.verified.where(payment_date: Date.current).count,
+          amount: Payment.verified.where(payment_date: Date.current).sum(:amount).to_f
+        },
+        this_month_payments: {
+          count: Payment.verified.where(payment_date: Date.current.all_month).count,
+          amount: Payment.verified.where(payment_date: Date.current.all_month).sum(:amount).to_f
         }
       }
     end

@@ -96,150 +96,100 @@
     </div>
   </div>
 
-  <!-- Mobile Card View -->
-  <div class="block lg:hidden space-y-4">
-    <% if @payments.any? %>
-      <% @payments.each do |payment| %>
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <p class="font-bold text-gray-900"><%= payment.loan.customer.full_name %></p>
-              <p class="text-xs text-gray-500"><%= payment.loan.customer.identification_number %></p>
-            </div>
-            <span class="px-2 py-1 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
-              <%= verification_status_es(payment.verification_status) %>
-            </span>
-          </div>
+  <%
+    current_sort = params[:sort].to_s
+    current_dir = params[:direction].to_s
+    preserved = { status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search] }
+  %>
 
-          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-            <% mobile_installments = payment.installments.order(:due_date) %>
-            <% mobile_earliest_due = mobile_installments.first&.due_date %>
-            <div>
-              <span class="text-gray-500 text-xs">Contrato</span>
-              <p class="font-medium text-[#125282]"><%= payment.loan.contract_number %></p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Cuota(s)</span>
-              <p class="font-medium text-gray-900">
-                <% mobile_installment_nums = mobile_installments.pluck(:installment_number) %>
-                <%= mobile_installment_nums.any? ? mobile_installment_nums.map { |n| "##{n}" }.join(", ") : "—" %>
-              </p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Monto</span>
-              <p class="font-bold text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Vencimiento</span>
-              <% if mobile_earliest_due %>
-                <% mobile_is_overdue = mobile_earliest_due < Date.today %>
-                <p class="<%= mobile_is_overdue ? 'text-red-600 font-semibold' : 'text-gray-700' %>">
-                  <%= mobile_earliest_due.strftime("%d/%m/%Y") %>
-                  <% if mobile_is_overdue %><span class="text-xs">(vencido)</span><% end %>
-                </p>
-              <% else %>
-                <p class="text-gray-400">—</p>
-              <% end %>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Fecha Pago</span>
-              <p class="text-gray-700"><%= payment.payment_date.strftime("%d/%m/%Y") %></p>
-            </div>
-            <div>
-              <span class="text-gray-500 text-xs">Método</span>
-              <span class="inline-block px-2 py-0.5 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
-                <%= payment_method_es(payment.payment_method) %>
-              </span>
-            </div>
-          </div>
-
-          <% if payment.reference_number.present? %>
-            <p class="text-xs text-gray-500 mb-3">Ref: <%= payment.reference_number %></p>
-          <% end %>
-
-          <div class="pt-3 border-t border-gray-100">
-            <%= link_to "Ver Detalles →", admin_payment_path(payment), class: "text-[#125282] hover:underline text-sm font-medium" %>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
-        No hay pagos que coincidan con tu búsqueda
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Desktop Table View -->
-  <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
+  <%= turbo_frame_tag "payments_table" do %>
+    <!-- Desktop Table View -->
+    <div class="hidden lg:block bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+      <table class="w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrato</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuota</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <% [
+              ["date", "Fecha"],
+              [nil, "Cliente"],
+              [nil, "Contrato / Cuota"],
+              ["due_date", "Vencimiento"],
+              ["amount", "Monto"],
+              ["method", "Metodo"],
+              ["status", "Estado"],
+            ].each do |col, label| %>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <% if col %>
+                  <% next_dir = (current_sort == col && current_dir != "desc") ? "desc" : "asc" %>
+                  <%= link_to admin_payments_path(preserved.merge(sort: col, direction: next_dir)), data: { turbo_frame: "payments_table" }, class: "hover:text-[#125282] inline-flex items-center gap-1 group" do %>
+                    <%= label %>
+                    <% if current_sort == col %>
+                      <svg class="w-3.5 h-3.5 text-[#125282]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <% if current_dir == "desc" %>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        <% else %>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/>
+                        <% end %>
+                      </svg>
+                    <% else %>
+                      <svg class="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                      </svg>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <%= label %>
+                <% end %>
+              </th>
+            <% end %>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <% if @payments.any? %>
             <% @payments.each do |payment| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
+              <tr class="hover:bg-blue-50 cursor-pointer transition-colors" data-turbo-frame="_top" onclick="Turbo.visit('<%= admin_payment_path(payment) %>')">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900"><%= payment.payment_date.strftime("%d/%m/%Y") %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900"><%= payment.loan.customer.full_name %></div>
+                <td class="px-4 py-3">
+                  <div class="text-sm font-medium text-gray-900 truncate max-w-[180px]"><%= payment.loan.customer.full_name %></div>
                   <div class="text-xs text-gray-500"><%= payment.loan.customer.identification_number %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="font-medium text-[#125282]"><%= payment.loan.contract_number %></span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <% installments_data = payment.installments.order(:due_date) %>
                   <% installment_nums = installments_data.pluck(:installment_number) %>
-                  <span class="text-sm font-medium text-gray-900"><%= installment_nums.any? ? installment_nums.map { |n| "##{n}" }.join(", ") : "—" %></span>
+                  <div class="text-sm font-medium text-[#125282]"><%= payment.loan.contract_number %></div>
+                  <div class="text-xs text-gray-500"><%= installment_nums.any? ? installment_nums.map { |n| "##{n}" }.join(", ") : "—" %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 whitespace-nowrap">
                   <% earliest_due = installments_data.first&.due_date %>
                   <% if earliest_due %>
                     <% is_overdue = earliest_due < Date.today %>
                     <span class="text-sm <%= is_overdue ? 'text-red-600 font-semibold' : 'text-gray-900' %>">
                       <%= earliest_due.strftime("%d/%m/%Y") %>
-                      <% if is_overdue %>
-                        <span class="text-xs">(vencido)</span>
-                      <% end %>
+                      <% if is_overdue %><span class="text-xs">(vencido)</span><% end %>
                     </span>
                   <% else %>
                     <span class="text-sm text-gray-400">—</span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></div>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-bold text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-0.5 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
                     <%= payment_method_es(payment.payment_method) %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-0.5 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
                     <%= verification_status_es(payment.verification_status) %>
                   </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <%= link_to "Ver", admin_payment_path(payment), class: "text-[#125282] hover:underline font-medium" %>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+              <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                 No hay pagos que coincidan con tu búsqueda
               </td>
             </tr>
@@ -247,60 +197,130 @@
         </tbody>
       </table>
     </div>
-  </div>
 
-  <!-- Pagination -->
-  <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
-    <div class="mt-6 flex flex-col items-center gap-4">
-      <!-- Mobile Pagination -->
-      <div class="flex lg:hidden items-center gap-3">
-        <% if @payments.first_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
-        <% else %>
-          <%= link_to "← Anterior", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page - 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
+    <!-- Mobile Card View (inside turbo frame for sorting) -->
+    <div class="block lg:hidden space-y-4">
+      <% if @payments.any? %>
+        <% @payments.each do |payment| %>
+          <%= link_to admin_payment_path(payment), data: { turbo_frame: "_top" }, class: "block bg-white rounded-xl shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow" do %>
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <p class="font-bold text-gray-900"><%= payment.loan.customer.full_name %></p>
+                <p class="text-xs text-gray-500"><%= payment.loan.customer.identification_number %></p>
+              </div>
+              <span class="px-2 py-1 text-xs rounded-full <%= payment.verified? ? 'bg-green-100 text-green-800' : payment.pending? ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800' %>">
+                <%= verification_status_es(payment.verification_status) %>
+              </span>
+            </div>
 
-        <span class="text-sm text-gray-600"><%= @payments.current_page %> / <%= @payments.total_pages %></span>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+              <% mobile_installments = payment.installments.order(:due_date) %>
+              <% mobile_earliest_due = mobile_installments.first&.due_date %>
+              <div>
+                <span class="text-gray-500 text-xs">Contrato</span>
+                <p class="font-medium text-[#125282]"><%= payment.loan.contract_number %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Cuota(s)</span>
+                <p class="font-medium text-gray-900">
+                  <% mobile_installment_nums = mobile_installments.pluck(:installment_number) %>
+                  <%= mobile_installment_nums.any? ? mobile_installment_nums.map { |n| "##{n}" }.join(", ") : "—" %>
+                </p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Monto</span>
+                <p class="font-bold text-gray-900">L. <%= number_with_delimiter(payment.amount, delimiter: ',') %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Vencimiento</span>
+                <% if mobile_earliest_due %>
+                  <% mobile_is_overdue = mobile_earliest_due < Date.today %>
+                  <p class="<%= mobile_is_overdue ? 'text-red-600 font-semibold' : 'text-gray-700' %>">
+                    <%= mobile_earliest_due.strftime("%d/%m/%Y") %>
+                    <% if mobile_is_overdue %><span class="text-xs">(vencido)</span><% end %>
+                  </p>
+                <% else %>
+                  <p class="text-gray-400">—</p>
+                <% end %>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Fecha Pago</span>
+                <p class="text-gray-700"><%= payment.payment_date.strftime("%d/%m/%Y") %></p>
+              </div>
+              <div>
+                <span class="text-gray-500 text-xs">Método</span>
+                <span class="inline-block px-2 py-0.5 text-xs rounded-full <%= payment.cash? ? 'bg-purple-100 text-purple-800' : payment.transfer? ? 'bg-blue-100 text-blue-800' : payment.card? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= payment_method_es(payment.payment_method) %>
+                </span>
+              </div>
+            </div>
 
-        <% if @payments.last_page? %>
-          <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
-        <% else %>
-          <%= link_to "Siguiente →", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page + 1), class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
-        <% end %>
-      </div>
-
-      <!-- Desktop Pagination -->
-      <div class="hidden lg:flex items-center gap-2">
-        <% if @payments.first_page? %>
-          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
-        <% else %>
-          <%= link_to "← Anterior", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page - 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-        <% end %>
-
-        <div class="flex items-center gap-1">
-          <% (1..@payments.total_pages).each do |page| %>
-            <% if page == @payments.current_page %>
-              <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
-            <% elsif (page - @payments.current_page).abs <= 1 || page == 1 || page == @payments.total_pages %>
-              <%= link_to page, admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: page), class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
-            <% elsif page == 2 && @payments.current_page > 3 %>
-              <span class="px-2 py-2 text-gray-500">...</span>
-            <% elsif page == @payments.total_pages - 1 && @payments.current_page < @payments.total_pages - 2 %>
-              <span class="px-2 py-2 text-gray-500">...</span>
+            <% if payment.reference_number.present? %>
+              <p class="text-xs text-gray-500 mb-3">Ref: <%= payment.reference_number %></p>
             <% end %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-8 text-center text-gray-500">
+          No hay pagos que coincidan con tu búsqueda
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Pagination -->
+    <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
+      <% page_params = preserved.merge(sort: params[:sort], direction: params[:direction]) %>
+      <div class="mt-6 flex flex-col items-center gap-4">
+        <!-- Mobile Pagination -->
+        <div class="flex lg:hidden items-center gap-3">
+          <% if @payments.first_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">← Anterior</span>
+          <% else %>
+            <%= link_to "← Anterior", admin_payments_path(page_params.merge(page: @payments.current_page - 1)), data: { turbo_frame: "payments_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
+          <% end %>
+
+          <span class="text-sm text-gray-600"><%= @payments.current_page %> / <%= @payments.total_pages %></span>
+
+          <% if @payments.last_page? %>
+            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-lg text-sm">Siguiente →</span>
+          <% else %>
+            <%= link_to "Siguiente →", admin_payments_path(page_params.merge(page: @payments.current_page + 1)), data: { turbo_frame: "payments_table" }, class: "px-4 py-2 bg-[#125282] text-white rounded-lg font-medium text-sm" %>
           <% end %>
         </div>
 
-        <% if @payments.last_page? %>
-          <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
-        <% else %>
-          <%= link_to "Siguiente →", admin_payments_path(status: params[:status], method: params[:method], date_from: params[:date_from], date_to: params[:date_to], search: params[:search], page: @payments.current_page + 1), class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
-        <% end %>
-      </div>
+        <!-- Desktop Pagination -->
+        <div class="hidden lg:flex items-center gap-2">
+          <% if @payments.first_page? %>
+            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">← Anterior</span>
+          <% else %>
+            <%= link_to "← Anterior", admin_payments_path(page_params.merge(page: @payments.current_page - 1)), data: { turbo_frame: "payments_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <% end %>
 
-      <p class="text-sm text-gray-500">
-        Mostrando <%= @payments.size %> de <%= @payments.total_count %> pagos
-      </p>
-    </div>
+          <div class="flex items-center gap-1">
+            <% (1..@payments.total_pages).each do |page| %>
+              <% if page == @payments.current_page %>
+                <span class="px-3 py-2 bg-[#125282] text-white rounded-lg font-medium"><%= page %></span>
+              <% elsif (page - @payments.current_page).abs <= 1 || page == 1 || page == @payments.total_pages %>
+                <%= link_to page, admin_payments_path(page_params.merge(page: page)), data: { turbo_frame: "payments_table" }, class: "px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors" %>
+              <% elsif page == 2 && @payments.current_page > 3 %>
+                <span class="px-2 py-2 text-gray-500">...</span>
+              <% elsif page == @payments.total_pages - 1 && @payments.current_page < @payments.total_pages - 2 %>
+                <span class="px-2 py-2 text-gray-500">...</span>
+              <% end %>
+            <% end %>
+          </div>
+
+          <% if @payments.last_page? %>
+            <span class="px-3 py-2 text-gray-400 cursor-not-allowed">Siguiente →</span>
+          <% else %>
+            <%= link_to "Siguiente →", admin_payments_path(page_params.merge(page: @payments.current_page + 1)), data: { turbo_frame: "payments_table" }, class: "px-3 py-2 bg-[#125282] text-white rounded-lg font-medium hover:bg-[#0f4670] transition-colors" %>
+          <% end %>
+        </div>
+
+        <p class="text-sm text-gray-500">
+          Mostrando <%= @payments.size %> de <%= @payments.total_count %> pagos
+        </p>
+      </div>
+    <% end %>
   <% end %>
 </div>
