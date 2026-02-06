@@ -151,6 +151,8 @@ Rails.application.routes.draw do
         get :download_contract
         post :block_device
         post :unblock_device
+        post :verify_down_payment
+        post :reject_down_payment
       end
     end
     # MDM Blueprint (Step 16) and Checklist (Step 17)

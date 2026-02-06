@@ -91,6 +91,16 @@ class Loan < ApplicationRecord
     else
       update(status: "paid")
     end
+    recalculate_installment_counters!
+  end
+
+  def recalculate_installment_counters!
+    update_columns(
+      paid_installments_count: installments.paid.count,
+      overdue_installments_count: installments.overdue.count,
+      next_due_date: installments.pending.order(:due_date).pick(:due_date)
+    )
+    broadcast_loan_row_updates
   end
 
   # Down Payment Collection Methods
@@ -178,6 +188,18 @@ class Loan < ApplicationRecord
   end
 
   private
+
+  def broadcast_loan_row_updates
+    broadcast_replace_later_to "vendor_loans",
+      target: "mobile_loan_#{id}",
+      partial: "vendor/loans/loan_mobile_card",
+      locals: { loan: self }
+
+    broadcast_replace_later_to "vendor_loans",
+      target: "desktop_loan_#{id}",
+      partial: "vendor/loans/loan_desktop_row",
+      locals: { loan: self }
+  end
 
   def generate_contract_number
     # Format: {branch}-{date}-{sequence}

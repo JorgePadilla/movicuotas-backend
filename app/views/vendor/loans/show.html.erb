@@ -275,11 +275,13 @@
       </div>
     <% end %>
 
-    <% if @loan.down_payment_receipt.attached? %>
-      <div class="border-t border-gray-200 pt-4">
-        <h4 class="text-base font-semibold text-gray-900 mb-3">Comprobante de Depósito</h4>
+    <div class="border-t border-gray-200 pt-4">
+      <h4 class="text-base font-semibold text-gray-900 mb-3">Comprobante de Prima</h4>
+      <% if @loan.down_payment_receipt.attached? %>
         <div class="flex justify-center mb-3">
-          <%= image_tag @loan.down_payment_receipt, class: "max-w-full max-h-80 rounded-lg shadow border border-gray-200" %>
+          <%= link_to url_for(@loan.down_payment_receipt), target: "_blank" do %>
+            <%= image_tag url_for(@loan.down_payment_receipt), class: "max-w-full max-h-80 rounded-lg shadow border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity" %>
+          <% end %>
         </div>
         <div class="text-center">
           <%= link_to "Descargar Comprobante",
@@ -288,13 +290,37 @@
                       class: "text-sm text-[#125282] hover:underline font-medium",
                       target: "_blank" %>
         </div>
-      </div>
-    <% elsif @loan.down_payment_method == "deposit" %>
-      <div class="border-t border-gray-200 pt-4 text-center py-6">
-        <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <p class="mt-2 text-sm text-gray-500">No se encontró comprobante adjunto</p>
+      <% else %>
+        <div class="text-center py-6">
+          <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <p class="mt-2 text-sm text-gray-500">No se encontró comprobante adjunto</p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if policy(@loan).verify_down_payment? && @loan.down_payment_verification_status == "pending" %>
+      <div class="border-t border-gray-200 pt-4 mt-4">
+        <h4 class="text-base font-semibold text-gray-900 mb-3">Acción</h4>
+        <div class="flex flex-col md:flex-row gap-3">
+          <%= button_to "Aprobar Prima",
+                        verify_down_payment_vendor_loan_path(@loan),
+                        method: :post,
+                        class: "flex-1 px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors text-center",
+                        data: { turbo_confirm: "¿Está seguro de aprobar esta prima de L. #{number_with_delimiter(@loan.down_payment_amount, delimiter: ',')}?" } %>
+          <div class="flex-1">
+            <%= form_with url: reject_down_payment_vendor_loan_path(@loan), method: :post, class: "flex flex-col gap-2" do %>
+              <input type="text" name="reason" placeholder="Razón del rechazo (opcional)"
+                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm">
+              <button type="submit"
+                      class="w-full px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+                      data-turbo-confirm="¿Está seguro de rechazar esta prima?">
+                Rechazar Prima
+              </button>
+            <% end %>
+          </div>
+        </div>
       </div>
     <% end %>
   </div>

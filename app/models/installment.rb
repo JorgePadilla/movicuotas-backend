@@ -24,6 +24,7 @@ class Installment < ApplicationRecord
   # Callbacks
   before_save :update_status_based_on_due_date, if: -> { due_date_changed? || status_changed? }
   after_save :update_loan_status, if: -> { saved_change_to_status? }
+  after_destroy :recalculate_loan_counters
 
   # Methods
   def days_overdue
@@ -80,5 +81,9 @@ class Installment < ApplicationRecord
 
   def update_loan_status
     loan.update_status_based_on_installments
+  end
+
+  def recalculate_loan_counters
+    loan.recalculate_installment_counters!
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_053343) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_011248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -228,8 +228,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_053343) do
     t.date "end_date"
     t.decimal "financed_amount", precision: 10, scale: 2, null: false
     t.decimal "interest_rate", precision: 5, scale: 2, null: false
+    t.date "next_due_date"
     t.text "notes"
     t.integer "number_of_installments", null: false
+    t.integer "overdue_installments_count", default: 0, null: false
+    t.integer "paid_installments_count", default: 0, null: false
     t.date "start_date", null: false
     t.string "status", default: "active", null: false
     t.decimal "total_amount", precision: 10, scale: 2, null: false
@@ -241,6 +244,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_053343) do
     t.index ["credit_application_id"], name: "index_loans_on_credit_application_id"
     t.index ["customer_id"], name: "index_loans_on_customer_id"
     t.index ["down_payment_verification_status"], name: "index_loans_on_down_payment_verification_status"
+    t.index ["next_due_date"], name: "index_loans_on_next_due_date"
     t.index ["status"], name: "index_loans_on_status"
     t.index ["user_id"], name: "index_loans_on_user_id"
   end

@@ -1,0 +1,69 @@
+<% status_class = case loan.status
+  when 'active' then 'bg-green-100 text-green-800'
+  when 'completed', 'paid' then 'bg-blue-100 text-blue-800'
+  when 'overdue' then 'bg-red-100 text-red-800'
+  else 'bg-gray-100 text-gray-800'
+end %>
+<%= link_to vendor_loan_path(loan), id: "mobile_loan_#{loan.id}", class: "block bg-white rounded-xl shadow-md border border-gray-200 p-4 hover:border-[#125282] hover:shadow-lg transition-all" do %>
+  <div class="flex justify-between items-start mb-3">
+    <div>
+      <p class="font-bold text-gray-900"><%= loan.customer.full_name %></p>
+      <p class="text-xs text-gray-500"><%= loan.customer.identification_number %></p>
+    </div>
+    <span class="px-2 py-1 text-xs rounded-full font-medium <%= status_class %>">
+      <%= loan_status_es(loan.status) %>
+    </span>
+  </div>
+
+  <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+    <div>
+      <span class="text-gray-500 text-xs">Contrato</span>
+      <p class="font-medium text-[#125282]"><%= loan.contract_number %></p>
+    </div>
+    <div>
+      <span class="text-gray-500 text-xs">Monto</span>
+      <p class="font-bold text-gray-900">L. <%= number_with_delimiter(loan.total_amount.to_i, delimiter: ',') %></p>
+    </div>
+    <div>
+      <span class="text-gray-500 text-xs">Cuotas</span>
+      <p class="text-gray-700">
+        <%= loan.paid_installments_count %>/<%= loan.number_of_installments %>
+        <% if loan.overdue_installments_count > 0 %>
+          <span class="text-red-600 text-xs ml-1">(<%= loan.overdue_installments_count %> venc.)</span>
+        <% end %>
+      </p>
+    </div>
+    <div>
+      <span class="text-gray-500 text-xs">Próx. Vencimiento</span>
+      <% if loan.next_due_date %>
+        <% days = (loan.next_due_date - Date.today).to_i %>
+        <p class="<%= days <= 3 ? 'text-orange-600' : 'text-gray-700' %>">
+          <%= loan.next_due_date.strftime("%d/%m/%Y") %>
+        </p>
+      <% else %>
+        <p class="text-green-600 text-sm">✓ Completado</p>
+      <% end %>
+    </div>
+    <div>
+      <span class="text-gray-500 text-xs">Creado</span>
+      <p class="text-gray-700"><%= loan.created_at.strftime("%d/%m/%Y") %></p>
+    </div>
+  </div>
+
+  <% if loan.device %>
+    <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+      <div class="text-gray-500">
+        <span class="font-medium"><%= loan.device.phone_model.brand %> <%= loan.device.phone_model.model %></span>
+        <span class="text-gray-400 ml-1"><%= loan.device.imei %></span>
+      </div>
+      <% mdm_badge = case loan.device.lock_status
+        when 'locked' then { text: 'Bloqueado', bg: 'bg-red-100', color: 'text-red-700' }
+        when 'pending' then { text: 'Pendiente', bg: 'bg-yellow-100', color: 'text-yellow-700' }
+        else { text: 'Libre', bg: 'bg-green-100', color: 'text-green-700' }
+      end %>
+      <span class="px-2 py-0.5 text-xs font-medium rounded-full <%= mdm_badge[:bg] %> <%= mdm_badge[:color] %>">
+        <%= mdm_badge[:text] %>
+      </span>
+    </div>
+  <% end %>
+<% end %>

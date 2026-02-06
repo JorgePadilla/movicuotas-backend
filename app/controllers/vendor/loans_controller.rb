@@ -18,7 +18,7 @@ module Vendor
     # - loan_attributes: Payment calculator results (total_amount, down_payment_percentage, etc.)
 
     before_action :set_prerequisites, only: [ :create ]
-    before_action :set_loan, only: [ :show, :download_contract, :block_device, :unblock_device ]
+    before_action :set_loan, only: [ :show, :download_contract, :block_device, :unblock_device, :verify_down_payment, :reject_down_payment ]
 
     # GET /vendor/loans/new
     # This would be the entry point from Step 14 (contract signature)
@@ -74,16 +74,16 @@ module Vendor
     # Step 18: Loan Tracking Dashboard - List all loans for tracking
     def index
       authorize :loan, :index?
-      base_loans = policy_scope(Loan).includes(:customer, :device, :installments)
+      base_loans = policy_scope(Loan).includes(:customer, :device)
 
       # Calculate stats from unfiltered data
       @active_count = base_loans.where(status: "active").count
       @completed_count = base_loans.where(status: %w[paid completed]).count
-      @overdue_count = base_loans.joins(:installments).where(installments: { status: "overdue" }).distinct.count
+      @overdue_count = base_loans.where("overdue_installments_count > 0").count
 
       # Sort params
       set_sort_params(
-        allowed_columns: %w[contract_number customer_name total_amount status created_at],
+        allowed_columns: %w[contract_number customer_name total_amount status created_at next_due_date],
         default_column: "created_at"
       )
 
@@ -107,7 +107,8 @@ module Vendor
         "customer_name" => "customers.full_name",
         "total_amount" => "loans.total_amount",
         "status" => "loans.status",
-        "created_at" => "loans.created_at"
+        "created_at" => "loans.created_at",
+        "next_due_date" => "loans.next_due_date"
       }
       @loans = base_loans.left_joins(:customer).order(sort_order_sql(column_mapping))
 
@@ -210,6 +211,23 @@ module Vendor
       end
     end
 
+    # POST /vendor/loans/:id/verify_down_payment
+    def verify_down_payment
+      authorize @loan, :verify_down_payment?
+
+      @loan.verify_down_payment!(current_user)
+      redirect_to vendor_loan_path(@loan), notice: "Prima aprobada exitosamente."
+    end
+
+    # POST /vendor/loans/:id/reject_down_payment
+    def reject_down_payment
+      authorize @loan, :verify_down_payment?
+
+      reason = params[:reason].presence || "Comprobante inválido o ilegible"
+      @loan.reject_down_payment!(current_user, reason)
+      redirect_to vendor_loan_path(@loan), notice: "Prima rechazada. Razón: #{reason}"
+    end
+
     private
 
     def set_prerequisites
@@ -291,19 +309,13 @@ module Vendor
     def filter_loans_by_cuotas(loans, cuotas_filter)
       case cuotas_filter
       when "con_vencidas"
-        # Loans with at least one overdue installment
-        loans.joins(:installments).where(installments: { status: "overdue" }).distinct
+        loans.where("overdue_installments_count > 0")
       when "sin_vencidas"
-        # Loans without any overdue installments
-        loans.where.not(id: Loan.joins(:installments).where(installments: { status: "overdue" }).select(:id))
+        loans.where(overdue_installments_count: 0)
       when "proximas"
-        # Loans with installments due in the next 7 days
-        loans.joins(:installments)
-             .where(installments: { status: "pending", due_date: Date.current..7.days.from_now })
-             .distinct
+        loans.where(next_due_date: Date.current..7.days.from_now)
       when "pendientes"
-        # Loans with pending installments
-        loans.joins(:installments).where(installments: { status: "pending" }).distinct
+        loans.where.not(next_due_date: nil)
       else
         loans
       end
