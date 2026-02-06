@@ -88,7 +88,7 @@
       <div class="space-y-2 text-sm border-t border-gray-100 pt-3">
         <div class="flex justify-between">
           <span class="text-gray-500">Prima</span>
-          <span class="font-medium text-gray-900"><%= @loan.down_payment_percentage %>%</span>
+          <a href="#prima-info" class="font-medium text-[#125282] hover:underline"><%= @loan.down_payment_percentage %>% — L. <%= number_with_delimiter(@loan.down_payment_amount, delimiter: ',') %></a>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Financiado</span>
@@ -209,6 +209,95 @@
       </div>
     </div>
   <% end %>
+
+  <!-- Down payment info -->
+  <div id="prima-info" class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-semibold text-gray-900">Información de Prima</h3>
+      <% dp_status_class = case @loan.down_payment_verification_status
+        when 'verified' then 'bg-green-100 text-green-800'
+        when 'pending' then 'bg-yellow-100 text-yellow-800'
+        when 'rejected' then 'bg-red-100 text-red-800'
+        when 'not_required' then 'bg-green-100 text-green-800'
+        else 'bg-gray-100 text-gray-500'
+      end %>
+      <% dp_status_label = case @loan.down_payment_verification_status
+        when 'verified' then 'Aprobada'
+        when 'pending' then 'Pendiente de Aprobación'
+        when 'rejected' then 'Rechazada'
+        when 'not_required' then 'Aprobada (Efectivo)'
+        else 'Sin registrar'
+      end %>
+      <span class="px-3 py-1 text-sm rounded-full font-medium <%= dp_status_class %>"><%= dp_status_label %></span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-500">Monto de Prima</p>
+        <p class="text-lg font-bold text-[#125282]">L. <%= number_with_delimiter(@loan.down_payment_amount, delimiter: ',') %></p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-500">Porcentaje</p>
+        <p class="font-medium"><%= @loan.down_payment_percentage %>%</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-500">Método de Pago</p>
+        <p class="font-medium">
+          <% if @loan.down_payment_method == "cash" %>
+            Efectivo
+          <% elsif @loan.down_payment_method == "deposit" %>
+            Depósito / Transferencia
+          <% else %>
+            —
+          <% end %>
+        </p>
+      </div>
+    </div>
+
+    <% if @loan.down_payment_confirmed_at.present? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+        <div class="flex justify-between bg-gray-50 p-3 rounded-lg">
+          <span class="text-gray-500">Registrada por</span>
+          <span class="font-medium text-gray-900"><%= @loan.down_payment_confirmed_by&.full_name || "—" %></span>
+        </div>
+        <div class="flex justify-between bg-gray-50 p-3 rounded-lg">
+          <span class="text-gray-500">Fecha de registro</span>
+          <span class="font-medium text-gray-900"><%= @loan.down_payment_confirmed_at.strftime("%d/%m/%Y %H:%M") %></span>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @loan.down_payment_verification_status == "rejected" && @loan.down_payment_rejection_reason.present? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+        <p class="text-sm text-red-800">
+          <strong>Motivo de rechazo:</strong> <%= @loan.down_payment_rejection_reason %>
+        </p>
+      </div>
+    <% end %>
+
+    <% if @loan.down_payment_receipt.attached? %>
+      <div class="border-t border-gray-200 pt-4">
+        <h4 class="text-base font-semibold text-gray-900 mb-3">Comprobante de Depósito</h4>
+        <div class="flex justify-center mb-3">
+          <%= image_tag @loan.down_payment_receipt, class: "max-w-full max-h-80 rounded-lg shadow border border-gray-200" %>
+        </div>
+        <div class="text-center">
+          <%= link_to "Descargar Comprobante",
+                      url_for(@loan.down_payment_receipt),
+                      download: "comprobante_prima_#{@loan.contract_number}.jpg",
+                      class: "text-sm text-[#125282] hover:underline font-medium",
+                      target: "_blank" %>
+        </div>
+      </div>
+    <% elsif @loan.down_payment_method == "deposit" %>
+      <div class="border-t border-gray-200 pt-4 text-center py-6">
+        <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="mt-2 text-sm text-gray-500">No se encontró comprobante adjunto</p>
+      </div>
+    <% end %>
+  </div>
 
   <!-- Two-column layout for schedule and payments (same 4-column grid as cards above) -->
   <div class="grid grid-cols-4 gap-4 md:gap-5" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
