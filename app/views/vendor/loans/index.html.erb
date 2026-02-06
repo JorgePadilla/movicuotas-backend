@@ -220,12 +220,12 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
+          <%= sortable_header :created_at, "Creado" %>
           <%= sortable_header :contract_number, "Contrato" %>
           <%= sortable_header :customer_name, "Cliente" %>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dispositivo</th>
           <%= sortable_header :total_amount, "Monto" %>
           <%= sortable_header :status, "Estado" %>
-          <%= sortable_header :created_at, "Creado" %>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cuotas</th>
           <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Próx. Venc.</th>
         </tr>
@@ -241,6 +241,9 @@
               else 'bg-gray-100 text-gray-800'
             end %>
             <tr class="hover:bg-blue-50 cursor-pointer transition-colors" onclick="window.location='<%= vendor_loan_path(loan) %>'">
+              <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-600">
+                <%= loan.created_at.strftime("%d/%m/%Y") %>
+              </td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="text-sm font-medium text-[#125282]"><%= loan.contract_number %></div>
                 <div class="text-xs text-gray-500"><%= loan.branch_number %></div>
@@ -274,9 +277,6 @@
                 <span class="px-2 py-1 text-xs rounded-full font-medium <%= status_class %>">
                   <%= loan_status_es(loan.status) %>
                 </span>
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-600">
-                <%= loan.created_at.strftime("%d/%m/%Y") %>
               </td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
