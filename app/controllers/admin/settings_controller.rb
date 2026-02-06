@@ -7,17 +7,22 @@ module Admin
     def index
       authorize nil, policy_class: Admin::SettingsPolicy
       @support_phone_number = SystemSetting.get("support_phone_number") || ""
+      @support_schedule = SystemSetting.get("support_schedule") || ""
     end
 
     def update
       authorize nil, policy_class: Admin::SettingsPolicy
 
       phone = params[:support_phone_number]&.strip
+      schedule = params[:support_schedule]&.strip
+
       if phone.present?
         SystemSetting.set("support_phone_number", phone)
+        SystemSetting.set("support_schedule", schedule) if schedule.present?
         redirect_to admin_settings_path, notice: "Configuración actualizada exitosamente."
       else
         @support_phone_number = phone
+        @support_schedule = schedule
         flash.now[:alert] = "El número de teléfono de soporte no puede estar vacío."
         render :index, status: :unprocessable_entity
       end

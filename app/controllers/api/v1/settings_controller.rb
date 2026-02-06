@@ -5,7 +5,8 @@ module Api
 
       def index
         support_phone = SystemSetting.get("support_phone_number")
-        render json: { support_phone_number: support_phone }
+        support_schedule = SystemSetting.get("support_schedule")
+        render json: { support_phone_number: support_phone, support_schedule: support_schedule }
       end
     end
   end

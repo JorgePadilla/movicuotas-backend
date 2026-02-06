@@ -33,6 +33,10 @@ SystemSetting.find_or_create_by!(key: "support_phone_number") do |s|
   s.value = "97902401"
   s.description = "Número de teléfono de soporte mostrado en la app móvil"
 end
+SystemSetting.find_or_create_by!(key: "support_schedule") do |s|
+  s.value = "Horario de atención:\nLunes a Viernes 8:00 AM - 5:00 PM\nSábado 8:00 AM - 12:00 PM"
+  s.description = "Horario de atención mostrado en la pantalla de soporte de la app móvil"
+end
 
 # 1. Create Users
 puts "Creating users..."
