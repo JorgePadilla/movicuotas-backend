@@ -43,15 +43,15 @@
       </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+    <%= link_to vendor_loans_path(filtered: true, cuotas: "con_vencidas"), class: "bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6 hover:border-red-300 hover:shadow-lg transition-all block" do %>
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-sm lg:text-lg font-semibold text-red-600">En Mora</h3>
-          <p class="text-gray-600 text-xs mt-1 hidden lg:block">Atrasados</p>
+          <p class="text-gray-600 text-xs mt-1 hidden lg:block">Con cuotas vencidas</p>
         </div>
         <div class="text-xl lg:text-3xl font-bold text-red-700"><%= @overdue_count %></div>
       </div>
-    </div>
+    <% end %>
   </div>
 
   <!-- Filters -->
@@ -85,7 +85,6 @@
             <option value="draft" <%= "selected" if @status_filter == "draft" %>>Borrador</option>
             <option value="active" <%= "selected" if @status_filter == "active" %>>Activo</option>
             <option value="paid" <%= "selected" if @status_filter == "paid" %>>Pagado</option>
-            <option value="overdue" <%= "selected" if @status_filter == "overdue" %>>En Mora</option>
             <option value="cancelled" <%= "selected" if @status_filter == "cancelled" %>>Cancelado</option>
           </select>
         </div>

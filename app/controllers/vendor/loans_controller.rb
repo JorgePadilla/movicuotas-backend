@@ -79,7 +79,10 @@ module Vendor
       # Calculate stats from unfiltered data
       @active_count = base_loans.where(status: "active").count
       @completed_count = base_loans.where(status: %w[paid completed]).count
-      @overdue_count = base_loans.where("overdue_installments_count > 0").count
+      @overdue_count = base_loans.where(
+        "overdue_installments_count > 0 OR loans.id IN (?)",
+        Installment.pending.where("due_date < ?", Date.current).select(:loan_id)
+      ).count
 
       # Sort params
       set_sort_params(
@@ -300,12 +303,12 @@ module Vendor
       case status_filter
       when "active"
         loans.where(status: "active")
-      when "completed"
+      when "paid", "completed"
         loans.where(status: %w[paid completed])
-      when "overdue"
-        loans.where(status: "overdue")
       when "draft"
         loans.where(status: "draft")
+      when "cancelled"
+        loans.where(status: "cancelled")
       else
         loans
       end
