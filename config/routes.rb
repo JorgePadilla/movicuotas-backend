@@ -48,6 +48,9 @@ Rails.application.routes.draw do
       end
     end
     resources :payments do  # Payment management (Admin/Supervisor: full CRUD, Vendedor: view only)
+      collection do
+        get :loan_installments
+      end
       member do
         post :verify
         post :reject

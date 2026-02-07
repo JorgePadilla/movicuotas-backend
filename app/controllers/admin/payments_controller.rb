@@ -155,6 +155,13 @@ module Admin
       end
     end
 
+    def loan_installments
+      authorize Payment, :new?
+      @loan = Loan.find_by(id: params[:loan_id])
+      @installments = @loan&.installments&.where&.not(status: "paid")&.order(:due_date) || []
+      render partial: "installments_section", locals: { installments: @installments, loan: @loan }
+    end
+
     def verify
       authorize @payment
 
