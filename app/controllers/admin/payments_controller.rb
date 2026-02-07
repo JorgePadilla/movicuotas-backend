@@ -98,22 +98,6 @@ module Admin
       @payment = Payment.new(payment_params)
       authorize @payment
 
-      # Validate payment doesn't exceed total remaining balance
-      if @payment.loan.present? && params[:installment_allocations].present?
-        total_pending = @payment.loan.installments.where.not(status: "paid").sum("amount - paid_amount")
-        if @payment.amount > total_pending
-          @payment.errors.add(:amount, "excede el saldo total pendiente del préstamo (L. #{helpers.number_with_delimiter(total_pending, delimiter: ',')})")
-          @loans = loans_for_select
-          @bank_sources = BANK_SOURCES
-          if params[:loan_id].present?
-            @loan = Loan.find_by(id: params[:loan_id])
-            @installments = @loan&.installments&.where&.not(status: "paid")&.order(:due_date) || []
-          end
-          render :new, status: :unprocessable_entity
-          return
-        end
-      end
-
       # If created by Admin/Supervisor, auto-verify if requested
       if params[:auto_verify] == "1" && (current_user.admin_or_master? || current_user.supervisor?)
         @payment.verification_status = "verified"
@@ -125,8 +109,14 @@ module Admin
         # Allocate to installments if specified
         allocate_to_installments if params[:installment_allocations].present?
 
-        # Redirect back to loan page
-        redirect_to vendor_loan_path(@payment.loan), notice: "Pago registrado correctamente."
+        # Build notice with excess info if applicable
+        excess = @payment.unallocated_amount
+        notice = "Pago de L. #{helpers.number_with_delimiter(@payment.amount, delimiter: ',')} registrado correctamente."
+        if excess > 0
+          notice += " Excedente de L. #{helpers.number_with_delimiter(excess, delimiter: ',')} sin asignar."
+        end
+
+        redirect_to vendor_loan_path(@payment.loan), notice: notice
       else
         @loans = loans_for_select
         @bank_sources = BANK_SOURCES
