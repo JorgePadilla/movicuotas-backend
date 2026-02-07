@@ -1,7 +1,13 @@
 <% if installments.present? %>
+  <% total_pending = installments.sum(&:remaining_amount) %>
   <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-    <h3 class="text-sm font-medium text-gray-900 mb-3">Asignar a Cuota</h3>
-    <p class="text-xs text-gray-600 mb-4">Selecciona la cuota a la que se aplicará este pago. El monto se asignará automáticamente.</p>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-medium text-gray-900">Asignar a Cuota</h3>
+      <span class="text-xs font-medium text-[#125282] bg-blue-50 px-2.5 py-1 rounded-full">
+        Total pendiente: L. <%= number_with_delimiter(total_pending, delimiter: ',') %>
+      </span>
+    </div>
+    <p class="text-xs text-gray-600 mb-4">Selecciona la cuota inicial. Si el monto del pago es mayor, el excedente se aplicará automáticamente a las cuotas siguientes.</p>
 
     <div class="space-y-2 max-h-60 overflow-y-auto">
       <% installments.each do |installment| %>

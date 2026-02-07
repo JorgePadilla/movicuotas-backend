@@ -59,14 +59,14 @@ class ContractGeneratorService
       pdf.font_size 12
       pdf.text "Número de Contrato: #{@loan.contract_number}", align: :right
       pdf.text "Fecha: #{Date.today.strftime('%d/%m/%Y')}", align: :right
-      pdf.move_down 30
+      pdf.move_down 20
 
       # Introductory Paragraph
       pdf.font_size 12
       pdf.text "Nosotros, MoviCuotas S. de R.L., que en adelante se denominará \"LA EMPRESA\", y el cliente, identificado en este documento en la Sección 1, que en adelante se denominará \"EL CLIENTE\", hemos convenido en celebrar como al efecto por este acto celebramos el presente CONTRATO DE CRÉDITO.", align: :justify
       pdf.move_down 10
       pdf.text "Este contrato regula los términos bajo los cuales LA EMPRESA otorga a EL CLIENTE un crédito quincenal para la compra del dispositivo móvil descrito en la Sección 1.", align: :justify
-      pdf.move_down 30
+      pdf.move_down 20
 
       # Section 1: Datos del Cliente y del Crédito
       pdf.font_size 16
@@ -121,7 +121,7 @@ class ContractGeneratorService
       pdf.text "Cuota quincenal: #{format_currency((@loan.installments.first&.amount || @loan.financed_amount / @loan.number_of_installments).ceil)}"
       pdf.text "Fecha de inicio del contrato: #{@loan.start_date.strftime('%d/%m/%Y')}"
       pdf.text "Fecha de pago quincenal: Cada 15 Días comenzando a partir de la fecha de inicio del contrato."
-      pdf.move_down 30
+      pdf.move_down 20
 
       # Installment schedule
       pdf.font_size 16
@@ -147,12 +147,13 @@ class ContractGeneratorService
         end
       end
 
-      pdf.move_down 30
+      pdf.move_down 20
 
       # Activation Code Section
       add_activation_code_section(pdf)
 
-      pdf.move_down 30
+      # Start legal clauses on a new page
+      pdf.start_new_page
 
       # Sections 2-11 from new contract
       pdf.font_size 16
@@ -287,7 +288,7 @@ class ContractGeneratorService
       pdf.text "• La Política de Privacidad"
       pdf.text "• La autorización para bloqueo remoto del dispositivo"
       pdf.text "• La totalidad de los términos y obligaciones aquí descritos"
-      pdf.move_down 30
+      pdf.move_down 20
 
       # Signature lines
       pdf.font_size 12
@@ -372,14 +373,16 @@ class ContractGeneratorService
   # Add activation code section to PDF
   def add_activation_code_section(pdf)
     activation_code = @device&.activation_code || "------"
+    box_height = 80
 
-    # Draw blue background box
-    pdf.fill_color "E8F4FD"
-    pdf.fill_rectangle [ 0, pdf.cursor ], pdf.bounds.width, 80
-    pdf.fill_color "000000"
+    # Use bounding_box to contain both the background and text
+    top = pdf.cursor
+    pdf.bounding_box([ 0, top ], width: pdf.bounds.width, height: box_height) do
+      # Draw blue background filling the entire box
+      pdf.fill_color "E8F4FD"
+      pdf.fill_rectangle [ 0, box_height ], pdf.bounds.width, box_height
+      pdf.fill_color "000000"
 
-    # Center the content inside the box
-    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width, height: 80) do
       pdf.move_down 10
       pdf.font_size 12
       pdf.text "CODIGO DE ACTIVACION", style: :bold, align: :center

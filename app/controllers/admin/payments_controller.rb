@@ -98,6 +98,22 @@ module Admin
       @payment = Payment.new(payment_params)
       authorize @payment
 
+      # Validate payment doesn't exceed total remaining balance
+      if @payment.loan.present? && params[:installment_allocations].present?
+        total_pending = @payment.loan.installments.where.not(status: "paid").sum("amount - paid_amount")
+        if @payment.amount > total_pending
+          @payment.errors.add(:amount, "excede el saldo total pendiente del préstamo (L. #{helpers.number_with_delimiter(total_pending, delimiter: ',')})")
+          @loans = loans_for_select
+          @bank_sources = BANK_SOURCES
+          if params[:loan_id].present?
+            @loan = Loan.find_by(id: params[:loan_id])
+            @installments = @loan&.installments&.where&.not(status: "paid")&.order(:due_date) || []
+          end
+          render :new, status: :unprocessable_entity
+          return
+        end
+      end
+
       # If created by Admin/Supervisor, auto-verify if requested
       if params[:auto_verify] == "1" && (current_user.admin_or_master? || current_user.supervisor?)
         @payment.verification_status = "verified"
@@ -226,10 +242,35 @@ module Admin
     def allocate_to_installments
       return unless params[:installment_allocations].present?
 
-      # Safely permit installment allocation params by explicitly allowing only integer keys
+      # Find the selected installment from the radio button
       allowed_keys = params[:installment_allocations].keys.select { |k| k.to_s.match?(/\A\d+\z/) }
       allocations = params.require(:installment_allocations).permit(*allowed_keys).to_h.transform_values(&:to_d)
-      @payment.allocate_to_installments(allocations) if allocations.values.sum.positive?
+      return unless allocations.values.sum.positive?
+
+      # Get the selected installment
+      selected_installment_id = allocations.keys.first.to_i
+      selected_installment = Installment.find_by(id: selected_installment_id)
+      return unless selected_installment&.loan_id == @payment.loan_id
+
+      # Auto-cascade: distribute the full payment amount across installments
+      remaining_to_allocate = @payment.amount
+      pending_installments = @payment.loan.installments
+                                     .where.not(status: "paid")
+                                     .where("installment_number >= ?", selected_installment.installment_number)
+                                     .order(:installment_number)
+
+      cascade_allocations = {}
+      pending_installments.each do |installment|
+        break if remaining_to_allocate <= 0
+
+        allocatable = [ remaining_to_allocate, installment.remaining_amount ].min
+        next unless allocatable > 0
+
+        cascade_allocations[installment.id.to_s] = allocatable
+        remaining_to_allocate -= allocatable
+      end
+
+      @payment.allocate_to_installments(cascade_allocations) if cascade_allocations.any?
     end
   end
 end
