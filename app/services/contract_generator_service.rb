@@ -149,12 +149,6 @@ class ContractGeneratorService
 
       pdf.move_down 20
 
-      # Activation Code Section
-      add_activation_code_section(pdf)
-
-      # Start legal clauses on a new page
-      pdf.start_new_page
-
       # Sections 2-11 from new contract
       pdf.font_size 16
       pdf.text "2. Objeto del Contrato", style: :bold
@@ -303,12 +297,14 @@ class ContractGeneratorService
       pdf.text "Representante: #{@loan.user&.full_name || 'Supervisor Autorizado'}", align: :right
       pdf.text "Sucursal: #{@loan.branch_number}", align: :right
 
-      # Footer
+      # Footer in bottom margin
       pdf.repeat(:all) do
-        pdf.bounding_box([ pdf.bounds.left, pdf.bounds.bottom + 40 ], width: pdf.bounds.width) do
+        pdf.canvas do
           pdf.font_size 8
-          pdf.text "Contrato generado automáticamente el #{Time.current.strftime('%d/%m/%Y %H:%M')}. Documento válido sin firma física.",
-                   align: :center, color: "6b7280"
+          pdf.fill_color "6b7280"
+          pdf.draw_text "Contrato generado automáticamente el #{Time.current.strftime('%d/%m/%Y %H:%M')}. Documento válido sin firma física.",
+                        at: [72, 20]
+          pdf.fill_color "000000"
         end
       end
     end.render
