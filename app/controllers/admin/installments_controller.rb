@@ -22,6 +22,7 @@ module Admin
     def mark_paid
       authorize @installment
 
+      payment = nil
       ActiveRecord::Base.transaction do
         # Create a verified payment for this installment
         payment = Payment.new(
@@ -44,14 +45,25 @@ module Admin
 
         payment.save!
 
-        # Allocate payment to this installment
-        payment.payment_installments.create!(
-          installment: @installment,
-          amount: payment_amount
-        )
+        # Cascade: distribute the payment amount starting from this installment forward
+        remaining_to_allocate = payment_amount
+        target_installments = @installment.loan.installments
+                                .where.not(status: "paid")
+                                .where("installment_number >= ?", @installment.installment_number)
+                                .order(:installment_number)
 
-        # Update installment paid amount (this also updates status)
-        @installment.update_paid_amount
+        target_installments.each do |inst|
+          break if remaining_to_allocate <= 0
+          allocatable = [remaining_to_allocate, inst.remaining_amount].min
+          next unless allocatable > 0
+
+          payment.payment_installments.create!(
+            installment: inst,
+            amount: allocatable
+          )
+          inst.update_paid_amount
+          remaining_to_allocate -= allocatable
+        end
 
         # Create audit log
         AuditLog.log(
@@ -69,8 +81,14 @@ module Admin
         )
       end
 
+      paid_count = payment.payment_installments.count
+      excess = payment.unallocated_amount
+      notice = "Cuota ##{@installment.installment_number} marcada como pagada."
+      notice += " Se cubrieron #{paid_count} cuotas en total." if paid_count > 1
+      notice += " Excedente de L. #{excess.round(2)} sin asignar." if excess > 0
+
       redirect_back fallback_location: vendor_loan_path(@installment.loan),
-                    notice: "Cuota ##{@installment.installment_number} marcada como pagada."
+                    notice: notice
     rescue ActiveRecord::RecordInvalid => e
       redirect_back fallback_location: vendor_loan_path(@installment.loan),
                     alert: "Error al marcar cuota como pagada: #{e.message}"

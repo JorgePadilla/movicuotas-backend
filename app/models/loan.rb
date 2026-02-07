@@ -53,6 +53,20 @@ class Loan < ApplicationRecord
     payments.sum(:amount)
   end
 
+  def verified_total_paid
+    payments.verified.sum(:amount)
+  end
+
+  def total_allocated
+    PaymentInstallment.joins(:payment)
+                      .where(payments: { loan_id: id, verification_status: "verified" })
+                      .sum(:amount)
+  end
+
+  def total_excess
+    verified_total_paid - total_allocated
+  end
+
   def remaining_balance
     financed_amount - total_paid
   end

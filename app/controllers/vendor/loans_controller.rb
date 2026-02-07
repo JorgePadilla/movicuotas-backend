@@ -148,6 +148,11 @@ module Vendor
       @installments = @loan.installments.order(:due_date)
       # Only show verified payments (pending payments are not visible to vendors)
       @payments = @loan.payments.where(verification_status: "verified").order(payment_date: :desc)
+
+      # Payment summary data
+      @total_verified_paid = @payments.sum(:amount)
+      @total_allocated = @loan.total_allocated
+      @total_excess = @total_verified_paid - @total_allocated
     end
 
     # GET /vendor/loans/:id/download_contract

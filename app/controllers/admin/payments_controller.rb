@@ -106,8 +106,12 @@ module Admin
       end
 
       if @payment.save
-        # Allocate to installments if specified
-        allocate_to_installments if params[:installment_allocations].present?
+        # Allocate to installments: use explicit selection or auto-cascade from first unpaid
+        if params[:installment_allocations].present?
+          allocate_to_installments
+        elsif @payment.verified?
+          auto_cascade_to_installments
+        end
 
         # Build notice with excess info if applicable
         excess = @payment.unallocated_amount
@@ -178,6 +182,12 @@ module Admin
       }
 
       @payment.verify!(current_user, verification_options)
+
+      # Auto-cascade allocation now that payment is verified
+      if @payment.payment_installments.empty?
+        auto_cascade_to_installments
+      end
+
       redirect_to admin_payment_path(@payment), notice: "Pago verificado correctamente."
     rescue StandardError => e
       redirect_to admin_payment_path(@payment), alert: "Error al verificar pago: #{e.message}"
@@ -261,6 +271,28 @@ module Admin
       end
 
       @payment.allocate_to_installments(cascade_allocations) if cascade_allocations.any?
+    end
+
+    # Auto-cascade: distribute payment to installments starting from the first unpaid
+    def auto_cascade_to_installments
+      return unless @payment.loan.present?
+
+      remaining = @payment.amount
+      pending_installments = @payment.loan.installments
+                                     .where.not(status: "paid")
+                                     .order(:installment_number)
+
+      allocations = {}
+      pending_installments.each do |installment|
+        break if remaining <= 0
+        allocatable = [remaining, installment.remaining_amount].min
+        next unless allocatable > 0
+
+        allocations[installment.id.to_s] = allocatable
+        remaining -= allocatable
+      end
+
+      @payment.allocate_to_installments(allocations) if allocations.any?
     end
   end
 end

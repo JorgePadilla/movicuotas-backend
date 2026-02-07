@@ -392,6 +392,28 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Resumen de Pagos -->
+      <% if @total_verified_paid > 0 %>
+        <div class="mt-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+            <div>
+              <span class="text-gray-500">Total pagado:</span>
+              <span class="font-semibold text-gray-900">L. <%= number_with_delimiter(format("%.2f", @total_verified_paid.to_f), delimiter: ',') %></span>
+            </div>
+            <div>
+              <span class="text-gray-500">Total asignado:</span>
+              <span class="font-semibold text-gray-900">L. <%= number_with_delimiter(format("%.2f", @total_allocated.to_f), delimiter: ',') %></span>
+            </div>
+            <% if @total_excess > 0 %>
+              <div>
+                <span class="text-gray-500">Excedente:</span>
+                <span class="font-semibold text-orange-600">L. <%= number_with_delimiter(format("%.2f", @total_excess.to_f), delimiter: ',') %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <!-- Payment history - column 4 (aligned with Estado card) -->
@@ -412,6 +434,11 @@
                 <span><%= payment.payment_date.strftime("%d/%m/%Y") %></span>
                 <span><%= payment_method_es(payment.payment_method) %></span>
               </div>
+              <% if payment.unallocated_amount > 0 %>
+                <div class="mt-1 text-xs text-orange-600 font-medium">
+                  Excedente: L. <%= number_with_delimiter(format("%.2f", payment.unallocated_amount.to_f), delimiter: ',') %>
+                </div>
+              <% end %>
               <% if payment.verification_image.attached? || payment.receipt_image.attached? %>
                 <div class="mt-2 pt-2 border-t border-gray-100">
                   <% if payment.verification_image.attached? %>
@@ -460,13 +487,14 @@
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
         <div class="space-y-4">
-          <!-- Amount (read-only - fixed to installment amount) -->
+          <!-- Amount (editable - cascade if exceeds installment) -->
           <div>
             <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
               Monto a Pagar (L.)
             </label>
-            <input type="number" name="amount" id="modal-amount" step="0.01" min="0" required readonly
-                   class="w-full border border-gray-200 rounded-lg p-3 text-gray-900 bg-gray-100 cursor-not-allowed font-semibold">
+            <input type="number" name="amount" id="modal-amount" step="0.01" min="0.01" required
+                   class="w-full border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-[#125282] focus:border-transparent font-semibold">
+            <p class="mt-1 text-xs text-gray-500">Si el monto excede esta cuota, el excedente se aplicará a las siguientes.</p>
           </div>
 
           <!-- Payment Date -->

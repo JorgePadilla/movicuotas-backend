@@ -8,6 +8,7 @@ class PaymentInstallment < ApplicationRecord
   validates :installment, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validate :amount_within_installment_remaining
+  validate :total_allocations_within_payment_amount
   validate :installment_matches_payment_loan
 
   # Callbacks
@@ -20,6 +21,14 @@ class PaymentInstallment < ApplicationRecord
     return unless amount.present? && installment.present?
     if amount > installment.remaining_amount
       errors.add(:amount, "no puede exceder el saldo pendiente de la cuota")
+    end
+  end
+
+  def total_allocations_within_payment_amount
+    return unless payment.present? && amount.present?
+    existing_total = payment.payment_installments.where.not(id: id).sum(:amount)
+    if existing_total + amount > payment.amount
+      errors.add(:amount, "las asignaciones totales no pueden exceder el monto del pago")
     end
   end
 
