@@ -57,10 +57,7 @@ class Contract < ApplicationRecord
   end
 
   def generate_pdf
-    # This would call a service to generate PDF contract
-    # ContractGeneratorService.new(self).generate
-    # For now, return a placeholder
-    "PDF contract content for loan #{loan.contract_number}"
+    ContractGeneratorService.new(self).generate_pdf
   end
 
   def qr_code_present?
