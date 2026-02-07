@@ -77,7 +77,7 @@ module Vendor
       base_loans = policy_scope(Loan).includes(:customer, :device)
 
       # Calculate stats from unfiltered data
-      @active_count = base_loans.where(status: "active").count
+      @active_count = base_loans.where(status: %w[active overdue]).count
       @completed_count = base_loans.where(status: %w[paid completed]).count
       @overdue_count = base_loans.where(
         "overdue_installments_count > 0 OR loans.id IN (?)",
@@ -302,7 +302,7 @@ module Vendor
     def filter_loans_by_status(loans, status_filter)
       case status_filter
       when "active"
-        loans.where(status: "active")
+        loans.where(status: %w[active overdue])
       when "paid", "completed"
         loans.where(status: %w[paid completed])
       when "draft"
