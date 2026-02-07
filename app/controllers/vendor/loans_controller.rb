@@ -314,9 +314,13 @@ module Vendor
     def filter_loans_by_cuotas(loans, cuotas_filter)
       case cuotas_filter
       when "con_vencidas"
-        loans.where("overdue_installments_count > 0")
+        loans.where(
+          "overdue_installments_count > 0 OR loans.id IN (?)",
+          Installment.pending.where("due_date < ?", Date.current).select(:loan_id)
+        )
       when "sin_vencidas"
         loans.where(overdue_installments_count: 0)
+             .where.not(id: Installment.pending.where("due_date < ?", Date.current).select(:loan_id))
       when "proximas"
         loans.where(next_due_date: Date.current..7.days.from_now)
       when "pendientes"
