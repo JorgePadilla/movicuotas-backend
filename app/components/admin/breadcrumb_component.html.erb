@@ -1,10 +1,11 @@
 <nav class="mb-4 sm:mb-6">
   <div class="flex items-center gap-2 text-sm">
-    <%= link_to admin_dashboard_path, class: "flex items-center text-[#125282] hover:text-[#0f4670] transition-colors" do %>
+    <% home_path = helpers.current_user&.admin_or_master? ? admin_dashboard_path : supervisor_dashboard_path %>
+    <%= link_to home_path, class: "flex items-center text-[#125282] hover:text-[#0f4670] transition-colors" do %>
       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
       </svg>
-      <span class="hidden sm:inline">Dashboard</span>
+      <span class="hidden sm:inline">Inicio</span>
     <% end %>
 
     <% items.each do |item| %>
