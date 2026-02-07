@@ -299,7 +299,7 @@ module Supervisor
             device.model,
             device.contract_number,
             device.overdue_count,
-            number_with_precision(device.total_overdue || 0, precision: 2),
+            format("%.2f", device.total_overdue || 0),
             device.first_overdue_date&.strftime("%d/%m/%Y"),
             device.days_overdue,
             device.lock_status.capitalize,
