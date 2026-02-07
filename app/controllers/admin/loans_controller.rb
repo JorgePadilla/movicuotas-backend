@@ -3,7 +3,7 @@
 module Admin
   class LoansController < ApplicationController
     include Sortable
-    before_action :set_loan, only: [ :show, :destroy ]
+    before_action :set_loan, only: [ :show, :destroy, :cancel ]
 
     def index
       set_sort_params(
@@ -50,6 +50,12 @@ module Admin
       authorize @loan
       @loan.destroy
       redirect_to admin_loans_path, notice: "Préstamo eliminado exitosamente."
+    end
+
+    def cancel
+      authorize @loan
+      @loan.update!(status: "cancelled")
+      redirect_to admin_loan_path(@loan), notice: "Préstamo cancelado exitosamente."
     end
 
     private

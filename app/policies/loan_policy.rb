@@ -28,6 +28,10 @@ class LoanPolicy < ApplicationPolicy
     master?  # Only master can delete loans (not regular admin)
   end
 
+  def cancel?
+    (admin? || master?) && !record.cancelled?
+  end
+
   # Manual approval - Admin only (Vendedor submissions are auto-approved)
   def approve?
     admin?

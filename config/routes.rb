@@ -41,7 +41,11 @@ Rails.application.routes.draw do
     # Admin management routes (Phase 3)
     resources :users  # User management
     resources :customers  # Customer management
-    resources :loans, only: [ :index, :show, :destroy ]  # Loan management (master can delete)
+    resources :loans, only: [ :index, :show, :destroy ] do  # Loan management (master can delete)
+      member do
+        patch :cancel
+      end
+    end
     resources :devices, only: [ :index, :show ] do  # Device management
       member do
         post :reset_activation  # Reset activation to allow re-use of code
