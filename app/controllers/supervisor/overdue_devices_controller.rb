@@ -266,7 +266,7 @@ module Supervisor
       all_devices = apply_sorting(all_devices)
 
       timestamp = Time.current.strftime("%Y%m%d_%H%M%S")
-      filename = "overdue_devices_#{timestamp}.csv"
+      filename = "dispositivos_en_mora_#{timestamp}.csv"
 
       send_data generate_csv(all_devices),
                 filename: filename,
