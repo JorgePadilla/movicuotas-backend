@@ -301,7 +301,6 @@ if customer
     d.brand = phone_model.brand
     d.model = phone_model.model
     d.color = 'Negro'
-    d.lock_status = 'unlocked'
   end
 
   # 8. Create Contract
