@@ -185,8 +185,7 @@ class ContractGeneratorService
       pdf.text "   c) Permitir llamar al servicio al cliente"
       pdf.text "   d) Permitir enviar comprobantes de pago"
       pdf.text "4. El bloqueo se mantendrá hasta que EL CLIENTE se ponga al día."
-      pdf.text "5. El bloqueo no afecta llamadas de emergencia (911)."
-      pdf.text "6. EL CLIENTE declara que comprende y autoriza esta medida como parte del acceso al crédito de MoviCuotas."
+      pdf.text "5. EL CLIENTE declara que comprende y autoriza esta medida como parte del acceso al crédito de MoviCuotas."
       pdf.move_down 15
 
       pdf.font_size 16
