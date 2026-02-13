@@ -182,8 +182,7 @@ class ContractGeneratorService
       pdf.text "3. El dispositivo bloqueado podrá:"
       pdf.text "   a) Mostrar notificaciones de mora"
       pdf.text "   b) Mostrar el saldo pendiente"
-      pdf.text "   c) Permitir llamar al servicio al cliente"
-      pdf.text "   d) Permitir enviar comprobantes de pago"
+      pdf.text "   c) Permitir enviar comprobantes de pago"
       pdf.text "4. El bloqueo se mantendrá hasta que EL CLIENTE se ponga al día."
       pdf.text "5. EL CLIENTE declara que comprende y autoriza esta medida como parte del acceso al crédito de MoviCuotas."
       pdf.move_down 15
