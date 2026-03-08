@@ -4,7 +4,7 @@
   when 'overdue' then 'bg-red-100 text-red-800'
   else 'bg-gray-100 text-gray-800'
 end %>
-<%= link_to vendor_loan_path(loan), id: "mobile_loan_#{loan.id}", class: "block bg-white rounded-xl shadow-md border border-gray-200 p-4 hover:border-[#125282] hover:shadow-lg transition-all" do %>
+<%= link_to vendor_loan_path(loan), id: "mobile_loan_#{loan.id}", data: { turbo_frame: "_top" }, class: "block bg-white rounded-xl shadow-md border border-gray-200 p-4 hover:border-[#125282] hover:shadow-lg transition-all" do %>
   <div class="flex justify-between items-start mb-3">
     <div>
       <p class="font-bold text-gray-900"><%= loan.customer.full_name %></p>
