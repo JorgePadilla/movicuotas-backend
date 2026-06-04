@@ -97,7 +97,7 @@ class SendPushNotificationJob < ApplicationJob
       # Permanent failure - don't retry
       notification.update(
         status: "failed_permanent",
-        error_message: [error_code, error_message].compact.join(": ")
+        error_message: [ error_code, error_message ].compact.join(": ")
       )
       Rails.logger.warn("[FCM] Notification #{notification.id} failed permanently: #{error_message}")
     when "QUOTA_EXCEEDED"
@@ -112,7 +112,7 @@ class SendPushNotificationJob < ApplicationJob
       # Unknown error - give up (no re-enqueue: "failed" is terminal)
       notification.update(
         status: "failed",
-        error_message: [error_code, error_message].compact.join(": ")
+        error_message: [ error_code, error_message ].compact.join(": ")
       )
       Rails.logger.error("[FCM] Notification #{notification.id} failed: #{error_message}")
     end
