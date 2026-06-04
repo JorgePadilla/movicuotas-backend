@@ -65,7 +65,7 @@ class SendPushNotificationJobTest < ActiveJob::TestCase
       total: 1,
       successful: 0,
       failed: 1,
-      results: [{ success: false, error_code: "500", error: "FCM request failed" }]
+      results: [ { success: false, error_code: "500", error: "FCM request failed" } ]
     }
   end
 end

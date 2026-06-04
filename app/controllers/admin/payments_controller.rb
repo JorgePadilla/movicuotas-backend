@@ -285,7 +285,7 @@ module Admin
       allocations = {}
       pending_installments.each do |installment|
         break if remaining <= 0
-        allocatable = [remaining, installment.remaining_amount].min
+        allocatable = [ remaining, installment.remaining_amount ].min
         next unless allocatable > 0
 
         allocations[installment.id.to_s] = allocatable

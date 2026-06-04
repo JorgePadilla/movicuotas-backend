@@ -13,7 +13,7 @@ class CreateDeviceLockStates < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :device_lock_states, [:device_id, :created_at]
+    add_index :device_lock_states, [ :device_id, :created_at ]
     add_index :device_lock_states, :status
   end
 end

@@ -7,7 +7,7 @@
       "check_name": "PermitAttributes",
       "message": "Potentially dangerous key allowed for mass assignment",
       "file": "app/controllers/admin/users_controller.rb",
-      "line": 65,
+      "line": 78,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
       "code": "params.require(:user).permit(:email, :full_name, :password, :password_confirmation, :role, :branch_number, :active)",
       "render_path": null,
@@ -18,10 +18,34 @@
       },
       "user_input": ":role",
       "confidence": "Medium",
-      "cwe_id": [915],
-      "note": "Intentional: Admin-only controller protected by Pundit authorization (authorize_user_management). Role and active assignment is required for user management."
+      "cwe_id": [
+        915
+      ]
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "eb0e84538eb6c43bae43c85ba01a567910f7638bdd27b29b1691387a6e0b8280",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/controllers/concerns/sortable.rb",
+      "line": 15,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Arel.sql(\"#{(column_mapping[@sort_column] or column_mapping.values.first)} #{@sort_direction}\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Sortable",
+        "method": "sort_order_sql"
+      },
+      "user_input": "column_mapping[@sort_column]",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "False positive: sort_order_sql interpolates only whitelisted values. @sort_column is restricted to allowed_columns (set_sort_params), @sort_direction is restricted to asc/desc, and sql_col comes from a developer-defined column_mapping. No user-controlled value reaches the SQL string."
     }
   ],
-  "updated": "2026-01-18 17:30:00 -0500",
-  "brakeman_version": "7.1.2"
+  "updated": null,
+  "brakeman_version": "8.0.4"
 }

@@ -301,7 +301,7 @@ class ContractGeneratorService
           pdf.font_size 8
           pdf.fill_color "6b7280"
           pdf.draw_text "Contrato generado automáticamente el #{Time.current.strftime('%d/%m/%Y %H:%M')}. Documento válido sin firma física.",
-                        at: [72, 20]
+                        at: [ 72, 20 ]
           pdf.fill_color "000000"
         end
       end

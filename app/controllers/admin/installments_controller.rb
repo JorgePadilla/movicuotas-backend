@@ -54,7 +54,7 @@ module Admin
 
         target_installments.each do |inst|
           break if remaining_to_allocate <= 0
-          allocatable = [remaining_to_allocate, inst.remaining_amount].min
+          allocatable = [ remaining_to_allocate, inst.remaining_amount ].min
           next unless allocatable > 0
 
           payment.payment_installments.create!(
