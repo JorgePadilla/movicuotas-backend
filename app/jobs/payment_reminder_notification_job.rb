@@ -50,6 +50,13 @@ class PaymentReminderNotificationJob < ApplicationJob
       customer = installment.loan.customer
       next unless customer.present?
 
+      # Don't create notifications that can only ever fail (no device to push to).
+      next unless customer.device_tokens.active.exists?
+
+      # Idempotency: skip if a reminder for this installment was already created
+      # today (guards against double-runs / manual re-triggers re-filling the table).
+      next if reminder_already_sent?(customer, installment)
+
       begin
         Notification.create!(
           customer: customer,
@@ -73,5 +80,15 @@ class PaymentReminderNotificationJob < ApplicationJob
 
     log_execution("Sent #{count} reminders for #{days_before} days before due date", :debug)
     count
+  end
+
+  # metadata is a JSON-serialized TEXT column, so we match the installment id with
+  # a LIKE against the serialized payload (e.g. ...,"installment_id":123,...).
+  def reminder_already_sent?(customer, installment)
+    customer.notifications
+            .where(notification_type: "payment_reminder")
+            .where("created_at >= ?", Time.current.beginning_of_day)
+            .where("metadata LIKE ?", "%\"installment_id\":#{installment.id}%")
+            .exists?
   end
 end

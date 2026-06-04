@@ -67,18 +67,18 @@ class FcmService
         send_notification(device_token: token, title: title, body: body, data: data)
       end
 
-      result = {
+      # NOTE: FcmService is a pure transport. It must NEVER create Notification
+      # records. The caller (e.g. SendPushNotificationJob) owns the notification
+      # lifecycle. Creating a record here re-fired Notification's after_create_commit
+      # callback, which re-enqueued the send, which called this method again — an
+      # unbounded notification-creation loop that filled the disk and crashed Postgres.
+      {
         success: results.any? { |r| r[:success] },
         total: tokens.count,
         successful: results.count { |r| r[:success] },
         failed: results.count { |r| !r[:success] },
         results: results
       }
-
-      # Create notification record
-      create_notification_record(customer, title, body, data, notification_type, result)
-
-      result
     end
 
     # Check if FCM is properly configured
@@ -225,22 +225,6 @@ class FcmService
       device_token = DeviceToken.find_by(token: token)
       device_token&.invalidate
       Rails.logger.info("Invalidated FCM token: #{token[0..20]}...")
-    end
-
-    def create_notification_record(customer, title, body, data, notification_type, result)
-      Notification.create(
-        customer: customer,
-        title: title,
-        body: body,
-        notification_type: notification_type,
-        metadata: data.to_json,
-        delivery_method: "fcm",
-        status: result[:success] ? "delivered" : "failed",
-        error_message: result[:error],
-        sent_at: Time.current
-      )
-    rescue StandardError => e
-      Rails.logger.error("Failed to create notification record: #{e.message}")
     end
 
     def error_result(message)

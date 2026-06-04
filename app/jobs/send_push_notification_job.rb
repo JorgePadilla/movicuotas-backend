@@ -17,8 +17,10 @@ class SendPushNotificationJob < ApplicationJob
   def perform(notification_id:)
     notification = Notification.find(notification_id)
 
-    # Skip if already delivered or failed permanently
-    return if notification.status.in?(%w[delivered failed_permanent])
+    # Skip if the notification is already in a terminal state. "failed" and
+    # "skipped" are terminal here too — reprocessing them is what let a single
+    # failed row get re-sent over and over.
+    return if notification.status.in?(%w[delivered failed failed_permanent skipped])
 
     # Skip if FCM not configured
     unless FcmService.configured?
@@ -81,15 +83,21 @@ class SendPushNotificationJob < ApplicationJob
   end
 
   def handle_failure(notification, result)
-    error_code = result[:error_code]
-    error_message = result[:error]
+    # FcmService.send_to_customer returns an AGGREGATE hash (keys: success/total/
+    # successful/failed/results) with no top-level :error_code/:error. Fall back to
+    # the first failing per-token result, then to a synthesized summary, so the
+    # stored error_message is meaningful instead of a bare ": ".
+    first_failure = Array(result[:results]).find { |r| !r[:success] } || {}
+    error_code = result[:error_code] || first_failure[:error_code]
+    error_message = result[:error] || first_failure[:error] ||
+                    "FCM send failed (#{result[:failed]}/#{result[:total]} tokens)"
 
     case error_code
     when "UNREGISTERED", "INVALID_ARGUMENT"
       # Permanent failure - don't retry
       notification.update(
         status: "failed_permanent",
-        error_message: "#{error_code}: #{error_message}"
+        error_message: [error_code, error_message].compact.join(": ")
       )
       Rails.logger.warn("[FCM] Notification #{notification.id} failed permanently: #{error_message}")
     when "QUOTA_EXCEEDED"
@@ -101,10 +109,10 @@ class SendPushNotificationJob < ApplicationJob
       Rails.logger.warn("[FCM] Notification #{notification.id} rate limited, will retry")
       raise "FCM rate limited" # Trigger retry
     else
-      # Unknown error - retry a few times then give up
+      # Unknown error - give up (no re-enqueue: "failed" is terminal)
       notification.update(
         status: "failed",
-        error_message: "#{error_code}: #{error_message}"
+        error_message: [error_code, error_message].compact.join(": ")
       )
       Rails.logger.error("[FCM] Notification #{notification.id} failed: #{error_message}")
     end

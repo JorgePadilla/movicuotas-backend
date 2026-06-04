@@ -111,7 +111,10 @@ class Notification < ApplicationRecord
 
   def queue_push_notification
     return unless delivery_method == "fcm" || delivery_method.nil?
-    return if status_delivered? || status_skipped?
+    # Only brand-new pending notifications should ever enqueue a send.
+    # delivered/failed/failed_permanent/skipped are all terminal — re-enqueuing a
+    # non-pending row is how a stray "failed" record could restart the send loop.
+    return unless status_pending?
 
     SendPushNotificationJob.perform_later(notification_id: id)
   end

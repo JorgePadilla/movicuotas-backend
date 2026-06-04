@@ -46,6 +46,12 @@ class OverduePaymentNotificationJob < ApplicationJob
       customer = installment.loan.customer
       next unless customer.present?
 
+      # Don't create notifications that can only ever fail (no device to push to).
+      next unless customer.device_tokens.active.exists?
+
+      # Idempotency: skip if an overdue warning for this installment already exists today.
+      next if overdue_already_sent?(customer, installment)
+
       begin
         Notification.create!(
           customer: customer,
@@ -67,5 +73,15 @@ class OverduePaymentNotificationJob < ApplicationJob
 
     log_execution("Sent #{count} notifications for #{days_after} days overdue", :debug)
     count
+  end
+
+  # metadata is a JSON-serialized TEXT column, so we match the installment id with
+  # a LIKE against the serialized payload (e.g. ...,"installment_id":123,...).
+  def overdue_already_sent?(customer, installment)
+    customer.notifications
+            .where(notification_type: "overdue_warning")
+            .where("created_at >= ?", Time.current.beginning_of_day)
+            .where("metadata LIKE ?", "%\"installment_id\":#{installment.id}%")
+            .exists?
   end
 end
