@@ -69,7 +69,7 @@ gem "rqrcode", "~> 2.0"
 gem "chunky_png", "~> 1.4"
 
 # Firebase Cloud Messaging (FCM) for push notifications
-gem "googleauth", "~> 1.8"  # For Firebase service account authentication
+gem "googleauth", "~> 1.17" # For Firebase service account authentication
 
 # AWS SNS for SMS notifications
 gem "aws-sdk-sns", "~> 1.0"
